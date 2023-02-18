@@ -1,5 +1,6 @@
 const fuzzy = require("fuzzball");
 const fs = require("fs");
+const path = require('path');
 const {CustomerRecord} = require("./record");
 
 function removeSimilarValues(list) {
@@ -57,6 +58,9 @@ function formatString(str) {
 	 * Cleans a string to replace non-ascii characters and removes \r from the string.
 	 * Removes multiple white spaces to put just one. Trims the string.
 	 */
+	if (str === null || str === undefined) {
+		return str;
+	}
 	return str.replaceAll('=0D', '')
 		.replaceAll('=3D', '')
 		.replaceAll('\r', '')
@@ -75,10 +79,52 @@ function formatPhoneNumber(phoneNumber) {
 	return parseInt(phoneNumber.trim().replace('1(', '(').replace(/\D/g, ''));
 }
 
+function createFullAddress(street, city, state, zip) {
+	/**
+	 * Given all the separated address info, create one formatted address string.
+	 */
+	let fullAddress = '';
+	if (street !== null && street !== undefined) {
+		fullAddress = formatString(street.toUpperCase()) + ', ';
+	}
+	if (city !== null && city !== undefined) {
+		fullAddress += formatString(city.toUpperCase()) + ', ';
+	}
+	if (state !== null && state !== undefined) {
+		fullAddress += shortStateName(state) + ' ';
+	}
+	if (zip !== null && zip !== undefined) {
+		fullAddress += zip;
+	}
+
+	return fullAddress.trim().replace(/^,+|,+$|(?<=,) +(?=,)/g, "");
+}
+
+function createFullName(firstName, lastName) {
+	/**
+	 * Given all the separated address info, create one formatted address string.
+	 */
+	let fullName = '';
+	if (firstName !== null && firstName !== undefined) {
+		fullName = firstName.toUpperCase() + ' ';
+	}
+	if (lastName !== null && lastName !== undefined) {
+		fullName += lastName.toUpperCase();
+	}
+	return fullName.trim();
+}
+
 function saveAsJSON(outputPath, obj) {
 	/**
 	 * Helper function to save an object as a JSON.
 	 */
+	if (!path.isAbsolute(outputPath)) {
+	  // If it's not absolute, join it with the ./Reports directory path
+	  outputPath = path.join('./Reports', outputPath);
+	}
+	if (!outputPath.endsWith('.json')) {
+	  outputPath += '.json';
+	}
 	fs.writeFile(outputPath, JSON.stringify(obj), function(err) {
 		if(err)
 			return console.log(err);
@@ -106,22 +152,30 @@ function aggregateCustomerHistory(records) {
 	  combinedRecords[key].orderCount += 1;
 	  combinedRecords[key].totalSpend += record.amount;
 	}
+	return formatCustomerRecords(Object.values(combinedRecords));
+}
 
-	const combinedRecordsArray = Object.values(combinedRecords);
-	for (const record of combinedRecordsArray) {
+function formatCustomerRecords(records) {
+	/**
+	 * Format customer records sets into lists and remove similar values, round the values to two decimal places.
+	 */
+	for (const record of records) {
 		record.customerNames = removeSimilarValues(Array.from(record.customerNames));
 		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null; }));
 		record.customerEmails = Array.from(record.customerEmails).filter(function(val) { return val !== null; });
 		record.totalSpend = parseFloat(record.totalSpend.toFixed(2));
 	}
-	return combinedRecordsArray;
+	return records;
 }
 
-
 module.exports = {
+	removeSimilarValues,
 	shortStateName,
 	formatString,
 	formatPhoneNumber,
+	formatCustomerRecords,
+	createFullAddress,
+	createFullName,
 	recordError,
 	saveAsJSON,
 	aggregateCustomerHistory

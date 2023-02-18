@@ -43,3 +43,7 @@ Once that happens, then we create outputted JSON files:
 3. Summarized customer information JSON
 
 Additional project details can be found [here](https://docs.google.com/document/d/1SY-x9IjD4EF6XFukgUbjEhsaYp_CBOY1gGCEC3FQk6c/edit?usp=sharing).
+
+Example commands:
+- Menufy: `./menufy.js -d /Users/ahaidrey/Downloads/Customer_Delivery_Addresses_02-13-2023-Aroma.csv -e /Users/ahaidrey/Downloads/Customer_Emails_02-13-2023-Aroma.csv -o menufyCustomers.json`
+- Slice: ``

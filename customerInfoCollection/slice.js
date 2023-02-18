@@ -74,7 +74,7 @@ function createRecord(mail) {
 					record.city = utils.formatString(cityStZip[1]);
 					record.state = utils.formatString(utils.shortStateName(cityStZip[2]));
 					record.zipcode = parseInt(utils.formatString(cityStZip[3]));
-					record.customerAddress = record.street + ', ' + record.city + ', ' + record.state + ' ' + record.zipcode;
+					record.customerAddress = utils.createFullAddress(record.street, record.city, record.state, record.zipcode);
 				} else {
 					utils.recordError(record, 'cityStZip does not have enough inputs: ' + cityStZip);
 				}

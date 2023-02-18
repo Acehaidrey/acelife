@@ -1,3 +1,6 @@
+/**
+ * File containing the Record types.
+ */
 
 class TransactionRecord {
   constructor(orderDate) {

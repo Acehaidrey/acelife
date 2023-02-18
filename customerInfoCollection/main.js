@@ -72,7 +72,6 @@ function createJSONs(outputPath, transactionRecords, errorRecords, customerRecor
 }
 
 parseMboxFile();
-// combine the csvs for menufy
 // parse the grubhub
 // parse the menustar
 // parse eatstreet
