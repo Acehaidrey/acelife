@@ -1,0 +1,4 @@
+node_modules
+customerInfoCollection/Reports/
+.idea/
+package-lock.json

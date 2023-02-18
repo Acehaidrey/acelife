@@ -1,0 +1,19 @@
+{
+  "name": "acelife",
+  "version": "1.0.0",
+  "description": "Read Project 1 in README file",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ace Haidrey",
+  "license": "ISC",
+  "dependencies": {
+    "mailparser": "^0.5.3",
+    "node-mbox": "^0.2.1",
+    "yargs": "^3.30.0",
+    "fuzzball": "latest",
+    "papaparse": "latest"
+  }
+}
+
