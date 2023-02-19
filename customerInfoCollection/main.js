@@ -88,8 +88,8 @@ function createJSONs(outputPath, transactionRecords, errorRecords, customerRecor
 	 * and the customer aggregated records.
 	 */
 	const outputPathSplit = outputPath.split('.')
-	const errorPath = outputPathSplit[0] + '-errors.' + outputPathSplit[1]
-	const customerPath = outputPathSplit[0] + '-customers.' + outputPathSplit[1]
+	const errorPath = outputPathSplit[0] + '-errors.json'
+	const customerPath = outputPathSplit[0] + '-customers.json'
 
 	utils.saveAsJSON(outputPath, transactionRecords)
 	utils.saveAsJSON(errorPath, errorRecords)
