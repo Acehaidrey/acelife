@@ -2,6 +2,7 @@ const fuzzy = require("fuzzball");
 const fs = require("fs");
 const path = require('path');
 const {CustomerRecord} = require("./record");
+const {SIMILARITY_THRESHOLD, keyType} = require("./constants");
 
 function removeSimilarValues(list) {
 	/**
@@ -10,7 +11,6 @@ function removeSimilarValues(list) {
 	 * records that have an 80% match (threshold below) from a list. We pick
 	 * the first value for that match only to add. Uses edit distance to compare.
 	 */
-	const threshold = 80
 	if (list.length <= 1) {
 		return list;
 	}
@@ -22,7 +22,7 @@ function removeSimilarValues(list) {
 		for (let j = i + 1; j < list.length; j++) {
 			let compareTo = list[j];
 			let ratio = fuzzy.ratio(add, compareTo);
-			if (ratio > threshold) {
+			if (ratio > SIMILARITY_THRESHOLD) {
 				isDuplicate = true;
 				break;
 			}
@@ -58,7 +58,7 @@ function formatString(str) {
 	 * Cleans a string to replace non-ascii characters and removes \r from the string.
 	 * Removes multiple white spaces to put just one. Trims the string.
 	 */
-	if (str === null || str === undefined) {
+	if (str === null || str === undefined || !str) {
 		return str;
 	}
 	return str.replaceAll('=0D', '')
@@ -131,19 +131,24 @@ function saveAsJSON(outputPath, obj) {
 	});
 }
 
-function aggregateCustomerHistory(records) {
+function aggregateCustomerHistory(records, keyIdentifier = keyType.PHONE) {
 	/**
 	 * Takes the list of TransactionRecord and aggregates them. It creates a list of CustomerRecords.
 	 * This assumes that the TransactionRecords are clean properly and won't have issues.
 	 */
 	const combinedRecords = {};
 	for (const record of records) {
-	  const key = `${record.storeName}-${record.customerNumber}`;
+	  const keyIdent = keyIdentifier === keyType.NAME ? record.customerName : record.customerNumber;
+	  const key = `${record.storeName}-${keyIdent}`;
+
 	  if (!combinedRecords[key]) {
 		combinedRecords[key] = new CustomerRecord(record.storeName, record.customerNumber);
 		combinedRecords[key].lastOrderDate = record.orderDate;
 		combinedRecords[key].firstOrderDate = record.orderDate;
+		combinedRecords[key].platforms.add(record.platform);
+		combinedRecords[key].customerNames.add(record.customerName);
 	  }
+	  combinedRecords[key].platforms.add(record.platform);
 	  combinedRecords[key].customerNames.add(record.customerName);
 	  combinedRecords[key].lastOrderDate = combinedRecords[key].lastOrderDate > record.orderDate ? combinedRecords[key].lastOrderDate : record.orderDate;
 	  combinedRecords[key].firstOrderDate = combinedRecords[key].firstOrderDate < record.orderDate ? combinedRecords[key].firstOrderDate : record.orderDate;
@@ -155,6 +160,23 @@ function aggregateCustomerHistory(records) {
 	return formatCustomerRecords(Object.values(combinedRecords));
 }
 
+function getPlatform(inputPath) {
+	/**
+	 * Get the platform name from the input paths of the mbox files.
+	 */
+	if (inputPath === null || inputPath === undefined || !inputPath) {
+		return null;
+	}
+	let partner = inputPath.match(/([^/]+)\.mbox$/);
+	if (partner) {
+		partner = partner[1];
+		if (partner.startsWith('Orders-')) {
+			partner = partner.replace(/^Orders-/, '');
+		}
+	}
+	return partner.toUpperCase();
+}
+
 function formatCustomerRecords(records) {
 	/**
 	 * Format customer records sets into lists and remove similar values, round the values to two decimal places.
@@ -163,6 +185,7 @@ function formatCustomerRecords(records) {
 		record.customerNames = removeSimilarValues(Array.from(record.customerNames));
 		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null; }));
 		record.customerEmails = Array.from(record.customerEmails).filter(function(val) { return val !== null; });
+		record.platforms = Array.from(record.platforms).filter(function(val) { return val !== null; });
 		record.totalSpend = parseFloat(record.totalSpend.toFixed(2));
 	}
 	return records;
@@ -176,6 +199,7 @@ module.exports = {
 	formatCustomerRecords,
 	createFullAddress,
 	createFullName,
+	getPlatform,
 	recordError,
 	saveAsJSON,
 	aggregateCustomerHistory

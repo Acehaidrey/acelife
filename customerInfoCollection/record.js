@@ -3,7 +3,8 @@
  */
 
 class TransactionRecord {
-  constructor(orderDate) {
+  constructor(platform, orderDate) {
+    this.platform = platform;
     this.orderDate = orderDate;
     this.storeName = null;
     this.orderType = null;
@@ -19,12 +20,14 @@ class TransactionRecord {
     this.zipcode = null;
     this.amount = 0;
     this.paymentType = null;
+    this.orderId = null;
     }
 }
 
 
 class CustomerRecord {
   constructor(store, number) {
+    this.platforms = new Set();
     this.storeName = store;
     this.customerNames = new Set();
     this.customerNumber = number;

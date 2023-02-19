@@ -9,9 +9,20 @@ const argv = require('yargs')
 	.demand(['e', 'd'])
 	.argv;
 
-const {CustomerRecord} = require("./record");
+const {CustomerRecord, TransactionRecord} = require("./record");
 const utils = require("./utils.js");
+const {Platform, keyType} = require("./constants");
 
+
+function createTransactionRecord(mail) {
+    const record = new TransactionRecord(Platform.MENUFY, mail.date);
+    console.log(mail);
+    // TODO
+}
+
+function createCustomerRecords(transactionRecords) {
+	return utils.aggregateCustomerHistory(transactionRecords, keyType.NAME);
+}
 
 function combineCSVFiles(delAddrFile, custEmailFile, storeName) {
   /**
@@ -34,6 +45,7 @@ function combineCSVFiles(delAddrFile, custEmailFile, storeName) {
           if (name !== '') {
               const combinedRecord = new CustomerRecord(utils.formatString(storeName), utils.formatPhoneNumber(row1['Phone']));
               combinedRecord.customerNames.add(name);
+              combinedRecord.platforms.add(Platform.MENUFY);
               combinedRecord.customerAddresses.add(utils.createFullAddress(row1['Address1'], row1['City'], row1['State'], row1['ZipCode']));
               data1Records.push(combinedRecord);
           }
@@ -53,6 +65,7 @@ function combineCSVFiles(delAddrFile, custEmailFile, storeName) {
               combinedRecord.lastOrderDate = row1['Last Order Date'];
               combinedRecord.firstOrderDate = row1['First Order Date'];
               combinedRecord.customerEmails.add(row1['Email']);
+              combinedRecord.platforms.add(Platform.MENUFY);
               data2Records.push(combinedRecord);
             }
 	    });
@@ -113,6 +126,8 @@ async function main() {
     console.error(error);
   }
 }
+
+module.exports = {createTransactionRecord, createCustomerRecords}
 
 
 main();

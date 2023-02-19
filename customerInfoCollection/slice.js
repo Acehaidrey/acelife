@@ -1,5 +1,6 @@
 const {TransactionRecord} = require("./record");
 const utils = require("./utils");
+const {Platform} = require("./constants");
 
 
 const regexOrderType = 'Order placed.*\\b(DELIVERY|PICKUP)\\b';
@@ -8,10 +9,11 @@ const regexCustomerInfo = /(?:Customer:\s*)(.*?)(?:\n\n)/gs;
 const regexCityStateZip = /^([\w\s]+),?\s([\w\s]+)\s(\d{5}(-\d{4})?)$/;
 const regexCost = /TOTAL:\s*\$(\d+\.\d+)/;
 const regexPaymentType = /Payment Method:\s*(\w+)/;
+const regexOrderId = /ORDER\s+(\S+)/;
 
 
-function createRecord(mail) {
-	const record = new TransactionRecord(mail.date);
+function createTransactionRecord(mail) {
+	const record = new TransactionRecord(Platform.SLICE, mail.date);
 	// set the order type to PICKUP or DELIVERY
     if (mail.text.match(regexOrderType)) {
 	    record.orderType = mail.text.match(regexOrderType)[1].toUpperCase();
@@ -35,6 +37,12 @@ function createRecord(mail) {
 	  record.paymentType = mail.text.match(regexPaymentType)[1].toUpperCase();
 	} else {
 	  utils.recordError(record, 'Payment type not matched.');
+	}
+	// get order id
+	if (mail.text.match(regexOrderId)) {
+	  record.orderId = utils.formatString(mail.text.match(regexOrderId)[1].toUpperCase());
+	} else {
+	  utils.recordError(record, 'Order id not matched.');
 	}
     // clean string body and get the customer info block
 	const cleanedText = mail.text
@@ -92,4 +100,8 @@ function createRecord(mail) {
 	return record;
 }
 
-module.exports = {createRecord}
+function createCustomerRecords(transactionRecords) {
+	return utils.aggregateCustomerHistory(transactionRecords);
+}
+
+module.exports = {createTransactionRecord, createCustomerRecords}
