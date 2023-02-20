@@ -90,7 +90,6 @@ function createTransactionRecord(mail) {
     } else {
         utils.recordError(record, errorType.JSON_BODY);
     }
-
     // for errors add the original message text body too
 	if (record.error) {
         record.mail = cleanedHtml;
@@ -100,7 +99,7 @@ function createTransactionRecord(mail) {
 
 /**
  * The html body contains a dictionary of the order info embedded in it that we extract from orderInfo div id.
- * @param html String of the mail html body
+ * @param {string} html - mail html body
  * @returns {null|any}
  */
 function getOrderJSON(html) {

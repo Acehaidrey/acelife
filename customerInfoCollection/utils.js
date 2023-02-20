@@ -2,15 +2,17 @@ const fuzzy = require("fuzzball");
 const fs = require("fs");
 const path = require('path');
 const {CustomerRecord, TransactionRecord} = require("./record");
-const {SIMILARITY_THRESHOLD, keyType, paymentType} = require("./constants");
+const {SIMILARITY_THRESHOLD, keyType, paymentType, Platform} = require("./constants");
 
+/**
+ * For names and addresses, users occasionally misspell the results. We want to filter
+ * out cases where there is this overlap. We identify records that have an 80% match
+ * (threshold below) from a list. We pick the first value for that match only to add.
+ * Uses edit distance to compare.
+ * @param {*[]} list
+ * @returns {*[]|*}
+ */
 function removeSimilarValues(list) {
-	/**
-	 * For names and addresses, users occasionally misspell the results.
-	 * We want to filter out cases where there is this overlap. We identify
-	 * records that have an 80% match (threshold below) from a list. We pick
-	 * the first value for that match only to add. Uses edit distance to compare.
-	 */
 	if (list.length <= 1) {
 		return list;
 	}
@@ -34,10 +36,12 @@ function removeSimilarValues(list) {
 	return uniqueAddresses;
 }
 
+/**
+ * Convert the state name to the short name. Our orders should all be in CA so.
+ * @param {string|null} stateName
+ * @returns {string|*}
+ */
 function shortStateName(stateName) {
-	/**
-	 * Convert the state name to the short name. Our orders should all be in CA so.
-	 */
 	if (stateName === null || stateName === undefined) {
 		return stateName;
 	}
@@ -48,19 +52,23 @@ function shortStateName(stateName) {
 	return stateName;
 }
 
+/**
+ * Record an error message and mark the record had an error parsing the record.
+ * @param {TransactionRecord} record
+ * @param {string} errorMsg
+ */
 function recordError(record, errorMsg) {
-    /**
-     * Record an error message and mark the record had an error parsing the record.
-     */
 	record.error = true;
 	record.errorReason.push(errorMsg);
 }
 
+/**
+ * Cleans a string to replace non-ascii characters and removes \r from the string.
+ * Removes multiple white spaces to put just one. Trims the string.
+ * @param {string|null} str
+ * @returns {string|*}
+ */
 function formatString(str) {
-	/**
-	 * Cleans a string to replace non-ascii characters and removes \r from the string.
-	 * Removes multiple white spaces to put just one. Trims the string.
-	 */
 	if (str === null || str === undefined || !str) {
 		return str;
 	}
@@ -71,21 +79,27 @@ function formatString(str) {
 		.trim();
 }
 
+/**
+ * Cleans a string to replace non-ascii characters and removes \r from the string. Creates an int value for phone.
+ * @param {string|null} phoneNumber
+ * @returns {number|*}
+ */
 function formatPhoneNumber(phoneNumber) {
-	/**
-	 * Cleans a string to replace non-ascii characters and removes \r from the string.
-	 * Removes multiple white spaces to put just one. Trims the string.
-	 */
 	if (phoneNumber === null || phoneNumber === undefined) {
 		return phoneNumber;
 	}
 	return parseInt(phoneNumber.trim().replace('1(', '(').replace(/\D/g, ''));
 }
 
+/**
+ * Given all the separated address info, create one formatted address string.
+ * @param {string|null} street
+ * @param {string|null} city
+ * @param {string|null} state
+ * @param {string|int} zip
+ * @returns {string}
+ */
 function createFullAddress(street, city, state, zip) {
-	/**
-	 * Given all the separated address info, create one formatted address string.
-	 */
 	let fullAddress = '';
 	if (street !== null && street !== undefined) {
 		fullAddress = formatString(street.toUpperCase()) + ', ';
@@ -103,10 +117,13 @@ function createFullAddress(street, city, state, zip) {
 	return fullAddress.trim().replace(/^,+|,+$|(?<=,) +(?=,)/g, "");
 }
 
+/**
+ * Given a first name and last name to create a single joined name.
+ * @param {string|null} firstName
+ * @param {string|null} lastName
+ * @returns {string}
+ */
 function createFullName(firstName, lastName) {
-	/**
-	 * Given all the separated address info, create one formatted address string.
-	 */
 	let fullName = '';
 	if (firstName !== null && firstName !== undefined) {
 		fullName = firstName.toUpperCase() + ' ';
@@ -117,10 +134,12 @@ function createFullName(firstName, lastName) {
 	return fullName.trim();
 }
 
+/**
+ * Helper function to save an object as a JSON.
+ * @param {string} outputPath - output path to save the json file to
+ * @param {*} obj - object to serialize as JSON
+ */
 function saveAsJSON(outputPath, obj) {
-	/**
-	 * Helper function to save an object as a JSON.
-	 */
 	if (!path.isAbsolute(outputPath)) {
 	  // If it's not absolute, join it with the ./Reports directory path
 	  outputPath = path.join('./Reports', outputPath);
@@ -134,11 +153,14 @@ function saveAsJSON(outputPath, obj) {
 	});
 }
 
+/**
+ * Takes the list of TransactionRecord and aggregates them. It creates a list of CustomerRecords.
+ * This assumes that the TransactionRecords are clean properly and won't have issues.
+ * @param {TransactionRecord[]} records - transaction records to join on
+ * @param {keyType} keyIdentifier - parameter type to use for the key to join on
+ * @returns {CustomerRecord[]} - list of customer records after combining
+ */
 function aggregateCustomerHistory(records, keyIdentifier = keyType.PHONE) {
-	/**
-	 * Takes the list of TransactionRecord and aggregates them. It creates a list of CustomerRecords.
-	 * This assumes that the TransactionRecords are clean properly and won't have issues.
-	 */
 	const combinedRecords = {};
 	for (const record of records) {
 	  const keyIdent = keyIdentifier === keyType.NAME ? record.customerName : record.customerNumber;
@@ -163,10 +185,13 @@ function aggregateCustomerHistory(records, keyIdentifier = keyType.PHONE) {
 	return formatCustomerRecords(Object.values(combinedRecords));
 }
 
+/**
+ * Get the platform name from the input paths of the mbox files. If filename prefixed with Orders-
+ * because it is a sub label, then we strip it out.
+ * @param {string|null} inputPath - input filepath
+ * @returns {Platform|null} - Platform name
+ */
 function getPlatform(inputPath) {
-	/**
-	 * Get the platform name from the input paths of the mbox files.
-	 */
 	if (inputPath === null || inputPath === undefined || !inputPath) {
 		return null;
 	}
@@ -180,10 +205,12 @@ function getPlatform(inputPath) {
 	return partner.toUpperCase();
 }
 
+/**
+ * Format customer records sets into lists and remove similar values, round the values to two decimal places.
+ * @param {CustomerRecord[]} records - the list of records to format Sets to Arrays and other formatting
+ * @returns {CustomerRecord[]} - the formatted list
+ */
 function formatCustomerRecords(records) {
-	/**
-	 * Format customer records sets into lists and remove similar values, round the values to two decimal places.
-	 */
 	for (const record of records) {
 		record.customerNames = removeSimilarValues(Array.from(record.customerNames));
 		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null; }));
@@ -209,19 +236,15 @@ function mergeRecords(records) {
     if (!record.orderId || seenOrderIds.has(record.orderId)) {
       continue;
     }
-
     const duplicateRecords = records.filter((r) => r.orderId === record.orderId);
-
     let mergedRecord = new TransactionRecord(record.platform, record.orderDate);
 
     for (const field of Object.keys(mergedRecord)) {
       const values = duplicateRecords.map((r) => r[field]).filter((value) => value !== null && value !== undefined);
-
       if (values.length > 0) {
         mergedRecord[field] = values[0];
       }
     }
-
     mergedRecords.push(mergedRecord);
     seenOrderIds.add(record.orderId);
   }
@@ -229,10 +252,12 @@ function mergeRecords(records) {
   return mergedRecords;
 }
 
+/***
+ * Helper function to get the payment type as cash or credit based on the string specific to menustar/eatstreet.
+ * @param {string} input - Input string to check matches on
+ * @returns {paymentType|null}
+ */
 function getPaymentType(input) {
-    /**
-     * Helper function to get the payment type as cash or credit based on the string specific to menustar/eatstreet.
-     */
     if (input === 'PLEASE CHARGE' || input === 'COLLECT PAYMENT') {
         return paymentType.CASH;
     } else if (input === 'DO NOT CHARGE') {

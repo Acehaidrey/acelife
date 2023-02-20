@@ -2,7 +2,6 @@ const {TransactionRecord} = require("./record");
 const utils = require("./utils");
 const {Platform, errorType, orderType} = require("./constants");
 
-
 const regexOrderType = 'Order placed.*\\b(DELIVERY|PICKUP)\\b';
 const regexStoreName = '\\b(Aroma|Ameci)\\b';
 const regexCustomerInfo = /(?:Customer:\s*)(.*?)(?:\n\n)/gs;

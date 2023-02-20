@@ -48,7 +48,10 @@ const errorType = {
     JSON_BODY: 'Parsing issue with getting JSON body',
 }
 
-
+/**
+ * Threshold percentage to get the similarity overlap between values.
+ * @type {number}
+ */
 SIMILARITY_THRESHOLD = 80;
 
 module.exports = {

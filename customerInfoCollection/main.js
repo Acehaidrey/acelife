@@ -11,6 +11,7 @@ const argv = require('yargs')
 
 const utils = require("./utils.js");
 const {Platform, recordType} = require("./constants");
+const {TransactionRecord, CustomerRecord} = require("./record");
 
 const platformModules = {
   [Platform.SLICE]: require('./slice.js'),
@@ -21,7 +22,11 @@ const platformModules = {
   // [Platform.MENUFY]: require('./menufy.js')
 };
 
-
+/**
+ * A function to read the mail in the mbox file and parse it specific to the platform
+ * to create transaction records and customer records.
+ * @param {Platform} platform - Platform type
+ */
 function parseMboxFile(platform) {
 	const messages = [];
 	let transactionRecords = [];
@@ -74,11 +79,15 @@ function parseMboxFile(platform) {
 	}
 }
 
+/**
+ * Get the record depending on the type and make a call to the correct function needed.
+ * All platform modules in platformModules must define createTransactionRecord and createCustomerRecords.
+ * @param {Platform} platform
+ * @param {TransactionRecord|CustomerRecord[]} obj
+ * @param {recordType} type
+ * @returns {TransactionRecord|CustomerRecord[]}
+ */
 function getRecord(platform, obj, type = recordType.TRANSACTION) {
-	/**
-	 * Get the record depending on the type and make a call to the correct function needed.
-	 * All platform modules in platformModules must define createTransactionRecord and createCustomerRecords.
-	 */
     const module = platformModules[platform];
 	if (!module) {
 	    throw new Error(`Unsupported platform: ${platform}`);
@@ -86,12 +95,16 @@ function getRecord(platform, obj, type = recordType.TRANSACTION) {
 	return type === recordType.TRANSACTION ? module.createTransactionRecord(obj) : module.createCustomerRecords(obj);
 }
 
+/**
+ * Create the JSON files for the output of parsing the emails here from the mbox file.
+ * These JSONs are the transaction records, the error records from transactions,
+ * and the customer aggregated records.
+ * @param {string} outputPath
+ * @param {TransactionRecord[]} transactionRecords
+ * @param {TransactionRecord[]} errorRecords
+ * @param {CustomerRecord[]} customerRecords
+ */
 function createJSONs(outputPath, transactionRecords, errorRecords, customerRecords) {
-	/**
-	 * Create the JSON files for the output of parsing the emails here from the mbox file.
-	 * These JSONs are the transaction records, the error records from transactions,
-	 * and the customer aggregated records.
-	 */
 	const outputPathSplit = outputPath.split('.')
 	const errorPath = outputPathSplit[0] + '-errors.json'
 	const customerPath = outputPathSplit[0] + '-customers.json'
@@ -101,10 +114,10 @@ function createJSONs(outputPath, transactionRecords, errorRecords, customerRecor
 	utils.saveAsJSON(customerPath, customerRecords)
 }
 
+/**
+ * Entry point to the email parsing. Gets the platform from the input path and passes to parse files.
+ */
 function main() {
-	/**
-	 * Entry point to the email parsing. Gets the platform from the input path and passes to parse files.
-	 */
 	const platform = utils.getPlatform(argv.i);
 	console.log(`Parsing for platform: ${platform}`)
 	parseMboxFile(platform);

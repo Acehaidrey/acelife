@@ -24,18 +24,22 @@ function createCustomerRecords(transactionRecords) {
 	return utils.aggregateCustomerHistory(transactionRecords, keyType.NAME);
 }
 
-function combineCSVFiles(delAddrFile, custEmailFile, storeName) {
-  /**
-   * Combine the customer email and the customer delivery address csvs from menufy admin dashboard,
-   * to produce single array of customer records.
-   */
+/**
+ * Combine the customer email and the customer delivery address csvs from menufy
+ * admin dashboard, to produce single array of customer records.
+ * @param {string} delAddrFilePath
+ * @param {string} custEmailFilePath
+ * @param {string} storeName
+ * @returns {Promise<unknown>}
+ */
+function combineCSVFiles(delAddrFilePath, custEmailFilePath, storeName) {
   let data1 = [];
   let data2 = [];
   let data1Records = [];
   let data2Records = [];
 
   return new Promise((resolve, reject) => {
-    fs.readFile(delAddrFile, 'utf8', (err, fileContents) => {
+    fs.readFile(delAddrFilePath, 'utf8', (err, fileContents) => {
       if (err) {
         reject(err);
       }
@@ -51,7 +55,7 @@ function combineCSVFiles(delAddrFile, custEmailFile, storeName) {
           }
 	  });
 
-      fs.readFile(custEmailFile, 'utf8', (err, fileContents) => {
+      fs.readFile(custEmailFilePath, 'utf8', (err, fileContents) => {
         if (err) {
           reject(err);
         }
@@ -77,11 +81,15 @@ function combineCSVFiles(delAddrFile, custEmailFile, storeName) {
   });
 }
 
+/**
+ * Combine two lists of customer records into one list merging the common
+ * contacts. It joins on the customer name to combine. This will have all the
+ * list1 and list2 and merge on their overlaps.
+ * @param {CustomerRecord[]} list1
+ * @param {CustomerRecord[]} list2
+ * @returns {CustomerRecord[]}
+ */
 function combineCustomerRecords(list1, list2) {
-  /**
-   * Combine two lists of customer records into one list merging the common contacts.
-   * It joins on the customer name.
-   */
   // Create an object to store combined records by customer name
   const combinedRecords = {};
 
