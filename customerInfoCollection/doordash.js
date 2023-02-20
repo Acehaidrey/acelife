@@ -1,4 +1,4 @@
-const {Platform, PaymentType, keyType} = require("./constants");
+const {Platform, PaymentType, keyType, errorType} = require("./constants");
 const {TransactionRecord} = require("./record");
 const utils = require("./utils");
 
@@ -15,21 +15,21 @@ function createTransactionRecord(mail) {
     if (customerNameMatch) {
         record.customerName = utils.formatString(customerNameMatch[1].toUpperCase());
     } else {
-		utils.recordError(record, 'Could not parse customer name.');
+		utils.recordError(record, errorType.CUSTOMER_NAME);
 	}
     // Extract store name
     const storeNameMatch = subj.match(regexStoreName);
     if (storeNameMatch) {
         record.storeName = utils.formatString(storeNameMatch[1].toUpperCase());
     } else {
-		utils.recordError(record, 'Could not parse store name.');
+		utils.recordError(record, errorType.STORE_NAME);
 	}
     // Extract order id
     const orderIdMatch = subj.match(regexOrderId);
     if (storeNameMatch) {
         record.orderId = utils.formatString(orderIdMatch[1]);
     } else {
-		utils.recordError(record, 'Could not parse order id.');
+		utils.recordError(record, errorType.ORDER_ID);
 	}
     // set payment type to credit always
     record.paymentType = PaymentType.CREDIT;
@@ -38,7 +38,7 @@ function createTransactionRecord(mail) {
 }
 
 function createCustomerRecords(transactionRecords) {
-	return utils.aggregateCustomerHistory(transactionRecords, keyType.NAME);
+	return utils.aggregateCustomerHistory(transactionRecords.filter(function(record) { return !record.error;}), keyType.NAME);
 }
 
 

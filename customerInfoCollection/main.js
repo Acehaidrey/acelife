@@ -18,13 +18,13 @@ const platformModules = {
   [Platform.MENUSTAR]: require('./menustar.js'),
   [Platform.EATSTREET]: require('./eatstreet.js'),
   [Platform.GRUBHUB]: require('./grubhub.js'),
-  [Platform.MENUFY]: require('./menufy.js')
+  // [Platform.MENUFY]: require('./menufy.js')
 };
 
 
 function parseMboxFile(platform) {
 	const messages = [];
-	const transactionRecords = [];
+	let transactionRecords = [];
 	const transactionErrorRecords = [];
 	const mbox = new Mbox();
 	let messageCount = 0;
@@ -33,19 +33,24 @@ function parseMboxFile(platform) {
 	  mailparser.on('end', function(mail) {
 		  messages.push(mail);
 		  const record = getRecord(platform, mail, recordType.TRANSACTION);
-		  transactionRecords.push(record);
 		  if (record.error) {
 			transactionErrorRecords.push(record);
+		  } else {
+			transactionRecords.push(record);
 		  }
 	  	if (messages.length === messageCount) {
+			const originalTransactionLength = transactionRecords.length;
+			// merge transaction records based on orderId
+			transactionRecords = utils.mergeRecords(transactionRecords);
 			const customerRecords = getRecord(platform, transactionRecords, recordType.CUSTOMER);
 			console.log(transactionRecords);
 			console.error(transactionErrorRecords);
 			console.log(customerRecords);
 			console.log(
 				`Finished parsing ${messageCount} emails. ` +
-				`Parsed ${transactionRecords.length} transaction records. ` +
+				`Parsed ${originalTransactionLength} transaction records. ` +
 				`${transactionErrorRecords.length} finished with errors. ` +
+				`${transactionRecords.length} transaction records after merging orderIds. ` +
 				`Parsed ${customerRecords.length} customer records.`
 			);
 	  		if (argv.o) {

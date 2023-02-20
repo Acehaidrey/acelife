@@ -18,7 +18,7 @@ class TransactionRecord {
     this.city = null;
     this.state = null;
     this.zipcode = null;
-    this.amount = 0;
+    this.orderAmount = 0;
     this.paymentType = null;
     this.orderId = null;
     }

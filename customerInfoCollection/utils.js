@@ -1,7 +1,7 @@
 const fuzzy = require("fuzzball");
 const fs = require("fs");
 const path = require('path');
-const {CustomerRecord} = require("./record");
+const {CustomerRecord, TransactionRecord} = require("./record");
 const {SIMILARITY_THRESHOLD, keyType} = require("./constants");
 
 function removeSimilarValues(list) {
@@ -155,7 +155,7 @@ function aggregateCustomerHistory(records, keyIdentifier = keyType.PHONE) {
 	  combinedRecords[key].customerAddresses.add(record.customerAddress);
 	  combinedRecords[key].customerEmails.add(record.customerEmail);
 	  combinedRecords[key].orderCount += 1;
-	  combinedRecords[key].totalSpend += record.amount;
+	  combinedRecords[key].totalSpend += record.orderAmount;
 	}
 	return formatCustomerRecords(Object.values(combinedRecords));
 }
@@ -191,6 +191,42 @@ function formatCustomerRecords(records) {
 	return records;
 }
 
+/**
+ * Merges duplicate records based on the orderId field, selecting non-null or non-undefined
+ * values for other fields, or the first value arbitrarily if both are null/undefined.
+ * Removes the other record from the list.
+ * @param {TransactionRecord[]} records - the list of records to merge
+ * @returns {TransactionRecord[]} - the merged list of records
+ */
+function mergeRecords(records) {
+  const mergedRecords = [];
+  const seenOrderIds = new Set();
+
+  for (const record of records) {
+    if (!record.orderId || seenOrderIds.has(record.orderId)) {
+      continue;
+    }
+
+    const duplicateRecords = records.filter((r) => r.orderId === record.orderId);
+
+    let mergedRecord = new TransactionRecord(record.platform, record.orderDate);
+
+    for (const field of Object.keys(mergedRecord)) {
+      const values = duplicateRecords.map((r) => r[field]).filter((value) => value !== null && value !== undefined);
+
+      if (values.length > 0) {
+        mergedRecord[field] = values[0];
+      }
+    }
+
+    mergedRecords.push(mergedRecord);
+    seenOrderIds.add(record.orderId);
+  }
+
+  return mergedRecords;
+}
+
+
 module.exports = {
 	removeSimilarValues,
 	shortStateName,
@@ -202,5 +238,6 @@ module.exports = {
 	getPlatform,
 	recordError,
 	saveAsJSON,
-	aggregateCustomerHistory
+	aggregateCustomerHistory,
+	mergeRecords
 };
