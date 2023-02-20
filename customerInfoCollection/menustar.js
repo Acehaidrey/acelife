@@ -1,6 +1,6 @@
 const utils = require("./utils");
 const {TransactionRecord} = require("./record");
-const {Platform, PaymentType, errorType, orderType} = require("./constants");
+const {Platform, errorType, orderType} = require("./constants");
 
 
 const regexStoreName = /(ameci|aroma)/i;
@@ -45,8 +45,8 @@ function createTransactionRecord(mail) {
 	}
     // Get payment type
     const paymentTypeMatch = cleanedHtml.match(regexPaymentType);
-    if (paymentTypeMatch && getPaymentType(paymentTypeMatch[0])) {
-        record.paymentType = getPaymentType(paymentTypeMatch[0]);
+    if (paymentTypeMatch && utils.getPaymentType(paymentTypeMatch[0])) {
+        record.paymentType = utils.getPaymentType(paymentTypeMatch[0]);
     } else {
 		utils.recordError(record, errorType.PAYMENT_TYPE);
 	}
@@ -95,19 +95,6 @@ function createTransactionRecord(mail) {
 
     return record;
 }
-
-function getPaymentType(input) {
-    /**
-     * Helper function to get the payment type as cash or credit based on the string specific to menustar.
-     */
-    if (input === 'PLEASE CHARGE') {
-        return PaymentType.CASH;
-    } else if (input === 'DO NOT CHARGE') {
-        return PaymentType.CREDIT;
-    }
-    return null;
-}
-
 
 function createCustomerRecords(transactionRecords) {
 	return utils.aggregateCustomerHistory(transactionRecords.filter(function(record) { return !record.error;}));

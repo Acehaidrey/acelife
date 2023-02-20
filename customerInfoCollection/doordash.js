@@ -1,4 +1,4 @@
-const {Platform, PaymentType, keyType, errorType} = require("./constants");
+const {Platform, paymentType, keyType, errorType} = require("./constants");
 const {TransactionRecord} = require("./record");
 const utils = require("./utils");
 
@@ -32,7 +32,7 @@ function createTransactionRecord(mail) {
 		utils.recordError(record, errorType.ORDER_ID);
 	}
     // set payment type to credit always
-    record.paymentType = PaymentType.CREDIT;
+    record.paymentType = paymentType.CREDIT;
 
     return record;
 }

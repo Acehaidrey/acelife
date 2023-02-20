@@ -9,7 +9,7 @@ const Platform = {
   GRUBHUB: "GRUBHUB"
 };
 
-const PaymentType = {
+const paymentType = {
     CASH: 'CASH',
     CREDIT: 'CREDIT'
 }
@@ -41,6 +41,11 @@ const errorType = {
     CUSTOMER_NUMBER: 'Parsing issue with customerNumber',
     CUSTOMER_EMAIL: 'Parsing issue with customerEmail',
     CUSTOMER_ADDRESS: 'Parsing issue with customerAddress',
+    ZIPCODE: 'Parsing issue with zipcode',
+    CITY: 'Parsing issue with city',
+    STATE: 'Parsing issue with state',
+    STREET: 'Parsing issue with street',
+    JSON_BODY: 'Parsing issue with getting JSON body',
 }
 
 
@@ -48,7 +53,7 @@ SIMILARITY_THRESHOLD = 80;
 
 module.exports = {
     Platform,
-    PaymentType,
+    paymentType,
     recordType,
     keyType,
     errorType,

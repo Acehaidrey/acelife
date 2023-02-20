@@ -43,9 +43,9 @@ function parseMboxFile(platform) {
 			// merge transaction records based on orderId
 			transactionRecords = utils.mergeRecords(transactionRecords);
 			const customerRecords = getRecord(platform, transactionRecords, recordType.CUSTOMER);
-			console.log(transactionRecords);
-			console.error(transactionErrorRecords);
-			console.log(customerRecords);
+			// console.log(transactionRecords);
+			// console.error(transactionErrorRecords);
+			// console.log(customerRecords);
 			console.log(
 				`Finished parsing ${messageCount} emails. ` +
 				`Parsed ${originalTransactionLength} transaction records. ` +

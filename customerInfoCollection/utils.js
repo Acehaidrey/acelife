@@ -2,7 +2,7 @@ const fuzzy = require("fuzzball");
 const fs = require("fs");
 const path = require('path');
 const {CustomerRecord, TransactionRecord} = require("./record");
-const {SIMILARITY_THRESHOLD, keyType} = require("./constants");
+const {SIMILARITY_THRESHOLD, keyType, paymentType} = require("./constants");
 
 function removeSimilarValues(list) {
 	/**
@@ -38,6 +38,9 @@ function shortStateName(stateName) {
 	/**
 	 * Convert the state name to the short name. Our orders should all be in CA so.
 	 */
+	if (stateName === null || stateName === undefined) {
+		return stateName;
+	}
 	stateName = stateName.toUpperCase();
 	if (stateName === 'CALIFORNIA') {
 		return 'CA';
@@ -226,9 +229,20 @@ function mergeRecords(records) {
   return mergedRecords;
 }
 
+function getPaymentType(input) {
+    /**
+     * Helper function to get the payment type as cash or credit based on the string specific to menustar/eatstreet.
+     */
+    if (input === 'PLEASE CHARGE' || input === 'COLLECT PAYMENT') {
+        return paymentType.CASH;
+    } else if (input === 'DO NOT CHARGE') {
+        return paymentType.CREDIT;
+    }
+    return null;
+}
+
 
 module.exports = {
-	removeSimilarValues,
 	shortStateName,
 	formatString,
 	formatPhoneNumber,
@@ -239,5 +253,6 @@ module.exports = {
 	recordError,
 	saveAsJSON,
 	aggregateCustomerHistory,
-	mergeRecords
+	mergeRecords,
+	getPaymentType
 };

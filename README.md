@@ -46,6 +46,7 @@ Additional project details can be found [here](https://docs.google.com/document/
 
 Example commands:
 - Menufy: `./menufy.js -d /Users/ahaidrey/Downloads/Customer_Delivery_Addresses_02-13-2023-Aroma.csv -e /Users/ahaidrey/Downloads/Customer_Emails_02-13-2023-Aroma.csv -o menufyCustomers.json`
-- Slice: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Slice.mbox -o Slice.json`
-- Doordash: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Doordash.mbox -o Doordash.json`
-- Menustar:
+- Slice: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Slice.mbox -o Slice`
+- Doordash: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Doordash.mbox -o Doordash`
+- Menustar: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Menustar.mbox -o Menustar`
+- Eatstreet: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Eatstreet.mbox -o Eatstreet`
