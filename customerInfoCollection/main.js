@@ -19,6 +19,7 @@ const platformModules = {
   [Platform.MENUSTAR]: require('./menustar.js'),
   [Platform.EATSTREET]: require('./eatstreet.js'),
   [Platform.GRUBHUB]: require('./grubhub.js'),
+  [Platform.BRYGID]: require('./brygid.js'),
   // [Platform.MENUFY]: require('./menufy.js')
 };
 

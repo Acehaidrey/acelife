@@ -42,6 +42,9 @@ Once that happens, then we create outputted JSON files:
 2. Error information JSON
 3. Summarized customer information JSON
 
+For Brygid, we need to go to the site to login and download the customer info from the site.
+
+
 Additional project details can be found [here](https://docs.google.com/document/d/1SY-x9IjD4EF6XFukgUbjEhsaYp_CBOY1gGCEC3FQk6c/edit?usp=sharing).
 
 Example commands:
@@ -50,3 +53,4 @@ Example commands:
 - Doordash: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Doordash.mbox -o Doordash`
 - Menustar: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Menustar.mbox -o Menustar`
 - Eatstreet: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Eatstreet.mbox -o Eatstreet`
+- Brygid: `./main.js -i ~/Downloads/Brygid.csv -o Brygid`

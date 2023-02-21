@@ -12,6 +12,11 @@ const Platform = {
   SPEEDLINE: "SPEEDLINE",
 };
 
+const storeType = {
+    AMECI: 'AMECI',
+    AROMA: 'AROMA'
+}
+
 const paymentType = {
     CASH: 'CASH',
     CREDIT: 'CREDIT'
@@ -64,5 +69,6 @@ module.exports = {
     keyType,
     errorType,
     orderType,
+    storeType,
     SIMILARITY_THRESHOLD
 }

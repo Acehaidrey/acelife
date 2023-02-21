@@ -201,6 +201,9 @@ function getPlatform(inputPath) {
 		return null;
 	}
 	let partner = inputPath.match(/([^/]+)\.mbox$/);
+	if (!partner) {
+		partner = inputPath.match(/([^/]+)\.csv$/);
+	}
 	if (partner) {
 		partner = partner[1];
 		if (partner.startsWith('Orders-')) {
