@@ -6,7 +6,10 @@ const Platform = {
   DOORDASH: 'DOORDASH',
   MENUFY: 'MENUFY',
   EATSTREET: "EATSTREET",
-  GRUBHUB: "GRUBHUB"
+  GRUBHUB: "GRUBHUB",
+  TOAST: "TOAST",
+  BRYGID: "BRYGID",
+  SPEEDLINE: "SPEEDLINE",
 };
 
 const paymentType = {

@@ -9,11 +9,11 @@
   "author": "Ace Haidrey",
   "license": "ISC",
   "dependencies": {
+    "fuzzball": "latest",
+    "jsdom": "^21.1.0",
     "mailparser": "^0.5.3",
     "node-mbox": "^0.2.1",
-    "yargs": "^3.30.0",
-    "fuzzball": "latest",
-    "papaparse": "latest"
+    "papaparse": "latest",
+    "yargs": "^3.30.0"
   }
 }
-

@@ -88,7 +88,12 @@ function formatPhoneNumber(phoneNumber) {
 	if (phoneNumber === null || phoneNumber === undefined) {
 		return phoneNumber;
 	}
-	return parseInt(phoneNumber.trim().replace('1(', '(').replace(/\D/g, ''));
+	return parseInt(
+		phoneNumber.trim()
+		.replace('1(', '(')
+		.replace('+1', '')
+		.replace(/\D/g, '')
+	);
 }
 
 /**
@@ -252,7 +257,7 @@ function mergeRecords(records) {
   return mergedRecords;
 }
 
-/***
+/**
  * Helper function to get the payment type as cash or credit based on the string specific to menustar/eatstreet.
  * @param {string} input - Input string to check matches on
  * @returns {paymentType|null}
@@ -264,6 +269,20 @@ function getPaymentType(input) {
         return paymentType.CREDIT;
     }
     return null;
+}
+
+/**
+ * The emails generally have some back and forth emails that we have with support. Those emails generally
+ * are false records vs true error records. If a record is in the transactionRecords already, if an orderId
+ * is already in the transactionRecords, then any record with same orderId in the error list is extraneous
+ * and causing noise, so we want to filter these out.
+ * @param {TransactionRecord[]} transactionRecords
+ * @param {TransactionRecord[]} errorRecords
+ * @returns {TransactionRecord[]}
+ */
+function removeFalseErrorRecords(transactionRecords, errorRecords) {
+	const orderIds = new Set(transactionRecords.filter(record => record.orderId !== null).map(record => record.orderId));
+	return errorRecords.filter(record => record.orderId !== null).filter(record => !orderIds.has(record.orderId));
 }
 
 
@@ -279,5 +298,6 @@ module.exports = {
 	saveAsJSON,
 	aggregateCustomerHistory,
 	mergeRecords,
-	getPaymentType
+	getPaymentType,
+	removeFalseErrorRecords
 };

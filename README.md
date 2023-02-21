@@ -45,7 +45,7 @@ Once that happens, then we create outputted JSON files:
 Additional project details can be found [here](https://docs.google.com/document/d/1SY-x9IjD4EF6XFukgUbjEhsaYp_CBOY1gGCEC3FQk6c/edit?usp=sharing).
 
 Example commands:
-- Menufy: `./menufy.js -d /Users/ahaidrey/Downloads/Customer_Delivery_Addresses_02-13-2023-Aroma.csv -e /Users/ahaidrey/Downloads/Customer_Emails_02-13-2023-Aroma.csv -o menufyCustomers.json`
+- Menufy: `./menufy.js -d /Users/ahaidrey/Downloads/Customer_Delivery_Addresses_02-13-2023-Aroma.csv -e /Users/ahaidrey/Downloads/Customer_Emails_02-13-2023-Aroma.csv -o menufyCustomers`
 - Slice: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Slice.mbox -o Slice`
 - Doordash: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Doordash.mbox -o Doordash`
 - Menustar: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Menustar.mbox -o Menustar`

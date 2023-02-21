@@ -30,7 +30,7 @@ const platformModules = {
 function parseMboxFile(platform) {
 	const messages = [];
 	let transactionRecords = [];
-	const transactionErrorRecords = [];
+	let transactionErrorRecords = [];
 	const mbox = new Mbox();
 	let messageCount = 0;
 	mbox.on('message', function(msg) {
@@ -45,18 +45,21 @@ function parseMboxFile(platform) {
 		  }
 	  	if (messages.length === messageCount) {
 			const originalTransactionLength = transactionRecords.length;
+			const originalErrorLength = transactionErrorRecords.length;
 			// merge transaction records based on orderId
 			transactionRecords = utils.mergeRecords(transactionRecords);
+			transactionErrorRecords = utils.removeFalseErrorRecords(transactionRecords, transactionErrorRecords);
 			const customerRecords = getRecord(platform, transactionRecords, recordType.CUSTOMER);
 			// console.log(transactionRecords);
 			// console.error(transactionErrorRecords);
 			// console.log(customerRecords);
 			console.log(
-				`Finished parsing ${messageCount} emails. ` +
-				`Parsed ${originalTransactionLength} transaction records. ` +
-				`${transactionErrorRecords.length} finished with errors. ` +
-				`${transactionRecords.length} transaction records after merging orderIds. ` +
-				`Parsed ${customerRecords.length} customer records.`
+				`${messageCount} parsed emails.\n` +
+				`${originalTransactionLength} parsed transaction records.\n` +
+				`${originalErrorLength} finished with errors.\n` +
+				`${transactionErrorRecords.length} finished with errors after merging orderIds.\n` +
+				`${transactionRecords.length} transaction records after merging orderIds.\n` +
+				`${customerRecords.length} parsed customer records.`
 			);
 	  		if (argv.o) {
 			  createJSONs(argv.o, transactionRecords, transactionErrorRecords, customerRecords);
