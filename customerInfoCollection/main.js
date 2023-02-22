@@ -6,7 +6,7 @@ const Mbox = require('node-mbox');
 const argv = require('yargs')
 	.alias('i', 'input')
 	.alias('o', 'output')
-	.demand(['i'])
+	// .demand(['i'])
 	.argv;
 
 const utils = require("./utils.js");
@@ -20,6 +20,7 @@ const platformModules = {
   [Platform.EATSTREET]: require('./eatstreet.js'),
   [Platform.GRUBHUB]: require('./grubhub.js'),
   [Platform.BRYGID]: require('./brygid.js'),
+  [Platform.SPEEDLINE]: require('./speedline.js'),
   // [Platform.MENUFY]: require('./menufy.js')
 };
 
@@ -122,7 +123,8 @@ function createJSONs(outputPath, transactionRecords, errorRecords, customerRecor
  * Entry point to the email parsing. Gets the platform from the input path and passes to parse files.
  */
 function main() {
-	const platform = utils.getPlatform(argv.i);
+	const inputStr = argv.i ? argv.i : argv.e;
+	const platform = utils.getPlatform(inputStr);
 	console.log(`Parsing for platform: ${platform}`)
 	parseMboxFile(platform);
 }

@@ -1,21 +1,21 @@
 const utils = require("./utils");
 const {CustomerRecord} = require("./record");
-const {Platform, errorType, orderType, storeType} = require("./constants");
+const {Platform, storeType} = require("./constants");
 const fs = require("fs");
 const Papa = require("papaparse");
 
 const argv = require('yargs')
 	.alias('i', 'input')
 	.alias('o', 'output')
-	.demand(['i'])
 	.argv;
 
 
-// TODO: Consider downloading the transaction information to get daily accounting too
+// TODO: Consider downloading the transaction information from emails to get daily accounting too
 function createTransactionRecord(mail) {
     return {};
 }
 
+// Brygid we get the file from the site, download 6 months worth customer data, and parse csv info
 function createCustomerRecords(transactionRecords) {
     const customerRecords = [];
     const csvData = fs.readFileSync(argv.i, 'utf-8');
@@ -36,14 +36,14 @@ function createCustomerRecords(transactionRecords) {
           customerRecord.platforms.add(Platform.BRYGID);
           customerRecord.customerNames.add(utils.createFullName(record['FIRST_NAME'], record['LAST_NAME']));
           customerRecord.customerEmails.add(record['EMAIL']);
-          customerRecord.lastOrderDate = convertTimestampToUTCFormat(record['DATE']);
+          customerRecord.lastOrderDate = utils.convertTimestampToUTCFormat(record['DATE']);
           // customerRecord.firstOrderDate = customerRecord.lastOrderDate;
           customerRecord.orderCount = parseInt(record['ORDERS']);
           customerRecord.totalSpend = parseFloat(record['PURCHASE'].replace('$', ''));
           if (record['STREET'] && record['SUITE_APT']) {
               record['STREET'] += ' #' + record['SUITE_APT'];
           }
-          const addr = utils.createFullAddress(record['STREET'], record['CITY'], record['STATE'], record['ZIP']);
+          const addr = utils.createFullAddress(record['STREET'], record['CITY'], utils.shortStateName(record['STATE']), record['ZIP']);
           customerRecord.customerAddresses.add(addr);
           customerRecords.push(customerRecord);
       }
@@ -51,14 +51,6 @@ function createCustomerRecords(transactionRecords) {
     });
 
     return utils.formatCustomerRecords(customerRecords);
-}
-
-
-function convertTimestampToUTCFormat(inputDateString) {
-    if (!inputDateString) {
-        return null;
-    }
-    return new Date(inputDateString).toISOString();
 }
 
 module.exports = {createTransactionRecord, createCustomerRecords}

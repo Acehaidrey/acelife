@@ -1,23 +1,19 @@
-#!/usr/bin/env node
-
 const Papa = require('papaparse');
 const fs = require('fs');
 const argv = require('yargs')
 	.alias('e', 'email-file')
 	.alias('d', 'delivery-file')
     .alias('o', 'output')
-	.demand(['e', 'd'])
 	.argv;
 
-const {CustomerRecord, TransactionRecord} = require("./record");
+const {CustomerRecord} = require("./record");
 const utils = require("./utils.js");
 const {Platform, keyType} = require("./constants");
 
 
+// TODO: Consider downloading the transaction information from emails to get daily accounting too
 function createTransactionRecord(mail) {
-    const record = new TransactionRecord(Platform.MENUFY, mail.date);
-    console.log(mail);
-    // TODO
+    return {};
 }
 
 function createCustomerRecords(transactionRecords) {

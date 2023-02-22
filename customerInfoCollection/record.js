@@ -29,18 +29,15 @@ class CustomerRecord {
   constructor(store, number) {
     this.platforms = new Set();
     this.storeName = store;
-    this.customerNames = new Set();
     this.customerNumber = number;
-    this.lastOrderDate = null;
-    this.firstOrderDate = null;
+    this.customerNames = new Set();
     this.customerAddresses = new Set();
     this.customerEmails = new Set();
+    this.lastOrderDate = null;
+    this.firstOrderDate = null;
     this.orderCount = 0;
     this.totalSpend = 0;
   }
 }
 
-module.exports = {
-	CustomerRecord,
-	TransactionRecord
-};
+module.exports = {CustomerRecord, TransactionRecord};

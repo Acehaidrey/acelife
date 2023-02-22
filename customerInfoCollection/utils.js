@@ -53,6 +53,26 @@ function shortStateName(stateName) {
 }
 
 /**
+ * If the zipcode is null but there is a city set, then infer it from this hard coded map.
+ * @param {int|string|null} zipcode
+ * @param {string|null} cityName
+ * @returns {int|*}
+ */
+function getZipForCity(zipcode, cityName) {
+	if (zipcode) {
+		return zipcode;
+	}
+	if (cityName === null || cityName === undefined) {
+		return cityName;
+	}
+	cityName = cityName.toUpperCase();
+	if (cityName === 'LAKE FOREST') {
+		return 92630;
+	}
+	return null;
+}
+
+/**
  * Record an error message and mark the record had an error parsing the record.
  * @param {TransactionRecord} record
  * @param {string} errorMsg
@@ -88,12 +108,14 @@ function formatPhoneNumber(phoneNumber) {
 	if (phoneNumber === null || phoneNumber === undefined) {
 		return phoneNumber;
 	}
-	return parseInt(
-		phoneNumber.trim()
+	let cleanedNum = phoneNumber.trim()
 		.replace('1(', '(')
 		.replace('+1', '')
-		.replace(/\D/g, '')
-	);
+		.replace(/\D/g, '');
+	if (cleanedNum && cleanedNum.length > 10) {
+		cleanedNum = cleanedNum.substring(cleanedNum.length - 10, cleanedNum.length);
+	}
+	return parseInt(cleanedNum);
 }
 
 /**
@@ -101,7 +123,7 @@ function formatPhoneNumber(phoneNumber) {
  * @param {string|null} street
  * @param {string|null} city
  * @param {string|null} state
- * @param {string|int} zip
+ * @param {string|int|null} zip
  * @returns {string}
  */
 function createFullAddress(street, city, state, zip) {
@@ -126,7 +148,7 @@ function createFullAddress(street, city, state, zip) {
  * Given a first name and last name to create a single joined name.
  * @param {string|null} firstName
  * @param {string|null} lastName
- * @returns {string}
+ * @returns {string|null}
  */
 function createFullName(firstName, lastName) {
 	let fullName = '';
@@ -136,7 +158,7 @@ function createFullName(firstName, lastName) {
 	if (lastName !== null && lastName !== undefined) {
 		fullName += lastName.toUpperCase();
 	}
-	return fullName.trim();
+	return fullName ? fullName.trim() : null;
 }
 
 /**
@@ -199,6 +221,10 @@ function aggregateCustomerHistory(records, keyIdentifier = keyType.PHONE) {
 function getPlatform(inputPath) {
 	if (inputPath === null || inputPath === undefined || !inputPath) {
 		return null;
+	}
+	// TODO: clean this up once handle file renaming for menufy
+	if (inputPath.toLowerCase().includes('customer_email') || inputPath.toLowerCase().includes('delivery_address')) {
+		return Platform.MENUFY;
 	}
 	let partner = inputPath.match(/([^/]+)\.mbox$/);
 	if (!partner) {
@@ -288,6 +314,84 @@ function removeFalseErrorRecords(transactionRecords, errorRecords) {
 	return errorRecords.filter(record => record.orderId !== null).filter(record => !orderIds.has(record.orderId));
 }
 
+/**
+ * Convert a string of form 01/09/2023 or other to 2023-01-09T00:00:00.000Z.
+ * @param {string} inputDateString
+ * @returns {string|null}
+ */
+function convertTimestampToUTCFormat(inputDateString) {
+    if (!inputDateString) {
+        return null;
+    }
+    return new Date(inputDateString).toISOString();
+}
+
+/**
+ * Merge customer records matching same phone number.
+ * @param {CustomerRecord[]} records
+ * @returns {CustomerRecord[]}
+ */
+function mergeCustomerRecords(records) {
+  const customerRecords = {};
+
+  for (const record of records) {
+    const customerNumber = record.customerNumber ?? '__NULL__';
+    let mergedRecord = customerRecords[customerNumber];
+
+    if (!mergedRecord) {
+      mergedRecord = new CustomerRecord(record.storeName, record.customerNumber);
+      customerRecords[customerNumber] = mergedRecord;
+    }
+
+    mergedRecord.platforms = new Set([...record.platforms, ...mergedRecord.platforms]);
+	mergedRecord.customerNames = new Set([...record.customerNames, ...mergedRecord.customerNames]);
+	mergedRecord.customerAddresses = new Set([...record.customerAddresses, ...mergedRecord.customerAddresses]);
+	mergedRecord.customerEmails = new Set([...record.customerEmails, ...mergedRecord.customerEmails]);
+    mergedRecord.orderCount += record.orderCount;
+    mergedRecord.totalSpend += record.totalSpend;
+
+    if (!mergedRecord.firstOrderDate || record.firstOrderDate < mergedRecord.firstOrderDate) {
+      mergedRecord.firstOrderDate = record.firstOrderDate;
+    }
+
+    if (!mergedRecord.lastOrderDate || record.lastOrderDate > mergedRecord.lastOrderDate) {
+      mergedRecord.lastOrderDate = record.lastOrderDate;
+    }
+  }
+
+  return Object.values(customerRecords);
+}
+
+/**
+ * Find duplicate records based on the customer phone number.
+ * @param {CustomerRecord[]|TransactionRecord[]} customers
+ * @returns {CustomerRecord[]|TransactionRecord[]}
+ */
+function findDuplicateCustomerNumbers(customers) {
+  const customerNumbers = customers.map(customer => customer.customerNumber);
+  const uniqueCustomerNumbers = new Set(customerNumbers);
+  const duplicateCustomerNumbers = [...customerNumbers.filter(customerNumber => {
+    if (uniqueCustomerNumbers.has(customerNumber)) {
+      uniqueCustomerNumbers.delete(customerNumber);
+    } else {
+      return true;
+    }
+  })];
+  return duplicateCustomerNumbers;
+}
+
+/**
+ * If the record is missing name, number, address and email, then it is not useful record.
+ * @param {CustomerRecord} record
+ * @returns {boolean}
+ */
+function customerInformationMissing(record) {
+    return !record.customerNumber &&
+        record.customerNames.size === 0 &&
+        record.customerAddresses.size === 0 &&
+        record.customerEmails.size === 0
+}
+
 
 module.exports = {
 	shortStateName,
@@ -302,5 +406,10 @@ module.exports = {
 	aggregateCustomerHistory,
 	mergeRecords,
 	getPaymentType,
-	removeFalseErrorRecords
+	removeFalseErrorRecords,
+	convertTimestampToUTCFormat,
+	getZipForCity,
+	mergeCustomerRecords,
+	findDuplicateCustomerNumbers,
+	customerInformationMissing
 };
