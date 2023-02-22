@@ -246,7 +246,7 @@ function getPlatform(inputPath) {
  */
 function formatCustomerRecords(records) {
 	for (const record of records) {
-		record.customerNames = removeSimilarValues(Array.from(record.customerNames));
+		record.customerNames = removeSimilarValues(Array.from(record.customerNames).filter(function(val) { return val !== null; }));
 		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null; }));
 		record.customerEmails = Array.from(record.customerEmails).filter(function(val) { return val !== null; });
 		record.platforms = Array.from(record.platforms).filter(function(val) { return val !== null; });
@@ -357,6 +357,10 @@ function mergeCustomerRecords(records) {
     if (!mergedRecord.lastOrderDate || record.lastOrderDate > mergedRecord.lastOrderDate) {
       mergedRecord.lastOrderDate = record.lastOrderDate;
     }
+	mergedRecord.platforms.delete(null);
+	mergedRecord.customerNames.delete(null);
+	mergedRecord.customerAddresses.delete(null);
+	mergedRecord.customerEmails.delete(null);
   }
 
   return Object.values(customerRecords);
@@ -382,10 +386,14 @@ function findDuplicateCustomerNumbers(customers) {
 
 /**
  * If the record is missing name, number, address and email, then it is not useful record.
+ * We delete null values from the lists first.
  * @param {CustomerRecord} record
  * @returns {boolean}
  */
 function customerInformationMissing(record) {
+	record.customerNames.delete(null);
+	record.customerAddresses.delete(null);
+	record.customerEmails.delete(null);
     return !record.customerNumber &&
         record.customerNames.size === 0 &&
         record.customerAddresses.size === 0 &&

@@ -7,7 +7,6 @@ const Papa = require("papaparse");
 const argv = require('yargs')
 	.alias('i', 'input')
 	.alias('o', 'output')
-	.demand(['i'])
 	.argv;
 
 

@@ -21,6 +21,7 @@ const platformModules = {
   [Platform.GRUBHUB]: require('./grubhub.js'),
   [Platform.BRYGID]: require('./brygid.js'),
   [Platform.SPEEDLINE]: require('./speedline.js'),
+  [Platform.TOAST]: require('./toast.js'),
   // [Platform.MENUFY]: require('./menufy.js')
 };
 
