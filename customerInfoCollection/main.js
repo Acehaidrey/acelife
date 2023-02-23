@@ -22,7 +22,7 @@ const platformModules = {
   [Platform.BRYGID]: require('./brygid.js'),
   [Platform.SPEEDLINE]: require('./speedline.js'),
   [Platform.TOAST]: require('./toast.js'),
-  // [Platform.MENUFY]: require('./menufy.js')
+  [Platform.MENUFY]: require('./menufy.js')
 };
 
 /**
@@ -78,10 +78,12 @@ function parseMboxFile(platform) {
 		messageCount = parsedCount;
 	});
 
-	if (fs.existsSync(argv.input)) {
-		const handle = fs.createReadStream(argv.input);
+	if (fs.existsSync(argv.i)) {
+		const handle = fs.createReadStream(argv.i);
 		//handle.setEncoding('ascii');
 		handle.pipe(mbox);
+	} else {
+		throw new Error(`${argv.i} path does not exist`)
 	}
 }
 
@@ -124,8 +126,9 @@ function createJSONs(outputPath, transactionRecords, errorRecords, customerRecor
  * Entry point to the email parsing. Gets the platform from the input path and passes to parse files.
  */
 function main() {
-	const inputStr = argv.i ? argv.i : argv.e;
-	const platform = utils.getPlatform(inputStr);
+	// hack to get around for menufy that takes in e/d flags and no i flag
+	argv.i = argv.i ? argv.i : argv.e;
+	const platform = utils.getPlatform(argv.i);
 	console.log(`Parsing for platform: ${platform}`)
 	parseMboxFile(platform);
 }

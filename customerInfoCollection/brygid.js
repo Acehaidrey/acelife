@@ -6,7 +6,6 @@ const Papa = require("papaparse");
 
 const argv = require('yargs')
 	.alias('i', 'input')
-	.alias('o', 'output')
 	.argv;
 
 
@@ -37,7 +36,6 @@ function createCustomerRecords(transactionRecords) {
           customerRecord.customerNames.add(utils.createFullName(record['FIRST_NAME'], record['LAST_NAME']));
           customerRecord.customerEmails.add(record['EMAIL']);
           customerRecord.lastOrderDate = utils.convertTimestampToUTCFormat(record['DATE']);
-          // customerRecord.firstOrderDate = customerRecord.lastOrderDate;
           customerRecord.orderCount = parseInt(record['ORDERS']);
           customerRecord.totalSpend = parseFloat(record['PURCHASE'].replace('$', ''));
           if (record['STREET'] && record['SUITE_APT']) {
@@ -47,9 +45,7 @@ function createCustomerRecords(transactionRecords) {
           customerRecord.customerAddresses.add(addr);
           customerRecords.push(customerRecord);
       }
-
     });
-
     return utils.formatCustomerRecords(customerRecords);
 }
 

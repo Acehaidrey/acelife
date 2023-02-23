@@ -329,18 +329,20 @@ function convertTimestampToUTCFormat(inputDateString) {
 /**
  * Merge customer records matching same phone number.
  * @param {CustomerRecord[]} records
+ * @param {keyType} keyIdentifier - parameter type to use for the key to join on
  * @returns {CustomerRecord[]}
  */
-function mergeCustomerRecords(records) {
+function mergeCustomerRecords(records, keyIdentifier = keyType.PHONE) {
   const customerRecords = {};
 
   for (const record of records) {
-    const customerNumber = record.customerNumber ?? '__NULL__';
-    let mergedRecord = customerRecords[customerNumber];
+	const key = keyIdentifier === keyType.PHONE ? record.customerNumber : record.customerNames;
+    const identifier = key ?? '__NULL__';
+    let mergedRecord = customerRecords[identifier];
 
     if (!mergedRecord) {
       mergedRecord = new CustomerRecord(record.storeName, record.customerNumber);
-      customerRecords[customerNumber] = mergedRecord;
+      customerRecords[identifier] = mergedRecord;
     }
 
     mergedRecord.platforms = new Set([...record.platforms, ...mergedRecord.platforms]);
