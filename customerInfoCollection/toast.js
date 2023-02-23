@@ -1,5 +1,5 @@
 const utils = require("./utils");
-const {CustomerRecord} = require("./record");
+const {CustomerRecord, TransactionRecord} = require("./record");
 const {Platform, storeType} = require("./constants");
 const fs = require("fs");
 const Papa = require("papaparse");
@@ -11,7 +11,9 @@ const argv = require('yargs')
 
 
 function createTransactionRecord(mail) {
-    return {};
+    const record = new TransactionRecord(Platform.TOAST, mail.date);
+    console.log(mail);
+    return null;
 }
 
 function createCustomerRecords(transactionRecords) {
@@ -81,7 +83,6 @@ function createCustomerRecords(transactionRecords) {
         }
       }
     });
-    console.log(utils.findDuplicateCustomerNumbers(customerRecords))
     const originalLength = customerRecords.length;
     customerRecords = utils.mergeCustomerRecords(customerRecords);
     console.log(`Originally had ${originalLength} customer records, merged alike to ${customerRecords.length} records.`)
