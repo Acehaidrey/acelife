@@ -235,6 +235,9 @@ function getPlatform(inputPath) {
 		if (partner.startsWith('Orders-')) {
 			partner = partner.replace(/^Orders-/, '');
 		}
+		if (partner.match(/^[^-]*/)) {
+			partner = partner.match(/^[^-]*/)[0];
+		}
 	}
 	return partner.toUpperCase();
 }
@@ -402,6 +405,17 @@ function customerInformationMissing(record) {
         record.customerEmails.size === 0
 }
 
+/**
+ * Takes the year/month/date and creates string in format YYYY-MM-DD.
+ * @param {Date} dt 
+ * @returns {string}
+ */
+function formatDate(dt) {
+	const year = dt.getFullYear();
+	const month = String(dt.getMonth() + 1).padStart(2, '0');
+	const day = String(dt.getDate()).padStart(2, '0');
+	return `${year}-${month}-${day}`;
+}
 
 module.exports = {
 	shortStateName,
@@ -421,5 +435,6 @@ module.exports = {
 	getZipForCity,
 	mergeCustomerRecords,
 	findDuplicateCustomerNumbers,
-	customerInformationMissing
+	customerInformationMissing,
+	formatDate
 };

@@ -10,9 +10,7 @@ const argv = require('yargs')
 
 
 function createTransactionRecord(mail) {
-    const record = new TransactionRecord(Platform.TOAST, mail.date);
-    console.log(mail);
-    return null;
+    return {};
 }
 
 function createCustomerRecords(transactionRecords) {
@@ -32,13 +30,10 @@ function createCustomerRecords(transactionRecords) {
             record[prop] = record[prop].trim();
         }
       }
-      console.log(record)
+
 
       if (record.phones) {
         const phoneNumbers = record.phones.split(';');
-        if (phoneNumbers.length > 1) {
-            console.log(phoneNumbers);
-        }
         phoneNumbers.forEach(phone => {
           if (phone) {
             const customerRecord = new CustomerRecord(storeType.AROMA, utils.formatPhoneNumber(phone.trim()));
