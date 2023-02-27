@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+const argv = require('yargs')
+	.alias('n', 'numdays')
+    .default('n', 1)
+	.argv;
+
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
@@ -10,7 +15,7 @@ const utils = require("./utils");
 
 // Get the current time and the time from 1 day ago
 const now = new Date();
-const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000 * 3); // TODO FIX TO 1 DAY
+const daysAgo = new Date(now - 24 * 60 * 60 * 1000 * argv.n);
 const nowString = utils.formatDate(now);
 
 // Get the home directory and the current working directory
@@ -133,6 +138,28 @@ function logAndAppend(text, msg) {
 	return text;
 }
 
+/**
+ * Clean up log files beyond 30 days.
+ */
+function cleanupOldLogs() {    
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    
+    fs.readdir(logsPath, (err, files) => {
+      if (err) throw err;
+    
+      files.forEach(file => {
+        const filePath = path.join(logsPath, file);
+        const stats = fs.statSync(filePath);
+        const fileAgeInMs = Date.now() - stats.mtime.getTime();
+    
+        if (fileAgeInMs > thirtyDaysAgo) {
+          fs.unlinkSync(filePath);
+          console.log(`Deleted log file: ${filePath}`);
+        }
+      });
+    });
+}
+
 
 function main() {
     let emailBody = logAndAppend('', `Running for date: ${nowString}`);
@@ -142,6 +169,7 @@ function main() {
     const startTime = Date.now();
 
     try {
+        cleanupOldLogs();
         // Get a list of files in the downloads folder
         const files = fs.readdirSync(downloadsPath);
         // Check if the directories exists or create it
@@ -150,11 +178,11 @@ function main() {
                 fs.mkdirSync(path);
             }
         }
-        // Find the files that match the zip file pattern and were modified in the last day
+        // Find the files that match the zip file pattern and were modified in the last n days
         const matchingFiles = files.filter(file => {
             const filePath = path.join(downloadsPath, file);
             const stats = fs.statSync(filePath);
-            return zipPattern.test(file) && stats.mtime > oneDayAgo;
+            return zipPattern.test(file) && stats.mtime > daysAgo;
         });
         if (!matchingFiles || matchingFiles.length < 1) {
             emailBody = logAndAppend(emailBody, 'No google takeout zip found in the past day.')

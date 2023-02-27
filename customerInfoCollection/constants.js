@@ -54,6 +54,7 @@ const errorType = {
     STATE: 'Parsing issue with state',
     STREET: 'Parsing issue with street',
     JSON_BODY: 'Parsing issue with getting JSON body',
+    NOT_TRANSACTION_EMAIL: 'Email record is not a transaction email'
 }
 
 /**

@@ -31,7 +31,6 @@ function createCustomerRecords(transactionRecords) {
         }
       }
 
-
       if (record.phones) {
         const phoneNumbers = record.phones.split(';');
         phoneNumbers.forEach(phone => {
@@ -78,8 +77,11 @@ function createCustomerRecords(transactionRecords) {
       }
     });
     const originalLength = customerRecords.length;
-    customerRecords = utils.mergeCustomerRecords(customerRecords);
-    console.log(`Originally had ${originalLength} customer records, merged alike to ${customerRecords.length} records.`)
+    customerRecords = utils.mergeCustomerRecordsByPhoneNumber(customerRecords);
+    console.log(
+      `${originalLength} original customer records found.` +
+      `${customerRecords.length} customer records found after merging.`
+    );
     return utils.formatCustomerRecords(customerRecords);
 }
 

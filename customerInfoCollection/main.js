@@ -49,7 +49,7 @@ function parseMboxFile(platform) {
 	  	if (messages.length === messageCount) {
 			const originalTransactionLength = transactionRecords.length;
 			const originalErrorLength = transactionErrorRecords.length;
-			// merge transaction records based on orderId
+			// merge transaction records based on orderId & remove error records for not correct format emails
 			transactionRecords = utils.mergeRecords(transactionRecords);
 			transactionErrorRecords = utils.removeFalseErrorRecords(transactionRecords, transactionErrorRecords);
 			const customerRecords = getRecord(platform, transactionRecords, recordType.CUSTOMER);

@@ -2,7 +2,7 @@ const fuzzy = require("fuzzball");
 const fs = require("fs");
 const path = require('path');
 const {CustomerRecord, TransactionRecord} = require("./record");
-const {SIMILARITY_THRESHOLD, keyType, paymentType, Platform} = require("./constants");
+const {SIMILARITY_THRESHOLD, keyType, paymentType, Platform, errorType} = require("./constants");
 
 /**
  * For names and addresses, users occasionally misspell the results. We want to filter
@@ -188,10 +188,13 @@ function saveAsJSON(outputPath, obj) {
  * @returns {CustomerRecord[]} - list of customer records after combining
  */
 function aggregateCustomerHistory(records, keyIdentifier = keyType.PHONE) {
+	const keyName = keyIdentifier === keyType.NAME ? 'customerName' : 'customerNumber';
+	const nullRecords = records.filter(function(record) { return !record[keyName]});
+	const validRecords = records.filter(function(record) { return record[keyName]});
+
 	const combinedRecords = {};
-	for (const record of records) {
-	  const keyIdent = keyIdentifier === keyType.NAME ? record.customerName : record.customerNumber;
-	  const key = `${record.storeName}-${keyIdent}`;
+	for (const record of validRecords) {
+	  const key = `${record.storeName}-${record[keyName]}`;
 
 	  if (!combinedRecords[key]) {
 		combinedRecords[key] = new CustomerRecord(record.storeName, record.customerNumber);
@@ -208,6 +211,18 @@ function aggregateCustomerHistory(records, keyIdentifier = keyType.PHONE) {
 	  combinedRecords[key].customerEmails.add(record.customerEmail);
 	  combinedRecords[key].orderCount += 1;
 	  combinedRecords[key].totalSpend += record.orderAmount;
+	}
+	for (const nullRecord in nullRecords) {
+		const count = 0; // add a random key
+		combinedRecords[count] = new CustomerRecord(nullRecord.storeName, nullRecord.customerNumber);
+		combinedRecords[count].platforms.add(nullRecord.platform);
+		combinedRecords[count].customerNames.add(nullRecord.customerName);
+		combinedRecords[count].lastOrderDate = combinedRecords[count].lastOrderDate > nullRecord.orderDate ? combinedRecords[count].lastOrderDate : nullRecord.orderDate;
+		combinedRecords[count].firstOrderDate = combinedRecords[count].firstOrderDate < nullRecord.orderDate ? combinedRecords[count].firstOrderDate : nullRecord.orderDate;
+		combinedRecords[count].customerAddresses.add(nullRecord.customerAddress);
+		combinedRecords[count].customerEmails.add(nullRecord.customerEmail);
+		combinedRecords[count].orderCount += 1;
+		combinedRecords[count].totalSpend += nullRecord.orderAmount;
 	}
 	return formatCustomerRecords(Object.values(combinedRecords));
 }
@@ -249,6 +264,10 @@ function getPlatform(inputPath) {
  */
 function formatCustomerRecords(records) {
 	for (const record of records) {
+		record.platforms.delete(null);
+		record.customerNames.delete(null);
+		record.customerAddresses.delete(null);
+		record.customerEmails.delete(null);
 		record.customerNames = removeSimilarValues(Array.from(record.customerNames).filter(function(val) { return val !== null; }));
 		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null; }));
 		record.customerEmails = Array.from(record.customerEmails).filter(function(val) { return val !== null; });
@@ -314,7 +333,9 @@ function getPaymentType(input) {
  */
 function removeFalseErrorRecords(transactionRecords, errorRecords) {
 	const orderIds = new Set(transactionRecords.filter(record => record.orderId !== null).map(record => record.orderId));
-	return errorRecords.filter(record => record.orderId !== null).filter(record => !orderIds.has(record.orderId));
+	return errorRecords.filter(record => record.orderId !== null && 
+		!orderIds.has(record.orderId) && 
+		!record.errorReason.includes(errorType.NOT_TRANSACTION_EMAIL));
 }
 
 /**
@@ -331,21 +352,21 @@ function convertTimestampToUTCFormat(inputDateString) {
 
 /**
  * Merge customer records matching same phone number.
+ * Does not combine the null phone numbers and treats them as separate records.
  * @param {CustomerRecord[]} records
- * @param {keyType} keyIdentifier - parameter type to use for the key to join on
  * @returns {CustomerRecord[]}
  */
-function mergeCustomerRecords(records, keyIdentifier = keyType.PHONE) {
+function mergeCustomerRecordsByPhoneNumber(records) {
   const customerRecords = {};
+  const nullPhoneRecords = records.filter(function(record) { return !record.customerNumber});
+  const validPhoneRecords = records.filter(function(record) { return record.customerNumber});
 
-  for (const record of records) {
-	const key = keyIdentifier === keyType.PHONE ? record.customerNumber : record.customerNames;
-    const identifier = key ?? '__NULL__';
-    let mergedRecord = customerRecords[identifier];
+  for (const record of validPhoneRecords) {
+    let mergedRecord = customerRecords[record.customerNumber];
 
     if (!mergedRecord) {
       mergedRecord = new CustomerRecord(record.storeName, record.customerNumber);
-      customerRecords[identifier] = mergedRecord;
+      customerRecords[record.customerNumber] = mergedRecord;
     }
 
     mergedRecord.platforms = new Set([...record.platforms, ...mergedRecord.platforms]);
@@ -368,7 +389,7 @@ function mergeCustomerRecords(records, keyIdentifier = keyType.PHONE) {
 	mergedRecord.customerEmails.delete(null);
   }
 
-  return Object.values(customerRecords);
+  return Object.values(customerRecords).concat(nullPhoneRecords);
 }
 
 /**
@@ -433,7 +454,7 @@ module.exports = {
 	removeFalseErrorRecords,
 	convertTimestampToUTCFormat,
 	getZipForCity,
-	mergeCustomerRecords,
+	mergeCustomerRecordsByPhoneNumber,
 	findDuplicateCustomerNumbers,
 	customerInformationMissing,
 	formatDate

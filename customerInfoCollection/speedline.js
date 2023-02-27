@@ -55,7 +55,7 @@ function createCustomerRecords(transactionRecords) {
       }
     });
     const originalLength = customerRecords.length;
-    customerRecords = utils.mergeCustomerRecords(customerRecords);
+    customerRecords = utils.mergeCustomerRecordsByPhoneNumber(customerRecords);
     console.log(`Originally had ${originalLength} customer records, merged alike to ${customerRecords.length} records.`)
     return utils.formatCustomerRecords(customerRecords);
 }
