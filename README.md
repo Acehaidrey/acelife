@@ -7,14 +7,16 @@ This repository will be a mosh posh of projects, files scripts that are owned by
 For our pizza shops, [Aroma](http://aromapizzaandpasta.com/) and [Ameci](http://amecilakeforest.com/), 
 we have gathered a lot of customer information over the years. We have many different partners that we will pull the data from.
 This list includes:
-- Toast
+- BeyondMenu
 - Brygid
-- Slice
+- Doordash
+- Eatstreet
 - Grubhub
 - Menufy
 - Menustar
-- Eatstreet
-- BeyondMenu
+- Slice
+- Speedline
+- Toast
 
 We get this customer information in specific ways - some will allow us to export scripts, and some will require to parse emails.
 
@@ -42,15 +44,24 @@ Once that happens, then we create outputted JSON files:
 2. Error information JSON
 3. Summarized customer information JSON
 
-For Brygid, we need to go to the site to login and download the customer info from the site.
+- For Brygid, we need to go to the site to login and download the customer info from the site.
+- For Toast, we need to go to the site to login and download the customer info from this site. It does not give address info.
+- For Speedline, we need to call them to get a csv of our customer export.
+- For Menufy, we need to download the customer info files for email and delivery respectively.
+
+All the above files need to be added to the Reports/POS folder. The execute.js script logic can shed more insight on what is happening.
 
 
 Additional project details can be found [here](https://docs.google.com/document/d/1SY-x9IjD4EF6XFukgUbjEhsaYp_CBOY1gGCEC3FQk6c/edit?usp=sharing).
 
 Example commands:
-- Menufy: `./menufy.js -d /Users/ahaidrey/Downloads/Customer_Delivery_Addresses_02-13-2023-Aroma.csv -e /Users/ahaidrey/Downloads/Customer_Emails_02-13-2023-Aroma.csv -o menufyCustomers`
-- Slice: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Slice.mbox -o Slice`
-- Doordash: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Doordash.mbox -o Doordash`
-- Menustar: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Menustar.mbox -o Menustar`
-- Eatstreet: `./main.js -i ~/Downloads/Takeout/Mail/Orders-Eatstreet.mbox -o Eatstreet`
-- Brygid: `./main.js -i ~/Downloads/Brygid.csv -o Brygid`
+- BeyondMenu: Currently not supported since the email do not have the content for order info
+- Brygid: `./main.js -i ./Reports/POS/Brygid-2023-02-01.csv -o Brygid`
+- Doordash: `./main.js -i ./Reports/Takeout/Mail/Orders-Doordash.mbox -o Doordash`
+- Eatstreet: `./main.js -i ./Reports/Takeout/Mail/Orders-Eatstreet.mbox -o Eatstreet`
+- Grubhub: `./main.js -i ./Reports/Takeout/Mail/Orders-Grubhub.mbox -o Grubhub`
+- Menufy: `./main.js -d ./Reports/Customer_Delivery_Addresses_02-13-2023-Aroma.csv -e ./Reports/Customer_Emails_02-13-2023-Aroma.csv -o Menufy`
+- Menustar: `./main.js -i ./Reports/Takeout/Mail/Orders-Menustar.mbox -o Menustar`
+- Slice: `./main.js -i ./Reports/Takeout/Mail/Orders-Slice.mbox -o Slice`
+- Speedline: `./main.js -i ./Reports/POS/Speedline-2023-02-01.csv -o Speedline`
+- Toast: `./main.js -i -e ./Reports/Takeout/Mail/Orders-Toast.mbox ./Reports/POS/Toast-2023-02-01.csv -o Toast`
