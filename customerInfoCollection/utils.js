@@ -1,3 +1,4 @@
+const Papa = require('papaparse');
 const fuzzy = require("fuzzball");
 const fs = require("fs");
 const path = require('path');
@@ -264,10 +265,6 @@ function getPlatform(inputPath) {
  */
 function formatCustomerRecords(records) {
 	for (const record of records) {
-		record.platforms.delete(null);
-		record.customerNames.delete(null);
-		record.customerAddresses.delete(null);
-		record.customerEmails.delete(null);
 		record.customerNames = removeSimilarValues(Array.from(record.customerNames).filter(function(val) { return val !== null; }));
 		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null; }));
 		record.customerEmails = Array.from(record.customerEmails).filter(function(val) { return val !== null; });
@@ -351,7 +348,7 @@ function convertTimestampToUTCFormat(inputDateString) {
 }
 
 /**
- * Merge customer records matching same phone number.
+ * Merge customer records matching same phone number. Separate by store still.
  * Does not combine the null phone numbers and treats them as separate records.
  * @param {CustomerRecord[]} records
  * @returns {CustomerRecord[]}
@@ -362,11 +359,12 @@ function mergeCustomerRecordsByPhoneNumber(records) {
   const validPhoneRecords = records.filter(function(record) { return record.customerNumber});
 
   for (const record of validPhoneRecords) {
-    let mergedRecord = customerRecords[record.customerNumber];
+	const key = `${record.storeName}-${record.customerNumber}`;
+    let mergedRecord = customerRecords[key];
 
     if (!mergedRecord) {
       mergedRecord = new CustomerRecord(record.storeName, record.customerNumber);
-      customerRecords[record.customerNumber] = mergedRecord;
+      customerRecords[key] = mergedRecord;
     }
 
     mergedRecord.platforms = new Set([...record.platforms, ...mergedRecord.platforms]);
@@ -438,6 +436,17 @@ function formatDate(dt) {
 	return `${year}-${month}-${day}`;
 }
 
+/**
+ * Read a CSV file and return the data of it.
+ * @param {string} filePath 
+ * @returns {*[]} - list of objects containing the csv data
+ */
+function readCSVFile(filePath) {
+	const csvData = fs.readFileSync(filePath, 'utf8');
+	const parsedData = Papa.parse(csvData, { header: true });
+	return parsedData.data;
+}
+
 module.exports = {
 	shortStateName,
 	formatString,
@@ -457,5 +466,6 @@ module.exports = {
 	mergeCustomerRecordsByPhoneNumber,
 	findDuplicateCustomerNumbers,
 	customerInformationMissing,
-	formatDate
+	formatDate,
+	readCSVFile
 };

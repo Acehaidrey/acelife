@@ -1,8 +1,6 @@
 const utils = require("./utils");
 const {CustomerRecord} = require("./record");
 const {Platform, storeType} = require("./constants");
-const fs = require("fs");
-const Papa = require("papaparse");
 
 const argv = require('yargs')
 	.alias('i', 'input')
@@ -15,8 +13,7 @@ function createTransactionRecord(mail) {
 
 function createCustomerRecords(transactionRecords) {
     let customerRecords = [];
-    const csvData = fs.readFileSync(argv.i, 'utf-8');
-    const { data } = Papa.parse(csvData, { header: true });
+    const data = utils.readCSVFile(argv.i);
     data.forEach((record) => {
       // replace the null string representations to real null values
       for (const prop in record) {

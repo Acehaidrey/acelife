@@ -94,13 +94,18 @@ Example commands:
 - Doordash: `./main.js -i ./Reports/Takeout/Mail/Orders-Doordash.mbox -o Doordash`
 - Eatstreet: `./main.js -i ./Reports/Takeout/Mail/Orders-Eatstreet.mbox -o Eatstreet`
 - Grubhub: `./main.js -i ./Reports/Takeout/Mail/Orders-Grubhub.mbox -o Grubhub`
-- Menufy: `./main.js -d ./Reports/Customer_Delivery_Addresses_02-13-2023-Aroma.csv -e ./Reports/Customer_Emails_02-13-2023-Aroma.csv -o Menufy`
+- Menufy: `./main.js -i ./Reports/Takeout/Mail/Orders-Menufy.mbox -o Menufy`
 - Menustar: `./main.js -i ./Reports/Takeout/Mail/Orders-Menustar.mbox -o Menustar`
 - Slice: `./main.js -i ./Reports/Takeout/Mail/Orders-Slice.mbox -o Slice`
 - Speedline: `./main.js -i ./Reports/POS/Speedline-2023-02-01.csv -o Speedline`
-- Toast: `./main.js -i -e ./Reports/Takeout/Mail/Orders-Toast.mbox ./Reports/POS/Toast-2023-02-01.csv -o Toast`
+- Toast: `./main.js -i ./Reports/Takeout/Mail/Orders-Toast.mbox -e ./Reports/POS/Toast-2023-02-01.csv -o Toast`
 
 The full end to end invocation where we find the `EMAIL_PASSWORD=YOUR_PASSWORD ./execute.js -n 1`. Where the `n` flag is to identify how many days to look back to find the takeout download file.
+
+### Caveats
+- This data set prioritizes the customer phone number and the store. Most unique keys are split by phone and store.
+- This means there can be duplicate names, emails, and addresses based off of that information.
+- We remove similar names/addresses in order to reduce some noise and arbitrarily pick one of the values of the matches.
 
 ### Future Work
 - Parse the Menufy transaction emails vs the customer records

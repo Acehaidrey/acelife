@@ -36,7 +36,7 @@ const zipPattern = /^takeout-.*\.zip$/;
 // Constants for email
 const senderEmail = 'acehaidrey@gmail.com';
 const recieveEmail = senderEmail;
-const emailPassword = process.env.EMAIL_PASSWORD;  // iezbuoumvztbaqwu
+const emailPassword = process.env.EMAIL_PASSWORD;
 
 /**
  * Sending an email utility.
@@ -165,7 +165,6 @@ function main() {
     let emailBody = logAndAppend('', `Running for date: ${nowString}`);
     const outputLogPath = path.join(logsPath, `output-${nowString}.log`);
     const outputs = [];
-    let state = 'SUCCESS';
     const startTime = Date.now();
 
     try {
@@ -236,7 +235,6 @@ function main() {
 // Filter for ameci and aroma separately and create jsons
 // Export the files
 // Fix the toast changes that were not saved
-// Do some code cleanup
 // Find BI tool to push the customer info to at end of it
 // Attach the json files to the email
 main();
