@@ -62,10 +62,10 @@ function createCustomerRecords(transactionRecords) {
   const originalCustomerRecords = combinedCustomerRecords.length;
   combinedCustomerRecords = utils.mergeCustomerRecordsByPhoneNumber(combinedCustomerRecords);
   console.log(
-      `${deliveryCustomers.length} delivery customer records\n` +
-      `${emailCustomers.length} email customer records\n` +
-      `${originalCustomerRecords} combined (by store & phone) customer records\n` +
-      `${combinedCustomerRecords.length} merged combined records`
+      `[MENUFY] ${deliveryCustomers.length} delivery customer records.\n` +
+      `[MENUFY] ${emailCustomers.length} email customer records.\n` +
+      `[MENUFY] ${originalCustomerRecords} combined (by store & phone) customer records.\n` +
+      `[MENUFY] ${combinedCustomerRecords.length} merged combined records.`
   )
   return utils.formatCustomerRecords(combinedCustomerRecords);
 }

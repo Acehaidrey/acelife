@@ -29,7 +29,8 @@ const keyType = {
 
 const recordType = {
     TRANSACTION: 'TRANSACTION',
-    CUSTOMER: 'CUSTOMER'
+    CUSTOMER: 'CUSTOMER',
+    ERROR: 'ERROR'
 }
 
 const orderType = {
@@ -57,6 +58,12 @@ const errorType = {
     NOT_TRANSACTION_EMAIL: 'Email record is not a transaction email'
 }
 
+const States = {
+    FAILED: 'FAILED',
+    SUCCESS: 'SUCCESS',
+    NOT_RUN: 'NOT_RUN'
+}
+
 /**
  * Threshold percentage to get the similarity overlap between values.
  * @type {number}
@@ -65,6 +72,7 @@ SIMILARITY_THRESHOLD = 80;
 
 module.exports = {
     Platform,
+    States,
     paymentType,
     recordType,
     keyType,

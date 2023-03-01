@@ -53,8 +53,11 @@ function createCustomerRecords(transactionRecords) {
     });
     const originalLength = customerRecords.length;
     customerRecords = utils.mergeCustomerRecordsByPhoneNumber(customerRecords);
-    console.log(`Originally had ${originalLength} customer records, merged alike to ${customerRecords.length} records.`)
-    return utils.formatCustomerRecords(customerRecords);
+    console.log(
+        `[SPEEDLINE] ${originalLength} original customer records found.\n` +
+        `[SPEEDLINE] ${customerRecords.length} customer records found after merging.`
+      );
+    return customerRecords;
 }
 
 module.exports = {createTransactionRecord, createCustomerRecords}

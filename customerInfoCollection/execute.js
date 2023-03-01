@@ -5,13 +5,15 @@ const argv = require('yargs')
     .default('n', 1)
 	.argv;
 
+const Papa = require('papaparse');
 const os = require('os');
 const fs = require('fs');
 const path = require('path');
 const childProcess = require('child_process');
 const nodemailer = require('nodemailer');
-const {Platform} = require("./constants");
+const {Platform, recordType, storeType, States} = require("./constants");
 const utils = require("./utils");
+const { CustomerRecord } = require('./record');
 
 // Get the current time and the time from 1 day ago
 const now = new Date();
@@ -43,7 +45,7 @@ const emailPassword = process.env.EMAIL_PASSWORD;
  * @param {string} outputPath - path of file to attach to email
  * @param {string} body  - email body content
  */
-function sendEmail(outputPath, body) {
+function sendEmail(fileAttachments, body) {
     // Send an email with the output file attached
     const transporter = nodemailer.createTransport({
         host: 'smtp.gmail.com',
@@ -54,16 +56,17 @@ function sendEmail(outputPath, body) {
         }
     });
     // Setup mail options
+    const emailAttachments = [];
+    for (const output of fileAttachments) {
+        emailAttachments.push({path: output});
+    }
+
     const mailOptions = {
         from: senderEmail,
         to: recieveEmail,
         subject: 'Customer Export Execution',
         text: body,
-        attachments: [
-          {
-            path: outputPath
-          }
-        ]
+        attachments: emailAttachments
     };
     // Send email if password
     if (emailPassword) {
@@ -87,9 +90,8 @@ function sendEmail(outputPath, body) {
  */
 function createMboxProcessingCommand(filePath, platform) {
     if (!Platform.hasOwnProperty(platform)) {
-        return `echo "${filePath} | ${platform} had no command associated with it."`;
+        return `echo "Parsing for platform: ${platform}\n.${filePath} | ${platform} had no command associated with it."`;
     }
-
     const fullOutputPath = path.join(outputTodayPath, platform.toLowerCase());
     if (platform === Platform.BRYGID) {
         filePath = getLatestFileForPlatform(Platform.BRYGID);
@@ -101,13 +103,7 @@ function createMboxProcessingCommand(filePath, platform) {
         // change to add a -e flag with csv file
         filePath = getLatestFileForPlatform(Platform.TOAST);
     }
-    let invokeCmd = `${cwd}/main.js -i ${filePath} -o ${fullOutputPath}`;
-
-    if (platform === Platform.MENUFY) {
-        // invokeCmd = `${cwd}/main.js -d ${deliveryfile} -e ${emailfile} -o ${fullOutputPath}`;
-        invokeCmd = 'echo hi';
-    }
-    return invokeCmd;
+    return `${cwd}/main.js -i ${filePath} -o ${fullOutputPath}`;
 }
 
 /**
@@ -160,14 +156,97 @@ function cleanupOldLogs() {
     });
 }
 
+/**
+ * Convert the JSON file to the CSV. We unpack the email so that each unique email and phone number will have a row.
+ * @param {string} filepath 
+ * @returns {string} - csv filepath written
+ */
+function convertCustomerJSONtoCSV(filepath, records) {
+    // Read JSON data from file
+    if (!records) {
+        const fp = fs.readFileSync(filepath);
+        records = JSON.parse(fp);
+        console.log(filepath, fp, records.length)
+    }
+    // Assume the variable `records` contains the list of records
+    const newRecords = [];
+    records.forEach(record => {
+        // If the original record had an empty `customerEmails` array,
+        // add a new record with an empty `customerEmails` array
+        if (record.customerEmails.length === 0) {
+            const newRecord = {
+                platforms: record.platforms.join(';'),
+                storeName: record.storeName,
+                customerNumber: record.customerNumber,
+                customerNames: record.customerNames.join(';'),
+                customerAddresses: record.customerAddresses.join(';'),
+                customerEmails: null,
+                lastOrderDate: utils.getDateFromString(record.lastOrderDate),
+                firstOrderDate: utils.getDateFromString(record.firstOrderDate),
+                orderCount: record.orderCount,
+                totalSpend: record.totalSpend
+            };
+            newRecords.push(newRecord);
+        } else {
+            record.customerEmails.forEach(email => {
+                // Create a new record with the same values as the original record,
+                // but with the `customerEmails` field set to an array with just `email`
+                const newRecord = {
+                platforms: record.platforms.join(';'),
+                storeName: record.storeName,
+                customerNumber: record.customerNumber,
+                customerNames: record.customerNames.join(';'),
+                customerAddresses: record.customerAddresses.join(';'),
+                customerEmails: email,
+                lastOrderDate: utils.getDateFromString(record.lastOrderDate),
+                firstOrderDate: utils.getDateFromString(record.firstOrderDate),
+                orderCount: record.orderCount,
+                totalSpend: record.totalSpend
+                };
+                // Add the new record to the list of new records
+                newRecords.push(newRecord);
+            });
+        }
+    });
+    // convert data to CSV format
+    const csv = Papa.unparse(newRecords);
+    // write CSV data to file
+    const csvFilePath = filepath.replace('.json', '.csv');
+    fs.writeFileSync(csvFilePath, csv);
+    return csvFilePath;
+}
+
+/**
+ * Finds all json files of matching the extension type and then creates a kv pair of platform: json objects list.
+ * @param {string} directoryPath 
+ * @param {recordType} extType 
+ * @returns {[CustomerRecord[]]}
+ */
+function readJSONOutputs(directoryPath, extType = recordType.CUSTOMER) {
+    const jsons = {};
+    const files = fs.readdirSync(directoryPath);
+    const extTypeFiles = files.filter(file => file.endsWith('-' + extType.toLowerCase() + '.json'));
+    extTypeFiles.map(file => {
+        const filePath = path.join(directoryPath, file);
+        const fileContent = fs.readFileSync(filePath);
+        const jsonContent = JSON.parse(fileContent);
+        jsons[file.toUpperCase().replace(`-${extType}.JSON`, '')] = jsonContent;
+    });
+    return jsons;
+}
 
 function main() {
     let emailBody = logAndAppend('', `Running for date: ${nowString}`);
     const outputLogPath = path.join(logsPath, `output-${nowString}.log`);
     const outputs = [];
     const startTime = Date.now();
+    let finalState = States.NOT_RUN;
+    let AllCustomersFilePath = path.join(outputTodayPath, 'AllCustomers.json');
+    let AmeciFilePath = path.join(outputTodayPath, 'AmeciCustomers.json');
+    let AromaFilePath = path.join(outputTodayPath, 'AromaCustomers.json');
 
     try {
+        // Clean up log files created by these processes
         cleanupOldLogs();
         // Get a list of files in the downloads folder
         const files = fs.readdirSync(downloadsPath);
@@ -184,7 +263,7 @@ function main() {
             return zipPattern.test(file) && stats.mtime > daysAgo;
         });
         if (!matchingFiles || matchingFiles.length < 1) {
-            emailBody = logAndAppend(emailBody, 'No google takeout zip found in the past day.')
+            emailBody = logAndAppend(emailBody, 'No google takeout zip found in the past day.');
             return;
         }
         console.log('Matching files: ' + matchingFiles);
@@ -219,22 +298,45 @@ function main() {
                 }
             }
         }
-    } catch {
-        emailBody = logAndAppend(emailBody, 'Error executing main');
+        // Combine the outputs to a single json for all customers
+        jsons = readJSONOutputs(outputTodayPath);
+        let combinedJson = [];
+        for (const key in jsons) {
+            emailBody = logAndAppend(emailBody, `JSON: ${key}, Number of Records: ${jsons[key].length}`);
+            combinedJson.push(...jsons[key]);
+        }
+        emailBody = logAndAppend(emailBody, `Combined JSON Number of Records BEFORE Merge: ${combinedJson.length}`);
+        combinedJson = utils.mergeCustomerRecordsByPhoneNumber(combinedJson);
+        emailBody = logAndAppend(emailBody, `Combined JSON Number of Records AFTER Merge: ${combinedJson.length}`);
+        // ameci handling
+        const AmeciCustomers = combinedJson.filter((record) => record.storeName === storeType.AMECI);
+        emailBody = logAndAppend(emailBody, `Number of Ameci Customers: ${AmeciCustomers.length}`);
+        // aroma handling
+        const AromaCustomers = combinedJson.filter((record) => record.storeName === storeType.AROMA);
+        emailBody = logAndAppend(emailBody, `Number of Aroma Customers: ${AromaCustomers.length}`);
+        // write all files out in json and in csv
+        utils.saveAsJSON(AllCustomersFilePath, combinedJson);
+        utils.saveAsJSON(AmeciFilePath, AmeciCustomers);
+        utils.saveAsJSON(AromaFilePath, AromaCustomers);
+        AllCustomersFilePath = convertCustomerJSONtoCSV(AllCustomersFilePath, combinedJson);
+        AmeciFilePath = convertCustomerJSONtoCSV(AmeciFilePath, AmeciCustomers);
+        AromaFilePath = convertCustomerJSONtoCSV(AromaFilePath, AromaCustomers);
+        emailBody = logAndAppend(emailBody, `Created JSON and CSV Files:\n${AllCustomersFilePath}\n${AmeciFilePath}\n${AromaFilePath}`);
+        finalState = States.SUCCESS;
+    } catch (error) {
+        emailBody = logAndAppend(emailBody, 'Error executing main because:\n' + error.stack);
+        finalState = States.FAILED;
     } finally {
         const endTime = Date.now();
         const elapsedTime = (endTime - startTime) / 1000;
-        emailBody = logAndAppend(emailBody, `Total Runtime: ${elapsedTime} secs.`);
-        fs.writeFileSync(outputLogPath, emailBody + '\n' + outputs.join("\n"));
-        sendEmail(outputLogPath, emailBody);
+        emailBody = logAndAppend(emailBody, `Total Runtime: ${elapsedTime} secs.\nFinal State: ${finalState}`);
+        fs.writeFileSync(outputLogPath, emailBody + '\n' + outputs.join('\n'));
+        const attachFiles = [outputLogPath, AmeciFilePath, AromaFilePath].filter((file) => fs.existsSync(file));
+        emailBody = logAndAppend(emailBody, `Adding following attachments to send as part of email: ${attachFiles}.`);
+        sendEmail(attachFiles, emailBody);
     }
 }
 
-
-// Build command to join together all the JSONs
-// Filter for ameci and aroma separately and create jsons
-// Export the files
 // Fix the toast changes that were not saved
 // Find BI tool to push the customer info to at end of it
-// Attach the json files to the email
 main();

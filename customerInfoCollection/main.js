@@ -6,7 +6,6 @@ const Mbox = require('node-mbox');
 const argv = require('yargs')
 	.alias('i', 'input')
 	.alias('o', 'output')
-	// .demand(['i'])
 	.argv;
 
 const utils = require("./utils.js");
@@ -57,12 +56,12 @@ function parseMboxFile(platform) {
 			// console.error(transactionErrorRecords);
 			// console.log(customerRecords);
 			console.log(
-				`${messageCount} parsed emails.\n` +
-				`${originalTransactionLength} parsed transaction records.\n` +
-				`${originalErrorLength} finished with errors.\n` +
-				`${transactionErrorRecords.length} finished with errors after merging orderIds.\n` +
-				`${transactionRecords.length} transaction records after merging orderIds.\n` +
-				`${customerRecords.length} parsed customer records.`
+				`[${platform}] ${messageCount} parsed emails.\n` +
+				`[${platform}] ${originalTransactionLength} parsed transaction records.\n` +
+				`[${platform}] ${originalErrorLength} finished with errors.\n` +
+				`[${platform}] ${transactionErrorRecords.length} finished with errors after merging orderIds.\n` +
+				`[${platform}] ${transactionRecords.length} transaction records after merging orderIds.\n` +
+				`[${platform}] ${customerRecords.length} parsed customer records.`
 			);
 	  		if (argv.o) {
 			  createJSONs(argv.o, transactionRecords, transactionErrorRecords, customerRecords);
@@ -114,10 +113,11 @@ function getRecord(platform, obj, type = recordType.TRANSACTION) {
  */
 function createJSONs(outputPath, transactionRecords, errorRecords, customerRecords) {
 	const outputPathSplit = outputPath.split('.')
-	const errorPath = outputPathSplit[0] + '-errors.json'
-	const customerPath = outputPathSplit[0] + '-customers.json'
+	const transactionPath = outputPathSplit[0]+ `-${recordType.TRANSACTION.toLowerCase()}.json`
+	const errorPath = outputPathSplit[0] + `-${recordType.ERROR.toLowerCase()}.json`
+	const customerPath = outputPathSplit[0] + `-${recordType.CUSTOMER.toLowerCase()}.json`
 
-	utils.saveAsJSON(outputPath, transactionRecords)
+	utils.saveAsJSON(transactionPath, transactionRecords)
 	utils.saveAsJSON(errorPath, errorRecords)
 	utils.saveAsJSON(customerPath, customerRecords)
 }

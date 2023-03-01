@@ -238,7 +238,6 @@ function getPlatform(inputPath) {
 	if (inputPath === null || inputPath === undefined || !inputPath) {
 		return null;
 	}
-	// TODO: clean this up once handle file renaming for menufy
 	if (inputPath.toLowerCase().includes('customer_email') || inputPath.toLowerCase().includes('delivery_address')) {
 		return Platform.MENUFY;
 	}
@@ -265,13 +264,32 @@ function getPlatform(inputPath) {
  */
 function formatCustomerRecords(records) {
 	for (const record of records) {
-		record.customerNames = removeSimilarValues(Array.from(record.customerNames).filter(function(val) { return val !== null; }));
-		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null; }));
-		record.customerEmails = Array.from(record.customerEmails).filter(function(val) { return val !== null; });
-		record.platforms = Array.from(record.platforms).filter(function(val) { return val !== null; });
+		record.customerNames = removeSimilarValues(Array.from(record.customerNames).filter(function(val) { return val !== null && val !== ''}));
+		record.customerNames = removeSubsets(record.customerNames);
+		record.customerAddresses = removeSimilarValues(Array.from(record.customerAddresses).filter(function(val) { return val !== null && val !== '' }));
+		record.customerEmails = Array.from(record.customerEmails).filter(function(val) { return val !== null && val !== '' });
+		record.platforms = Array.from(record.platforms).filter(function(val) { return val !== null && val !== '' });
 		record.totalSpend = parseFloat(record.totalSpend.toFixed(2));
 	}
 	return records;
+}
+
+/**
+ * Removes subsets for names so that if we have the name [Mike, Mike Malone], we remove the name Mike.
+ * @param {string[]} customerNames 
+ * @returns {string[]}
+ */
+function removeSubsets(customerNames) {
+	const sortedNames = customerNames.sort((a, b) => b.length - a.length);
+	const uniqueNames = sortedNames.filter((name, index) => {
+	  for (let i = index + 1; i < sortedNames.length; i++) {
+		if (sortedNames[i].includes(name)) {
+		  return false;
+		}
+	  }
+	  return true;
+	});
+	return uniqueNames;
 }
 
 /**
@@ -386,8 +404,7 @@ function mergeCustomerRecordsByPhoneNumber(records) {
 	mergedRecord.customerAddresses.delete(null);
 	mergedRecord.customerEmails.delete(null);
   }
-
-  return Object.values(customerRecords).concat(nullPhoneRecords);
+  return formatCustomerRecords(Object.values(customerRecords).concat(nullPhoneRecords));
 }
 
 /**
@@ -447,6 +464,26 @@ function readCSVFile(filePath) {
 	return parsedData.data;
 }
 
+/**
+ * Convert the date string from ISO format string to short string.
+ * @param {string} dateString 
+ * @returns {string}
+ */
+function getDateFromString(dateString) {
+	// Check if input string is valid
+	if (!dateString || !dateString.match(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/)) {
+	  return null;
+	}
+	
+	// Extract year, month, and date from input string
+	const year = dateString.substring(0, 4);
+	const month = dateString.substring(5, 7);
+	const date = dateString.substring(8, 10);
+	
+	// Return formatted string
+	return `${year}-${month}-${date}`;
+}
+
 module.exports = {
 	shortStateName,
 	formatString,
@@ -467,5 +504,6 @@ module.exports = {
 	findDuplicateCustomerNumbers,
 	customerInformationMissing,
 	formatDate,
-	readCSVFile
+	readCSVFile,
+	getDateFromString
 };

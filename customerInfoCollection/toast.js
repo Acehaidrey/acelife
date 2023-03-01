@@ -76,10 +76,10 @@ function createCustomerRecords(transactionRecords) {
     const originalLength = customerRecords.length;
     customerRecords = utils.mergeCustomerRecordsByPhoneNumber(customerRecords);
     console.log(
-      `${originalLength} original customer records found.\n` +
-      `${customerRecords.length} customer records found after merging.`
+      `[TOAST] ${originalLength} original customer records found.\n` +
+      `[TOAST] ${customerRecords.length} customer records found after merging.`
     );
-    return utils.formatCustomerRecords(customerRecords);
+    return customerRecords;
 }
 
 module.exports = {createTransactionRecord, createCustomerRecords}
