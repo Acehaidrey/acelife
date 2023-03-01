@@ -282,7 +282,7 @@ function formatCustomerRecords(records) {
 function removeSubsets(customerNames) {
 	const sortedNames = customerNames.sort((a, b) => b.length - a.length);
 	const uniqueNames = sortedNames.filter((name, index) => {
-	  for (let i = index + 1; i < sortedNames.length; i++) {
+	  for (let i = 0; i < index; i++) {
 		if (sortedNames[i].includes(name)) {
 		  return false;
 		}
@@ -505,5 +505,6 @@ module.exports = {
 	customerInformationMissing,
 	formatDate,
 	readCSVFile,
-	getDateFromString
+	getDateFromString,
+	removeSubsets
 };

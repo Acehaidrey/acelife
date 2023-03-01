@@ -31,6 +31,7 @@ const logsPath = path.join(reportsPath, 'log');
 const posPath = path.join(reportsPath, 'POS');
 const outputPath = path.join(reportsPath, 'Output');
 const outputTodayPath =  path.join(outputPath, nowString);
+const csvPath =  path.join(outputTodayPath, 'CSV');
 
 // Define the pattern for matching zip files
 const zipPattern = /^takeout-.*\.zip$/;
@@ -166,7 +167,6 @@ function convertCustomerJSONtoCSV(filepath, records) {
     if (!records) {
         const fp = fs.readFileSync(filepath);
         records = JSON.parse(fp);
-        console.log(filepath, fp, records.length)
     }
     // Assume the variable `records` contains the list of records
     const newRecords = [];
@@ -211,7 +211,7 @@ function convertCustomerJSONtoCSV(filepath, records) {
     // convert data to CSV format
     const csv = Papa.unparse(newRecords);
     // write CSV data to file
-    const csvFilePath = filepath.replace('.json', '.csv');
+    const csvFilePath = filepath.replace(outputTodayPath, csvPath).replace('.json', '.csv');
     fs.writeFileSync(csvFilePath, csv);
     return csvFilePath;
 }
@@ -251,7 +251,7 @@ function main() {
         // Get a list of files in the downloads folder
         const files = fs.readdirSync(downloadsPath);
         // Check if the directories exists or create it
-        for (const path of [reportsPath, logsPath, posPath, outputPath, outputTodayPath]) {
+        for (const path of [reportsPath, logsPath, posPath, outputPath, outputTodayPath, csvPath]) {
             if (!fs.existsSync(path)) {
                 fs.mkdirSync(path);
             }
@@ -337,6 +337,5 @@ function main() {
     }
 }
 
-// Fix the toast changes that were not saved
 // Find BI tool to push the customer info to at end of it
 main();
