@@ -61,16 +61,21 @@ function shortStateName(stateName) {
  */
 function getZipForCity(zipcode, cityName) {
 	if (zipcode) {
-		return zipcode;
+		return parseInt(zipcode);
 	}
 	if (cityName === null || cityName === undefined) {
-		return cityName;
+		return null;
 	}
-	cityName = cityName.toUpperCase();
-	if (cityName === 'LAKE FOREST') {
-		return 92630;
-	}
-	return null;
+	cityName = formatString(cityName).toUpperCase();
+	const cityZipMap = {
+		'LAKE FOREST': 92630,
+		'FOOTHILL RANCH': 92610,
+		'IRVINE': 92618,
+		'MISSION VIEJO': 92692,
+		'TRABUCO CANYON': 92679,
+		'RANCHO SANTA MARGARITA': 92688
+	};
+	return cityZipMap[cityName] || null;
 }
 
 /**

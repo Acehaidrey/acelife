@@ -5,11 +5,7 @@
 class TransactionRecord {
   constructor(platform, orderDate) {
     this.platform = platform;
-    this.orderDate = orderDate;
     this.storeName = null;
-    this.orderType = null;
-    this.error = false;
-    this.errorReason = [];
     this.customerName = null;
     this.customerNumber = null;
     this.customerEmail = null;
@@ -19,9 +15,13 @@ class TransactionRecord {
     this.state = null;
     this.zipcode = null;
     this.orderAmount = 0;
-    this.paymentType = null;
+    this.orderType = null;
+    this.orderDate = orderDate;
     this.orderId = null;
-    }
+    this.paymentType = null;
+    this.error = false;
+    this.errorReason = [];
+  }
 }
 
 

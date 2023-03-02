@@ -5,6 +5,7 @@ const fs = require('fs');
 const Mbox = require('node-mbox');
 const argv = require('yargs')
 	.alias('i', 'input')
+	.alias('e', 'extra-file')
 	.alias('o', 'output')
 	.argv;
 
