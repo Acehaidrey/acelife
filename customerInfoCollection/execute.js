@@ -37,7 +37,7 @@ const csvPath =  path.join(outputTodayPath, 'CSV');
 const zipPattern = /^takeout-.*\.zip$/;
 
 // Constants for email
-const senderEmail = 'acehaidrey@gmail.com';
+const senderEmail = process.env.EMAIL;
 const recieveEmail = senderEmail;
 const emailPassword = process.env.EMAIL_PASSWORD;
 
@@ -101,8 +101,8 @@ function createMboxProcessingCommand(filePath, platform) {
         filePath = getLatestFileForPlatform(Platform.SPEEDLINE);
     }
     if (platform === Platform.TOAST) {
-        // change to add a -e flag with csv file
-        filePath = getLatestFileForPlatform(Platform.TOAST);
+        const csvFilePath = getLatestFileForPlatform(Platform.TOAST);
+        return `${cwd}/main.js -i ${filePath} -e ${csvFilePath} -o ${fullOutputPath}`
     }
     return `${cwd}/main.js -i ${filePath} -o ${fullOutputPath}`;
 }
@@ -324,7 +324,7 @@ function main() {
         emailBody = logAndAppend(emailBody, `Created JSON and CSV Files:\n${AllCustomersFilePath}\n${AmeciFilePath}\n${AromaFilePath}`);
         finalState = States.SUCCESS;
     } catch (error) {
-        emailBody = logAndAppend(emailBody, 'Error executing main because:\n' + error.stack);
+        emailBody = logAndAppend(emailBody, '\nError executing main because:\n' + error.stack);
         finalState = States.FAILED;
     } finally {
         const endTime = Date.now();
@@ -337,5 +337,4 @@ function main() {
     }
 }
 
-// Find BI tool to push the customer info to at end of it
 main();

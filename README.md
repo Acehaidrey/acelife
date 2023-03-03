@@ -4,9 +4,10 @@ This repository will be a mosh posh of projects, files scripts that are owned by
 
 ## Project 1: Customer Information Aggregation
 
-For our pizza shops, [Aroma](http://aromapizzaandpasta.com/) and [Ameci](http://amecilakeforest.com/), 
+For our pizza shops, [Aroma](http://aromapizzaandpasta.com/) and [Ameci](http://amecilakeforest.com/),
 we have gathered a lot of customer information over the years. We have many different partners that we will pull the data from.
 This list includes:
+
 - BeyondMenu
 - Brygid
 - Doordash
@@ -15,11 +16,14 @@ This list includes:
 - Menufy
 - Menustar
 - Slice
-- Speedline
-- Toast
+- Speedline POS
+- Toast POS
+
+The goal of this initative is to parse the information from the customer emails, to build this collection and reach
+out to users to opt into communications and deals. This collection will have all unique emails and numbers, where the
+outputted CSV will have duplicate record information here ultimately if a customer has used multiple numbers and emails.
 
 Additional project details can be found [here](https://docs.google.com/document/d/1SY-x9IjD4EF6XFukgUbjEhsaYp_CBOY1gGCEC3FQk6c/edit?usp=sharing).
-
 
 ### Prerequisites
 
@@ -32,6 +36,7 @@ This is a node application so need to make sure node and npm are installed. Make
 We get this customer information in specific ways - some will allow us to export scripts, and some will require to parse emails.
 
 For the email parsing, there is some setup (gmail based):
+
 1. Setup google rules to add a label to the orders coming in: Slice, Grubhub etc. You can do this by setting up filter rules.
 2. Go to https://takeout.google.com/settings/takeout.
 3. Deselect all services except Gmail.
@@ -47,6 +52,7 @@ For the email parsing, there is some setup (gmail based):
 13. Setup this rule to automatically run every 2 months. See if we can make this more frequent.
 
 #### Application Specific Password
+
 In order to setup for gmail a password to run the execution, you cannot use your regular password.
 If you're using Gmail as your email service, you can generate an application-specific password by following these steps:
 
@@ -71,17 +77,19 @@ All the above files need to be added to the Reports/POS folder. The execute.js s
 #### Scheduled Invocation
 
 That is now getting the files ready to process. We then need to setup the rules to create a cron job here to run every day.
+
 1. Check the cron job - it will run everyday to check if files were downloaded and then process them.
 2. To set up a cron job on your Mac to run daily, you can use the crontab command. Here's an example of how to create a cron job that runs a script every day at 9am:
 3. Open the Terminal app on your Mac.
 4. Type the following command to open the crontab editor: `crontab -e`
 5. If this is the first time you are using crontab, you may be prompted to choose an editor. Select your preferred editor.
-6. In the editor, add the following line: `0 9 * * * EMAIL_PASSWORD=YOUR_PASSWORD ./execute.js`
+6. In the editor, add the following line: `0 9 * * * EMAIL=your.email@gmail.com EMAIL_PASSWORD=YOUR_PASSWORD ./execute.js`
 
 ### Outputs
 
 The cron job will kick off our script. There are both js and python files here operating to process the files, to extract customer info.
 Once that happens, then we create outputted JSON files:
+
 1. Transaction information JSON
 2. Error information JSON (suffixed with -errors.json)
 3. Summarized customer information JSON (suffixed with -customers.json)
@@ -89,6 +97,7 @@ Once that happens, then we create outputted JSON files:
 ### Individual File Processing Commands
 
 Example commands:
+
 - BeyondMenu: Currently not supported since the email do not have the content for order info
 - Brygid: `./main.js -i ./Reports/POS/Brygid-2023-02-01.csv -o Brygid`
 - Doordash: `./main.js -i ./Reports/Takeout/Mail/Orders-Doordash.mbox -o Doordash`
@@ -103,13 +112,14 @@ Example commands:
 The full end to end invocation where we find the `EMAIL_PASSWORD=YOUR_PASSWORD ./execute.js -n 1`. Where the `n` flag is to identify how many days to look back to find the takeout download file.
 
 ### Caveats
+
 - This data set prioritizes the customer phone number and the store. Most unique keys are split by phone and store.
 - This means there can be duplicate names, emails, and addresses based off of that information.
 - We remove similar names/addresses in order to reduce some noise and arbitrarily pick one of the values of the matches.
 
 ### Future Work
+
 - Parse the Menufy transaction emails vs the customer records
 - Parse the Grubhub attachements to get total spend info
-- Place a state here to the script execution
-- Harden this pipeline more.
 - Refactor string parsing for leveraging DOM objects parsing
+- Find a BI or CRM to input all this information to

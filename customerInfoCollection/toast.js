@@ -289,6 +289,25 @@ function setErrorMessageForMissingFields(record, isDelEmail, isOnlineEmail) {
 }
 
 /**
+ * Zero out the order count and total spend as the csv data for overlaps has the accurate information.
+ * This function will assume the csv file is up to date but it could be outdated and will not have most
+ * accurate info regarding the total spend / order count.
+ * @param {TransactionRecord[]} transRecords 
+ * @param {CustomerRecord[]} csvRecords 
+ */
+function zeroOutOverlapping(transRecords, csvRecords) {
+  // Get a list of phone numbers from the csv list
+  const phoneNumbers = csvRecords.map(item => item.customerNumber);
+  // Iterate over the trans list and update required fields if phone number is found
+  transRecords.forEach(item => {
+    if (phoneNumbers.includes(item.customerNumber)) {
+      item.totalSpend = 0;
+      item.orderCount = 0;
+    }
+  });
+}
+
+/**
  * Parses the customer csv file to create a customer profile. Note this csv misses customer address info.
  * @returns {CustomerRecord[]}
  */
@@ -345,6 +364,7 @@ function createCustomerRecordsFromCSV() {
 function createCustomerRecords(transactionRecords) {
   const CSVRecords = createCustomerRecordsFromCSV();
   const transactRecords = utils.aggregateCustomerHistory(transactionRecords.filter(function(record) { return !record.error}));
+  zeroOutOverlapping(transactRecords, CSVRecords);
   let customerRecords = CSVRecords.concat(transactRecords);
   const originalLength = customerRecords.length;
   customerRecords = utils.mergeCustomerRecordsByPhoneNumber(customerRecords);
