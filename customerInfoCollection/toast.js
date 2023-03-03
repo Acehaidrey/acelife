@@ -12,7 +12,7 @@ const argv = require('yargs')
 
 const OnlineOrderPrefix = 'Online Order #'.toLowerCase();
 const DeliveryOrderPrefix = 'New delivery order from:'.toLowerCase();
-const regexCityStateZip = /(.*),\s*([A-Za-z]{2})(?:\s+(\d{5}))?$/i;
+const regexCityStateZip = /(.*),\s*([A-Za-z]{2})\s*(\d{5})?(?:-(\d{4}))?$/i;
 
 function createTransactionRecord(mail) {
   const isOnlineOrder = mail.subject.toLowerCase().startsWith(OnlineOrderPrefix);
@@ -31,23 +31,76 @@ function createTransactionRecord(mail) {
   // set customer information
   if (isOnlineOrder) {
     transRecord.orderType = getOrderTypeForOnline(mail.html);
-    // getCustomerInfoForOnline(mail.html, transRecord);
+    getCustomerInfoForOnline(mail.html, transRecord);
   }
   // order amount (already set in online order but for delivery need)
-  // set cusotmer information
+  // set customer information
   if (isDeliveryOrder) {
     transRecord.orderAmount = getOrderAmountForDelivery(mail.html);
     getCustomerInfoForDelivery(mail.html, transRecord);
   }
   // mark error records if fields missing
-  // console.log(mail.subject, isOnlineOrder, isDeliveryOrder);
-  if (isDeliveryOrder) {
-    console.log(transRecord)
-  }
+  setErrorMessageForMissingFields(transRecord, isDeliveryOrder, isOnlineOrder);
   return transRecord;
 }
 
+/**
+ * Parses the email html body to parse the customer info between HR tags and populate the record.
+ * @param {string} html 
+ * @param {TransactionRecord} record 
+ */
+function getCustomerInfoForOnline(html, record) {
+  const dom = new JSDOM(html);
+  const document = dom.window.document;
+  const hrTags = document.getElementsByTagName("hr");
+  let customerCells = [];
+  // from 2nd to 3rd hr tags has all customer information - assume this (can break in future)
+  if (hrTags.length > 2) {
+    // get outer parent encapsulating the hr which has customer info
+    let parentTr = hrTags[1].parentElement.parentElement;
+    let nextTr = parentTr.nextElementSibling;
+    // loop until we continue to have customer info
+    while (nextTr !== null) {
+      const cells = Array.from(nextTr.querySelectorAll('td')).map(td => td.textContent.trim());
+      customerCells = customerCells.concat(cells);
+      nextTr = nextTr.nextElementSibling;
+      // if the next element will contain an hr then break out of this
+      if (nextTr && nextTr.querySelector('hr') !== null) {
+        break;
+      }
+    }
+    customerCells = customerCells.filter(cell => cell !== '' && !cell.startsWith('Notes:'));
+    if (customerCells && customerCells.length > 1) {
+      record.customerName = utils.formatString(customerCells[0].toUpperCase());
+      record.customerEmail = utils.formatString(customerCells[customerCells.length - 1].toUpperCase());
+      if (record.orderType === orderType.PICKUP && customerCells.length > 2) {
+        // format for pickup orders is [customer name, phone number, email]
+        record.customerNumber = utils.formatPhoneNumber(customerCells[1]);
+      }
+      if (record.orderType === orderType.DELIVERY && customerCells.length > 3) {
+        // format for delivery orders is [customer name, street, phone number, (city, state, zip), additional address, email]
+        record.customerNumber = utils.formatPhoneNumber(customerCells[2]);
+        record.street = utils.formatString(customerCells[1].toUpperCase());
+        for (let i = 3; i < customerCells.length - 2; i++) {
+          record.street += ' #' + utils.formatString(customerCells[i].toUpperCase().replace('#', ''));
+        }
+        const matchCityStateZip = customerCells[customerCells.length - 2].match(regexCityStateZip);
+        if (matchCityStateZip) {
+          record.city = utils.formatString(matchCityStateZip[1].toUpperCase());
+          record.state = utils.shortStateName(matchCityStateZip[2]);
+          record.zipcode = parseInt(utils.getZipForCity(matchCityStateZip[3], record.city));
+        }
+        record.customerAddress = utils.createFullAddress(record.street, record.city, record.state, record.zipcode);
+      }
+    }
+  }
+}
 
+/**
+ * Finds the innermost TR element that contains the customer info.
+ * @param {HTMLElement} element 
+ * @returns {HTMLTableRowElement}
+ */
 function getInnermostTrWithCustomerInfo(element) {
   let targetTr = null;
   if (element.tagName === "TR" && /\bCustomer Info\b/.test(element.textContent)) {
@@ -64,6 +117,11 @@ function getInnermostTrWithCustomerInfo(element) {
   return targetTr;
 }
 
+/**
+ * Parses the email html body for the customer information for delivery email format.
+ * @param {string} html 
+ * @param {TransactionRecord} record 
+ */
 function getCustomerInfoForDelivery(html, record) {
   const dom = new JSDOM(html);
   const document = dom.window.document;
@@ -85,16 +143,21 @@ function getCustomerInfoForDelivery(html, record) {
         record.state = utils.shortStateName(matchCityStateZip[2]);
         record.zipcode = parseInt(utils.getZipForCity(matchCityStateZip[3], record.city));
       }
-      let street = customerInfo[1].toUpperCase();
+      record.street = utils.formatString(customerInfo[1].toUpperCase());
       for (let i = 2; i < customerInfo.length - 2; i++) {
-        street += ' #' + customerInfo[i].toUpperCase().replace('#', '') + ' ';
+        record.street += ' #' + utils.formatString(customerInfo[i].toUpperCase().replace('#', ''));
       }
-      record.street = utils.formatString(street);
       record.customerAddress = utils.createFullAddress(record.street, record.city, record.state, record.zipcode);
     }
   }
 }
 
+/**
+ * Parses the email html body to retrieve the total cost. Online order types have this in the email subject
+ * but the delivery orders need it parsed from the content.
+ * @param {string} html 
+ * @returns {float}
+ */
 function getOrderAmountForDelivery(html) {
   const dom = new JSDOM(html);
   const document = dom.window.document;
@@ -106,13 +169,20 @@ function getOrderAmountForDelivery(html) {
       const lines = text.trim().split(/\s+/);
       // Find the index of the line with "Total"
       const totalIndex = lines.findIndex(line => line === "Total");
-      // Get the value after "Total"
+      // Get the value after "Total" which contains the true value
       const totalValue = parseFloat(lines[totalIndex + 1].replace("$", ""));
       return totalValue;
     }
   }
+  return -1;
 }
 
+/**
+ * Parses the email html body and parses out the order type between the first and second hr tags
+ * for online order types.
+ * @param {string} html 
+ * @returns {orderType}
+ */
 function getOrderTypeForOnline(html) {
   const dom = new JSDOM(html);
   const document = dom.window.document;
@@ -172,6 +242,56 @@ function createOrderNumber(date, checkNumber) {
   return `${utils.formatDate(date)}-${checkNumber}`
 }
 
+/**
+ * Checks if any of the given parameters are null and then sets a respective error message.
+ * @param {TransactionRecord} record
+ */
+function setErrorMessageForMissingFields(record, isDelEmail, isOnlineEmail) {
+  if (!record.orderType) {
+      utils.recordError(record, errorType.ORDER_TYPE);
+  }
+  if ((record.orderAmount < 0 && isDelEmail) || (!record.orderAmount && isOnlineEmail)) {
+      utils.recordError(record, errorType.ORDER_AMOUNT);
+  }
+  if (!record.orderId) {
+      utils.recordError(record, errorType.ORDER_ID);
+  }
+  if (!record.paymentType) {
+      utils.recordError(record, errorType.PAYMENT_TYPE);
+  }
+  if (!record.customerNumber) {
+      utils.recordError(record, errorType.CUSTOMER_NUMBER);
+  }
+  if (!record.customerName) {
+      utils.recordError(record, errorType.CUSTOMER_NAME);
+  }
+  if (isDelEmail || (isOnlineEmail && record.orderType === orderType.DELIVERY)) {
+    if (!record.street) {
+      utils.recordError(record, errorType.STREET);
+    }
+    if (!record.city) {
+      utils.recordError(record, errorType.CITY);
+    }
+    if (!record.state) {
+      utils.recordError(record, errorType.STATE);
+    }
+    if (!record.zipcode) {
+      utils.recordError(record, errorType.ZIPCODE);
+    }
+    if (!record.customerAddress) {
+      utils.recordError(record, errorType.CUSTOMER_ADDRESS);
+    }
+  }
+  if (record.error) {
+    const emailType = isDelEmail ? 'DELIVERY' : 'ONLINE'
+    utils.recordError(record, `Email Type: ${emailType}`)
+  }
+}
+
+/**
+ * Parses the customer csv file to create a customer profile. Note this csv misses customer address info.
+ * @returns {CustomerRecord[]}
+ */
 function createCustomerRecordsFromCSV() {
     let customerRecords = [];
     const data = utils.readCSVFile(argv.e);
@@ -201,9 +321,6 @@ function createCustomerRecordsFromCSV() {
       }
       // split the phone numbers (can have multiple) and make copies and add a copy of this info for each number
       if (record.phones) {
-        // if (phoneNumbers.length > 1) {
-        //   console.log(phoneNumbers)
-        // }
         const phoneNumbers = record.phones.split(';').filter((val) => val !== '');
         phoneNumbers.forEach(phone => {
           const customerRecordCopy = Object.assign({}, customerRecord);
@@ -240,7 +357,3 @@ function createCustomerRecords(transactionRecords) {
 }
 
 module.exports = {createTransactionRecord, createCustomerRecords}
-
-// parse the online orders for delivery and customer information
-// combine the transaction records so that online order info for matching delivery orders get merged (by orderId)
-// merge the customer information records together properly

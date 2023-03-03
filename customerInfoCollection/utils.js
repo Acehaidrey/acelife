@@ -55,12 +55,17 @@ function shortStateName(stateName) {
 
 /**
  * If the zipcode is null but there is a city set, then infer it from this hard coded map.
+ * Note this can lead to incorrect zipcodes for an address as it is not accurate.
  * @param {int|string|null} zipcode
  * @param {string|null} cityName
  * @returns {int|*}
  */
 function getZipForCity(zipcode, cityName) {
 	if (zipcode) {
+		// remove the sub-zipcodes
+		if (zipcode.includes('-')) {
+			zipcode = zipcode.split('-')[0];
+		}
 		return parseInt(zipcode);
 	}
 	if (cityName === null || cityName === undefined) {
@@ -73,7 +78,8 @@ function getZipForCity(zipcode, cityName) {
 		'IRVINE': 92618,
 		'MISSION VIEJO': 92692,
 		'TRABUCO CANYON': 92679,
-		'RANCHO SANTA MARGARITA': 92688
+		'RANCHO SANTA MARGARITA': 92688,
+		'LAGUNA HILLS': 92653
 	};
 	return cityZipMap[cityName] || null;
 }
@@ -415,10 +421,14 @@ function mergeCustomerRecordsByPhoneNumber(records) {
 /**
  * Find duplicate records based on the customer phone number.
  * @param {CustomerRecord[]|TransactionRecord[]} customers
+ * @param {boolean} filterNulls - remove nulls from the duplicate check
  * @returns {CustomerRecord[]|TransactionRecord[]}
  */
-function findDuplicateCustomerNumbers(customers) {
-  const customerNumbers = customers.map(customer => customer.customerNumber);
+function findDuplicateCustomerNumbers(customers, filterNulls = true) {
+  let customerNumbers = customers.map(customer => customer.customerNumber);
+  if (filterNulls) {
+	customerNumbers = customerNumbers.filter((row) => row);
+  }
   const uniqueCustomerNumbers = new Set(customerNumbers);
   const duplicateCustomerNumbers = [...customerNumbers.filter(customerNumber => {
     if (uniqueCustomerNumbers.has(customerNumber)) {
