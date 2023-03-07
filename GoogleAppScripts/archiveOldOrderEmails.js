@@ -135,3 +135,9 @@ function archiveOldBillingEmailsToast() {
     const userLabel = `${billingLabel}/${Platform.TOAST}`;
     archiveOldOrderEmails(userLabel, 30);
 }
+
+// Doordash Billing
+function archiveOldBillingEmailsDoordash() {
+  const userLabel = `${billingLabel}/${Platform.DOORDASH}`;
+  archiveOldOrderEmails(userLabel, 30);
+}

@@ -9,10 +9,12 @@ const daysAgoCutoffForContest = 1;
  * @returns {string} - PDF content as text
  */
 function saveAttachmentToDriveAndGetText(attachment) {
-  // create folder if not exists
+  // Create folder if not exists and then get folder
   let folder = DriveApp.getFoldersByName(driveFolderName);
-  if (!folder) {
-    DriveApp.createFolder(driveFolderName);
+  if (!folder.hasNext()) {
+    folder = DriveApp.createFolder(driveFolderName);
+  } else {
+    folder = folder.next();
   }
   // save the PDF from email to Drive
   folder = DriveApp.getFoldersByName(driveFolderName).next();
@@ -42,7 +44,7 @@ function saveAttachmentToDriveAndGetText(attachment) {
  * @param {string} pdfText 
  * @returns {*[]}
  */
-function createEmailContext(pdfText) {
+function createEmailContextGH(pdfText) {
     const disputeRecords = [];
     const pdfTextList = pdfText.split('\n').map((value) => value.trim());
     const restaurant = pdfTextList[1];
@@ -102,7 +104,7 @@ function createEmailContext(pdfText) {
  * @param {*[]} disputes 
  * @param {string} email
  */
-function createEmail(disputes, email) {
+function createEmailGH(disputes, email) {
     if (!disputes || disputes.length === 0) {
         Logger.info('No dispute records exist')
         throw new Error('No dispute records exist')
@@ -110,10 +112,11 @@ function createEmail(disputes, email) {
     for (var i = 0; i < disputes.length; i++) {
         const record = disputes[i];
         const subject = `Adjustment Contest Order ${record.ID}`
-        const body = `Dear ${record.Provider} Customer Service,
+        const body = `
+        Dear ${record.Provider} Customer Service,
 
         I am writing on behalf of my restaurant, ${record.Restaurant}, located at ${record.Address}, 
-        to address the ${record.Type} to order ${record.ID} on ${record.Date}. That have been charged 
+        to address the ${record.Type} to order ${record.ID} on ${record.Date} that have been charged 
         to our account. We need to contest these charges and inform you that we have done our due 
         diligence in ensuring that all orders are fulfilled to the best of our ability.
         
@@ -133,12 +136,34 @@ function createEmail(disputes, email) {
         Thank you for your attention to this matter. Especially in these times.
         
         Sincerely,
-    
+        
         Ace Haidrey
-        ${record.Restaurant}
-        `
+        ${record.Restaurant}`;        
         GmailApp.sendEmail(email, subject, body);
     }
+}
+
+/**
+ * Delete files older than 30 days in the Drive location we copy PDFs to.
+ */
+function deleteOldFilesInDriveGH(deleteDaysAgo = 30) {
+  // Set the ID of the folder you want to delete files from
+  const driveFolder = DriveApp.getFoldersByName(driveFolderName).next();
+  // Get the folder
+  const folder = DriveApp.getFolderById(driveFolder.getId());
+  // Calculate the date 30 days ago
+  const thirtyDaysAgo = new Date(Date.now()  - deleteDaysAgo * 24 * 60 * 60 * 1000);
+  // Get all files in the folder
+  const files = folder.getFiles();
+  // Loop through each file
+  while (files.hasNext()) {
+    const file = files.next();
+    // Check if the file was last modified more than 30 days ago
+    if (file.getLastUpdated() < thirtyDaysAgo) {
+      // Delete the file
+      file.setTrashed(true);
+    }
+  }
 }
 
 /**
@@ -148,6 +173,7 @@ function processGrubhubOrderContests() {
   const daysAgo = new Date(Date.now() - daysAgoCutoffForContest * 24 * 60 * 60 * 1000);
   const label = GmailApp.getUserLabelByName(grubhubContestLabel);
   const threads = label.getThreads();
+  deleteOldFilesInDriveGH();
   for (var i = 0; i < threads.length; i++) {
     // get all messages in the last N days
     if (threads[i].getLastMessageDate() > daysAgo) {
@@ -163,10 +189,10 @@ function processGrubhubOrderContests() {
           // no library to read PDF directly - save to Drive and leverage there to read to text
           if (attachments[k].getContentType() === 'application/pdf') {
             const text = saveAttachmentToDriveAndGetText(attachments[k]);
-            const disputeRecs = createEmailContext(text);
+            const disputeRecs = createEmailContextGH(text);
             Logger.log(text);
             Logger.log(disputeRecs);
-            createEmail(disputeRecs, grubhubSenderEmail);
+            createEmailGH(disputeRecs, grubhubSenderEmail);
           }
         }
       }
