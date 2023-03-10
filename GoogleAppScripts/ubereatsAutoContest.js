@@ -124,7 +124,7 @@ function deleteOldFilesInDrive(deleteDaysAgo = 30) {
  * @param {string} emailBody 
  * @returns {*[]}
  */
-function createEmailContext(emailBody) {
+function createEmailContextUE(emailBody) {
     let seenError = false;
     const disputeRecords = [];
     const emailBodyList = emailBody.split('\n').map((value) => value.trim()).filter(row => row.length > 0);
@@ -328,7 +328,7 @@ function createDriverAcknowledgementPDF(record) {
  * @param {*[]} disputes 
  * @param {string} email
  */
-function createEmail(disputes, email) {
+function createEmailUE(disputes, email) {
     if (!disputes || disputes.length === 0) {
         Logger.info('No dispute records exist')
         throw new Error('No dispute records exist')
@@ -399,10 +399,10 @@ function processUberOrderContests() {
       // only get the first message to use - getMessages returns chronologically 
       if (messages.length > 0) {
         const firstMessage = messages[0].getPlainBody();
-        const recordSummary = createEmailContext(firstMessage);
+        const recordSummary = createEmailContextUE(firstMessage);
         Logger.log(recordSummary);
         seenAnyError = seenAnyError || recordSummary.error;
-        createEmail(recordSummary.records, uberSenderEmail);
+        createEmailUE(recordSummary.records, uberSenderEmail);
         Logger.log('Completed email sends for: ' + recordSummary);
       }
     }

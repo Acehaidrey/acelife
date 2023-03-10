@@ -14,7 +14,8 @@ const Platform = {
   BRYGID: "Brygid",
   SPEEDLINE: "Speedline",
   OFFICE_EXPRESS: "OfficeExpress",
-  BEYONDMENU: "BeyondMenu"
+  BEYONDMENU: "BeyondMenu",
+  UBEREATS: 'UberEats'
 };
 
 /**
@@ -139,5 +140,23 @@ function archiveOldBillingEmailsToast() {
 // Doordash Billing
 function archiveOldBillingEmailsDoordash() {
   const userLabel = `${billingLabel}/${Platform.DOORDASH}`;
+  archiveOldOrderEmails(userLabel, 30);
+}
+
+// Speedline Billing
+function archiveOldBillingEmailsSpeedline() {
+  const userLabel = `${billingLabel}/${Platform.SPEEDLINE}`;
+  archiveOldOrderEmails(userLabel, 30);
+}
+
+// Ordermark Billing
+function archiveOldBillingEmailsOrdermark() {
+  const userLabel = `${billingLabel}/Ordermark`;
+  archiveOldOrderEmails(userLabel, 30);
+}
+
+// UberEats Billing
+function archiveOldBillingEmailsUberEats() {
+  const userLabel = `${billingLabel}/${Platform.UBEREATS}`;
   archiveOldOrderEmails(userLabel, 30);
 }
