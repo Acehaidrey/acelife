@@ -19,17 +19,19 @@ function deleteArchivedEmailsWithoutLabels() {
  
   for (var i = 0; i < threads.length; i++) {
     const messages = threads[i].getMessages();
-    var hasMyEmail = false;
-    var hasMyName = false;
+    let hasMyEmail = false;
+    let hasMyName = false;
     
     for (var j = 0; j < messages.length; j++) {
       if (messages[j].getFrom().includes(myEmail)) {
         hasMyEmail = true;
       }
-      if (messages[j].getBody().includes(myName)) {
-        hasMyName = true;
-      }
+      // Remove check if name in body because lots of unsubscribe emails here include name
+      // if (messages[j].getBody().includes(myName)) {
+      //   hasMyName = true;
+      // }
     }
+    console.log(!hasMyEmail && !hasMyName && threads[i].getLabels().length === 0)
     // if the thread is not sent from my email, nor is it include my last name (other family members)
     // and if it has no custom labels, then we will remove the mail.
     if (!hasMyEmail && !hasMyName && threads[i].getLabels().length === 0) {

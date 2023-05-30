@@ -3,3 +3,7 @@ customerInfoCollection/Reports/
 .idea/
 package-lock.json
 .DS_Store
+provider_reports/reports/
+provider_reports/reports_processed/
+provider_reports/credentials/
+BusinessFinances/

@@ -15,7 +15,8 @@ const Platform = {
   SPEEDLINE: "Speedline",
   OFFICE_EXPRESS: "OfficeExpress",
   BEYONDMENU: "BeyondMenu",
-  UBEREATS: 'UberEats'
+  UBEREATS: 'UberEats',
+  CHOWNOW: 'ChowNow'
 };
 
 /**
@@ -61,6 +62,12 @@ function archiveOldOrderEmailsBeyondMenu() {
 // Brygid
 function archiveOldOrderEmailsBrygid() {
   const userLabel = `${orderLabel}/${Platform.BRYGID}`;
+  archiveOldOrderEmails(userLabel);
+}
+
+// ChowNow
+function archiveOldOrderEmailsChowNow() {
+  const userLabel = `${orderLabel}/${Platform.CHOWNOW}`;
   archiveOldOrderEmails(userLabel);
 }
 
