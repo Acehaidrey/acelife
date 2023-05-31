@@ -1,80 +1,65 @@
-// archive means no inbox
-const archiveLabel = '-label:inbox';
-// needs review label
-const needsReviewLabel = '-label:promo-needsreview';
-// arbitrary safeguard to only cleanup messages prior 2019 to begin
-const cutoffBeforeDate = '2019/1/1';
-const getDaysBeforeCutoff = 365 * 2; // 2 years ago
-// condition check
-const myEmail = 'acehaidrey@gmail.com';
-const myName = 'haidrey';
+const toastFinanceLabelName = 'Billings/Toast/Processing'
+const reportFolderBF = 'BusinessFinances'
+const daysAgoToastFinance = 15
 
 /**
- * Delete archived emails who meet certain criteria.
- * Criteria in this case includes any message that is archived, do not have custom labels, and do not have
- * any responses from my personal email - aka if it has multiple threads where one of the emails is mine.
+ * Uses the toast finance label setup in inbox to download the toast monthly processing reports. The provider names it
+ * in a way to provide the month year in the attachment name, where we then label it, and move it to the correct
+ * folder based off of the reporting month. All reports here exist for Aroma.
+ * These reports are generally released on the 5th of each month.
  */
-function deleteArchivedEmailsWithoutLabels() {
-  var countMessagesDeleted = 0;
-  var countReviewLabelAdded = 0;
-  // Get all archived threads
-  const threads = GmailApp.search(`${archiveLabel} ${needsReviewLabel} before:${cutoffBeforeDate}`);
- 
+function saveToastFinanceAttachments() {
+  const daysAgo = new Date(Date.now() - daysAgoToastFinance * 24 * 60 * 60 * 1000);
+  const label = GmailApp.getUserLabelByName(toastFinanceLabelName);
+  const threads = label.getThreads().filter((thread) => thread.getLastMessageDate() > daysAgo);
+  const parentFolder = DriveApp.getFoldersByName(reportFolderBF).next();
+  const aromaBillingFolder = parentFolder.getFoldersByName('Aroma').next();
   for (var i = 0; i < threads.length; i++) {
-    const messages = threads[i].getMessages();
-    let hasMyEmail = false;
-    let hasMyName = false;
+    // get first message from original sender and get its attachment
+    var message = threads[i].getMessages()[0];
+    var attachments = message.getAttachments();
     
-    for (var j = 0; j < messages.length; j++) {
-      // if (!messages[j].getFrom().includes(myEmail) && ! messages[j].getBody().includes(myName) && threads[i].getLabels().length === 0) {
-        // console.log('------')
-        // console.log(messages.length)
-        // console.log(messages[j].getFrom())
-        // console.log(messages[j].getFrom().includes(myEmail))
-        // console.log(messages[j].getPlainBody())
-        // console.log(messages[j].getPlainBody().includes(myName))
-        // console.log(threads[i].getLabels())
-        // console.log(threads[i].getLabels().length)
-      // }
-      if (messages[j].getFrom().includes(myEmail)) {
-        hasMyEmail = true;
-      } else {
-        // if it does not meet add label here of Promo/NeedsReview
-        if (threads[i].getLabels().length === 0) {
-          threads[i].addLabel(GmailApp.getUserLabelByName("Promo/NeedsReview"));
-          countReviewLabelAdded += 1;
+    for (var j = 0; j < attachments.length; j++) {
+      var attachment = attachments[j];
+      var fileName = attachment.getName();
+      Logger.log('Processing file: ' + fileName);
+      if (attachment.getContentType() === 'application/pdf') {
+        var regex = /_([A-Za-z]+)_([0-9]{4})/;
+        var match = fileName.match(regex);
+        if (match) {
+          var month = match[1].toLowerCase();
+          var year = match[2];
+          var monthNumber = new Date(month + " 1, " + year).getMonth() + 1;
+          var monthString = ("0" + monthNumber).slice(-2);
+          var newName = 'toast_aroma_processing_' + monthString + year + '.pdf'
+          var yearFolder = getOrCreateFolder(aromaBillingFolder, year);
+          var monthFolder = getOrCreateFolder(yearFolder, monthString);
+          // if file exists to delete the older one then write new one
+          var files = monthFolder.getFilesByName(newName);
+          if (files.hasNext()) {
+            var existingFile = files.next();
+            existingFile.setTrashed(true); // delete existing file
+          }
+          var file = monthFolder.createFile(attachment);
+          file.setName(newName);
+          Logger.log('Adding file: ' + file + ' to location: ' + monthFolder);
         }
       }
-      // if (messages[j].getBody().includes(myName)) {
-      //   hasMyName = true;
-      //   console.log('hasMyName ' + hasMyName)
-      // }
     }
-    // console.log(!hasMyEmail && !hasMyName && threads[i].getLabels().length === 0)
-    // if the thread is not sent from my email, nor is it include my last name (other family members)
-    // and if it has no custom labels, then we will remove the mail.
-    if (!hasMyEmail && !hasMyName && threads[i].getLabels().length === 0) {
-      threads[i].moveToTrash();
-      countMessagesDeleted += 1;
-    //   Logger.log(`Subj: ${threads[i].getFirstMessageSubject()}\nlabels: ${threads[i].getLabels()}\nmessages len: ${messages.length}}`);
-    }
-  }
-  Logger.log(`${countMessagesDeleted} messages found and deleted.`);
-  Logger.log(`${countReviewLabelAdded} messages found needing review.`);
-  if (countMessagesDeleted < 1 && countReviewLabelAdded < 1) {
-    throw new Error('No messages found to delete or label for review');
   }
 }
 
 /**
- * Converts a date object to a string version of it in format YYYY/MM/DD.
- * @param date {Date}
- * @returns {string}
+ * Check if a folder exists or create it if not.
+ * @param {*} parentFolder Top level folder name looking into
+ * @param {*} folderName Folder name looking for or creating
+ * @returns DriveFolder
  */
-function getBeforeDate(date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const formattedDate = `${year}/${month}/${day}`;
-    return formattedDate;
+function getOrCreateFolder(parentFolder, folderName) {
+  var folders = parentFolder.getFoldersByName(folderName);
+  if (folders.hasNext()) {
+    return folders.next();
+  } else {
+    return parentFolder.createFolder(folderName);
+  }
 }
