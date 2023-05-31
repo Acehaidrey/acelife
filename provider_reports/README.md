@@ -88,13 +88,30 @@ Where the `get_reports` call can be multiple reports, namely:
 ```
 Therefore we must implement at least `get_orders`.
 
-The `main.py` function when implemented will invoke these calls for any provider file passed.
-This file at this time is not yet implemented.
-
 The extensibility is to either through selenium actions to get the reports or it can be via an API.
 Both are acceptable but majority do not offer an API to customers.
 
 For now, see any classes `main.py` function in the providers/ endpoint.
+
+#### Entry Point
+
+The `main.py` function will invoke these providers for any provider file passed but it must be added to `provider_map`.
+This will handle all the orchestration.
+
+In here we have a few options to filter what we would like to run:
+
+| Argument Flag    | Default Value         | Description                                                                                        |
+|------------------|-----------------------|----------------------------------------------------------------------------------------------------| 
+| -s, --start-date | Required              | Can be of form 2023/01/15 or of form 2023/01 which will then set 1 as the default day.             |
+| -e, --end-date   | Required              | Can be of form 2023/01/28 or of form 2023/01 which will then set last day of month as default day. |
+| -c, --cleanup    | False                 | Delete all raw report files in reports/ directory.                                                 |
+| -p, --providers  | All in Providers Enum | Space separated list of providers to run report for (i.e. doordash, ubereats, etc.)                |
+| -n, --stores     | All in Stores Enum    | Space separated list of store names to run report for (i.e. aroma, ameci)                          |
+
+Running a command such as
+`python main.py -s 2023/03 -e 2023/03 -p office_express -n ameci`
+will invoke the script for the full month of March 2023 for the provider of office_express for Ameci only.
+
 
 #### Raw & Processed Reports
 
@@ -103,7 +120,7 @@ we format the information within them, create consolidated reports, separate out
 and do any additional post processing such as converting to csv files from other formats, and 
 handling that to place files in the `reports_processed/` directory.
 
-#### Reports Needed & Status
+#### Reports Status Tracker & Future Work
 
 | Provider       | Status          | Blockers / Notes                                                             |
 |----------------|-----------------|------------------------------------------------------------------------------| 
@@ -121,8 +138,6 @@ handling that to place files in the `reports_processed/` directory.
 
 These providers need to be finished and then there are some providers who we handle
 using google app scripts as they send over info via emails. Consider to build around those here.
-
-We need to then build out the orchestration logic in `main.py` to go through all these.
 
 Then we need to push this info ultimately to google drive. We have utils in place to accomplish this.
 

@@ -3,7 +3,7 @@ import glob
 import os
 import time
 import zipfile
-from datetime import date
+from datetime import date, datetime
 
 import pandas as pd
 import retrying
@@ -39,8 +39,8 @@ class MenufyOrders(OrdersProvider):
 
         Args:
             credential_file_path (str): The path to the credential file.
-            start_date (str): The start date for retrieving orders.
-            end_date (str): The end date for retrieving orders.
+            start_date (datetime.datetime): The start date for retrieving orders.
+            end_date (datetime.datetime): The end date for retrieving orders.
             store_name (Store): The name of the store associated with the provider.
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
@@ -273,8 +273,8 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     credential_file_path = '../credentials/menufy_credentials.json'
-    start_date = '01/01/2023'
-    end_date = '01/31/2023'
+    start_date = datetime(2023, 3, 1)
+    end_date = datetime(2023, 3, 31)
     store_name = Store.AROMA
 
     orders = MenufyOrders(credential_file_path, start_date, end_date, store_name)

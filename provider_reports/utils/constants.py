@@ -1,9 +1,11 @@
 import enum
 import os
 
+CURRENT_FILE = os.path.abspath(__file__)
 DOWNLOADS_DIR = os.path.join(os.path.expanduser('~'), 'Downloads')
-RAW_REPORTS_PATH = os.path.abspath('../reports')
-PROCESSED_REPORTS_PATH = os.path.abspath('../reports_processed')
+RAW_REPORTS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../reports'))
+PROCESSED_REPORTS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../reports_processed'))
+CREDENTIALS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../credentials'))
 
 
 class Store(enum.Enum):
@@ -12,8 +14,8 @@ class Store(enum.Enum):
 
     This class provides constants for different store names.
     """
-    AMECI = 'Ameci'
-    AROMA = 'Aroma'
+    AMECI = 'ameci'
+    AROMA = 'aroma'
 
 
 class ReportType:
@@ -52,4 +54,5 @@ class Provider(enum.Enum):
     MENUFY = 'menufy'
     OFFICE_EXPRESS = 'office_express'
     SLICE = 'slice'
+    TOAST = 'toast'
     UBEREATS = 'ubereats'

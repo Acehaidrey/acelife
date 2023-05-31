@@ -1,15 +1,15 @@
 import csv
 import os
 from datetime import datetime
-from bs4 import BeautifulSoup
 
 import pandas as pd
 import retrying
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 from provider_reports.providers.base_provider import OrdersProvider
 from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions
@@ -36,8 +36,8 @@ class EatstreetOrders(OrdersProvider):
 
         Args:
             credential_file_path (str): The path to the credential file.
-            start_date (str): The start date for retrieving orders.
-            end_date (str): The end date for retrieving orders.
+            start_date (datetime.datetime): The start date for retrieving orders.
+            end_date (datetime.datetime): The end date for retrieving orders.
             store_name (Store): The name of the store associated with the provider.
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
@@ -233,8 +233,8 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     credential_file_path = '../credentials/eatstreet_credentials.json'
-    start_date = '04/01/2023'
-    end_date = '04/30/2023'
+    start_date = datetime(2023, 3, 1)
+    end_date = datetime(2023, 3, 31)
     store_name = Store.AROMA
 
     orders = EatstreetOrders(credential_file_path, start_date, end_date, store_name)
