@@ -27,7 +27,7 @@ const Platform = {
  * function for the partners that are not manually added here.
  * NOTE, this gets the last 500 threads only. Larger sizes can use while loop with label.getThreads(start, maxThreads).
  */
-function archiveOldOrderEmails(userLabel, daysAgoCutoff = defaultDaysAgoCutoff) {
+function archiveOldOrderAndBillingEmails(userLabel, daysAgoCutoff = defaultDaysAgoCutoff) {
   const startTime = Date.now();
   const daysAgo = new Date(Date.now() - daysAgoCutoff * 24 * 60 * 60 * 1000);
   const label = GmailApp.getUserLabelByName(userLabel);
@@ -56,67 +56,67 @@ function archiveOldOrderEmails(userLabel, daysAgoCutoff = defaultDaysAgoCutoff) 
 // BeyondMenu
 function archiveOldOrderEmailsBeyondMenu() {
   const userLabel = `${orderLabel}/${Platform.BEYONDMENU}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Brygid
 function archiveOldOrderEmailsBrygid() {
   const userLabel = `${orderLabel}/${Platform.BRYGID}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // ChowNow
 function archiveOldOrderEmailsChowNow() {
   const userLabel = `${orderLabel}/${Platform.CHOWNOW}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Doordash
 function archiveOldOrderEmailsDoordash() {
   const userLabel = `${orderLabel}/${Platform.DOORDASH}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Eatstreet
 function archiveOldOrderEmailsEatstreet() {
   const userLabel = `${orderLabel}/${Platform.EATSTREET}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Grubhub
 function archiveOldOrderEmailsGrubhub() {
   const userLabel = `${orderLabel}/${Platform.GRUBHUB}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Menufy
 function archiveOldOrderEmailsMenufy() {
   const userLabel = `${orderLabel}/${Platform.MENUFY}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Menustar
 function archiveOldOrderEmailsMenustar() {
   const userLabel = `${orderLabel}/${Platform.MENUSTAR}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // OfficeExpress
 function archiveOldOrderEmailsOfficeExpress() {
   const userLabel = `${orderLabel}/${Platform.OFFICE_EXPRESS}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Slice
 function archiveOldOrderEmailsSlice() {
   const userLabel = `${orderLabel}/${Platform.SLICE}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // Toast
 function archiveOldOrderEmailsToast() {
   const userLabel = `${orderLabel}/${Platform.TOAST}`;
-  archiveOldOrderEmails(userLabel);
+  archiveOldOrderAndBillingEmails(userLabel);
 }
 
 // All Others
@@ -127,7 +127,7 @@ function archiveOldOrderEmailsOthers() {
     const labelName = labels[i].getName();
     if ((labelName.indexOf(orderLabel + "/") > -1 || labelName === orderLabel) && !platforms.includes(labelName.replace(orderLabel + '/', ''))) {
       Logger.log(`${labelName} missing from the manual checks. Caught in the Others call.`)
-      archiveOldOrderEmails(labelName);
+      archiveOldOrderAndBillingEmails(labelName);
     }
   }
 }
@@ -135,35 +135,35 @@ function archiveOldOrderEmailsOthers() {
 // Grubhub Billing
 function archiveOldBillingEmailsGrubhub() {
     const userLabel = `${billingLabel}/${Platform.GRUBHUB}`;
-    archiveOldOrderEmails(userLabel, 30);
+    archiveOldOrderAndBillingEmails(userLabel, 30);
 }
 
 // Toast Billing
 function archiveOldBillingEmailsToast() {
     const userLabel = `${billingLabel}/${Platform.TOAST}`;
-    archiveOldOrderEmails(userLabel, 30);
+    archiveOldOrderAndBillingEmails(userLabel, 30);
 }
 
 // Doordash Billing
 function archiveOldBillingEmailsDoordash() {
   const userLabel = `${billingLabel}/${Platform.DOORDASH}`;
-  archiveOldOrderEmails(userLabel, 30);
+  archiveOldOrderAndBillingEmails(userLabel, 30);
 }
 
 // Speedline Billing
 function archiveOldBillingEmailsSpeedline() {
   const userLabel = `${billingLabel}/${Platform.SPEEDLINE}`;
-  archiveOldOrderEmails(userLabel, 30);
+  archiveOldOrderAndBillingEmails(userLabel, 30);
 }
 
 // Ordermark Billing
 function archiveOldBillingEmailsOrdermark() {
   const userLabel = `${billingLabel}/Ordermark`;
-  archiveOldOrderEmails(userLabel, 30);
+  archiveOldOrderAndBillingEmails(userLabel, 30);
 }
 
 // UberEats Billing
 function archiveOldBillingEmailsUberEats() {
   const userLabel = `${billingLabel}/${Platform.UBEREATS}`;
-  archiveOldOrderEmails(userLabel, 30);
+  archiveOldOrderAndBillingEmails(userLabel, 30);
 }

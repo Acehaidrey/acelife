@@ -1,5 +1,5 @@
 const menustarLabelName = 'Billings/Menustar'
-const daysAgoCutoffForMenustar = 65
+const daysAgoCutoffForMenustar = 15
 
 /**
  * Uses the menustar label setup in inbox to download the label monthly reports. The provider names it

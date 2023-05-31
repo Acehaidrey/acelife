@@ -139,8 +139,8 @@ function createEmailGH(disputes, email) {
         
         Ace Haidrey
         ${record.Restaurant}`;
-        // only send email if adjustment is greater than 50 cents
-        if (record.Total > 0.5) {
+        // only send messages for adjustments more than $0
+        if (record.Total !== '$.00') {
           GmailApp.sendEmail(email, subject, body);
         }
     }
