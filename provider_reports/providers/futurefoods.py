@@ -37,8 +37,8 @@ class FutureFoodsOrders(OrdersProvider):
 
         Args:
             credential_file_path (str): The path to the credential file.
-            start_date (str): The start date for retrieving orders.
-            end_date (str): The end date for retrieving orders.
+            start_date (datetime.datetime): The start date for retrieving orders.
+            end_date (datetime.datetime): The end date for retrieving orders.
             store_name (Store): The name of the store associated with the provider.
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
@@ -84,19 +84,38 @@ class FutureFoodsOrders(OrdersProvider):
         # Execute JavaScript to set the value of the input field
         script = f'document.querySelector(\'input[placeholder="Select dates"][data-testid="op-input"]\').value = "{new_value}";'
         self.driver.execute_script(script)
+        input_field.click()
 
-        # time.sleep(30)
+        time.sleep(5)
 
         # download_button = self.driver.find_element(By.XPATH, "//button[text()='Download']")
-        download_button = self.driver.find_element(By.XPATH,
-                                             '//button[contains(text(), "Download")][@data-testid="op-button"]')
+        # try:
+        download_buttons = self.driver.find_elements(By.XPATH,
+                                              '//button[contains(., "Download") and @data-testid="op-button"]')
+        print(f'len down buttons: {len(download_buttons)}')
+        for db in download_buttons:
+            print(db.get_attribute('outerHTML'))
+        # except Exception:
+        #     print('exception clause')
+        #     download_button = self.driver.find_element(By.XPATH,
+        #                                           '//button/div[contains(., "Download") and @data-testid="op-button"]')
+        # download_button = self.driver.find_element(By.XPATH,
+        #                                      '//button[contains(text(), "Download")][@data-testid="op-button"]')
         # download_button = self.wait.until(EC.presence_of_element_located((By.XPATH, "//button[contains(., 'Download')]")))
+        # Scroll the button element into view
+        download_button = download_buttons[-1]
+        self.driver.execute_script("arguments[0].removeAttribute('disabled');", download_button)
+        print(download_button.get_attribute('outerHTML'))
+        # self.driver.execute_script("arguments[0].scrollIntoView();", download_button)
         self.driver.execute_script("arguments[0].click();", download_button)
+        time.sleep(5)
+        # self.wait.until(EC.visibility_of(download_button))
+        # self.wait.until(EC.element_to_be_clickable(download_button))
 
         download_button.click()
 
-        time.sleep(200)
-
+        time.sleep(15)
+        return
         # page_source = self.driver.page_source
         # print(page_source)
 
@@ -264,8 +283,8 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     credential_file_path = '../credentials/future_foods_credentials.json'
-    start_date = '04/01/2023'
-    end_date = '04/30/2023'
+    start_date = datetime(2023, 4, 1)
+    end_date = datetime(2023, 4, 30)
     store_name = Store.AROMA
 
     orders = FutureFoodsOrders(credential_file_path, start_date, end_date, store_name)
