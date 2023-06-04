@@ -16,19 +16,20 @@ from provider_reports.utils.constants import Provider, RAW_REPORTS_PATH, CREDENT
 from provider_reports.utils.utils import get_store_names_from_credentials_file
 from providers.brygid import BrygidOrders
 from providers.eatstreet import EatstreetOrders
+from providers.ezcater import EZCaterOrders
 from providers.menufy import MenufyOrders
 from providers.office_express import FoodjaOrders
+from providers.restaurantdepot import RestaurantDepotReceipts
 
 
 # Map provider names to provider classes and credential files
 provider_map = {
     Provider.BRYGID: (BrygidOrders, 'brygid_credentials.json'),
     Provider.EATSTREET: (EatstreetOrders, 'eatstreet_credentials.json'),
+    Provider.EZCATER: (EZCaterOrders, 'ezcater_credentials.json'),
     Provider.OFFICE_EXPRESS: (FoodjaOrders, 'office_express_credentials.json'),
-    # Provider.FUTURE_FOODS: (FutureFoodsOrders, 'futurefoods_credentials.json'),
-    # Provider.GRUBHUB: (GrubhubOrders, 'grubhub_credentials.json'),
     Provider.MENUFY: (MenufyOrders, 'menufy_credentials.json'),
-    # Provider.TOAST: (ToastOrders, 'toast_credentials.json'),
+    Provider.RESTAURANT_DEPOT: (RestaurantDepotReceipts, 'restaurant_depot_credentials.json'),
 }
 
 

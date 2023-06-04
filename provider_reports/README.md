@@ -122,19 +122,21 @@ handling that to place files in the `reports_processed/` directory.
 
 #### Reports Status Tracker & Future Work
 
-| Provider       | Status          | Blockers / Notes                                                             |
-|----------------|-----------------|------------------------------------------------------------------------------| 
-| Brygid         | DONE            | Download customer info after order info.                                     |
-| Eatstreet      | DONE            | Convert html download to csv to take transaction info only.                  |
-| Future Foods   | IN PROGRESS     | Issues with datepicker code                                                  |
-| Grubhub        | BLOCKED         | Knows its an automated script requiring captcha. NO API available.           |
-| Menufy         | DONE            | Donwload order, del info, and customer email info and combine customer info. |
-| Office Express | DONE            | Both stores same login. One download & separate out orders per location.     |
-| Doordash       | NOT YET STARTED | Need to download order info, drive info, error info, & cancelled info.       |
-| UberEats       | NOT YET STARTED | Need to download order info, error info, & cancelled info.                   |
-| Slice          | NOT YET STARTED | Need to download order info pdf and get info exported from there.            |
-| Toast          | NOT YET STARTED | Need to download order info, customer info, and payment info.                |
-| Vantiv         | NOT YET STARTED | Need to get merchant processing statements.                                  |
+| Provider         | Status          | Blockers / Notes                                                             |
+|------------------|-----------------|------------------------------------------------------------------------------| 
+| Brygid           | DONE            | Download customer info after order info.                                     |
+| Eatstreet        | DONE            | Convert html download to csv to take transaction info only.                  |
+| EZCater          | DONE            | Both stores same login. One download & separate out orders per location.     |
+| Future Foods     | IN PROGRESS     | Issues with datepicker code                                                  |
+| Grubhub          | BLOCKED         | Knows its an automated script requiring captcha. NO API available.           |
+| Menufy           | DONE            | Donwload order, del info, and customer email info and combine customer info. |
+| Office Express   | DONE            | Both stores same login. One download & separate out orders per location.     |
+| Doordash         | NOT YET STARTED | Need to download order info, drive info, error info, & cancelled info.       |
+| UberEats         | NOT YET STARTED | Need to download order info, error info, & cancelled info.                   |
+| Slice            | NOT YET STARTED | Need to download order info pdf and get info exported from there.            |
+| Toast            | NOT YET STARTED | Need to download order info, customer info, and payment info.                |
+| Vantiv           | NOT YET STARTED | Need to get merchant processing statements.                                  |
+| Restaurant Depot | DONE            | Need to get invoice receipts to feed into xtraChef for product pricing.      |
 
 These providers need to be finished and then there are some providers who we handle
 using google app scripts as they send over info via emails. Consider to build around those here.

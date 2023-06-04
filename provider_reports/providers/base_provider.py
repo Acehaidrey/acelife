@@ -75,8 +75,8 @@ class OrdersProvider(ABC):
             self.password = credentials['stores'][0]['password']
 
     def create_processed_filename(self, report_type, ext, store=None):
-        sdate = self.start_date.replace('/', '_')
-        edate = self.end_date.replace('/', '_')
+        sdate = self.start_date_dt.strftime('%m_%d_%Y')
+        edate = self.end_date_dt.strftime('%m_%d_%Y')
         provider_name = self.PROVIDER.value.lower()
         sname = store.lower() if store else self.store_name.lower()
         report_filename = f'{provider_name}_{sname}_{report_type}_{sdate}_{edate}.{ext}'

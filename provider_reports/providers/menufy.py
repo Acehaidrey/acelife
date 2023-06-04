@@ -247,7 +247,7 @@ class MenufyOrders(OrdersProvider):
             order_df = pd.read_csv(order_file)
             order_len += len(order_df)
 
-        if abs(order_len - processed_len) == 2:
+        if not (abs(order_len - processed_len) == 2):
             raise AssertionError(f'Number of records combined for order files dont match {order_len}, {processed_len}')
 
         print("Report validation successful")

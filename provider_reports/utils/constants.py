@@ -26,6 +26,7 @@ class ReportType:
     """
     ORDERS = 'orders'
     CUSTOMERS = 'customers'
+    INVOICES = 'invoices'
 
 
 class Extensions:
@@ -38,6 +39,7 @@ class Extensions:
     TXT = 'txt'
     ZIP = 'zip'
     HTML = 'html'
+    EXCEL = 'xlsx'
 
 
 class Provider(enum.Enum):
@@ -49,6 +51,7 @@ class Provider(enum.Enum):
     BRYGID = 'brygid'
     DOORDASH = 'doordash'
     EATSTREET = 'eatstreet'
+    EZCATER = 'ezcater'
     FUTURE_FOODS = 'future_foods'
     GRUBHUB = 'grubhub'
     MENUFY = 'menufy'
@@ -56,3 +59,4 @@ class Provider(enum.Enum):
     SLICE = 'slice'
     TOAST = 'toast'
     UBEREATS = 'ubereats'
+    RESTAURANT_DEPOT = 'restaurant_depot'

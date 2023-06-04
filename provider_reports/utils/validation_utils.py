@@ -88,7 +88,7 @@ class ValidationUtils:
             processed_df = pd.read_csv(processed_file)
 
             start_date = pd.to_datetime(start_date, format='%m/%d/%Y')
-            end_date = pd.to_datetime(end_date, format='%m/%d/%Y')
+            end_date = pd.to_datetime(end_date, format='%m/%d/%Y').replace(hour=23, minute=59, second=59)
             delivery_dates = pd.to_datetime(processed_df[date_column_name], format=date_format)
 
             if not ((delivery_dates >= start_date) & (delivery_dates <= end_date)).all():
