@@ -19,7 +19,7 @@ from providers.eatstreet import EatstreetOrders
 from providers.ezcater import EZCaterOrders
 from providers.menufy import MenufyOrders
 from providers.office_express import FoodjaOrders
-from providers.restaurantdepot import RestaurantDepotReceipts
+from providers.restaurant_depot import RestaurantDepotReceipts
 
 
 # Map provider names to provider classes and credential files

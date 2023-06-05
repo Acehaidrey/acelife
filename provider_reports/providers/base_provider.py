@@ -35,7 +35,7 @@ class OrdersProvider(ABC):
     ORDER_FILENAME_PATTERN = None
     CUSTOMER_FILENAME_PATTERN = None
 
-    def __init__(self, credential_file_path, start_date, end_date, store_name=None):
+    def __init__(self, credential_file_path, start_date, end_date, store=None):
         """
         Initialize the OrdersProvider.
 
@@ -43,13 +43,14 @@ class OrdersProvider(ABC):
             credential_file_path (str): The path to the credential file.
             start_date (datetime.datetime): The start date for retrieving orders.
             end_date (datetime.datetime): The end date for retrieving orders.
-            store_name (Store, optional): The name of the store associated with the provider.
+            store (Store, optional): The name of the store associated with the provider.
         """
         self.start_date_dt = start_date
         self.end_date_dt = end_date
         self.start_date = self.start_date_dt.strftime('%m/%d/%Y')
         self.end_date = self.end_date_dt.strftime('%m/%d/%Y')
-        self.store_name = store_name.value.title()
+        self.store = store
+        self.store_name = store.value.title()
         self.load_credentials(credential_file_path)
         self.downloaded_files = []
         self.processed_files = []

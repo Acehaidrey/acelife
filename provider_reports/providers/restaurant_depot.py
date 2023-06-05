@@ -12,8 +12,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from provider_reports.providers.base_provider import OrdersProvider
-from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions
-from provider_reports.utils.utils import get_chrome_options
+from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions, \
+    AMECI_FWD_EMAIL, AROMA_FWD_EMAIL
+from provider_reports.utils.utils import get_chrome_options, send_email
 from provider_reports.utils.validation_utils import ValidationUtils
 
 
@@ -129,10 +130,12 @@ class RestaurantDepotReceipts(OrdersProvider):
 
     def upload_reports(self):
         """
-        Upload the processed report to a remote location specific to the RestaurantDepot provider.
+        Send the reports to the forwarded xtraChef email
         """
-        # TODO: Implement report uploading logic for RestaurantDepot
-        pass
+        subject = f'{self.PROVIDER.value.title()} receipts for {self.store_name} for past 30 days'
+        body = f'The attachments are automated receipts pulled from {self.PROVIDER.value.title()} site.'
+        recipients = [AMECI_FWD_EMAIL] if self.store == Store.AMECI else [AROMA_FWD_EMAIL]
+        send_email(subject, body, recipients, attachments=self.processed_files)
 
     def quit(self):
         """

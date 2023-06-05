@@ -1,11 +1,17 @@
 import enum
 import os
 
+# file path constants
 CURRENT_FILE = os.path.abspath(__file__)
 DOWNLOADS_DIR = os.path.join(os.path.expanduser('~'), 'Downloads')
 RAW_REPORTS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../reports'))
 PROCESSED_REPORTS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../reports_processed'))
 CREDENTIALS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../credentials'))
+
+# email name constants
+SENDER_EMAIL = 'acehaidrey@gmail.com'
+AMECI_FWD_EMAIL = '9320.Amec@xcinvoice.com'
+AROMA_FWD_EMAIL = '7907.Arom@xcinvoice.com'
 
 
 class Store(enum.Enum):
