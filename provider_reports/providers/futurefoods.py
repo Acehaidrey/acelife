@@ -72,6 +72,7 @@ class FutureFoodsOrders(OrdersProvider):
         password_input.send_keys(self.password)
         self.wait.until(EC.presence_of_element_located((By.XPATH, "//button/div[contains(.,'Sign in')]"))).click()
 
+    @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
     def get_orders(self):
         start_time = time.time()
         formatted_start_date = self.start_date_dt.strftime("%A, %B {day}, %Y".format(day=self.start_date_dt.day))
@@ -106,6 +107,7 @@ class FutureFoodsOrders(OrdersProvider):
                 ele = self.driver.find_element(By.XPATH, f'//td[contains(@aria-label, "{formatted_start_date}")]')
                 if ele.is_displayed():
                     start_element = ele
+                    break
             except Exception as e:
                 print('start_element not found or not visible\n' + str(e))
                 start_element = None
@@ -120,6 +122,7 @@ class FutureFoodsOrders(OrdersProvider):
                 ele = self.driver.find_element(By.XPATH, f'//td[contains(@aria-label, "{formatted_end_date}")]')
                 if ele.is_displayed():
                     end_element = ele
+                    break
             except Exception as e:
                 print('end_element not found or not visible\n' + str(e))
                 end_element = None

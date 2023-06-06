@@ -133,7 +133,7 @@ handling that to place files in the `reports_processed/` directory.
 | Office Express   | DONE            | Both stores same login. One download & separate out orders per location.     |
 | Doordash         | NOT YET STARTED | Need to download order info, drive info, error info, & cancelled info.       |
 | UberEats         | NOT YET STARTED | Need to download order info, error info, & cancelled info.                   |
-| Slice            | NOT YET STARTED | Need to download order info pdf and get info exported from there.            |
+| Slice            | IN PROGRESS     | Need to download order info pdf and get info exported from there.            |
 | Toast            | NOT YET STARTED | Need to download order info, customer info, and payment info.                |
 | Vantiv           | NOT YET STARTED | Need to get merchant processing statements.                                  |
 | Restaurant Depot | DONE            | Need to get invoice receipts to feed into xtraChef for product pricing.      |

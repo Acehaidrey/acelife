@@ -21,6 +21,7 @@ from providers.futurefoods import FutureFoodsOrders
 from providers.menufy import MenufyOrders
 from providers.office_express import FoodjaOrders
 from providers.restaurant_depot import RestaurantDepotReceipts
+from providers.slice import SliceOrders
 
 
 # Map provider names to provider classes and credential files
@@ -32,6 +33,7 @@ provider_map = {
     Provider.MENUFY: (MenufyOrders, 'menufy_credentials.json'),
     Provider.OFFICE_EXPRESS: (FoodjaOrders, 'office_express_credentials.json'),
     Provider.RESTAURANT_DEPOT: (RestaurantDepotReceipts, 'restaurant_depot_credentials.json'),
+    Provider.SLICE: (SliceOrders, 'slice_credentials.json'),
 }
 
 
