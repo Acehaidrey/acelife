@@ -86,7 +86,6 @@ class FutureFoodsOrders(OrdersProvider):
         # have the calendar modal opened
         # identify the back and forward button elements
         buttons = self.driver.find_elements(By.CSS_SELECTOR, 'div[role="button"][class*="DayPickerNavigation_button"]')
-        # self.wait.until(EC.visibility_of_element_located(buttons[0]))
         back_button, forward_button = None, None
         for btn in buttons:
             if btn:
@@ -99,90 +98,34 @@ class FutureFoodsOrders(OrdersProvider):
         # get active day elements
         elements = self.driver.find_elements(By.XPATH,
                                         '//td[contains(@class, "CalendarDay") and @role="button" and @aria-disabled="false"]')
-        first_active_date_td = elements[0]
-        last_active_date_td = elements[-1]
-        if not first_active_date_td and last_active_date_td:
-            raise Exception('No active day elements found')
 
-        first_date = get_date_from_aria_label(first_active_date_td)
-        last_date = get_date_from_aria_label(last_active_date_td)
-        print(self.start_date_dt, first_date, first_active_date_td.get_attribute('aria-label'))
-        print(self.end_date_dt, last_date, last_active_date_td.get_attribute('aria-label'))
-        print(first_active_date_td.is_displayed())
-        print(last_active_date_td.is_displayed())
-
-        # debug html
-        # Save the HTML source to a local file
-        with open(os.path.join(RAW_REPORTS_PATH, 'futurefoods.html'), 'w+', encoding='utf-8') as file:
-            file.write(self.driver.page_source)
-            print(f"HTML source saved to '{os.path.join(RAW_REPORTS_PATH, 'futurefoods.html')}'")
-
-        # if the first date is greater than start_date then we need to go back
         # if the start_element is not set or not visible then click back
-        start_element = None  # first_date > self.start_date_dt
+        start_element = None
         while not start_element:
-            elements = self.driver.find_elements(By.XPATH,
-                                                 '//td[contains(@class, "CalendarDay") and @role="button" and @aria-disabled="false"]')
-            # first_active_date_td = elements[0]
-            # first_date = get_date_from_aria_label(first_active_date_td)
             try:
                 ele = self.driver.find_element(By.XPATH, f'//td[contains(@aria-label, "{formatted_start_date}")]')
-                print('found ele')
-                print(ele.is_displayed())
-                print(ele.get_attribute('aria-label'))
-                print(ele.get_attribute('outerHTML'))
                 if ele.is_displayed():
                     start_element = ele
             except Exception as e:
-                print(e)
-                print('start_element not found or not visible')
+                print('start_element not found or not visible\n' + str(e))
                 start_element = None
             back_button.click()
 
         # select the start_date
-        try:
-            # start_element = self.driver.find_element(By.XPATH, f'//td[contains(@aria-label, "{formatted_start_date}")]')
-            # print(start_element.get_attribute('innerHTML'))
-            start_element.click()
-            print('found matching element')
-        except Exception as e:
-            print('could not find start date')
-            print(e)
-
-        print('all elements')
-        for ele in elements:
-            try:
-                print(ele.get_attribute('aria-label') + ' ' + str(ele.is_displayed()))
-                al = ele.get_attribute('aria-label')
-                formatted_start_date = self.start_date_dt.strftime("%A, %B {day}, %Y".format(day=self.start_date_dt.day))
-                if formatted_start_date in al:
-                    print(f'matching date for: {formatted_start_date} in {al}')
-            except Exception:
-                print('issue getting ele ' + str(ele))
+        start_element.click()
 
         end_element = None
-        while not end_element:  # last_date < self.end_date_dt
-            # elements = self.driver.find_elements(By.XPATH,
-            #                                      '//td[contains(@class, "CalendarDay") and @role="button" and @aria-disabled="false"]')
-            # last_active_date_td = elements[-1]
-            # last_date = get_date_from_aria_label(last_active_date_td)
+        while not end_element:
             try:
-                print('end date')
                 ele = self.driver.find_element(By.XPATH, f'//td[contains(@aria-label, "{formatted_end_date}")]')
-                print('found ele')
-                print(ele.is_displayed())
-                print(ele.get_attribute('aria-label'))
-                print(ele.get_attribute('outerHTML'))
                 if ele.is_displayed():
                     end_element = ele
             except Exception as e:
-                print(e)
-                print('start_element not found or not visible')
+                print('end_element not found or not visible\n' + str(e))
                 end_element = None
             forward_button.click()
 
         # select the end_date now
-        # end_element = self.driver.find_element(By.XPATH, f'//td[contains(@aria-label, "{formatted_end_date}")]')
         end_element.click()
 
         # click on input button again to remove the calendar hover over
@@ -227,7 +170,7 @@ class FutureFoodsOrders(OrdersProvider):
             processed_file = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV)
             shutil.copy(downloaded_file, processed_file)
             self.processed_files.append(processed_file)
-            print(f'Saved {self.store_name} orders to: {processed_file}')
+            print(f'Saved {self.store_name} virtual store orders to: {processed_file}')
 
     def validate_reports(self):
         """
@@ -271,14 +214,11 @@ def main():
     orders.login()
     orders.preprocess_reports()
     orders.get_reports()
-    # orders.postprocess_reports()
-    # orders.validate_reports()
-    # orders.upload_reports()
+    orders.postprocess_reports()
+    orders.validate_reports()
+    orders.upload_reports()
     orders.quit()
 
 
 if __name__ == '__main__':
     main()
-
-
-# curl -X POST -F 'client_id=M5VQfGY4x9BjyeOg2XqYQ7cp9xSiHZEp' -F 'client_secret=I7yiL6txSOB0vdR0goWb0PY6BTCphFKTJtE7jvWP' -F 'grant_type=client_credentials' -F "scope=business.receipts" "https://login.uber.com/oauth/v2/token"

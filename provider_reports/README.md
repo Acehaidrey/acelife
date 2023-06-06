@@ -127,7 +127,7 @@ handling that to place files in the `reports_processed/` directory.
 | Brygid           | DONE            | Download customer info after order info.                                     |
 | Eatstreet        | DONE            | Convert html download to csv to take transaction info only.                  |
 | EZCater          | DONE            | Both stores same login. One download & separate out orders per location.     |
-| Future Foods     | IN PROGRESS     | Issues with datepicker code                                                  |
+| Future Foods     | DONE            | Aroma virtual kitchen files.                                                 |
 | Grubhub          | BLOCKED         | Knows its an automated script requiring captcha. NO API available.           |
 | Menufy           | DONE            | Donwload order, del info, and customer email info and combine customer info. |
 | Office Express   | DONE            | Both stores same login. One download & separate out orders per location.     |
