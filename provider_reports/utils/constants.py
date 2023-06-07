@@ -46,6 +46,7 @@ class Extensions:
     ZIP = 'zip'
     HTML = 'html'
     EXCEL = 'xlsx'
+    PDF = 'pdf'
 
 
 class Provider(enum.Enum):
