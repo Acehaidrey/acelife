@@ -3,9 +3,11 @@ import os
 import shutil
 import time
 
+import numpy as np
 import pandas as pd
 import requests
 import retrying
+import tabula
 from selenium import webdriver
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -44,8 +46,8 @@ class SliceOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        self.driver = webdriver.Chrome(options=get_chrome_options())
-        self.wait = WebDriverWait(self.driver, 60)
+        # self.driver = webdriver.Chrome(options=get_chrome_options())
+        # self.wait = WebDriverWait(self.driver, 60)
 
     def get_store_id(self):
         store_ids = {
@@ -68,7 +70,7 @@ class SliceOrders(OrdersProvider):
         password_input.send_keys(self.password)
         self.driver.find_element(By.NAME, "action").click()
 
-    # @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
+    @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
     def get_orders(self):
         """
         Retrieve orders from the Slice provider.
@@ -200,6 +202,66 @@ class SliceOrders(OrdersProvider):
             self.processed_files.append(processed_file)
             print(f'Saved {self.store_name} orders to: {processed_file}')
 
+            # Extract tables from the PDF
+            import tabula
+            tables = tabula.read_pdf(downloaded_file, pages='all', multiple_tables=True, guess=False)
+            print('tables here')
+            print(len(tables))
+
+            # # Iterate over each table
+            # for table in tables:
+            #     # Process the table data
+
+
+            merged_rows = []
+            for table in tables:
+                # print(table)  # Example: Print the table data
+                header = table.columns.tolist()
+                data = table.values.tolist()
+                print('---' + str(len(data) + 1) + '---')
+                # Extract the data from the table
+                print(header)
+                for d in data:
+                    print(d)
+
+                # for i in range(0, len(data), 4):
+                #     if len(data) > i + 2:
+                #         row1 = data[i]
+                #         row2 = data[i+1]
+                #         row3 = data[i + 2]
+                #         print(row1, row2, row3)
+                #     else:
+                #         print('not enough rows!!')
+                #         print(data[i])
+
+
+
+
+
+                # # Merge every three rows
+                # for i in range(0, len(data), 4):
+                #     merged_row = [str(data[i][0])]  # Convert float to string
+                #     print(merged_row)
+                #
+                #     # Combine the first column of the header row
+                #     if i == 0 and j == 0:
+                #         merged_row[0] += ' ' + str(data[i + 1][0])
+                #
+                #     # Merge the rest of the rows
+                #     for j in range(4):
+                #         if i + j < len(data):
+                #             merged_row.extend(data[i + j][1:])
+                #     merged_rows.append(merged_row)
+
+            # # Create a DataFrame from the merged rows
+            # merged_df = pd.DataFrame(merged_rows)
+            #
+            # # Replace NaN values with empty strings
+            # merged_df = merged_df.replace(np.nan, '', regex=True)
+            #
+            # # Display the merged DataFrame
+            # print(merged_df)
+
     def validate_reports(self):
         """
         Perform report validation specific to the Slice provider.
@@ -236,13 +298,14 @@ def main():
     store_name = Store.AMECI
 
     orders = SliceOrders(credential_file_path, start_date, end_date, store_name)
-    orders.login()
-    orders.preprocess_reports()
-    orders.get_reports()
+    # orders.login()
+    # orders.preprocess_reports()
+    # orders.get_reports()
+    orders.downloaded_files = ['/Users/ahaidrey/Desktop/acelife/provider_reports/reports/slice_1686121049.pdf']
     orders.postprocess_reports()
     orders.validate_reports()
     orders.upload_reports()
-    orders.quit()
+    # orders.quit()
 
 
 if __name__ == '__main__':

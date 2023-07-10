@@ -7,3 +7,5 @@ provider_reports/reports/
 provider_reports/reports_processed/
 provider_reports/credentials/
 BusinessFinances/
+__pycache__/
+venv/

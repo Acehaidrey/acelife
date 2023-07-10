@@ -21,6 +21,9 @@ def get_chrome_options():
         'download.directory_upgrade': True,
         'safebrowsing.enabled': False
     })
+    if os.getenv('GCP_ENV', 'false') == 'true':
+        options.add_argument("--headless")  # Run Chrome in headless mode
+        options.add_argument("--no-sandbox")  # Disable sandbox mode
     return options
 
 

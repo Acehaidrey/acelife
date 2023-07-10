@@ -25,8 +25,8 @@ class OrdersProvider(ABC):
     Attributes:
         username (str): The username or account ID used for authentication.
         password (str): The password used for authentication.
-        start_date (str): The start date for retrieving orders.
-        end_date (str): The end date for retrieving orders.
+        start_date (datetime.datetime): The start date for retrieving orders.
+        end_date (datetime.datetime): The end date for retrieving orders.
         store_name (Store): The name of the store associated with the provider (optional).
     """
 
@@ -45,6 +45,8 @@ class OrdersProvider(ABC):
             end_date (datetime.datetime): The end date for retrieving orders.
             store (Store, optional): The name of the store associated with the provider.
         """
+        self.password = None
+        self.username = None
         self.start_date_dt = start_date
         self.end_date_dt = end_date
         self.start_date = self.start_date_dt.strftime('%m/%d/%Y')
