@@ -16,7 +16,8 @@ class OrdersProvider(ABC):
                         login()
                         preprocess_reports()
                         get_reports()
-                        postprocess_orders()
+                        postprocess_reports()
+                        standardize_orders_report()
                         validate_reports()
                         upload_reports()
                         quit()
@@ -56,6 +57,7 @@ class OrdersProvider(ABC):
         self.load_credentials(credential_file_path)
         self.downloaded_files = []
         self.processed_files = []
+        self.data_files = []
 
     def load_credentials(self, credential_file_path):
         """
@@ -77,13 +79,13 @@ class OrdersProvider(ABC):
             self.username = credentials['stores'][0]['username']
             self.password = credentials['stores'][0]['password']
 
-    def create_processed_filename(self, report_type, ext, store=None):
+    def create_processed_filename(self, report_type, ext, store=None, parent_path=PROCESSED_REPORTS_PATH):
         sdate = self.start_date_dt.strftime('%m_%d_%Y')
         edate = self.end_date_dt.strftime('%m_%d_%Y')
         provider_name = self.PROVIDER.value.lower()
         sname = store.lower() if store else self.store_name.lower()
         report_filename = f'{provider_name}_{sname}_{report_type}_{sdate}_{edate}.{ext}'
-        return os.path.join(PROCESSED_REPORTS_PATH, report_filename)
+        return os.path.join(parent_path, report_filename)
 
     @abstractmethod
     def login(self):
@@ -127,6 +129,16 @@ class OrdersProvider(ABC):
         Postprocess the retrieved reports specific to the provider.
         This function is expected to append to self.processed_files.
         See create_processed_filename for naming convention.
+        """
+        pass
+
+    @abstractmethod
+    def standardize_orders_report(self):
+        """
+        Format the transaction report to schema standards. See schema.py.
+        This file will be used as the files for the database queries.
+
+        See standardize_order_report_setup for useful setup utils.
         """
         pass
 

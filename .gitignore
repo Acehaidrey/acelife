@@ -9,3 +9,4 @@ provider_reports/credentials/
 BusinessFinances/
 __pycache__/
 venv/
+data/

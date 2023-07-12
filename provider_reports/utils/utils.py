@@ -6,8 +6,10 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+import pandas as pd
 from selenium.webdriver.chrome.options import Options
 
+from provider_reports.schema.schema import TransactionRecord
 from provider_reports.utils.constants import RAW_REPORTS_PATH, Store, CREDENTIALS_PATH, SENDER_EMAIL
 
 
@@ -71,3 +73,46 @@ def send_email(subject, body, recipients, attachments=None):
         smtp_server.login(SENDER_EMAIL, get_email_password())
         smtp_server.sendmail(SENDER_EMAIL, recipients, msg.as_string())
         print("Message sent!")
+
+
+def standardize_order_report_setup(orders_file, rename_map, provider, store):
+    """
+    Helper function to clean up a processed file to look like a standard
+    report. It will get the order report, lowercase all strings,
+    rename columns, remove unnecessary columns, add default columns,
+    and add in missing columns then reorder them.
+    """
+
+    # Read the provider's CSV file using Pandas
+    df = pd.read_csv(orders_file)
+
+    if rename_map:
+        # Apply column renaming based on the YAML rename map
+        for old_name, new_name in rename_map.items():
+            if old_name in df.columns:
+                df.rename(columns={old_name: new_name}, inplace=True)
+
+        # Filter out columns not defined in the column schema
+        df = df[rename_map.values()]
+
+    # add in provider and store
+    df[TransactionRecord.PROVIDER] = provider.value
+    df[TransactionRecord.STORE] = store.value
+
+    # Validate and enforce the column schema
+    for column, dtype in TransactionRecord.COLUMN_TYPE_MAPPING.items():
+        if dtype == 'timestamp':
+            dtype = 'datetime64[ns]'
+        if column not in df.columns:
+            if dtype == 'float':
+                df[column] = 0.0
+            else:
+                df[column] = None
+        df[column] = df[column].astype(dtype)
+
+    # lowercase all strings
+    df = df.applymap(lambda x: x.lower() if isinstance(x, str) else x)
+
+    # Reindex the columns to the desired order
+    df = df.reindex(columns=TransactionRecord.get_column_names())
+    return df

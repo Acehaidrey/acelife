@@ -12,8 +12,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from provider_reports.providers.base_provider import OrdersProvider
-from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions
-from provider_reports.utils.utils import get_chrome_options
+from provider_reports.schema.schema import TransactionRecord
+from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, \
+    ReportType, Extensions, DATA_PATH_RAW, DATA_PATH_OPTIMIZED
+from provider_reports.utils.utils import get_chrome_options, \
+    standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
 
 
@@ -42,8 +45,8 @@ class BrygidOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        self.driver = webdriver.Chrome(options=get_chrome_options())
-        self.wait = WebDriverWait(self.driver, 10)
+        # self.driver = webdriver.Chrome(options=get_chrome_options())
+        # self.wait = WebDriverWait(self.driver, 10)
 
     @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
     def login(self):
@@ -196,27 +199,88 @@ class BrygidOrders(OrdersProvider):
             print(f'Saved {self.store_name} orders to: {full_filename}')
             self.processed_files.append(full_filename)
 
+    def standardize_orders_report(self):
+        """
+        Standardize report to conform to expected table format.
+        """
+        rename_map = {
+            'ORDER_ID': TransactionRecord.TRANSACTION_ID,
+            'DATE': TransactionRecord.ORDER_DATE,
+            'PAY_TYPE': TransactionRecord.PAYMENT_TYPE,
+            'TOTAL_BEFORE_TAX': TransactionRecord.SUBTOTAL,
+            'TIP_AMOUNT': TransactionRecord.TIP,
+            'TOTAL_TAX': TransactionRecord.TAX,
+            'DEL_CHARGE': TransactionRecord.DELIVERY_CHARGE,
+            'TOTAL_DISCOUNT': TransactionRecord.MARKETING_FEE,
+            'TOTAL_AFTER_TAX': TransactionRecord.TOTAL_BEFORE_FEES,
+            'PAY_AMOUNT': TransactionRecord.TOTAL_AFTER_FEES
+        }
+        # Get transaction file
+        orders_file = [f for f in self.processed_files if ReportType.ORDERS in f][0]
+        df = standardize_order_report_setup(orders_file, rename_map, self.PROVIDER, self.store)
+
+        # Rename Visa/Mastercard/Discover to credit
+        df.loc[df[TransactionRecord.PAYMENT_TYPE] != 'cash', TransactionRecord.PAYMENT_TYPE] = 'credit'
+        # Subtract delivery_fee from subtotal as included by default
+        df[TransactionRecord.SUBTOTAL] = (df[TransactionRecord.SUBTOTAL] - df[TransactionRecord.DELIVERY_CHARGE]).round(2)
+        # Set note here to notify vantiv has merchant services total (not per order) & commission
+        df[TransactionRecord.NOTES] = 'Merchant Processing Not Included (Vantiv).'
+        # Fill NaN values in 'total_after_fees' with values from 'total_before_fees'
+        df[TransactionRecord.TOTAL_AFTER_FEES].fillna(df[TransactionRecord.TOTAL_BEFORE_FEES], inplace=True)
+        # Calculate the commission rate (min $0.50, max $2, 2.5% total)
+        df[TransactionRecord.COMMISSION_FEE] = df[TransactionRecord.SUBTOTAL] * 0.025
+        df.loc[df[TransactionRecord.COMMISSION_FEE] < 0.5, TransactionRecord.COMMISSION_FEE] = 0.5
+        df.loc[df[TransactionRecord.COMMISSION_FEE] > 2.0, TransactionRecord.COMMISSION_FEE] = 2.0
+        df[TransactionRecord.COMMISSION_FEE] = df[TransactionRecord.COMMISSION_FEE].round(2)
+        # Adjust total after fees to take out commission
+        df[TransactionRecord.TOTAL_AFTER_FEES] = (df[TransactionRecord.TOTAL_AFTER_FEES] - df[TransactionRecord.COMMISSION_FEE]).round(2)
+
+        # Write the transformed data to a new CSV file (csv and parquet)
+        raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
+        df.to_csv(raw_data_filename, index=False)
+        self.data_files.append(raw_data_filename)
+        print(f'Saved {self.store_name} data orders to: {raw_data_filename}')
+
     def validate_reports(self):
         """
         Perform report validation specific to the Brygid provider.
         """
         ValidationUtils.validate_processed_files_count(self.processed_files, 2)
-        ValidationUtils.validate_downloaded_files_count(self.downloaded_files, 2)
+        # ValidationUtils.validate_downloaded_files_count(self.downloaded_files, 2)
         ValidationUtils.validate_processed_files_extension(self.processed_files, Extensions.CSV)
-        ValidationUtils.validate_downloaded_files_extension(self.downloaded_files, Extensions.TXT)
+        # ValidationUtils.validate_downloaded_files_extension(self.downloaded_files, Extensions.TXT)
         # only check the order report for the dates match
-        order_report = [rep for rep in self.processed_files if fnmatch.fnmatch(rep, self.ORDER_FILENAME_PATTERN)]
+        order_report = [rep for rep in self.processed_files if fnmatch.fnmatch(rep, '*' + ReportType.ORDERS + '*')]
         ValidationUtils.validate_processed_files_date_range(
             order_report, self.start_date, self.end_date, 'DATE', '%m/%d/%Y %H:%M')
+        # data file checking
+        ValidationUtils.validate_data_files_count(self.data_files, 1)
+        ValidationUtils.validate_data_file_columns_match(self.data_files[0])
+        ValidationUtils.validate_processed_records_data_records_match(self.data_files[0], order_report[0])
+        ValidationUtils.validate_data_file_total_before_fees_accurate(self.data_files[0])
+        ValidationUtils.validate_data_file_total_after_fees_accurate(self.data_files[0])
 
         print("Report validation successful")
+
+    def upload_db_data(self):
+        """
+        Transform CSV data to Parquet which will be in a place table reads from.
+        :return:
+        """
+        parquet_data_file_name = self.create_processed_filename(ReportType.ORDERS,
+                                                                Extensions.PARQUET,
+                                                                parent_path=DATA_PATH_OPTIMIZED)
+        df = pd.read_csv(self.data_files[0])
+        df.to_parquet(parquet_data_file_name, index=False)
+        self.data_files = []
+        self.data_files.append(parquet_data_file_name)
 
     def upload_reports(self):
         """
         Upload the processed report to a remote location specific to the Brygid provider.
         """
         # TODO: Implement report uploading logic for Brygid
-        pass
+        self.upload_db_data()
 
     def quit(self):
         """
@@ -232,18 +296,23 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     credential_file_path = '../credentials/brygid_credentials.json'
-    start_date = datetime(2023, 3, 1)
-    end_date = datetime(2023, 3, 31)
+    start_date = datetime(2023, 1, 1)
+    end_date = datetime(2023, 1, 31)
     store_name = Store.AMECI
 
     orders = BrygidOrders(credential_file_path, start_date, end_date, store_name)
-    orders.login()
-    orders.preprocess_reports()
-    orders.get_reports()
-    orders.postprocess_reports()
+    # orders.login()
+    # orders.preprocess_reports()
+    # orders.get_reports()
+    # orders.postprocess_reports()
+    orders.processed_files = [
+        '/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/brygid_ameci_customers_01_01_2023_01_31_2023.csv',
+        '/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/brygid_ameci_orders_01_01_2023_01_31_2023.csv'
+    ]
+    orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
-    orders.quit()
+    # orders.quit()
 
 
 if __name__ == '__main__':

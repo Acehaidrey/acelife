@@ -6,13 +6,17 @@ import sys
 import time
 import traceback
 from datetime import datetime
+import logging
+from logging.handlers import RotatingFileHandler
 
 import chromedriver_autoinstaller
 
-# add this project in the system path to resolve the imports
+# Add this project in the system path to resolve the imports
 sys.path.extend([os.path.abspath('..')])
 
-from provider_reports.utils.constants import Provider, RAW_REPORTS_PATH, CREDENTIALS_PATH, Store, PROCESSED_REPORTS_PATH
+from provider_reports.utils.constants import Provider, RAW_REPORTS_PATH, \
+    CREDENTIALS_PATH, Store, PROCESSED_REPORTS_PATH, Stage, DATA_PATH, \
+    DATA_PATH_RAW, DATA_PATH_OPTIMIZED
 from provider_reports.utils.utils import get_store_names_from_credentials_file
 from providers.brygid import BrygidOrders
 from providers.eatstreet import EatstreetOrders
@@ -22,6 +26,21 @@ from providers.menufy import MenufyOrders
 from providers.office_express import FoodjaOrders
 from providers.restaurant_depot import RestaurantDepotReceipts
 from providers.slice import SliceOrders
+
+
+def get_logger(log_file):
+    """
+    Get a logger instance with rotating file handler for log rotation.
+    :param log_file: The log file name.
+    :return: Logger instance.
+    """
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+    handler = RotatingFileHandler(log_file, maxBytes=1024 * 1024 * 10, backupCount=5)
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
 
 # Map provider names to provider classes and credential files
@@ -37,44 +56,57 @@ provider_map = {
 }
 
 
-def run_orders_providers(start_date, end_date, provider_names=None, filtered_stores=None):
+def run_orders_providers(start_date, end_date, provider_names=None, filtered_stores=None, log_file=None):
     if provider_names is None:
         provider_names = [provider.value for provider in provider_map.keys()]
+
+    logger = get_logger(log_file) if log_file else logging.getLogger()
 
     for passed_provider_name in provider_names:
         provider_name = Provider[passed_provider_name.upper()]
         if provider_name in provider_map:
             provider_class, provider_credential_filename = provider_map[provider_name]
             credential_file_path = os.path.join(CREDENTIALS_PATH, provider_credential_filename)
+            stage = Stage.CREDENTIALS
             if os.path.isfile(credential_file_path):
                 stores = get_store_names_from_credentials_file(credential_file_path, filtered_stores)
                 for store in stores:
                     orders_provider = provider_class(credential_file_path, start_date, end_date, store_name=store)
                     start_time = time.time()
                     try:
+                        stage = Stage.LOGIN
                         orders_provider.login()
-                        print(f"{provider_name}: {store} Login successful")
+                        logger.info(f"{provider_name}: {store} {stage} successful")
+                        stage = Stage.PREPROCESSING
                         orders_provider.preprocess_reports()
-                        print(f"{provider_name}: {store} Reports preprocessing completed")
+                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
+                        stage = Stage.RETRIEVAL
                         orders_provider.get_reports()
-                        print(f"{provider_name}: {store} Reports retrieval completed")
+                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
+                        stage = Stage.POSTPROCESSING
                         orders_provider.postprocess_reports()
-                        print(f"{provider_name}: {store} Reports postprocessing completed")
+                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
+                        stage = Stage.STANDARDIZE
+                        orders_provider.standardize_orders_report()
+                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
+                        stage = Stage.VALIDATION
                         orders_provider.validate_reports()
-                        print(f"{provider_name}: {store} Reports validation completed")
+                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
+                        stage = Stage.UPLOAD
                         orders_provider.upload_reports()
-                        print(f"{provider_name}: {store} Reports upload completed")
+                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
+                        stage = Stage.CLOSE
                         orders_provider.quit()
-                        print(f"{provider_name}: {store} Completed successfully")
+                        logger.info(f"{provider_name}: {store} Completed successfully")
                     except Exception as e:
-                        print(f"{provider_name}: {store} failed on stage with error: {str(e)}")
-                        print(traceback.format_exc())
+                        logger.error(f"{provider_name}: {store} failed on stage: {stage} with error: {str(e)}")
+                        logger.error(traceback.format_exc())
                     end_time = time.time()
-                    print(f'{provider_name}: {store} Took {round(end_time - start_time, 2)} seconds to run.')
+                    logger.info(f'{provider_name}: {store} Took {round(end_time - start_time, 2)} seconds to run.')
             else:
-                print(f"Credential file not found for {provider_name}: {credential_file_path}")
+                logger.error(f"Credential file not found for {provider_name}: {credential_file_path}")
         else:
-            print(f"Invalid provider name: {provider_name}")
+            logger.error(f"Invalid provider name: {provider_name}")
 
 
 def parse_date(date_str, date_type='start'):
@@ -95,7 +127,7 @@ def parse_date(date_str, date_type='start'):
                 # end_date - get last day of month
                 _, last_day = calendar.monthrange(dt.year, dt.month)
                 dt = dt.replace(day=last_day)
-            print(f'Using {date_type} date of {dt}')
+            logging.info(f'Using {date_type} date of {dt}')
             return dt
         except ValueError:
             raise argparse.ArgumentTypeError("Invalid date format. Expected format: YYYY/MM or YYYY/MM/DD")
@@ -105,15 +137,18 @@ def setup(cleanup=False):
     """Setup utilities for the project to begin."""
     chromedriver_autoinstaller.install()
 
-    for folder in [CREDENTIALS_PATH, RAW_REPORTS_PATH, PROCESSED_REPORTS_PATH]:
+    for folder in [
+        CREDENTIALS_PATH, RAW_REPORTS_PATH, PROCESSED_REPORTS_PATH,
+        DATA_PATH, DATA_PATH_RAW, DATA_PATH_OPTIMIZED
+    ]:
         if not os.path.exists(folder):
             os.makedirs(folder)
-            print(f"Created folder: {folder}")
+            logging.info(f"Created folder: {folder}")
 
     if cleanup:
         cleanup_reports()
 
-    print("Setup completed successfully.")
+    logging.info("Setup completed successfully.")
 
 
 def cleanup_reports(folder=RAW_REPORTS_PATH):
@@ -123,14 +158,25 @@ def cleanup_reports(folder=RAW_REPORTS_PATH):
             file_path = os.path.join(folder, file_name)
             if os.path.isfile(file_path):
                 os.remove(file_path)
-                print(f'Deleted file: {file_path}')
+                logging.info(f'Deleted file: {file_path}')
             elif os.path.isdir(file_path):
                 shutil.rmtree(file_path)
-                print(f'Deleted directory and all subfiles in {file_path}')
-        print(f"All files in '{folder}' folder have been deleted.")
+                logging.info(f'Deleted directory and all subfiles in {file_path}')
+        logging.info(f"All files in '{folder}' folder have been deleted.")
     else:
-        print(f"'{folder}' folder does not exist.")
+        logging.info(f"'{folder}' folder does not exist.")
 
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run orders providers to get finance reports")
+    parser.add_argument("-s", "--start-date", type=lambda d: parse_date(d, 'start'), required=True,
+                        help="Start date (YYYY/MM or YYYY/MM/DD)")
+    parser.add_argument("-e", "--end-date", type=lambda d: parse_date(d, 'end'), required=True,
+                        help="End date (YYYY/MM or YYYY/MM/DD)")
+    parser.add_argument("-p", "--providers", nargs="+", choices=[provider.value for provider in Provider],
+                        help="Provider names to run (separated by spaces)")
+    parser.add_argument('-n', '--stores', nargs="+", choices=[store.value for store in Store], default=None,
+                        help='Store names to filter on. All by default.')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run orders providers to get finance reports")
@@ -144,12 +190,40 @@ if __name__ == "__main__":
                         help='Store names to filter on. All by default.')
     parser.add_argument("-c", "--cleanup", action="store_true", default=False,
                         help="Cleanup reports folder from previous run files")
+    parser.add_argument("-l", "--logfile", default=None, help="Path to the log file to use")
 
     args = parser.parse_args()
     start_date = args.start_date
     end_date = args.end_date
     providers = args.providers
     stores = args.stores
-    print(f'Running with args: {args}')
+    log_file = args.logfile
+    logging.info(f'Running with args: {args}')
     setup(args.cleanup)
-    run_orders_providers(start_date, end_date, providers, stores)
+    run_orders_providers(start_date, end_date, providers, stores, log_file)
+
+
+# print(TransactionRecord.generate_yaml_config('brygid')) (X)
+# add stage information (X)
+# build a schema file here or yaml (we will do transactional) (X)
+# add a mapping file per provider (not a single yaml) (X)
+# add utility funcitons to do the transformation
+    # to read yaml and check against the schema file here (X)
+    # to transform to an output data file we want (X)
+# write the new file in a central place (X)
+# add validation functions for data file (X)
+# save the file as parquet file format (X)
+
+
+# update all functions to implement the orders standardization
+# create duckdb table on top of this transactional data
+# create quick dashboard
+# fix toast script
+# fix slice script
+# get files from GSuite
+
+# improve by unifying all the underlying files
+# fix the logging if needed
+# fix the error handling when things aren't working out
+# do a deduplication step based on transaction info (separate table maybe)
+# build quick dashboard for it

@@ -53,6 +53,11 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Setup env flag that running in GCP is prod
 ENV GCP_ENV=true
 
+# Set the command to accept arguments
+CMD ["python", "main.py"]
+
 # Set the command to run your Python script
-#CMD ["python", "main.py", "-s", "2023/06/01", "-e", "2023/06/30", "-p", "restaurant_depot", "-n", "ameci"]
-#  python main.py -s 2023/06/01 -e 2023/06/30 -p restaurant_depot -n ameci
+#  python main.py -s 2023/06/01 -e 2023/06/30 -p restaurant_depot -n aroma
+
+
+docker run -v "$(pwd)":/code provider-reports python /code/main.py -s 2023/06/01 -e 2023/06/30 -p restaurant_depot -n aroma

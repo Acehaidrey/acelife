@@ -6,6 +6,9 @@ CURRENT_FILE = os.path.abspath(__file__)
 DOWNLOADS_DIR = os.path.join(os.path.expanduser('~'), 'Downloads')
 RAW_REPORTS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../reports'))
 PROCESSED_REPORTS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../reports_processed'))
+DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../data'))
+DATA_PATH_RAW = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../data/raw'))
+DATA_PATH_OPTIMIZED = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../data/optimized'))
 CREDENTIALS_PATH = os.path.abspath(os.path.join(os.path.dirname(CURRENT_FILE), '../credentials'))
 
 # email name constants
@@ -47,6 +50,7 @@ class Extensions:
     HTML = 'html'
     EXCEL = 'xlsx'
     PDF = 'pdf'
+    PARQUET = 'parquet'
 
 
 class Provider(enum.Enum):
@@ -67,3 +71,22 @@ class Provider(enum.Enum):
     TOAST = 'toast'
     UBEREATS = 'ubereats'
     RESTAURANT_DEPOT = 'restaurant_depot'
+
+
+class Stage(enum.Enum):
+    """
+    Constants for stage names.
+
+    This class provides constants for different stage names.
+    """
+    START = 'start'
+    CREDENTIALS = 'credentials'
+    LOGIN = 'login'
+    PREPROCESSING = 'preprocessing'
+    RETRIEVAL = 'retrieval'
+    POSTPROCESSING = 'postprocessing'
+    STANDARDIZE = 'standardize'
+    VALIDATION = 'validation'
+    UPLOAD = 'upload'
+    CLOSE = 'close'
+    COMPLETE = 'complete'

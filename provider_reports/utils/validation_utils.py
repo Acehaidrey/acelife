@@ -1,6 +1,9 @@
 import os
 
+import numpy as np
 import pandas as pd
+
+from provider_reports.schema.schema import TransactionRecord
 
 
 class ValidationUtils:
@@ -14,7 +17,7 @@ class ValidationUtils:
             expected_count (int): Expected number of files.
 
         Raises:
-            ValueError: If the number of files is invalid
+            AssertionError: If the number of files is invalid
         """
         if len(downloaded_files) != expected_count:
             raise AssertionError(
@@ -30,11 +33,27 @@ class ValidationUtils:
             expected_count (int): Expected number of files.
 
         Raises:
-            ValueError: If the number of files is invalid
+            AssertionError: If the number of files is invalid
         """
         if len(processed_files) != expected_count:
             raise AssertionError(
                 f"Expected {expected_count} processed file(s), but found {len(processed_files)}")
+
+    @staticmethod
+    def validate_data_files_count(data_files, expected_count):
+        """
+        Validate the data files.
+
+        Args:
+            data_files (list): List of data files.
+            expected_count (int): Expected number of files.
+
+        Raises:
+            AssertionError: If the number of files is invalid
+        """
+        if len(data_files) != expected_count:
+            raise AssertionError(
+                f"Expected {expected_count} processed file(s), but found {len(data_files)}")
 
     @staticmethod
     def validate_downloaded_files_extension(downloaded_files, extension):
@@ -46,7 +65,7 @@ class ValidationUtils:
             extension (str): Acceptable extension.
 
         Raises:
-            ValueError: If the extensions of files are incorrect.
+            AssertionError: If the extensions of files are incorrect.
         """
         for file_path in downloaded_files:
             if not os.path.isfile(file_path) or not file_path.endswith(extension):
@@ -62,7 +81,7 @@ class ValidationUtils:
             extension (str): Acceptable extension.
 
         Raises:
-            ValueError: If the extensions of files are incorrect.
+            AssertionError: If the extensions of files are incorrect.
         """
         # Perform validation on processed file extensions
         for file_path in processed_files:
@@ -93,3 +112,103 @@ class ValidationUtils:
 
             if not ((delivery_dates >= start_date) & (delivery_dates <= end_date)).all():
                 raise AssertionError("Dates in the processed file are not within the specified range")
+
+    @staticmethod
+    def validate_data_file_columns_match(data_file):
+        """
+        Validate the raw data file columns match all columns.
+
+        Args:
+            data_file (str): Filename
+
+        Raises:
+            AssertionError: If the columns have a mismatch.
+        """
+        order_columns = TransactionRecord.get_column_names()
+        orders_df = pd.read_csv(data_file)
+        df_columns = orders_df.columns.tolist()
+        if not df_columns == order_columns:
+            raise AssertionError(f'Standardized data columns mismatch: {df_columns}, {order_columns}')
+
+    @staticmethod
+    def validate_processed_records_data_records_match(data_file, processed_file):
+        """
+        Validate the raw data file columns match number records of processed file.
+
+        Args:
+            data_file (str): Filename
+            processed_file (str): Filename
+
+        Raises:
+            AssertionError: If the length have a mismatch.
+        """
+        orders_df = pd.read_csv(data_file)
+        processed_df = pd.read_csv(processed_file)
+        if not len(orders_df) == len(processed_df):
+            raise AssertionError(
+                f'Standardized data length differs from processed file '
+                f'length: {len(orders_df)}, {len(processed_df)}')
+
+    @staticmethod
+    def validate_data_file_total_before_fees_accurate(data_file):
+        """
+        Validate that the TOTAL_BEFORE_FEES column is the sum of the
+        corresponding columns (SUBTOTAL, TIP, TAX, and DELIVERY_CHARGE).
+
+        Args:
+            data_file (str): Filename
+
+        Raises:
+            AssertionError: If the columns have a mismatch.
+        """
+        orders_df = pd.read_csv(data_file)
+        # Calculate the expected total before fees
+        expected_total_before_fees = orders_df[
+            [TransactionRecord.SUBTOTAL,
+             TransactionRecord.TIP,
+             TransactionRecord.TAX,
+             TransactionRecord.DELIVERY_CHARGE]
+        ].sum(axis=1)
+        # Check if the calculated total before fees matches the column value
+        # atol=0.05 sets the tolerance to 5 cents (adjust as needed)
+        is_total_before_fees_match = np.isclose(
+            orders_df[TransactionRecord.TOTAL_BEFORE_FEES],
+                                                expected_total_before_fees,
+                                                atol=0.05)
+
+        # Verify that all rows have the matching total before fees
+        if not is_total_before_fees_match.all():
+            raise AssertionError(f'{TransactionRecord.TOTAL_BEFORE_FEES} column mismatch calculation')
+
+    @staticmethod
+    def validate_data_file_total_after_fees_accurate(data_file):
+        """
+        Validate that the TOTAL_AFTER_FEES column is the
+        difference between TOTAL_BEFORE_FEES and the corresponding columns
+        (SERVICE_FEE, MARKETING_FEE, ADJUSTMENT_FEE,
+        MERCHANT_PROCESSING_FEE, and COMMISSION_FEE)
+
+        Args:
+            data_file (str): Filename
+
+        Raises:
+            AssertionError: If the columns have a mismatch.
+        """
+        orders_df = pd.read_csv(data_file)
+        # Calculate the expected total after fees
+        expected_total_after_fees = \
+            orders_df[TransactionRecord.TOTAL_BEFORE_FEES] - \
+            orders_df[[TransactionRecord.SERVICE_FEE,
+             TransactionRecord.MARKETING_FEE,
+             TransactionRecord.ADJUSTMENT_FEE,
+             TransactionRecord.MERCHANT_PROCESSING_FEE,
+             TransactionRecord.COMMISSION_FEE]].sum(axis=1)
+        # Check if the calculated total after fees matches the column value
+        # atol=0.05 sets the tolerance to 5 cents (adjust as needed)
+        is_total_after_fees_match = np.isclose(orders_df[TransactionRecord.TOTAL_AFTER_FEES],
+                                               expected_total_after_fees,
+                                               atol=0.05)
+
+        # Verify that all rows have the matching total before fees
+        if not is_total_after_fees_match.all():
+            raise AssertionError(f'{TransactionRecord.TOTAL_AFTER_FEES} column mismatch calculation')

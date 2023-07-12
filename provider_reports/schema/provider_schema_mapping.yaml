@@ -1,0 +1,22 @@
+providers:
+  brygid:
+    column_mapping:
+      - provider_column: column1
+        mapped_column: transaction_id
+      - provider_column: column2
+        mapped_column: provider
+      - provider_column: store
+        mapped_column: payout
+      - provider_column: column4
+        mapped_column: tax
+      - provider_column: column5
+        mapped_column: tip
+      - provider_column: column6
+        mapped_column: tax_withheld
+      - provider_column: column7
+        mapped_column: delivery_fee
+    version_mappings:
+      - version: '2023-05-01'
+        column_mapping:
+          - provider_column: column4
+            mapped_column: taxes
