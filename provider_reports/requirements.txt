@@ -9,3 +9,5 @@ requests
 tabula-py
 PyYaml
 pyarrow
+duckdb
+streamlit

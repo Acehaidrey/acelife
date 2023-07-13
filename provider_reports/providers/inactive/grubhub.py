@@ -125,7 +125,7 @@ def main():
     """
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
-    credential_file_path = '../credentials/grubhub_credentials.json'
+    credential_file_path = '../../credentials/grubhub_credentials.json'
     start_date = '04/01/2023'
     end_date = '04/30/2023'
     store_name = Store.AROMA

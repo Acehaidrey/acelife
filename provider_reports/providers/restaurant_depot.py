@@ -128,6 +128,9 @@ class RestaurantDepotReceipts(OrdersProvider):
         ValidationUtils.validate_downloaded_files_extension(self.downloaded_files, Extensions.CSV)
         print("Report validation successful")
 
+    def standardize_orders_report(self):
+        pass
+
     def upload_reports(self):
         """
         Send the reports to the forwarded xtraChef email

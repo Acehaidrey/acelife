@@ -10,7 +10,8 @@ class TransactionRecord:
     SUBTOTAL = 'subtotal'  # not including any other fees - before all of them
     TIP = 'tip'
     TAX = 'tax'
-    DELIVERY_CHARGE = 'delivery_fee'
+    TAX_WITHHELD = 'tax_withheld'
+    DELIVERY_CHARGE = 'delivery_charge'
     TOTAL_BEFORE_FEES = 'total_before_fees'
     SERVICE_FEE = 'service_fee'
     MARKETING_FEE = 'marketing_fee'
@@ -18,6 +19,7 @@ class TransactionRecord:
     MERCHANT_PROCESSING_FEE = 'merchant_processing_fee'
     COMMISSION_FEE = 'commission_fee'
     TOTAL_AFTER_FEES = 'total_after_fees'
+    PAYOUT = 'payout'
     NOTES = 'notes'
 
     COLUMN_TYPE_MAPPING = {
@@ -29,6 +31,7 @@ class TransactionRecord:
         SUBTOTAL: 'float',
         TIP: 'float',
         TAX: 'float',
+        TAX_WITHHELD: 'float',
         DELIVERY_CHARGE: 'float',
         SERVICE_FEE: 'float',
         MARKETING_FEE: 'float',
@@ -37,12 +40,17 @@ class TransactionRecord:
         COMMISSION_FEE: 'float',
         TOTAL_BEFORE_FEES: 'float',
         TOTAL_AFTER_FEES: 'float',
+        PAYOUT: 'float',
         NOTES: 'string',
     }
 
     @classmethod
     def get_column_names(cls):
         return list(cls.COLUMN_TYPE_MAPPING.keys())
+
+    @classmethod
+    def get_fee_column_names(cls):
+        return [c for c in TransactionRecord.get_column_names() if c.endswith('_fee')]
 
     @classmethod
     def generate_yaml_config(cls, provider_name, version_tuples=None):
@@ -74,3 +82,16 @@ class TransactionRecord:
         # Convert the config to YAML string
         yaml_str = yaml.safe_dump(config, default_flow_style=False)
         return yaml_str
+
+    @classmethod
+    def calculate_total_before_fees(cls, df):
+        adding_cols = [cls.SUBTOTAL, cls.TIP, cls.TAX, cls.TAX_WITHHELD, cls.DELIVERY_CHARGE]
+        df[cls.TOTAL_BEFORE_FEES] = (df[adding_cols].sum(axis=1)).round(2)
+        return df
+
+    @classmethod
+    def calculate_total_after_fees(cls, df):
+        fee_cols = cls.get_fee_column_names()
+        # expecting the fee columns to be negative values
+        df[cls.TOTAL_AFTER_FEES] = (df[cls.TOTAL_BEFORE_FEES] + df[fee_cols].sum(axis=1)).round(2)
+        return df

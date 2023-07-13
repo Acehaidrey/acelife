@@ -11,8 +11,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from provider_reports.providers.base_provider import OrdersProvider
-from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions
-from provider_reports.utils.utils import get_chrome_options
+from provider_reports.schema.schema import TransactionRecord
+from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, \
+    ReportType, Extensions, DATA_PATH_RAW
+from provider_reports.utils.utils import get_chrome_options, \
+    standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
 
 
@@ -22,6 +25,9 @@ class EZCaterOrders(OrdersProvider):
 
     This class implements the OrdersProvider interface for the EZCater provider.
     It defines methods for logging in, retrieving orders, and performing preprocessing and postprocessing tasks.
+
+    Future work:
+        Consider extracting customer business info from here.
     """
 
     PROVIDER = Provider.EZCATER
@@ -155,6 +161,51 @@ class EZCaterOrders(OrdersProvider):
                 print(f'Saved {store} orders to: {full_match_fp}')
                 self.processed_files.append(full_match_fp)
 
+    def standardize_orders_report(self):
+        """
+        Standardize report to conform to expected table format.
+        """
+        rename_map = {
+            'Order Number': TransactionRecord.TRANSACTION_ID,
+            'Event Date': TransactionRecord.ORDER_DATE,
+            'Food Total': TransactionRecord.SUBTOTAL,
+            'Promotion': TransactionRecord.MARKETING_FEE,
+            'Delivery Fee': TransactionRecord.DELIVERY_CHARGE,
+            'Commission': TransactionRecord.COMMISSION_FEE,
+            'Sales Tax': TransactionRecord.TAX,
+            'Sales Tax Remitted by ezCater': TransactionRecord.TAX_WITHHELD,
+            'Tip': TransactionRecord.TIP,
+            'Payment Transaction Fee': TransactionRecord.MERCHANT_PROCESSING_FEE,
+            'Adjustments': TransactionRecord.ADJUSTMENT_FEE,
+            'Discounts': 'discounts',
+            'Misc Fees': 'misc_fees',
+            'Preferred Partner Program': 'preferred_partner',
+            'ezRewards': 'ezrewards',
+            'Caterer Total Due': TransactionRecord.PAYOUT,
+            'Payment Type': TransactionRecord.PAYMENT_TYPE,
+        }
+        # Get transaction file
+        orders_file = [f for f in self.processed_files if ReportType.ORDERS in f and self.store_name.lower() in f][0]
+        df = standardize_order_report_setup(orders_file, rename_map, self.PROVIDER, self.store)
+
+        # add in discounts, preferred partner program, and ezrewards into the marketing
+        df[TransactionRecord.MARKETING_FEE] = df[TransactionRecord.MARKETING_FEE] + df['preferred_partner'] + df['ezrewards'] + df['discounts']
+        # If adjustment_fee is positive, add it to tip and set adjustment_fee to 0 (call in adjustment)
+        # If adjustment_fee is negative, leave it as it is
+        df.loc[df[TransactionRecord.ADJUSTMENT_FEE] > 0, TransactionRecord.TIP] += df[TransactionRecord.ADJUSTMENT_FEE]
+        df.loc[df[TransactionRecord.ADJUSTMENT_FEE] > 0, TransactionRecord.ADJUSTMENT_FEE] = 0
+        # add in misc fees to adjustments
+        df[TransactionRecord.ADJUSTMENT_FEE] = df[TransactionRecord.ADJUSTMENT_FEE] + df['misc_fees']
+        # calculate before/after fees costs
+        TransactionRecord.calculate_total_before_fees(df)
+        TransactionRecord.calculate_total_after_fees(df)
+        df = df.reindex(columns=TransactionRecord.get_column_names())
+        # Write the transformed data to a new CSV file (csv and parquet)
+        raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
+        df.to_csv(raw_data_filename, index=False)
+        self.data_files.append(raw_data_filename)
+        print(f'Saved {self.store_name} data orders to: {raw_data_filename}. Based off of processed file: {orders_file}.')
+
     def validate_reports(self):
         """
         Perform report validation specific to the EZCater provider.
@@ -176,7 +227,9 @@ class EZCaterOrders(OrdersProvider):
         if not (abs(len(downloaded_df) - processed_record_count) == 1):
             raise AssertionError(f'Number of rows in the downloaded file does not match the processed file '
                                  f'{len(downloaded_df)}, {processed_record_count}')
-
+        ValidationUtils.validate_data_files_count(self.data_files, 1)
+        store_processed_file = [f for f in self.processed_files if self.store_name.lower() in f]
+        ValidationUtils.validate_all_data_file_checks(self.data_files[0], store_processed_file[0])
         print("Report validation successful")
 
     def upload_reports(self):
@@ -184,7 +237,7 @@ class EZCaterOrders(OrdersProvider):
         Upload the processed report to a remote location specific to the EZCater provider.
         """
         # TODO: Implement report uploading logic for EZCater
-        pass
+        self.write_parquet_data()
 
     def quit(self):
         """
@@ -202,13 +255,18 @@ def main():
     credential_file_path = '../credentials/ezcater_credentials.json'
     start_date = datetime.datetime(2023, 1, 1)
     end_date = datetime.datetime(2023, 1, 31)
-    store_name = Store.AROMA
+    store_name = Store.AMECI
 
     orders = EZCaterOrders(credential_file_path, start_date, end_date, store_name)
     orders.login()
     orders.preprocess_reports()
     orders.get_reports()
     orders.postprocess_reports()
+    # orders.processed_files = [
+    #     '/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/ezcater_aroma_orders_01_01_2023_01_31_2023.csv',
+    #     '/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/ezcater_ameci_orders_01_01_2023_01_31_2023.csv'
+    # ]
+    orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
     orders.quit()

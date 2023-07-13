@@ -117,6 +117,7 @@ class ValidationUtils:
     def validate_data_file_columns_match(data_file):
         """
         Validate the raw data file columns match all columns.
+        Also check formatting of fee columns to all be 0 or negative.
 
         Args:
             data_file (str): Filename
@@ -129,6 +130,11 @@ class ValidationUtils:
         df_columns = orders_df.columns.tolist()
         if not df_columns == order_columns:
             raise AssertionError(f'Standardized data columns mismatch: {df_columns}, {order_columns}')
+        for fee_col in TransactionRecord.get_fee_column_names():
+            is_negative_or_zero = (orders_df[fee_col] <= 0).all()
+            if not is_negative_or_zero:
+                raise AssertionError(f'column {fee_col} has positive values')
+
 
     @staticmethod
     def validate_processed_records_data_records_match(data_file, processed_file):
@@ -197,7 +203,7 @@ class ValidationUtils:
         orders_df = pd.read_csv(data_file)
         # Calculate the expected total after fees
         expected_total_after_fees = \
-            orders_df[TransactionRecord.TOTAL_BEFORE_FEES] - \
+            orders_df[TransactionRecord.TOTAL_BEFORE_FEES] + \
             orders_df[[TransactionRecord.SERVICE_FEE,
              TransactionRecord.MARKETING_FEE,
              TransactionRecord.ADJUSTMENT_FEE,
@@ -212,3 +218,35 @@ class ValidationUtils:
         # Verify that all rows have the matching total before fees
         if not is_total_after_fees_match.all():
             raise AssertionError(f'{TransactionRecord.TOTAL_AFTER_FEES} column mismatch calculation')
+
+    @staticmethod
+    def validate_data_file_after_fees_payout_match(data_file):
+        """
+        Validate the payout amount matches the after fees amount.
+        If not we should be alerting the provider for incorrect payout.
+        Note, cash orders for non POS systems will be counted as 0.
+
+        Args:
+            data_file (str): Filename
+
+        Raises:
+            AssertionError: If the columns have a mismatch.
+        """
+        orders_df = pd.read_csv(data_file)
+        is_cash = orders_df[TransactionRecord.PAYMENT_TYPE].eq('cash')
+        payout_expected = np.where(is_cash, 0, orders_df[TransactionRecord.TOTAL_AFTER_FEES])
+        payout_match = np.isclose(payout_expected,
+                                  orders_df[TransactionRecord.PAYOUT],
+                                  atol=0.05)
+        if not payout_match.all():
+            raise AssertionError(
+                f'{TransactionRecord.TOTAL_AFTER_FEES}, {TransactionRecord.PAYOUT} value mismatch calculation')
+
+    @staticmethod
+    def validate_all_data_file_checks(data_file, processed_file):
+        """Wrapper around all data checks."""
+        ValidationUtils.validate_data_file_columns_match(data_file)
+        ValidationUtils.validate_processed_records_data_records_match(data_file, processed_file)
+        ValidationUtils.validate_data_file_total_before_fees_accurate(data_file)
+        ValidationUtils.validate_data_file_total_after_fees_accurate(data_file)
+        ValidationUtils.validate_data_file_after_fees_payout_match(data_file)

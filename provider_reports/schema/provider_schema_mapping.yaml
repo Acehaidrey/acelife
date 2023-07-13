@@ -1,22 +1,47 @@
+# example yaml config
 providers:
   brygid:
     column_mapping:
-      - provider_column: column1
-        mapped_column: transaction_id
-      - provider_column: column2
-        mapped_column: provider
-      - provider_column: store
-        mapped_column: payout
-      - provider_column: column4
-        mapped_column: tax
-      - provider_column: column5
-        mapped_column: tip
-      - provider_column: column6
-        mapped_column: tax_withheld
-      - provider_column: column7
-        mapped_column: delivery_fee
+    - mapped_column: provider
+      provider_column: PLACEHOLDER
+    - mapped_column: store
+      provider_column: PLACEHOLDER
+    - mapped_column: transaction_id
+      provider_column: PLACEHOLDER
+    - mapped_column: order_date
+      provider_column: PLACEHOLDER
+    - mapped_column: payment_type
+      provider_column: PLACEHOLDER
+    - mapped_column: subtotal
+      provider_column: PLACEHOLDER
+    - mapped_column: tip
+      provider_column: PLACEHOLDER
+    - mapped_column: tax
+      provider_column: PLACEHOLDER
+    - mapped_column: tax_withheld
+      provider_column: PLACEHOLDER
+    - mapped_column: delivery_fee
+      provider_column: PLACEHOLDER
+    - mapped_column: service_fee
+      provider_column: PLACEHOLDER
+    - mapped_column: marketing_fee
+      provider_column: PLACEHOLDER
+    - mapped_column: adjustment_fee
+      provider_column: PLACEHOLDER
+    - mapped_column: merchant_processing_fee
+      provider_column: PLACEHOLDER
+    - mapped_column: commission_fee
+      provider_column: PLACEHOLDER
+    - mapped_column: total_before_fees
+      provider_column: PLACEHOLDER
+    - mapped_column: total_after_fees
+      provider_column: PLACEHOLDER
+    - mapped_column: payout
+      provider_column: PLACEHOLDER
+    - mapped_column: notes
+      provider_column: PLACEHOLDER
     version_mappings:
       - version: '2023-05-01'
         column_mapping:
-          - provider_column: column4
-            mapped_column: taxes
+          - provider_column: TAXED
+            mapped_column: tax

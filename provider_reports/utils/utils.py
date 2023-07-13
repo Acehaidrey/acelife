@@ -114,5 +114,8 @@ def standardize_order_report_setup(orders_file, rename_map, provider, store):
     df = df.applymap(lambda x: x.lower() if isinstance(x, str) else x)
 
     # Reindex the columns to the desired order
-    df = df.reindex(columns=TransactionRecord.get_column_names())
+    # (may have extra cols to keep but will need to merge them before valid)
+    extra_columns = [col for col in df.columns if
+                     col not in TransactionRecord.get_column_names()]
+    df = df[TransactionRecord.get_column_names() + extra_columns]
     return df

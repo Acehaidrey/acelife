@@ -2,7 +2,10 @@ import json
 import os
 from abc import ABC, abstractmethod
 
-from provider_reports.utils.constants import PROCESSED_REPORTS_PATH, Provider
+import pandas as pd
+
+from provider_reports.utils.constants import PROCESSED_REPORTS_PATH, Provider, \
+    Extensions, ReportType, DATA_PATH_OPTIMIZED
 
 
 class OrdersProvider(ABC):
@@ -156,6 +159,21 @@ class OrdersProvider(ABC):
         See validation_utils.py for common check cases.
         """
         pass
+
+    def write_parquet_data(self):
+        """
+        Transform CSV data to Parquet which will be in a place table reads from.
+        :return:
+        """
+        parquet_data_file_name = self.create_processed_filename(ReportType.ORDERS,
+                                                                Extensions.PARQUET,
+                                                                parent_path=DATA_PATH_OPTIMIZED)
+        if self.data_files and len(self.data_files) == 1:
+            df = pd.read_csv(self.data_files[0])
+            df.to_parquet(parquet_data_file_name, index=False)
+            self.data_files = []
+            self.data_files.append(parquet_data_file_name)
+            print(f'Saved {self.store_name} data orders to: {parquet_data_file_name}. Read for db usage.')
 
     @abstractmethod
     def quit(self):

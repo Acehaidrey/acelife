@@ -64,43 +64,37 @@ def run_orders_providers(start_date, end_date, provider_names=None, filtered_sto
 
     for passed_provider_name in provider_names:
         provider_name = Provider[passed_provider_name.upper()]
+
         if provider_name in provider_map:
             provider_class, provider_credential_filename = provider_map[provider_name]
             credential_file_path = os.path.join(CREDENTIALS_PATH, provider_credential_filename)
-            stage = Stage.CREDENTIALS
+
             if os.path.isfile(credential_file_path):
                 stores = get_store_names_from_credentials_file(credential_file_path, filtered_stores)
+
                 for store in stores:
                     orders_provider = provider_class(credential_file_path, start_date, end_date, store_name=store)
                     start_time = time.time()
-                    try:
-                        stage = Stage.LOGIN
-                        orders_provider.login()
-                        logger.info(f"{provider_name}: {store} {stage} successful")
-                        stage = Stage.PREPROCESSING
-                        orders_provider.preprocess_reports()
-                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
-                        stage = Stage.RETRIEVAL
-                        orders_provider.get_reports()
-                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
-                        stage = Stage.POSTPROCESSING
-                        orders_provider.postprocess_reports()
-                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
-                        stage = Stage.STANDARDIZE
-                        orders_provider.standardize_orders_report()
-                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
-                        stage = Stage.VALIDATION
-                        orders_provider.validate_reports()
-                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
-                        stage = Stage.UPLOAD
-                        orders_provider.upload_reports()
-                        logger.info(f"{provider_name}: {store} Reports {stage} completed")
-                        stage = Stage.CLOSE
-                        orders_provider.quit()
-                        logger.info(f"{provider_name}: {store} Completed successfully")
-                    except Exception as e:
-                        logger.error(f"{provider_name}: {store} failed on stage: {stage} with error: {str(e)}")
-                        logger.error(traceback.format_exc())
+
+                    stages = [
+                        (Stage.LOGIN, orders_provider.login),
+                        (Stage.PREPROCESSING, orders_provider.preprocess_reports),
+                        (Stage.RETRIEVAL, orders_provider.get_reports),
+                        (Stage.POSTPROCESSING, orders_provider.postprocess_reports),
+                        (Stage.STANDARDIZE, orders_provider.standardize_transaction_report),
+                        (Stage.VALIDATION, orders_provider.validate_reports),
+                        (Stage.UPLOAD, orders_provider.upload_reports),
+                        (Stage.CLOSE, orders_provider.quit)
+                    ]
+
+                    for stage, action in stages:
+                        try:
+                            action()
+                            logger.info(f"{provider_name}: {store} Reports {stage} completed")
+                        except Exception as e:
+                            logger.error(f"{provider_name}: {store} failed on stage: {stage} with error: {str(e)}")
+                            logger.error(traceback.format_exc())
+
                     end_time = time.time()
                     logger.info(f'{provider_name}: {store} Took {round(end_time - start_time, 2)} seconds to run.')
             else:
@@ -177,17 +171,6 @@ if __name__ == "__main__":
                         help="Provider names to run (separated by spaces)")
     parser.add_argument('-n', '--stores', nargs="+", choices=[store.value for store in Store], default=None,
                         help='Store names to filter on. All by default.')
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run orders providers to get finance reports")
-    parser.add_argument("-s", "--start-date", type=lambda d: parse_date(d, 'start'), required=True,
-                        help="Start date (YYYY/MM or YYYY/MM/DD)")
-    parser.add_argument("-e", "--end-date", type=lambda d: parse_date(d, 'end'), required=True,
-                        help="End date (YYYY/MM or YYYY/MM/DD)")
-    parser.add_argument("-p", "--providers", nargs="+", choices=[provider.value for provider in Provider],
-                        help="Provider names to run (separated by spaces)")
-    parser.add_argument('-n', '--stores', nargs="+", choices=[store.value for store in Store], default=None,
-                        help='Store names to filter on. All by default.')
     parser.add_argument("-c", "--cleanup", action="store_true", default=False,
                         help="Cleanup reports folder from previous run files")
     parser.add_argument("-l", "--logfile", default=None, help="Path to the log file to use")
@@ -213,10 +196,11 @@ if __name__ == "__main__":
 # write the new file in a central place (X)
 # add validation functions for data file (X)
 # save the file as parquet file format (X)
+# create duckdb table on top of this transactional data (X)
 
 
 # update all functions to implement the orders standardization
-# create duckdb table on top of this transactional data
+    # brygid, ezcater
 # create quick dashboard
 # fix toast script
 # fix slice script
