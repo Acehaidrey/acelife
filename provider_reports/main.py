@@ -24,8 +24,10 @@ from providers.ezcater import EZCaterOrders
 from providers.futurefoods import FutureFoodsOrders
 from providers.menufy import MenufyOrders
 from providers.office_express import FoodjaOrders
+from providers.order_inn import OrderInnOrders
 from providers.restaurant_depot import RestaurantDepotReceipts
 from providers.slice import SliceOrders
+from providers.toast import ToastOrders
 
 
 def get_logger(log_file):
@@ -53,6 +55,8 @@ provider_map = {
     Provider.OFFICE_EXPRESS: (FoodjaOrders, 'office_express_credentials.json'),
     Provider.RESTAURANT_DEPOT: (RestaurantDepotReceipts, 'restaurant_depot_credentials.json'),
     Provider.SLICE: (SliceOrders, 'slice_credentials.json'),
+    Provider.TOAST: (ToastOrders, 'toast_credentials.json'),
+    Provider.ORDER_INN: (OrderInnOrders, 'order_inn_credentials.json'),
 }
 
 
@@ -185,6 +189,8 @@ if __name__ == "__main__":
     setup(args.cleanup)
     run_orders_providers(start_date, end_date, providers, stores, log_file)
 
+# orderinn endpoint (X)
+
 
 # do a deduplication step based on transaction info (separate table maybe)
 # build quick dashboard for it
@@ -197,9 +203,9 @@ if __name__ == "__main__":
 # ubereats get the prod version running with webhook
 # grubhub -- setup email way to automate
 # get the toast and vantiv reports
-# orderinn endpoint
 # delivery.com ? cater2me ? beyond_menu ?
 # how to handle speedline ?
 # improve by unifying all the underlying files
+
 # fix the logging if needed
 # fix the error handling when things aren't working out

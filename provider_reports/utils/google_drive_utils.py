@@ -6,7 +6,10 @@ from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 
 # OAuth scopes required for accessing Google Drive
-SCOPES = ['https://www.googleapis.com/auth/drive']
+SCOPES = [
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/gmail.readonly'
+]
 
 
 def authenticate():
