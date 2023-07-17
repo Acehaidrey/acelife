@@ -12,8 +12,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from provider_reports.providers.base_provider import OrdersProvider
-from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions
-from provider_reports.utils.utils import get_chrome_options
+from provider_reports.schema.schema import TransactionRecord
+from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, \
+    ReportType, Extensions, PaymentType, TAX_RATE, DATA_PATH_RAW
+from provider_reports.utils.utils import get_chrome_options, \
+    standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
 
 
@@ -23,6 +26,8 @@ class EatstreetOrders(OrdersProvider):
 
     This class implements the OrdersProvider interface for the Eatstreet provider.
     It defines methods for logging in, retrieving orders, and performing preprocessing and postprocessing tasks.
+
+    TODO: Get advertisement and other costs (not per transaction) into a separate csv to use.
     """
 
     PROVIDER = Provider.EATSTREET
@@ -197,6 +202,55 @@ class EatstreetOrders(OrdersProvider):
                 self.processed_files.append(processed_file)
                 print(f'Saved {self.store_name} orders to: {processed_file}')
 
+    def standardize_orders_report(self):
+        """
+        The total value includes the tip and del fee.
+        The taxes are withheld but do not show up on report so manual calc.
+        The delivery fee is not included. We make an estimate as 2.99.
+        Payment types are always set to credit (can be inaccurate).
+        :return:
+        """
+        rename_map = {
+            'ID': TransactionRecord.TRANSACTION_ID,
+            'Date': TransactionRecord.ORDER_DATE,
+            'Tip': TransactionRecord.TIP,
+            'Total': TransactionRecord.SUBTOTAL,
+            'Proc': TransactionRecord.MERCHANT_PROCESSING_FEE,
+            'Comm': TransactionRecord.COMMISSION_FEE,
+            'OrderType': 'order_type',
+        }
+        # have to first do cleanup on the processed file to convert types
+        orders_file = self.processed_files[0]
+        df = pd.read_csv(orders_file)
+        df['Tip'] = df['Tip'].str.replace('$', '').astype(float)
+        df['Total'] = df['Total'].str.replace('$', '').astype(float)
+        df['Proc'] = -(df['Proc'].str.replace('$', '').astype(float))
+        df['Comm'] = -(df['Comm'].str.replace('$', '').astype(float))
+
+        df = standardize_order_report_setup(None, rename_map, self.PROVIDER, self.store, df)
+
+        df[TransactionRecord.PAYMENT_TYPE] = PaymentType.CREDIT
+        # if order type delivery add 2.99 charge as that is most common (not 100% accurate here)
+        # report given to us does not include this information
+        df.loc[df['order_type'] == 'delivery', TransactionRecord.DELIVERY_CHARGE] = 2.99
+        # subtotal includes tip and del charge so remove them
+        df[TransactionRecord.SUBTOTAL] = df[TransactionRecord.SUBTOTAL] - df[TransactionRecord.TIP] - df[TransactionRecord.DELIVERY_CHARGE]
+        # multiply subtotal by tax rate to get taxes withheld amount
+        df[TransactionRecord.TAX_WITHHELD] = (TAX_RATE * df[TransactionRecord.SUBTOTAL]).round(2)
+        # get before and after fees
+        TransactionRecord.calculate_total_before_fees(df)
+        TransactionRecord.calculate_total_after_fees(df)
+        # set payout column (taxes withheld)
+        TransactionRecord.calculate_payout(df)
+        # remove extra columns
+        df = df.reindex(columns=TransactionRecord.get_column_names())
+
+        # Write the transformed data to a new CSV file (csv and parquet)
+        raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
+        df.to_csv(raw_data_filename, index=False)
+        self.data_files.append(raw_data_filename)
+        print(f'Saved {self.store_name} data orders to: {raw_data_filename}. Based off of processed file: {orders_file}.')
+
     def validate_reports(self):
         """
         Perform report validation specific to the Eatstreet provider.
@@ -209,15 +263,15 @@ class EatstreetOrders(OrdersProvider):
         ValidationUtils.validate_downloaded_files_extension(self.downloaded_files, Extensions.HTML)
         ValidationUtils.validate_processed_files_date_range(
             self.processed_files, self.start_date, self.end_date, 'Date', '%m/%d/%Y %I:%M %p')
-
+        ValidationUtils.validate_data_files_count(self.data_files, 1)
+        ValidationUtils.validate_all_data_file_checks(self.data_files[0], self.processed_files[0])
         print("Report validation successful")
 
     def upload_reports(self):
         """
         Upload the processed report to a remote location specific to the Eatstreet provider.
         """
-        # TODO: Implement report uploading logic for Eatstreet
-        pass
+        self.write_parquet_data()
 
     def quit(self):
         """
@@ -233,8 +287,8 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     credential_file_path = '../credentials/eatstreet_credentials.json'
-    start_date = datetime(2023, 3, 1)
-    end_date = datetime(2023, 3, 31)
+    start_date = datetime(2023, 4, 1)
+    end_date = datetime(2023, 4, 30)
     store_name = Store.AROMA
 
     orders = EatstreetOrders(credential_file_path, start_date, end_date, store_name)
@@ -242,6 +296,8 @@ def main():
     orders.preprocess_reports()
     orders.get_reports()
     orders.postprocess_reports()
+    # orders.processed_files = ['/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/eatstreet_aroma_orders_04_01_2023_04_30_2023.csv']
+    orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
     orders.quit()

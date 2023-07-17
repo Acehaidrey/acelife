@@ -12,8 +12,11 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from provider_reports.providers.base_provider import OrdersProvider
-from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions
-from provider_reports.utils.utils import get_chrome_options
+from provider_reports.schema.schema import TransactionRecord
+from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, \
+    ReportType, Extensions, TAX_RATE, DATA_PATH_RAW
+from provider_reports.utils.utils import get_chrome_options, \
+    standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
 
 
@@ -125,6 +128,39 @@ class FoodjaOrders(OrdersProvider):
                 print(f'Saved {store} orders to: {full_match_fp}')
                 self.processed_files.append(full_match_fp)
 
+    def standardize_orders_report(self):
+        """
+        Standardize report to conform to expected table format.
+        Manually calculate taxes withheld and commission as 30% of subtotal.
+        """
+        rename_map = {
+            'Order #': TransactionRecord.TRANSACTION_ID,
+            'Delivery Date': TransactionRecord.ORDER_DATE,
+            'Payment Type': TransactionRecord.PAYMENT_TYPE,
+            'Food Total': TransactionRecord.SUBTOTAL,
+            'Check Date': TransactionRecord.NOTES
+        }
+        # Get transaction file
+        orders_file = [f for f in self.processed_files if self.store.value in f][0]
+        df = standardize_order_report_setup(orders_file, rename_map, self.PROVIDER, self.store)
+
+        # Calculate taxes withheld manually
+        df[TransactionRecord.TAX_WITHHELD] = (df[TransactionRecord.SUBTOTAL] * TAX_RATE).round(2)
+        # Calculate commission as 30% of order total
+        df[TransactionRecord.COMMISSION_FEE] = -(df[TransactionRecord.SUBTOTAL] * 0.3).round(2)
+        # Rewrite the notes column
+        df[TransactionRecord.NOTES] = 'check date: ' + df[TransactionRecord.NOTES]
+        # calculate before/after fees and payout
+        TransactionRecord.calculate_total_before_fees(df)
+        TransactionRecord.calculate_total_after_fees(df)
+        TransactionRecord.calculate_payout(df)
+
+        # Write the transformed data to a new CSV file (csv and parquet)
+        raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
+        df.to_csv(raw_data_filename, index=False)
+        self.data_files.append(raw_data_filename)
+        print(f'Saved {self.store_name} data orders to: {raw_data_filename}. Based off of processed file: {orders_file}.')
+
     def validate_reports(self):
         """
         Perform report validation specific to the Foodja provider.
@@ -144,14 +180,18 @@ class FoodjaOrders(OrdersProvider):
         if len(downloaded_df) != processed_record_count:
             raise AssertionError("Number of rows in the downloaded file does not match the processed file")
 
+        # data file checking
+        ValidationUtils.validate_data_files_count(self.data_files, 1)
+        orders_file = [f for f in self.processed_files if self.store.value in f][0]
+        ValidationUtils.validate_all_data_file_checks(self.data_files[0], orders_file)
+
         print("Report validation successful")
 
     def upload_reports(self):
         """
         Upload the processed report to a remote location specific to the Foodja provider.
         """
-        # TODO: Implement report uploading logic for Foodja
-        pass
+        self.write_parquet_data()
 
     def quit(self):
         """
@@ -176,6 +216,8 @@ def main():
     orders.preprocess_reports()
     orders.get_reports()
     orders.postprocess_reports()
+    # orders.processed_files = ['/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/office_express_aroma_orders_03_01_2023_03_31_2023.csv', '/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/office_express_ameci_orders_03_01_2023_03_31_2023.csv']
+    orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
     orders.quit()

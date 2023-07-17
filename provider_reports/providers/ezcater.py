@@ -13,7 +13,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from provider_reports.providers.base_provider import OrdersProvider
 from provider_reports.schema.schema import TransactionRecord
 from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, \
-    ReportType, Extensions, DATA_PATH_RAW
+    ReportType, Extensions, DATA_PATH_RAW, PaymentType
 from provider_reports.utils.utils import get_chrome_options, \
     standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
@@ -152,7 +152,7 @@ class EZCaterOrders(OrdersProvider):
         for downloaded_file in self.downloaded_files:
             df = pd.read_excel(downloaded_file)
             df = df.iloc[:-1]
-            df['Payment Type'] = 'Credit'
+            df['Payment Type'] = PaymentType.CREDIT
 
             for store in [Store.AROMA.value, Store.AMECI.value]:
                 match_df = df[df['Store Name'].str.contains(store, case=False)]

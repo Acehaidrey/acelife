@@ -14,8 +14,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from provider_reports.providers.base_provider import OrdersProvider
-from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, PROCESSED_REPORTS_PATH, Provider, Extensions
-from provider_reports.utils.utils import get_chrome_options
+from provider_reports.schema.schema import TransactionRecord
+from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, \
+    PROCESSED_REPORTS_PATH, Provider, Extensions, PaymentType, ReportType, \
+    DATA_PATH_RAW
+from provider_reports.utils.utils import get_chrome_options, \
+    standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
 
 
@@ -74,7 +78,7 @@ class MenufyOrders(OrdersProvider):
         navbar_dropdown = (By.CSS_SELECTOR, "#navbarDropdown > span")
         store_navbar_link = (By.LINK_TEXT, f'{self.store_name} Pizza & Pasta (Lake Forest, CA 92630)')
         reports_heading = (By.ID, "headingReports")
-        combined_sales_report_link = (By.LINK_TEXT, "Combined Sales")
+        combined_sales_report_link = (By.LINK_TEXT, "Sales By Order")
 
         # pick navbar to select restaurant
         self.wait.until(EC.presence_of_element_located(navbar_dropdown)).click()
@@ -188,11 +192,11 @@ class MenufyOrders(OrdersProvider):
                         if 'paidonline' in old_file_path.replace(' ', '').lower():
                             prepaid_df = pd.read_csv(old_file_path)
                             prepaid_df = prepaid_df.iloc[:-1]
-                            prepaid_df['Payment Type'] = 'Credit'
+                            prepaid_df['Payment Type'] = PaymentType.CREDIT
                         if 'paidin-store' in old_file_path.replace(' ', '').lower():
                             instore_df = pd.read_csv(old_file_path)
                             instore_df = instore_df.iloc[:-1]
-                            instore_df['Payment Type'] = 'Cash'
+                            instore_df['Payment Type'] = PaymentType.CASH
                 # search and processed both files. if can merge, merge, else set to whichever not null
                 if not instore_df.empty and not prepaid_df.empty:
                     combined_df = pd.merge(instore_df, prepaid_df, how='outer').fillna(0)
@@ -208,13 +212,66 @@ class MenufyOrders(OrdersProvider):
                 df = pd.read_csv(downloaded_file)
                 df.to_csv(full_filename, index=False)
                 self.processed_files.append(full_filename)
+                print(f'Saved {self.store_name} emails to: {full_filename}')
             elif fnmatch.fnmatch(downloaded_file, self.CUSTOMER_DELIVERY_PATTERN):
                 new_filename = f'menufy_{self.store_name.lower()}_customer_delivery_addresses_{tday}.csv'
                 full_filename = os.path.join(PROCESSED_REPORTS_PATH, new_filename)
                 df = pd.read_csv(downloaded_file)
                 df.to_csv(full_filename, index=False)
                 self.processed_files.append(full_filename)
+                print(f'Saved {self.store_name} addresses to: {full_filename}')
         print(f'Menufy Processed Reports: {self.processed_files}')
+
+    def standardize_orders_report(self):
+        """
+        Standardize report to conform to expected table format.
+
+        Service charge of 1.50 added per order and paid by customer. It
+        is included in the total_before_fees then taken out as we pay to
+        menufy. Cash orders show payout of -service_fee .
+        3rd party delivery charge added to service fee (not used currently).
+        """
+        rename_map = {
+            'Date': TransactionRecord.ORDER_DATE,
+            'Payment Type': TransactionRecord.PAYMENT_TYPE,
+            'Subtotal': TransactionRecord.SUBTOTAL,
+            'Tax': TransactionRecord.TAX,
+            'Tip': TransactionRecord.TIP,
+            'Customer Carryout or Delivery Charge': TransactionRecord.DELIVERY_CHARGE,
+            'Total': TransactionRecord.TOTAL_BEFORE_FEES,
+            'Customer Fees': TransactionRecord.SERVICE_FEE,
+            'Restaurant Fees': TransactionRecord.MERCHANT_PROCESSING_FEE,
+            'Payout': TransactionRecord.PAYOUT,
+            'Upcharges': TransactionRecord.ADJUSTMENT_FEE,
+            'Delivery Service': '3rd_party_del_charge',
+            'Customer Name': 'customer_name'
+        }
+        # Get transaction file
+        orders_file = [f for f in self.processed_files if ReportType.ORDERS in f][0]
+        df = standardize_order_report_setup(orders_file, rename_map, self.PROVIDER, self.store)
+
+        # Set a unique transaction id based off customer name and date
+        # Convert the 'name' column to lowercase and remove spaces
+        df[TransactionRecord.TRANSACTION_ID] = df['customer_name'].str.replace(' ', '_')
+        # Add the date column in ISO format to the 'name' column
+        df[TransactionRecord.TRANSACTION_ID] = df[TransactionRecord.TRANSACTION_ID] + '_' + \
+                                               pd.to_datetime(df[TransactionRecord.ORDER_DATE]).dt.strftime('%Y_%m_%dT%H_%M_%S')
+        # Make service charge negative & add in 3rd party del charges
+        df[TransactionRecord.SERVICE_FEE] += df['3rd_party_del_charge']
+        # Make fee columns negative
+        df[TransactionRecord.SERVICE_FEE] = -df[TransactionRecord.SERVICE_FEE]
+        df[TransactionRecord.MERCHANT_PROCESSING_FEE] = -df[TransactionRecord.MERCHANT_PROCESSING_FEE]
+        df[TransactionRecord.COMMISSION_FEE] = -df[TransactionRecord.COMMISSION_FEE]
+        # Set total after fees
+        TransactionRecord.calculate_total_after_fees(df)
+        # remove extra columns
+        df = df.reindex(columns=TransactionRecord.get_column_names())
+
+        # Write the transformed data to a new CSV file (csv and parquet)
+        raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
+        df.to_csv(raw_data_filename, index=False)
+        self.data_files.append(raw_data_filename)
+        print(f'Saved {self.store_name} data orders to: {raw_data_filename}. Based off of processed file: {orders_file}.')
 
     def validate_reports(self):
         """
@@ -230,7 +287,7 @@ class MenufyOrders(OrdersProvider):
         ValidationUtils.validate_downloaded_files_extension(order_files, Extensions.ZIP)
 
         ValidationUtils.validate_processed_files_date_range(
-            [f for f in self.processed_files if 'orders' in f], self.start_date, self.end_date, 'Date', '%m/%d/%y')
+            [f for f in self.processed_files if 'orders' in f], self.start_date, self.end_date, 'Date', '%m/%d/%y %I:%M%p')
 
         if len(self.order_files) > 2:
             raise AssertionError(f"Expected up to 2 order file, but found {len(self.order_files)}")
@@ -250,14 +307,17 @@ class MenufyOrders(OrdersProvider):
         if not (abs(order_len - processed_len) == 2):
             raise AssertionError(f'Number of records combined for order files dont match {order_len}, {processed_len}')
 
+        ValidationUtils.validate_data_files_count(self.data_files, 1)
+        orders_file = [f for f in self.processed_files if ReportType.ORDERS in f][0]
+        ValidationUtils.validate_all_data_file_checks(self.data_files[0], orders_file)
+
         print("Report validation successful")
 
     def upload_reports(self):
         """
         Upload the processed report to a remote location specific to the Menufy provider.
         """
-        # TODO: Implement report uploading logic for Menufy
-        pass
+        self.write_parquet_data()
 
     def quit(self):
         """
@@ -282,6 +342,8 @@ def main():
     orders.preprocess_reports()
     orders.get_reports()
     orders.postprocess_reports()
+    # orders.processed_files = ['/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/menufy_aroma_orders_03_01_2023_03_31_2023.csv', '/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/menufy_aroma_customer_emails_07_12_2023.csv', '/Users/ahaidrey/Desktop/acelife/provider_reports/reports_processed/menufy_aroma_customer_delivery_addresses_07_12_2023.csv']
+    orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
     orders.quit()

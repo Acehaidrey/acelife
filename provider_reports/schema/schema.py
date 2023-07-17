@@ -95,3 +95,9 @@ class TransactionRecord:
         # expecting the fee columns to be negative values
         df[cls.TOTAL_AFTER_FEES] = (df[cls.TOTAL_BEFORE_FEES] + df[fee_cols].sum(axis=1)).round(2)
         return df
+
+    @classmethod
+    def calculate_payout(cls, df):
+        # expecting the TOTAL_AFTER_FEES set already
+        df[cls.PAYOUT] = (df[cls.TOTAL_AFTER_FEES] - df[cls.TAX_WITHHELD]).round(2)
+        return df

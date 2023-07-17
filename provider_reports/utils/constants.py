@@ -16,6 +16,8 @@ SENDER_EMAIL = 'acehaidrey@gmail.com'
 AMECI_FWD_EMAIL = '9320.Amec@xcinvoice.com'
 AROMA_FWD_EMAIL = '7907.Arom@xcinvoice.com'
 
+TAX_RATE = 0.0775
+
 
 class Store(enum.Enum):
     """
@@ -25,6 +27,16 @@ class Store(enum.Enum):
     """
     AMECI = 'ameci'
     AROMA = 'aroma'
+
+
+class PaymentType:
+    """
+    Constants for store names.
+
+    This class provides constants for different payment types.
+    """
+    CREDIT = 'credit'
+    CASH = 'cash'
 
 
 class ReportType:

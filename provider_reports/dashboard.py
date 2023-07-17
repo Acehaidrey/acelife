@@ -129,6 +129,6 @@ if __name__ == '__main__':
     full_path = os.path.abspath(os.path.join(here, parquet_short_path))
     dashboard = ProviderDashboard(full_path)
     # dashboard.display_dashboard()
-    df = dashboard._query('select * from providers')
+    df = dashboard._query('select * from orders')
     print(df)
     dashboard.close()

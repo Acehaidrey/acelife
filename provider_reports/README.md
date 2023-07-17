@@ -134,9 +134,12 @@ handling that to place files in the `reports_processed/` directory.
 | Doordash         | NOT YET STARTED | Need to download order info, drive info, error info, & cancelled info.                   |
 | UberEats         | IN PROGRESS     | Need to download order info, error info, & cancelled info.                               |
 | Slice            | IN PROGRESS     | Need to download order info pdf and get info exported from there. Extraction to be done. |
-| Toast            | IN PROGRESS     | Using SFTP client. Need to download order info, customer info, and payment info.         |
+| Toast            | DONE            | Using SFTP client. Need to download order info, customer info, and payment info.         |
 | Vantiv           | NOT YET STARTED | Need to get merchant processing statements.                                              |
 | Restaurant Depot | DONE            | Need to get invoice receipts to feed into xtraChef for product pricing.                  |
+| ChowNow          | NOT YET STARTED | Chownow is an online order provider.                                                     |
+| OrderInn         | NOT YET STARTED | Charges for commission Ameci.                                                            |
+
 
 These providers need to be finished and then there are some providers who we handle
 using google app scripts as they send over info via emails. Consider to build around those here.

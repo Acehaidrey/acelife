@@ -186,28 +186,20 @@ if __name__ == "__main__":
     run_orders_providers(start_date, end_date, providers, stores, log_file)
 
 
-# print(TransactionRecord.generate_yaml_config('brygid')) (X)
-# add stage information (X)
-# build a schema file here or yaml (we will do transactional) (X)
-# add a mapping file per provider (not a single yaml) (X)
-# add utility funcitons to do the transformation
-    # to read yaml and check against the schema file here (X)
-    # to transform to an output data file we want (X)
-# write the new file in a central place (X)
-# add validation functions for data file (X)
-# save the file as parquet file format (X)
-# create duckdb table on top of this transactional data (X)
+# do a deduplication step based on transaction info (separate table maybe)
+# build quick dashboard for it
 
-
-# update all functions to implement the orders standardization
-    # brygid, ezcater
-# create quick dashboard
-# fix toast script
 # fix slice script
-# get files from GSuite
 
+# get files from GSuite
+#  menustar, toast_finances
+
+# ubereats get the prod version running with webhook
+# grubhub -- setup email way to automate
+# get the toast and vantiv reports
+# orderinn endpoint
+# delivery.com ? cater2me ? beyond_menu ?
+# how to handle speedline ?
 # improve by unifying all the underlying files
 # fix the logging if needed
 # fix the error handling when things aren't working out
-# do a deduplication step based on transaction info (separate table maybe)
-# build quick dashboard for it

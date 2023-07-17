@@ -14,7 +14,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from provider_reports.providers.base_provider import OrdersProvider
 from provider_reports.schema.schema import TransactionRecord
 from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, \
-    ReportType, Extensions, DATA_PATH_RAW
+    ReportType, Extensions, DATA_PATH_RAW, PaymentType
 from provider_reports.utils.utils import get_chrome_options, \
     standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
@@ -219,8 +219,10 @@ class BrygidOrders(OrdersProvider):
         orders_file = [f for f in self.processed_files if ReportType.ORDERS in f][0]
         df = standardize_order_report_setup(orders_file, rename_map, self.PROVIDER, self.store)
 
+        # Make transaction id column string type
+        df[TransactionRecord.TRANSACTION_ID] = df[TransactionRecord.TRANSACTION_ID].astype(str)
         # Rename Visa/Mastercard/Discover to credit
-        df.loc[df[TransactionRecord.PAYMENT_TYPE] != 'cash', TransactionRecord.PAYMENT_TYPE] = 'credit'
+        df.loc[df[TransactionRecord.PAYMENT_TYPE] != PaymentType.CASH, TransactionRecord.PAYMENT_TYPE] = PaymentType.CREDIT
         # Subtract delivery_fee from subtotal as included by default
         df[TransactionRecord.SUBTOTAL] = (df[TransactionRecord.SUBTOTAL] - df[TransactionRecord.DELIVERY_CHARGE]).round(2)
         # Set note here to notify vantiv has merchant services total (not per order) & commission
@@ -235,8 +237,8 @@ class BrygidOrders(OrdersProvider):
         # Adjust total after fees to take out commission
         df[TransactionRecord.TOTAL_AFTER_FEES] = (df[TransactionRecord.TOTAL_AFTER_FEES] - df[TransactionRecord.COMMISSION_FEE]).round(2)
         # Pay amount (zero when cash since goes to our pos, total when credit)
-        df.loc[df[TransactionRecord.PAYMENT_TYPE] == 'cash', TransactionRecord.PAYOUT] = 0
-        df.loc[df[TransactionRecord.PAYMENT_TYPE] == 'credit', TransactionRecord.PAYOUT] = df[TransactionRecord.TOTAL_AFTER_FEES]
+        df.loc[df[TransactionRecord.PAYMENT_TYPE] == PaymentType.CASH, TransactionRecord.PAYOUT] = 0
+        df.loc[df[TransactionRecord.PAYMENT_TYPE] == PaymentType.CREDIT, TransactionRecord.PAYOUT] = df[TransactionRecord.TOTAL_AFTER_FEES]
 
         # Write the transformed data to a new CSV file (csv and parquet)
         raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
@@ -265,7 +267,6 @@ class BrygidOrders(OrdersProvider):
         """
         Upload the processed report to a remote location specific to the Brygid provider.
         """
-        # TODO: Implement report uploading logic for Brygid
         self.write_parquet_data()
 
     def quit(self):

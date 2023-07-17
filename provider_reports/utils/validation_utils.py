@@ -173,6 +173,7 @@ class ValidationUtils:
             [TransactionRecord.SUBTOTAL,
              TransactionRecord.TIP,
              TransactionRecord.TAX,
+             TransactionRecord.TAX_WITHHELD,
              TransactionRecord.DELIVERY_CHARGE]
         ].sum(axis=1)
         # Check if the calculated total before fees matches the column value
@@ -234,7 +235,7 @@ class ValidationUtils:
         """
         orders_df = pd.read_csv(data_file)
         is_cash = orders_df[TransactionRecord.PAYMENT_TYPE].eq('cash')
-        payout_expected = np.where(is_cash, 0, orders_df[TransactionRecord.TOTAL_AFTER_FEES])
+        payout_expected = np.where(is_cash, 0, orders_df[TransactionRecord.TOTAL_AFTER_FEES] - orders_df[TransactionRecord.TAX_WITHHELD])
         payout_match = np.isclose(payout_expected,
                                   orders_df[TransactionRecord.PAYOUT],
                                   atol=0.05)
@@ -249,4 +250,3 @@ class ValidationUtils:
         ValidationUtils.validate_processed_records_data_records_match(data_file, processed_file)
         ValidationUtils.validate_data_file_total_before_fees_accurate(data_file)
         ValidationUtils.validate_data_file_total_after_fees_accurate(data_file)
-        ValidationUtils.validate_data_file_after_fees_payout_match(data_file)

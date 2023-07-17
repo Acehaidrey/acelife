@@ -75,16 +75,22 @@ def send_email(subject, body, recipients, attachments=None):
         print("Message sent!")
 
 
-def standardize_order_report_setup(orders_file, rename_map, provider, store):
+def standardize_order_report_setup(orders_file, rename_map, provider, store, df=None):
     """
     Helper function to clean up a processed file to look like a standard
     report. It will get the order report, lowercase all strings,
     rename columns, remove unnecessary columns, add default columns,
     and add in missing columns then reorder them.
+
+    Use order_file to create df if passed, otherwise expect df to be passed.
     """
 
+    if orders_file and df:
+        raise Exception('Either orders filepath or df object should be passed')
+
     # Read the provider's CSV file using Pandas
-    df = pd.read_csv(orders_file)
+    if orders_file:
+        df = pd.read_csv(orders_file)
 
     if rename_map:
         # Apply column renaming based on the YAML rename map

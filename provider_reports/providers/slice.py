@@ -197,10 +197,10 @@ class SliceOrders(OrdersProvider):
             return
 
         for downloaded_file in self.downloaded_files:
-            processed_file = self.create_processed_filename(ReportType.ORDERS, Extensions.PDF)
-            shutil.copy(downloaded_file, processed_file)
-            self.processed_files.append(processed_file)
-            print(f'Saved {self.store_name} orders to: {processed_file}')
+            # processed_file = self.create_processed_filename(ReportType.ORDERS, Extensions.PDF)
+            # shutil.copy(downloaded_file, processed_file)
+            # self.processed_files.append(processed_file)
+            # print(f'Saved {self.store_name} orders to: {processed_file}')
 
             # Extract tables from the PDF
             import tabula
@@ -261,6 +261,9 @@ class SliceOrders(OrdersProvider):
             #
             # # Display the merged DataFrame
             # print(merged_df)
+
+    def standardize_orders_report(self):
+        pass
 
     def validate_reports(self):
         """
