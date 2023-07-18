@@ -155,8 +155,7 @@ class OrderInnOrders(OrdersProvider):
         ValidationUtils.validate_data_file_total_after_fees_accurate(self.data_files[0])
 
     def upload_reports(self):
-        if self.data_files:
-            self.write_parquet_data()
+        self.write_parquet_data()
 
     def quit(self):
         self.driver.quit()

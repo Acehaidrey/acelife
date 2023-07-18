@@ -114,6 +114,10 @@ def standardize_order_report_setup(orders_file, rename_map, provider, store, df=
                 df[column] = 0.0
             else:
                 df[column] = None
+        else:
+            if dtype == 'float':
+                # Strip out the dollar sign
+                df[column] = df[column].str.replace('$', '')
         df[column] = df[column].astype(dtype)
 
     # lowercase all strings

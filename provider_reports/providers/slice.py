@@ -1,9 +1,7 @@
-import datetime
+from datetime import datetime
 import os
-import shutil
 import time
 
-import numpy as np
 import pandas as pd
 import requests
 import retrying
@@ -15,9 +13,79 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
 from provider_reports.providers.base_provider import OrdersProvider
-from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, ReportType, Extensions
-from provider_reports.utils.utils import get_chrome_options
+from provider_reports.schema.schema import TransactionRecord
+from provider_reports.utils.constants import Store, RAW_REPORTS_PATH, Provider, \
+    ReportType, Extensions, DATA_PATH_RAW, PaymentType
+from provider_reports.utils.utils import get_chrome_options, \
+    standardize_order_report_setup
 from provider_reports.utils.validation_utils import ValidationUtils
+
+
+def fill_unnamed_columns(cols):
+    updated_list = [element if 'Unnamed' not in element else '' for element in cols]
+    return updated_list
+
+
+def find_index_of_slice_adjustment(orders_list):
+    for i, record in enumerate(orders_list):
+        if isinstance(record[0], str) and 'slice adjustments' in record[0].lower():
+            return i
+
+
+def find_index_of_first_order_row(orders_list):
+    desired_format = '%b %d, %Y'
+
+    # Iterate through the list and find the index of the first record
+    for i, record in enumerate(orders_list):
+        if isinstance(record[0], str):
+            try:
+                datetime.strptime(record[0], desired_format)
+                return i
+            except ValueError:
+                continue
+
+
+def create_order_header(orders_list):
+    # transpose the list to invert rows & columns
+    df = pd.DataFrame(orders_list)
+    df = df.transpose()
+    df = df.fillna('')
+    header_cols = []
+    rows = df.values.tolist()
+
+    for row in rows:
+        converted_data = [str(int(value))
+                          if isinstance(value, float) and value.is_integer()
+                          else str(value) for value in row]
+        joined_row = ' '.join([v for v in converted_data if v])
+        header_cols.append(joined_row.strip())
+    # return [h for h in header_cols if h]
+    return header_cols
+
+
+def standardize_row_group(row_group, header):
+    all_len_match = all(len(row) == len(row_group[0]) for row in row_group)
+    if not all_len_match:
+        raise Exception(f'All rows do not match len in row group: {row_group}')
+
+    if len(row_group[0]) == len(header):
+        return create_order_header(row_group)
+
+    # handle the larger size where row length is different
+    # second row is the one that is full of values (examples below)
+    # ['Saturday 82369372', nan, nan, 'Credit', 'Delivery', '$40.20 $1.99', nan, '$0.00',
+    # '$3.27 $0.00', '$45.46', nan, '-$2.99', '-$1.82']
+    # ['Saturday 17719778', nan, nan, 'Phone', '-', '- -', nan, '-', '- -', '-', nan, '-$2.99', '-']
+    altered_lists = pd.DataFrame(row_group[1]).fillna('').values.tolist()
+    second_row = []
+    for lst in altered_lists:
+        vals = ' '.join(lst).strip()
+        vals_list = [v for v in vals.split(' ') if v]
+        second_row.extend(vals_list)
+    first_item = ' '.join([row_group[0][0], second_row[0], row_group[2][0]])
+    fixed_record = [first_item] + second_row[1:]
+    assert len(fixed_record) == len(header), f'Adjusted row mismatch: {fixed_record}, headers {header}'
+    return fixed_record
 
 
 class SliceOrders(OrdersProvider):
@@ -46,8 +114,8 @@ class SliceOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        # self.driver = webdriver.Chrome(options=get_chrome_options())
-        # self.wait = WebDriverWait(self.driver, 60)
+        self.driver = webdriver.Chrome(options=get_chrome_options())
+        self.wait = WebDriverWait(self.driver, 60)
 
     def get_store_id(self):
         store_ids = {
@@ -190,103 +258,164 @@ class SliceOrders(OrdersProvider):
 
     def postprocess_reports(self):
         """
-        Postprocess the retrieved orders from the Slice provider. Only expect one PDF file.
+        Postprocess the retrieved orders from the Slice provider.
+        Parse the PDF for order information and try to get summary info.
+        TODO: write steps to process summary report & add validation steps
         """
         if not self.downloaded_files:
             print('No downloaded_files to process')
             return
 
-        for downloaded_file in self.downloaded_files:
-            # processed_file = self.create_processed_filename(ReportType.ORDERS, Extensions.PDF)
-            # shutil.copy(downloaded_file, processed_file)
-            # self.processed_files.append(processed_file)
-            # print(f'Saved {self.store_name} orders to: {processed_file}')
+        # Extract tables from the PDF - tables here is just data in pdf
+        downloaded_file = self.downloaded_files[0]
+        tables = tabula.read_pdf(downloaded_file, pages='all', multiple_tables=True, guess=False)
+        print(f'{len(tables)} tables identified in pdf: {downloaded_file}')
 
-            # Extract tables from the PDF
-            import tabula
-            tables = tabula.read_pdf(downloaded_file, pages='all', multiple_tables=True, guess=False)
-            print('tables here')
-            print(len(tables))
+        # Iterate through all rows and make some assumptions on breaking points
+        # 1. One csv will be the summary info (Dataframes with 3 columns)
+        # 2. One csv will be the orders info (Dataframes with 12/13 columns)
+        # 3. One csv will be the adjustment info (Dataframes with 13 columns)
 
-            # # Iterate over each table
-            # for table in tables:
-            #     # Process the table data
+        summary_rows = []
+        order_rows = []
+        orders_index = None  # index that orders begin
+        for i, table in enumerate(tables):
+            # print(table)  # Example: Print the table data
+            header = table.columns.tolist()
+            data = table.values.tolist()
 
+            # marks end of parsing last page reached
+            if 'FAQ' in header:
+                break
 
-            merged_rows = []
-            for table in tables:
-                # print(table)  # Example: Print the table data
-                header = table.columns.tolist()
-                data = table.values.tolist()
-                print('---' + str(len(data) + 1) + '---')
-                # Extract the data from the table
-                print(header)
+            # mark the orders starting
+            if ('Orders' in header and all('Unnamed' in column for column in header[1:])) \
+                    or (orders_index and i >= orders_index):
+                # set value to compare against
+                if orders_index is None:
+                    orders_index = i
+                order_rows.append(fill_unnamed_columns(header))
                 for d in data:
-                    print(d)
+                    order_rows.append(d)
+            else:
+                # if prior to orders then keep the records of overview numbers
+                summary_rows.append(header)
+                for d in data:
+                    summary_rows.append(d)
 
-                # for i in range(0, len(data), 4):
-                #     if len(data) > i + 2:
-                #         row1 = data[i]
-                #         row2 = data[i+1]
-                #         row3 = data[i + 2]
-                #         print(row1, row2, row3)
-                #     else:
-                #         print('not enough rows!!')
-                #         print(data[i])
+        ind = find_index_of_first_order_row(order_rows)
+        slice_adjustment_ind = find_index_of_slice_adjustment(order_rows)
+        # first row is just Orders header so skip
+        order_header = create_order_header(order_rows[1:ind])
+        true_order_rows = order_rows[ind:slice_adjustment_ind]
+        assert len(true_order_rows) % 3 == 0, \
+            "The length of orders_list is not divisible by 3. Issue parsing."
 
+        # process all order rows (separate by column count (12 vs 13)
+        # first 4 rows are just trying to make headers
+        # identify when we see 'Slice Adjustments'
+        # the rest of the rows are groups of 3 for data records
+        standardized_rows = []
+        for i in range(0, len(true_order_rows), 3):
+            row_group = true_order_rows[i:i + 3]
+            # Process the three rows together
+            standardized_row = standardize_row_group(row_group, order_header)
+            standardized_rows.append(standardized_row)
 
+        df = pd.DataFrame(standardized_rows, columns=order_header)
+        df = df.replace('-', '0')  # replace - to zero
 
+        processed_file = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV)
+        df.to_csv(processed_file)
+        self.processed_files.append(processed_file)
+        print(f'Saved {self.store_name} orders to: {processed_file}')
 
+        # strip out first row that says Slice Adjustments
+        slice_adj_rows = order_rows[slice_adjustment_ind + 1:]
+        ind = find_index_of_first_order_row(slice_adj_rows)
+        true_slice_adj_rows = slice_adj_rows[ind:]
+        adj_header = create_order_header(slice_adj_rows[0: ind])
 
-                # # Merge every three rows
-                # for i in range(0, len(data), 4):
-                #     merged_row = [str(data[i][0])]  # Convert float to string
-                #     print(merged_row)
-                #
-                #     # Combine the first column of the header row
-                #     if i == 0 and j == 0:
-                #         merged_row[0] += ' ' + str(data[i + 1][0])
-                #
-                #     # Merge the rest of the rows
-                #     for j in range(4):
-                #         if i + j < len(data):
-                #             merged_row.extend(data[i + j][1:])
-                #     merged_rows.append(merged_row)
+        adj_rows = []
+        for i in range(0, len(true_slice_adj_rows), 3):
+            row_group = true_slice_adj_rows[i:i + 3]
+            # Process the three rows together
+            standardized_row = standardize_row_group(row_group, adj_header)
+            adj_rows.append([e for e in standardized_row if e])
 
-            # # Create a DataFrame from the merged rows
-            # merged_df = pd.DataFrame(merged_rows)
-            #
-            # # Replace NaN values with empty strings
-            # merged_df = merged_df.replace(np.nan, '', regex=True)
-            #
-            # # Display the merged DataFrame
-            # print(merged_df)
+        df = pd.DataFrame(adj_rows, columns=[c for c in adj_header if c])
+        df = df.replace('-', '0')  # replace - to zero
+        processed_file = self.create_processed_filename(ReportType.ADJUSTMENTS, Extensions.CSV)
+        df.to_csv(processed_file)
+        self.processed_files.append(processed_file)
+        print(f'Saved {self.store_name} adjustments to: {processed_file}')
 
     def standardize_orders_report(self):
-        pass
+        """
+        Standardize report to conform to expected table format.
+        """
+        rename_map = {
+            'Order ID': TransactionRecord.TRANSACTION_ID,
+            'Order Type': TransactionRecord.PAYMENT_TYPE,
+            'Date & Time': TransactionRecord.ORDER_DATE,
+            'Subtotal': TransactionRecord.SUBTOTAL,
+            'Cust. Delivery Fee': TransactionRecord.DELIVERY_CHARGE,
+            'Order Adjust.': TransactionRecord.ADJUSTMENT_FEE,
+            'Tax': TransactionRecord.TAX_WITHHELD,
+            'Tips': TransactionRecord.TIP,
+            'Order Total': TransactionRecord.TOTAL_BEFORE_FEES,
+            "P'ship Fee": TransactionRecord.COMMISSION_FEE,
+            'Proc. Fee': TransactionRecord.MERCHANT_PROCESSING_FEE,
+        }
+        # Get order file
+        orders_file = [f for f in self.processed_files if ReportType.ORDERS in f][0]
+        df = pd.read_csv(orders_file)
+        # remove voided orders
+        df = df[df['Order Total'] != 'VOIDED']
+        # convert all $ columns to remove that value
+        df = standardize_order_report_setup(None, rename_map, self.PROVIDER, self.store, df)
+        # put note for phone orders and add credit type
+        df.loc[df[TransactionRecord.PAYMENT_TYPE] == 'phone', TransactionRecord.NOTES] = 'This is a phone order commission record'
+        df.loc[df[TransactionRecord.PAYMENT_TYPE] == 'phone', TransactionRecord.PAYMENT_TYPE] = PaymentType.CREDIT
+        # after fees record
+        TransactionRecord.calculate_total_after_fees(df)
+        # payout record
+        TransactionRecord.calculate_payout(df)
+        # Pay amount (zero when cash since goes to our pos, total when credit)
+        df.loc[df[TransactionRecord.PAYMENT_TYPE] == PaymentType.CASH, TransactionRecord.PAYOUT] = 0
+        print(df)
+        # Write the transformed data to a new CSV file (csv and parquet)
+        raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
+        df.to_csv(raw_data_filename, index=False)
+        self.data_files.append(raw_data_filename)
+        print(f'Saved {self.store_name} data orders to: {raw_data_filename}. Based off of processed file: {orders_file}.')
 
     def validate_reports(self):
         """
         Perform report validation specific to the Slice provider.
         """
-        ValidationUtils.validate_processed_files_count(self.processed_files, 1)
+        order_files = [f for f in self.processed_files if ReportType.ORDERS in f]
+        ValidationUtils.validate_processed_files_count(order_files, 1)
         ValidationUtils.validate_downloaded_files_count(self.downloaded_files, 1)
-        ValidationUtils.validate_processed_files_extension(self.processed_files, Extensions.PDF)
+        ValidationUtils.validate_processed_files_extension(self.processed_files, Extensions.CSV)
         ValidationUtils.validate_downloaded_files_extension(self.downloaded_files, Extensions.PDF)
+        ValidationUtils.validate_data_files_count(self.data_files, 1)
+        ValidationUtils.validate_downloaded_files_extension(self.data_files, Extensions.CSV)
+        ValidationUtils.validate_data_file_columns_match(self.data_files[0])
         print("Report validation successful")
 
     def upload_reports(self):
         """
         Upload the processed report to a remote location specific to the Slice provider.
         """
-        # TODO: Implement report uploading logic for Slice
-        pass
+        self.write_parquet_data()
 
     def quit(self):
         """
         Quit the Slice provider session.
         """
-        self.driver.quit()
+        if self.driver:
+            self.driver.quit()
 
 
 def main():
@@ -296,19 +425,20 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     credential_file_path = '../credentials/slice_credentials.json'
-    start_date = datetime.datetime(2023, 1, 1)
-    end_date = datetime.datetime(2023, 1, 28)
+    start_date = datetime(2023, 1, 1)
+    end_date = datetime(2023, 1, 28)
     store_name = Store.AMECI
 
     orders = SliceOrders(credential_file_path, start_date, end_date, store_name)
-    # orders.login()
-    # orders.preprocess_reports()
-    # orders.get_reports()
-    orders.downloaded_files = ['/Users/ahaidrey/Desktop/acelife/provider_reports/reports/slice_1686121049.pdf']
+    orders.login()
+    orders.preprocess_reports()
+    orders.get_reports()
+    # orders.downloaded_files = ['/Users/ahaidrey/Desktop/acelife/provider_reports/reports/slice_1686121049.pdf']
     orders.postprocess_reports()
+    orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
-    # orders.quit()
+    orders.quit()
 
 
 if __name__ == '__main__':

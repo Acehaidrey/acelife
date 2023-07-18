@@ -48,6 +48,7 @@ class ReportType:
     ORDERS = 'orders'
     CUSTOMERS = 'customers'
     INVOICES = 'invoices'
+    ADJUSTMENTS = 'adjustments'
 
 
 class Extensions:

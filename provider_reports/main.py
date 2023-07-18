@@ -190,22 +190,22 @@ if __name__ == "__main__":
     run_orders_providers(start_date, end_date, providers, stores, log_file)
 
 # orderinn endpoint (X)
+# fix slice script (X)
 
-
-# do a deduplication step based on transaction info (separate table maybe)
-# build quick dashboard for it
-
-# fix slice script
+# ubereats get the prod version running with webhook
+# grubhub -- setup email way to automate
 
 # get files from GSuite
 #  menustar, toast_finances
 
-# ubereats get the prod version running with webhook
-# grubhub -- setup email way to automate
+
+# do a deduplication step based on transaction info (separate table maybe)
+# improve by unifying all the underlying files
+# build quick dashboard for it
+
 # get the toast and vantiv reports
 # delivery.com ? cater2me ? beyond_menu ?
 # how to handle speedline ?
-# improve by unifying all the underlying files
 
 # fix the logging if needed
 # fix the error handling when things aren't working out
