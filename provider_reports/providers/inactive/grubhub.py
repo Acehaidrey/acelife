@@ -36,8 +36,8 @@ class GrubhubOrders(OrdersProvider):
 
         Args:
             credential_file_path (str): The path to the credential file.
-            start_date (str): The start date for retrieving orders.
-            end_date (str): The end date for retrieving orders.
+            start_date (datetime.datetime): The start date for retrieving orders.
+            end_date (datetime.datetime): The end date for retrieving orders.
             store_name (Store): The name of the store associated with the provider.
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
@@ -91,6 +91,9 @@ class GrubhubOrders(OrdersProvider):
         # self.processed_files.append(processed_file)
         # print(f'Saved {self.store_name} orders to: {processed_file}')
 
+    def standardize_orders_report(self):
+        pass
+
     def validate_reports(self):
         """
         Perform report validation specific to the Grubhub provider.
@@ -126,8 +129,8 @@ def main():
     pd.set_option('display.max_columns', None)
     pd.set_option('display.width', None)
     credential_file_path = '../../credentials/grubhub_credentials.json'
-    start_date = '04/01/2023'
-    end_date = '04/30/2023'
+    start_date = datetime(2023, 4, 1)
+    end_date = datetime(2023, 4, 30)
     store_name = Store.AROMA
 
     orders = GrubhubOrders(credential_file_path, start_date, end_date, store_name)
@@ -135,6 +138,7 @@ def main():
     orders.preprocess_reports()
     orders.get_reports()
     orders.postprocess_reports()
+    orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
     orders.quit()

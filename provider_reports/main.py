@@ -98,6 +98,8 @@ def run_orders_providers(start_date, end_date, provider_names=None, filtered_sto
                         except Exception as e:
                             logger.error(f"{provider_name}: {store} failed on stage: {stage} with error: {str(e)}")
                             logger.error(traceback.format_exc())
+                        finally:
+                            orders_provider.quit()
 
                     end_time = time.time()
                     logger.info(f'{provider_name}: {store} Took {round(end_time - start_time, 2)} seconds to run.')
@@ -194,14 +196,18 @@ if __name__ == "__main__":
 
 # get files from GSuite
 #  menustar, toast_finances
+# delivery.com ?
 
 # do a deduplication step based on transaction info (separate table maybe)
 # improve by unifying all the underlying files
 # build quick dashboard for it
 
 # get the toast and vantiv reports
-# delivery.com ? cater2me ? beyond_menu ?
 # how to handle speedline ?
 
 # fix the logging if needed
 # fix the error handling when things aren't working out
+
+# grubhub post report download steps
+# doordash post report download steps
+# uber post report download steps

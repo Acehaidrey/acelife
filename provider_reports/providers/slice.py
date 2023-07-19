@@ -383,7 +383,6 @@ class SliceOrders(OrdersProvider):
         TransactionRecord.calculate_payout(df)
         # Pay amount (zero when cash since goes to our pos, total when credit)
         df.loc[df[TransactionRecord.PAYMENT_TYPE] == PaymentType.CASH, TransactionRecord.PAYOUT] = 0
-        print(df)
         # Write the transformed data to a new CSV file (csv and parquet)
         raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
         df.to_csv(raw_data_filename, index=False)

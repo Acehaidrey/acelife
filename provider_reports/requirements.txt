@@ -12,3 +12,4 @@ pyarrow
 duckdb
 streamlit
 google-api-python-client
+lxml
