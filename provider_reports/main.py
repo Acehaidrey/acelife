@@ -189,15 +189,11 @@ if __name__ == "__main__":
     setup(args.cleanup)
     run_orders_providers(start_date, end_date, providers, stores, log_file)
 
-# orderinn endpoint (X)
-# fix slice script (X)
 
 # ubereats get the prod version running with webhook
-# grubhub -- setup email way to automate
 
 # get files from GSuite
 #  menustar, toast_finances
-
 
 # do a deduplication step based on transaction info (separate table maybe)
 # improve by unifying all the underlying files
