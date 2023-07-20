@@ -192,22 +192,26 @@ if __name__ == "__main__":
     run_orders_providers(start_date, end_date, providers, stores, log_file)
 
 
+# grubhub post report download steps
+# get files from GSuite
+#  menustar, toast_finances, grubhub
+
+# improve by unifying all the underlying files
+
 # ubereats get the prod version running with webhook
 
-# get files from GSuite
-#  menustar, toast_finances
-# delivery.com ?
+# delivery.com ? chownow?
 
 # do a deduplication step based on transaction info (separate table maybe)
-# improve by unifying all the underlying files
 # build quick dashboard for it
 
 # get the toast and vantiv reports
 # how to handle speedline ?
 
+# MANUAL: speedline, vantiv
+
 # fix the logging if needed
 # fix the error handling when things aren't working out
 
-# grubhub post report download steps
 # doordash post report download steps
 # uber post report download steps

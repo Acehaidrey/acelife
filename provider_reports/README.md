@@ -122,23 +122,24 @@ handling that to place files in the `reports_processed/` directory.
 
 #### Reports Status Tracker & Future Work
 
-| Provider         | Status          | Blockers / Notes                                                                         |
-|------------------|-----------------|------------------------------------------------------------------------------------------| 
-| Brygid           | DONE            | Download customer info after order info.                                                 |
-| Eatstreet        | DONE            | Convert html download to csv to take transaction info only.                              |
-| EZCater          | DONE            | Both stores same login. One download & separate out orders per location.                 |
-| Future Foods     | DONE            | Aroma virtual kitchen files.                                                             |
-| Grubhub          | BLOCKED         | Knows its an automated script requiring captcha. NO API available.                       |
-| Menufy           | DONE            | Donwload order, del info, and customer email info and combine customer info.             |
-| Office Express   | DONE            | Both stores same login. One download & separate out orders per location.                 |
-| Doordash         | NOT YET STARTED | Need to download order info, drive info, error info, & cancelled info.                   |
-| UberEats         | IN PROGRESS     | Need to download order info, error info, & cancelled info.                               |
-| Slice            | IN PROGRESS     | Need to download order info pdf and get info exported from there. Extraction to be done. |
-| Toast            | DONE            | Using SFTP client. Need to download order info, customer info, and payment info.         |
-| Vantiv           | NOT YET STARTED | Need to get merchant processing statements.                                              |
-| Restaurant Depot | DONE            | Need to get invoice receipts to feed into xtraChef for product pricing.                  |
-| ChowNow          | NOT YET STARTED | Chownow is an online order provider.                                                     |
-| OrderInn         | NOT YET STARTED | Charges for commission Ameci.                                                            |
+| Provider         | Status          | Blockers / Notes                                                                   |
+|------------------|-----------------|------------------------------------------------------------------------------------| 
+| Brygid           | DONE            | Download customer info after order info.                                           |
+| Eatstreet        | DONE            | Convert html download to csv to take transaction info only.                        |
+| EZCater          | DONE            | Both stores same login. One download & separate out orders per location.           |
+| Future Foods     | DONE            | Aroma virtual kitchen files.                                                       |
+| Menufy           | DONE            | Donwload order, del info, and customer email info and combine customer info.       |
+| Office Express   | DONE            | Both stores same login. One download & separate out orders per location.           |
+| Slice            | DONE            | Need to download order info pdf and get info exported from there. Extraction done. |
+| Toast            | DONE            | Using SFTP client. Need to download order info, customer info, and payment info.   |
+| Restaurant Depot | DONE            | Need to get invoice receipts to feed into xtraChef for product pricing.            |
+| OrderInn         | DONE            | Charges for commission Ameci.                                                      |
+| BeyondMenu       | DONE            | Restaurant order partner.                                                          |
+| Grubhub          | BLOCKED         | Knows its an automated script requiring captcha. NO API available.                 |
+| ChowNow          | NOT YET STARTED | Chownow is an online order provider.                                               |
+| Vantiv           | BLOCKED         | Need to get merchant processing statements. Manual Login Only.                     |
+| Doordash         | NOT YET STARTED | Need to download order info, drive info, error info, & cancelled info.             |
+| UberEats         | IN PROGRESS     | Need to download order info, error info, & cancelled info. Setup Webhook Needed.   |
 
 
 These providers need to be finished and then there are some providers who we handle

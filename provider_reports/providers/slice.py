@@ -114,8 +114,8 @@ class SliceOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        self.driver = webdriver.Chrome(options=get_chrome_options())
-        self.wait = WebDriverWait(self.driver, 60)
+        self.driver = None
+        self.wait = None
 
     def get_store_id(self):
         store_ids = {
@@ -129,6 +129,9 @@ class SliceOrders(OrdersProvider):
         """
         Perform the login process for the Slice provider.
         """
+        self.driver = webdriver.Chrome(options=get_chrome_options())
+        self.wait = WebDriverWait(self.driver, 60)
+
         self.driver.get(SliceOrders.LOGIN_URL)
         username_input = self.wait.until(EC.presence_of_element_located((By.ID, "username")))
         username_input.clear()

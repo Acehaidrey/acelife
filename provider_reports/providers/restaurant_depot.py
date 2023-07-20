@@ -43,8 +43,8 @@ class RestaurantDepotReceipts(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        self.driver = webdriver.Chrome(options=get_chrome_options())
-        self.wait = WebDriverWait(self.driver, 30)
+        self.driver = None
+        self.wait = None
         self.number_of_invoice_rows = 0
 
     @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
@@ -52,6 +52,9 @@ class RestaurantDepotReceipts(OrdersProvider):
         """
         Perform the login process for the RestaurantDepot provider.
         """
+        self.driver = webdriver.Chrome(options=get_chrome_options())
+        self.wait = WebDriverWait(self.driver, 30)
+
         self.driver.get(RestaurantDepotReceipts.LOGIN_URL)
         username_input = self.wait.until(EC.presence_of_element_located((By.ID, "email")))
         username_input.clear()

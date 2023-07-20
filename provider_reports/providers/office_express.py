@@ -45,14 +45,17 @@ class FoodjaOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        self.driver = webdriver.Chrome(options=get_chrome_options())
-        self.wait = WebDriverWait(self.driver, 10)
+        self.driver = None
+        self.wait = None
 
     @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
     def login(self):
         """
         Perform the login process for the Foodja provider.
         """
+        self.driver = webdriver.Chrome(options=get_chrome_options())
+        self.wait = WebDriverWait(self.driver, 10)
+
         self.driver.get(FoodjaOrders.LOGIN_URL)
         login_link = self.wait.until(EC.element_to_be_clickable((By.LINK_TEXT, "LOG IN")))
         login_link.click()
