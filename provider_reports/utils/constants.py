@@ -86,6 +86,7 @@ class Provider(enum.Enum):
     RESTAURANT_DEPOT = 'restaurant_depot'
     ORDER_INN = 'order_inn'
     BEYOND_MENU = 'beyond_menu'
+    DELIVERY_COM = 'delivery_com'
 
 
 class Stage(enum.Enum):

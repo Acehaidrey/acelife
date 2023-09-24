@@ -196,18 +196,15 @@ if __name__ == "__main__":
 # get files from GSuite
 #  menustar, toast_finances, grubhub
 
-# improve by unifying all the underlying files
 
 # ubereats get the prod version running with webhook
 
-# delivery.com ? chownow?
+# delivery.com ? chownow ?
 
 # do a deduplication step based on transaction info (separate table maybe)
 # build quick dashboard for it
 
-# get the toast and vantiv reports
 # how to handle speedline ?
-
 # MANUAL: speedline, vantiv
 
 # fix the logging if needed

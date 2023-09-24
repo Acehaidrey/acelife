@@ -30,9 +30,9 @@ def authenticate():
             print(creds)
         except ValueError as e:
             print(f'Error getting credential file: {e}')
-
+    print(vars(creds))
     if not creds or not creds.valid:
-        if creds and creds.expired and creds.refresh_token:
+        if creds and creds.expired and creds.refresh_token and False:
             creds.refresh(Request())
         else:
             flow = InstalledAppFlow.from_client_secrets_file(credential_file_path, SCOPES)
