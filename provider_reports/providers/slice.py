@@ -114,8 +114,8 @@ class SliceOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        self.driver = webdriver.Chrome(options=get_chrome_options())
-        self.wait = WebDriverWait(self.driver, 60)
+        self.driver = None
+        self.wait = None
 
     def get_store_id(self):
         store_ids = {
@@ -129,6 +129,9 @@ class SliceOrders(OrdersProvider):
         """
         Perform the login process for the Slice provider.
         """
+        self.driver = webdriver.Chrome(options=get_chrome_options())
+        self.wait = WebDriverWait(self.driver, 60)
+
         self.driver.get(SliceOrders.LOGIN_URL)
         username_input = self.wait.until(EC.presence_of_element_located((By.ID, "username")))
         username_input.clear()
@@ -383,7 +386,6 @@ class SliceOrders(OrdersProvider):
         TransactionRecord.calculate_payout(df)
         # Pay amount (zero when cash since goes to our pos, total when credit)
         df.loc[df[TransactionRecord.PAYMENT_TYPE] == PaymentType.CASH, TransactionRecord.PAYOUT] = 0
-        print(df)
         # Write the transformed data to a new CSV file (csv and parquet)
         raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
         df.to_csv(raw_data_filename, index=False)

@@ -47,16 +47,19 @@ class EatstreetOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        cap = DesiredCapabilities.CHROME
-        cap["pageLoadStrategy"] = "none"
-        self.driver = webdriver.Chrome(options=get_chrome_options(), desired_capabilities=cap)
-        self.wait = WebDriverWait(self.driver, 20)
+        self.driver = None
+        self.wait = None
 
     @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
     def login(self):
         """
         Perform the login process for the Eatstreet provider.
         """
+        cap = DesiredCapabilities.CHROME
+        cap["pageLoadStrategy"] = "none"
+        self.driver = webdriver.Chrome(options=get_chrome_options(), desired_capabilities=cap)
+        self.wait = WebDriverWait(self.driver, 20)
+
         self.driver.get(EatstreetOrders.LOGIN_URL)
         username_input = self.wait.until(EC.presence_of_element_located((By.ID, "identifier")))
         username_input.clear()
@@ -126,15 +129,12 @@ class EatstreetOrders(OrdersProvider):
 
         # Get the HTML content of the page
         html_content = self.driver.page_source
-        sdate = self.start_date.replace('/', '_')
-        edate = self.end_date.replace('/', '_')
-        orders_filename = f'eatstreet_{self.store_name.lower()}_orders_{sdate}_{edate}.html'
-        full_filename = os.path.join(RAW_REPORTS_PATH, orders_filename)
-        with open(full_filename, 'w+', encoding='utf-8') as file:
+        orders_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.HTML, parent_path=RAW_REPORTS_PATH)
+        with open(orders_filename, 'w+', encoding='utf-8') as file:
             file.write(html_content)
 
-        print(f"Downloaded file(s): {full_filename}")
-        self.downloaded_files.extend(full_filename)
+        self.downloaded_files.append(orders_filename)
+        print(f"Downloaded file(s): {self.downloaded_files}")
 
     def preprocess_reports(self):
         """

@@ -8,7 +8,6 @@ import pandas as pd
 import retrying
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -41,8 +40,7 @@ class OrderInnOrders(OrdersProvider):
 
     def __init__(self, credential_file_path, start_date, end_date, store_name):
         """
-        Initialize the FoodjaOrders/OfficeExpressOrders provider.
-        Office Express is historic name where Foodja is new name.
+        Initialize the Order Inn provider.
 
         Args:
             credential_file_path (str): The path to the credential file.
@@ -52,14 +50,17 @@ class OrderInnOrders(OrdersProvider):
         """
         super().__init__(credential_file_path, start_date, end_date, store_name)
 
-        # self.driver = webdriver.Chrome(options=get_chrome_options())
-        # self.wait = WebDriverWait(self.driver, 10)
+        self.driver = None
+        self.wait = None
 
     @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
     def login(self):
         """
-        Perform the login process for the EZCater provider.
+        Perform the login process for the Order Inn provider.
         """
+        self.driver = webdriver.Chrome(options=get_chrome_options())
+        self.wait = WebDriverWait(self.driver, 10)
+
         self.driver.get(OrderInnOrders.LOGIN_URL)
         username_input = self.wait.until(EC.presence_of_element_located((By.NAME, "Username")))
         username_input.clear()
@@ -138,8 +139,6 @@ class OrderInnOrders(OrdersProvider):
         df[TransactionRecord.NOTES] = df.apply(lambda row: f'{row["order_count"]} orders. {row["hangups"]} hangups. Payout part of speedline.', axis=1)
         df = df.reindex(columns=TransactionRecord.get_column_names())
 
-        print(df)
-        return
         # Write the transformed data to a new CSV file (csv and parquet)
         raw_data_filename = self.create_processed_filename(ReportType.ORDERS, Extensions.CSV, parent_path=DATA_PATH_RAW)
         df.to_csv(raw_data_filename, index=False)
@@ -161,7 +160,6 @@ class OrderInnOrders(OrdersProvider):
         self.driver.quit()
 
 
-
 def main():
     """
     Main entry point for the script.
@@ -174,9 +172,9 @@ def main():
     store_name = Store.AMECI
 
     orders = OrderInnOrders(credential_file_path, start_date, end_date, store_name)
-    # orders.login()
-    # orders.preprocess_reports()
-    # orders.get_reports()
+    orders.login()
+    orders.preprocess_reports()
+    orders.get_reports()
     orders.downloaded_files = [
         '/Users/ahaidrey/Desktop/acelife/provider_reports/reports/RestData (1).csv',
     ]
@@ -184,7 +182,7 @@ def main():
     orders.standardize_orders_report()
     orders.validate_reports()
     orders.upload_reports()
-    # orders.quit()
+    orders.quit()
 
 
 if __name__ == '__main__':

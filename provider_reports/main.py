@@ -98,6 +98,8 @@ def run_orders_providers(start_date, end_date, provider_names=None, filtered_sto
                         except Exception as e:
                             logger.error(f"{provider_name}: {store} failed on stage: {stage} with error: {str(e)}")
                             logger.error(traceback.format_exc())
+                        finally:
+                            orders_provider.quit()
 
                     end_time = time.time()
                     logger.info(f'{provider_name}: {store} Took {round(end_time - start_time, 2)} seconds to run.')
@@ -189,23 +191,24 @@ if __name__ == "__main__":
     setup(args.cleanup)
     run_orders_providers(start_date, end_date, providers, stores, log_file)
 
-# orderinn endpoint (X)
-# fix slice script (X)
+
+# grubhub post report download steps
+# get files from GSuite
+#  menustar, toast_finances, grubhub
+
 
 # ubereats get the prod version running with webhook
-# grubhub -- setup email way to automate
 
-# get files from GSuite
-#  menustar, toast_finances
-
+# delivery.com ? chownow ?
 
 # do a deduplication step based on transaction info (separate table maybe)
-# improve by unifying all the underlying files
 # build quick dashboard for it
 
-# get the toast and vantiv reports
-# delivery.com ? cater2me ? beyond_menu ?
 # how to handle speedline ?
+# MANUAL: speedline, vantiv
 
 # fix the logging if needed
 # fix the error handling when things aren't working out
+
+# doordash post report download steps
+# uber post report download steps

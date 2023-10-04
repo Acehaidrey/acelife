@@ -49,14 +49,17 @@ class EZCaterOrders(OrdersProvider):
         self.start_date = self.start_date_dt.strftime('%Y-%m-%d')
         self.end_date = self.end_date_dt.strftime('%Y-%m-%d')
         self.download_report_name_prefix = 'completed_orders_' + str(int(time.time()))
-        self.driver = webdriver.Chrome(options=get_chrome_options())
-        self.wait = WebDriverWait(self.driver, 30)
+        self.driver = None
+        self.wait = None
 
     @retrying.retry(wait_fixed=5000, stop_max_attempt_number=3)
     def login(self):
         """
         Perform the login process for the EZCater provider.
         """
+        self.driver = webdriver.Chrome(options=get_chrome_options())
+        self.wait = WebDriverWait(self.driver, 30)
+
         self.driver.get(EZCaterOrders.LOGIN_URL)
         username_input = self.wait.until(EC.presence_of_element_located((By.ID, "email")))
         username_input.clear()
