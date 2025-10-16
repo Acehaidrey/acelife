@@ -95,6 +95,7 @@ function extractSliceOrdersToNewSheet() {
  */
 function extractOrderDetailsFromHtml(htmlBody, emailDate) {
   const details = {};
+  const normalizedHtml = htmlBody.replace(/&nbsp;/gi, ' ');
 
   // Helper to find text between two strings (inclusive of start, exclusive of end)
   function findTextBetween(text, startString, endString) {
@@ -196,9 +197,16 @@ function extractOrderDetailsFromHtml(htmlBody, emailDate) {
         let addressTableMatch = afterNamePhoneTable.match(/(<table[^>]*class="row"[^>]*>[\s\S]*?<\/table>)/);
         if (addressTableMatch && addressTableMatch[1]) {
           const addressTableHtml = addressTableMatch[1];
-          const addressLinesRaw = addressTableHtml.split(/<br\s*\/?>/).map(line => line.trim()).filter(line => line !== '');
-          if (addressLinesRaw.length > 0 && addressLinesRaw[0] !== 'PICKUP') {
-            details['address'] = addressLinesRaw.join(', ');
+          const addressLinesRaw = addressTableHtml
+            .replace(/<br\s*\/?>/gi, '\n')
+            .replace(/<[^>]+>/g, '\n')
+            .replace(/&nbsp;/gi, ' ')
+            .split(/\n+/)
+            .map(line => line.trim())
+            .filter(line => line !== '');
+          if (addressLinesRaw.length > 0 && addressLinesRaw[0].toUpperCase() !== 'PICKUP') {
+            const cleanedLines = addressLinesRaw.map(line => line.replace(/,\s*$/, '').trim());
+            details['address'] = cleanedLines.join(', ');
           }
         }
       }
@@ -208,13 +216,19 @@ function extractOrderDetailsFromHtml(htmlBody, emailDate) {
 
   // --- Price Extractions (Subtotal, Tax, Tip, Delivery Fee, Coupon Discount, Total) ---
   function extractPrice(label) {
-    // Look for price in <td> tag first
-    let priceMatch = htmlBody.match(new RegExp(`${label}[\s\S]*?<td[^>]*>\s*(\$[\d\.,]+)\s*<\/td>`));
+    const baseLabel = label.replace(/:\s*$/, '');
+    const escapedLabel = baseLabel.replace(/[.*+?^${}()|[\\]\\]/g, '\$&');
+    const labelRegex = new RegExp(String.raw`${escapedLabel}\s*:`, 'i');
+    const labelMatch = labelRegex.exec(normalizedHtml);
+    if (!labelMatch) {
+      return null;
+    }
+    const searchArea = normalizedHtml.slice(labelMatch.index + labelMatch[0].length);
+    let priceMatch = searchArea.match(/<td[^>]*>\s*(\$[\d\.,]+)\s*<\/td>/i);
     if (priceMatch && priceMatch[1]) {
       return priceMatch[1].trim();
     }
-    // Fallback for <p> tag if <td> not found
-    priceMatch = htmlBody.match(new RegExp(`${label}[\s\S]*?<p[^>]*>\s*(\$[\d\.,]+)\s*<\/p>`));
+    priceMatch = searchArea.match(/<p[^>]*>\s*(\$[\d\.,]+)\s*<\/p>/i);
     if (priceMatch && priceMatch[1]) {
       return priceMatch[1].trim();
     }
@@ -229,7 +243,7 @@ function extractOrderDetailsFromHtml(htmlBody, emailDate) {
 
   // Discount Percent is tricky, might need a different pattern
   // For now, let's try to extract it if it's explicitly labeled.
-  match = htmlBody.match(/Discount Percent:[\s\S]*?<p[^>]*>\s*(-?\$?[\d\.,]+%?)\s*<\/p>/);
+  match = normalizedHtml.match(/Discount Percent\s*:[\s\S]*?<p[^>]*>\s*(-?\$?[\d\.,]+%?)\s*<\/p>/i);
   if (match && match[1]) {
     details['discount_percent'] = match[1].trim();
   } else {
@@ -237,7 +251,7 @@ function extractOrderDetailsFromHtml(htmlBody, emailDate) {
   }
 
   // Total (can be in strong tag or regular price)
-  let totalMatch = htmlBody.match(/Total[\s\S]*?<strong>\s*(\$[\d\.,]+)\s*<\/strong>/);
+  let totalMatch = normalizedHtml.match(/Total[\s\S]*?<strong[^>]*>\s*(\$[\d\.,]+)\s*<\/strong>/i);
   if (totalMatch && totalMatch[1]) {
     details['total'] = totalMatch[1].trim();
   } else {
@@ -245,11 +259,11 @@ function extractOrderDetailsFromHtml(htmlBody, emailDate) {
   }
 
   // Payment Method and Last 4 Digits
-  match = htmlBody.match(/<span class="order-transmission__meta-desc"[^>]*>(CREDIT|CASH)<\/span>/);
+  match = normalizedHtml.match(/<span class="order-transmission__meta-desc"[^>]*>\s*(CREDIT|CASH)\s*<\/span>/i);
   if (match && match[1]) {
     details['payment_method'] = match[1].trim();
     if (details['payment_method'] === 'CREDIT') {
-      match = htmlBody.match(/ending in (\d{4})/);
+      match = normalizedHtml.match(/ending in (\d{4})/);
       if (match && match[1]) {
         details['last_4_digits'] = match[1].trim();
       }
