@@ -4,34 +4,112 @@
 //   // Add other platforms if needed for context, but only Slice is processed here
 // };
 
-const SPREADSHEET_ID = '1qsSrlrVyyV9KbFpJOrBtOPKbSZoGhussHoV5iJoNXls'; // Provided Spreadsheet ID
-const SHEET_NAME = 'Testing'; // Assuming default sheet name, adjust if needed
-const HEADERS = [
+// https://docs.google.com/spreadsheets/d/1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro/edit?gid=1537424369#gid=1537424369
+
+const SLICE_ORDERS_SPREADSHEET_ID = '1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro'; // '1qsSrlrVyyV9KbFpJOrBtOPKbSZoGhussHoV5iJoNXls'; // Provided Spreadsheet ID
+const SLICE_ORDERS_SHEET_NAME = 'Slice Order History';
+const SLICE_ORDERS_HEADERS = [
   'restaurant_name', 'order_number', 'day_of_week', 'order_date', 'order_time',
   'first_name', 'last_name', 'phone_number', 'address', 'subtotal', 'tax',
   'tip', 'delivery_fee', 'coupon_discount', 'discount_percent', 'total',
   'payment_method', 'last_4_digits'
 ];
 
-const DEBUG_HTML_SHEET_NAME = 'Debug HTML';
+const SLICE_DEBUG_HTML_SHEET_NAME = 'Slice Order Debug HTML';
 
 function logFullHtmlToSheet(htmlContent, orderNumber) {
-  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-  let debugSheet = spreadsheet.getSheetByName(DEBUG_HTML_SHEET_NAME);
+  const spreadsheet = SpreadsheetApp.openById(SLICE_ORDERS_SPREADSHEET_ID);
+  let debugSheet = spreadsheet.getSheetByName(SLICE_DEBUG_HTML_SHEET_NAME);
 
   if (!debugSheet) {
-    debugSheet = spreadsheet.insertSheet(DEBUG_HTML_SHEET_NAME);
+    debugSheet = spreadsheet.insertSheet(SLICE_DEBUG_HTML_SHEET_NAME);
     debugSheet.appendRow(['Order Number', 'Full HTML Content']);
   }
 
   debugSheet.appendRow([orderNumber, htmlContent]);
-  Logger.log(`Full HTML for order ${orderNumber} logged to sheet "${DEBUG_HTML_SHEET_NAME}".`);
+  Logger.log(`Full HTML for order ${orderNumber} logged to sheet "${SLICE_DEBUG_HTML_SHEET_NAME}".`);
+}
+
+function parseDateInput(dateInput) {
+  if (!dateInput) {
+    return null;
+  }
+  if (Object.prototype.toString.call(dateInput) === '[object Date]' && !isNaN(dateInput)) {
+    return new Date(dateInput.getTime());
+  }
+  if (typeof dateInput === 'string') {
+    const parsed = new Date(dateInput);
+    if (!isNaN(parsed)) {
+      return parsed;
+    }
+    Logger.log(`WARNING: Unable to parse date string "${dateInput}". Ignoring date filter.`);
+    return null;
+  }
+  Logger.log(`WARNING: Unsupported date input "${dateInput}". Ignoring date filter.`);
+  return null;
+}
+
+function normalizeStartOfDay(dateObj) {
+  if (!dateObj) return null;
+  const normalized = new Date(dateObj);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+}
+
+function normalizeEndOfDay(dateObj) {
+  if (!dateObj) return null;
+  const normalized = new Date(dateObj);
+  normalized.setHours(23, 59, 59, 999);
+  return normalized;
+}
+
+function formatDateForGmail(dateObj) {
+  return Utilities.formatDate(dateObj, Session.getScriptTimeZone(), 'yyyy/MM/dd');
+}
+
+function buildThreadQuery(labelName, startInput, endInput) {
+  const startDateRaw = parseDateInput(startInput);
+  const endDateRaw = parseDateInput(endInput);
+
+  if (startDateRaw && endDateRaw && startDateRaw > endDateRaw) {
+    Logger.log('WARNING: Start date is after end date. Swapping the values for filtering.');
+    return buildThreadQuery(labelName, endInput, startInput);
+  }
+
+  const startDate = normalizeStartOfDay(startDateRaw);
+  const endDate = normalizeEndOfDay(endDateRaw);
+
+  if (!startDate && !endDate) {
+    return { startDate: null, endDate: null, query: null };
+  }
+
+  const encodedLabel = labelName.replace(/"/g, '\\"');
+  let query = `label:"${encodedLabel}"`;
+
+  if (startDate) {
+    query += ` after:${formatDateForGmail(startDate)}`;
+  }
+
+  if (endDate) {
+    const nextDay = new Date(endDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+    query += ` before:${formatDateForGmail(nextDay)}`;
+  }
+
+  return { startDate, endDate, query };
+}
+
+function extractSliceOrdersForYesterday() {
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  extractSliceOrdersToGoogleSheet(yesterday, today);
 }
 
 /**
  * Main function to process Slice order emails, extract details, and save to a Google Sheet.
  */
-function extractSliceOrdersToNewSheet() {
+function extractSliceOrdersToGoogleSheet(startDateInput, endDateInput) {
   const userLabel = `${orderLabel}/${Platform.SLICE}`;
   const label = GmailApp.getUserLabelByName(userLabel);
 
@@ -40,48 +118,60 @@ function extractSliceOrdersToNewSheet() {
     return;
   }
 
-  const threads = label.getThreads();
-  Logger.log(`Processing ${threads.length} email threads for ${userLabel}.`);
+  const { startDate, endDate, query } = buildThreadQuery(userLabel, startDateInput, endDateInput);
+  let threads;
 
-  const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
-  const sheet = spreadsheet.getSheetByName(SHEET_NAME);
+  if (query) {
+    threads = GmailApp.search(query);
+    Logger.log(`Processing ${threads.length} email threads for ${userLabel} using query: ${query}`);
+  } else {
+    threads = label.getThreads();
+    Logger.log(`Processing ${threads.length} email threads for ${userLabel}.`);
+  }
+
+  const spreadsheet = SpreadsheetApp.openById(SLICE_ORDERS_SPREADSHEET_ID);
+  const sheet = spreadsheet.getSheetByName(SLICE_ORDERS_SHEET_NAME);
 
   if (!sheet) {
-    Logger.log(`ERROR: Sheet "${SHEET_NAME}" not found in spreadsheet ID "${SPREADSHEET_ID}".`);
+    Logger.log(`ERROR: Sheet "${SLICE_ORDERS_SHEET_NAME}" not found in spreadsheet ID "${SLICE_ORDERS_SPREADSHEET_ID}".`);
     return;
   }
 
   // Add headers if the sheet is empty
   if (sheet.getLastRow() === 0) {
-    sheet.appendRow(HEADERS);
+    sheet.appendRow(SLICE_ORDERS_HEADERS);
   }
 
   for (let i = 0; i < threads.length; i++) {
     const thread = threads[i];
     const messages = thread.getMessages();
+    if (!messages || messages.length === 0) {
+      continue;
+    }
 
-    for (let j = 0; j < messages.length; j++) {
-      const message = messages[j];
-      // Process all messages, regardless of read status
-      // if (!message.isUnread()) {
-      //   continue;
-      // }
+    const message = messages[0];
+    // Process only the first message in the thread, which contains the original order details
+    const htmlBody = message.getBody();
+    const emailDate = message.getDate();
 
-      const htmlBody = message.getBody();
-      const emailDate = message.getDate(); // Get the date for potential 2019 layout handling
+    if (startDate && emailDate < startDate) {
+      continue;
+    }
+    if (endDate && emailDate > endDate) {
+      continue;
+    }
 
-      const orderDetails = extractOrderDetailsFromHtml(htmlBody, emailDate);
+    const orderDetails = extractOrderDetailsFromHtml(htmlBody, emailDate);
 
-      if (orderDetails && orderDetails['order_number']) { // Only save if an order number was extracted
-        const rowData = HEADERS.map(header => orderDetails[header] || '');
-        sheet.appendRow(rowData);
-        message.markRead(); // Mark as read after processing
-      } else {
-        // Log full HTML to a debug sheet if extraction fails
-        const orderNum = orderDetails && orderDetails['order_number'] ? orderDetails['order_number'] : 'UNKNOWN_ORDER';
-        logFullHtmlToSheet(htmlBody, orderNum);
-        Logger.log(`No valid order details extracted for this message. Full HTML logged for ${orderNum}.`);
-      }
+    if (orderDetails && orderDetails['order_number']) { // Only save if an order number was extracted
+      const rowData = SLICE_ORDERS_HEADERS.map(header => orderDetails[header] || '');
+      sheet.appendRow(rowData);
+      message.markRead(); // Mark as read after processing
+    } else {
+      // Log full HTML to a debug sheet if extraction fails
+      const orderNum = orderDetails && orderDetails['order_number'] ? orderDetails['order_number'] : 'UNKNOWN_ORDER';
+      logFullHtmlToSheet(htmlBody, orderNum);
+      Logger.log(`No valid order details extracted for this message. Full HTML logged for ${orderNum}.`);
     }
     // thread.moveToArchive(); // Archive the thread after processing all messages
   }
@@ -217,7 +307,7 @@ function extractOrderDetailsFromHtml(htmlBody, emailDate) {
   // --- Price Extractions (Subtotal, Tax, Tip, Delivery Fee, Coupon Discount, Total) ---
   function extractPrice(label) {
     const baseLabel = label.replace(/:\s*$/, '');
-    const escapedLabel = baseLabel.replace(/[.*+?^${}()|[\\]\\]/g, '\$&');
+    const escapedLabel = baseLabel.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
     const labelRegex = new RegExp(String.raw`${escapedLabel}\s*:`, 'i');
     const labelMatch = labelRegex.exec(normalizedHtml);
     if (!labelMatch) {
