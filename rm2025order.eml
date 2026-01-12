@@ -1,0 +1,1072 @@
+Delivered-To: acehaidrey@gmail.com
+Received: by 2002:a05:6358:61c2:b0:266:49f7:7b71 with SMTP id x2csp3458487rwx;
+        Sun, 30 Nov 2025 12:42:59 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEwCCgvzU8G3NTSwD0qAIXsHxfXvJGf7SyyhR0ZwQHRKh2TEvzgPB7v0p2NPxU4R1ANZRjG
+X-Received: by 2002:a05:620a:45a7:b0:8b2:e179:feb7 with SMTP id af79cd13be357-8b4ebdb0aa1mr3164862685a.49.1764535379494;
+        Sun, 30 Nov 2025 12:42:59 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1764535379; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Vzm6hkbkAWOSl17O7BAsO3KD/+bDC2b+fX9L0K089GNtmIhgX9h7nAwomc/W+9uWHI
+         OUq3C3ggf+ky3W34oYW1xbnM9pi0v9E8DwBsgHjLZxeoadfxctq+fyh5/7W7OOzMDMC/
+         xlTxOWe8plPbi6vluI/WUsuEC5euPaT/m95DYqJfdM+bfqN/GP9MnV8dHG4L2A1wgZMn
+         Y9gUU/MP5Zkq7hRswD8CmZHCQZ4IJdNkWVLjvDNn06sJ1PTvqJSie+CxHNyECYaKG2Aq
+         ZZbMGZxWR+Q3LDXfW/CUv6925RHGX3IhriDSqMFSleRGqIlv4EB0EQRKdvh9kDwsQ73o
+         5L0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=mime-version:subject:references:in-reply-to:message-id:to:from:date
+         :dkim-signature;
+        bh=QHX9MNNjxETPJS0fXdy0XqW5Qeo1l6DIaSKlefHPkTc=;
+        fh=dwccAND2wFfXV2ScEmCvWz5K7WYJWkHV70199wsElFE=;
+        b=bzkdnCqSK3kNx1hBtDTLIQf/4qV2BCsZYBWizgfQuvs+ojOW1olpEyVmbxxUAQAKy7
+         8V8CSEIkQvBWWr2EVcS8nVDbVQnNJqq4Mhcgz6q56sLWg8ceb7Mwlcqxzrv5YIOhdEvX
+         eh8b7sNBTqH5Ib8LKst664D+2JQcRuy55cCij7MwoyTCsZARx6jUQYClLfikshd/NEe9
+         MDvKfCmGr3U0stQMDH8IC1AZySOwDb/aweKCDsXhAYjbS93uKDY0fkFOf8QfiNfgQ7im
+         H7kEEpvKTQkcubyynjOcj247JwvljMyFF9jD/r/8fD3tl/GqaLldys+AnScqHKz/13S7
+         lKCg==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@aol.com header.s=a2048 header.b="ThYMdGY/";
+       spf=pass (google.com: domain of saidhaidrey@aol.com designates 66.163.188.148 as permitted sender) smtp.mailfrom=saidhaidrey@aol.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=aol.com
+Return-Path: <saidhaidrey@aol.com>
+Received: from sonic303-22.consmr.mail.ne1.yahoo.com (sonic303-22.consmr.mail.ne1.yahoo.com. [66.163.188.148])
+        by mx.google.com with ESMTPS id af79cd13be357-8b52a1a0287si338021785a.512.2025.11.30.12.42.59
+        for <acehaidrey@gmail.com>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 30 Nov 2025 12:42:59 -0800 (PST)
+Received-SPF: pass (google.com: domain of saidhaidrey@aol.com designates 66.163.188.148 as permitted sender) client-ip=66.163.188.148;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@aol.com header.s=a2048 header.b="ThYMdGY/";
+       spf=pass (google.com: domain of saidhaidrey@aol.com designates 66.163.188.148 as permitted sender) smtp.mailfrom=saidhaidrey@aol.com;
+       dmarc=pass (p=REJECT sp=REJECT dis=NONE) header.from=aol.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aol.com; s=a2048; t=1764535379; bh=QHX9MNNjxETPJS0fXdy0XqW5Qeo1l6DIaSKlefHPkTc=; h=Date:From:To:In-Reply-To:References:Subject:From:Subject:Reply-To; b=ThYMdGY/3QG024A0qigGqK1ZvUr7Pk6Ci3D7MFt9cHJTWb4mb3j083zpShEeas1298lVrUan7GO61eAYpJ1abh0jH88epitbXa3sAK05aXaF6F3zSDJqIjtCEqk22A39y7gMc8iJ61iM2FTTXN+RZx3Dk/u/fXSc/iUBywuZvjBVoZ3Ll1qNNRHWMWX7zaIyGFpQ9oMvHEwRla3pOaT3SWRp6VMcT4tz8IOOqNIoVgDkN1s4/w66zpEVBXq/QCu5WkOoXf/YqztGYP5oUbNqUkc7HCcW/j9d1efIwGL9RP4+gNjA7nieRBFyMW2Mb7Wro3Zx3BYEnYQdRCENT5qXYA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1764535379; bh=uyWwgpdwUpUS+Z/4L/nzS/t/oxHygpQvAzA4d19q4i/=; h=X-Sonic-MF:Date:From:To:Subject:From:Subject; b=i2yvNR4eUghPPNed2oVwJY7Y+3+VChlLDBdpDt7zOq/pRr7QjOyicon1qPCi0daAyUeZ2+J0uBIAAeNOoY4seg+ag/8P8Mx6deKwWiAABxYy49hsLh5Rz2rOleNmdVdQaFieOfkcHv5skTGJzv8enFLMKQDFcTUE9vAGcBixKaxh0nBdLs9MPZ0AYG70PfDTBnZ8pOowKgccWB7xzshIEOaZP5U4FzVRG4h0hXtcyRZyQAArMzYk+Rbv7T06rbFVwmcgirDympCGJQmrXJANHYUXQTONMnqf9XO431XthotJZgiOyYaFigp4qkkibJJbbQWKIpDjnVusQZ6DA/6Q2A==
+X-YMail-OSG: CgO7QIgVM1lwl_3lnIOJhBBYXJrQ_wUPqKx6RHukmPufY85mJWNW8BqulCNm5mN
+ zOk8b15at2bdVPFTTbVY0RZR8lrHDj1NRln9UKJYU1UMLUvlaHLZMhr0OFaBFwUepfqseUIORUGZ
+ WVyn.4RxVd3_uhOVdfGGkKhmc2IdE2SCzlulknX7YXVOUwpFFGLrtwgvOjWl9wz0K9tnJ_nf0GmZ
+ pWASFuFcDhbKOK9mJ1oo4NhMG_p5nUpdUI43lLnIx9KPxisp8tuhzBqwlVLhfrpjQFYQKj8xktIF
+ WWIIRFfA6EfuL6auv2EOnsXi0HG_1dF6CU9htchZNYf9J0t9edzGh3Ke54L8BlH25n0UpeJx7qih
+ we_50jdG6xkmEUmfBYi9Xsf1l2g9o1yAYpBoLWiUVxMDklEAG_sMysFnI0YZnjPjp9cxFUuKc.Nq
+ GdWbenQdDl4fB9xUYqucGUyIZbUDuw5fM4TnO4fWsFZZE1RvVi0rYRUglj2eUhrkyb028yA3zyg7
+ urJ89SyORTx_wHZ3Sx_FIzHkHnxLlhC2HY9j1KDnlhLI_JoMs2e_Rnq.3QEXFTPjEi.d66HkZAkt
+ 4ajtzgGudJNVxD7FGvJQFRDtQAovR7Nch0EBkQ9xGSPZKC3EfOW1.Cm0DTUw4h698VO9xm.xo1Xc
+ XwAYtdHK10y.kEVBvL2LuXGDWWHj18yG77YZR7iji1dMte89PmKAXictt.D5I.Nstu1D.ldDOmY_
+ 3sf9s8hqOZAgqde7ypCt5jOHcjdKD2PmXUfG86RRC9BoRbhKCJS.eNyn2iLb8jQTWT6UcpWCJ5Fi
+ 1KGEMF8ibLKTQ7io0uLrMB2pJ.SycfQkpPNfg00_wIrKA1IB4BWWEAFm8iBUV1jILoMVRF1Rfg9Z
+ VD9z6sMxxbvB_0gAROpGfAubj4yTnswOqujiWp63hLspDcrmjkc94GHY.OA0nyDOfskLzru5KbNl
+ qbeKPaVqAAwqcOAIunIDOTvfUbl6R2SlE9g37IZe9MOUqxwCNbXzjC9jPFejcy2ZLYAqjtdEyi8s
+ fCQafWKw7wyrUOZCf6cE.tLnyIBpGzPwynFq8GlnlgApptoeCmnqNwao_T17ChRuuq6puGkHsLaM
+ r_.1yDDT0uNMJuRAa_RSKtw6zC6iQ8j2WzAnHZcDx62ixLxeSeNAtOAfdqyOE8mgZD2mxDeor5Mw
+ fCPP8bxM5zTHugKNghD7JyQHsCxb64pbaEhiOcQdskI9zb4Uo52qc9.FDsoxDiLdJwFifwFROypR
+ HB648wSuKeFijitsbokBB4sOL8jbRGz8FVz4yda_r3_Wt9FAWQGsZmXAXKEMIq7Cc09mjsqrzJKl
+ 9WsS4qerMHF9c0y.LM6oemZHysKvLCd7OYyC_E9OE6AR1.n5BUVm9NsaXu6jvTACGjSgujY5828.
+ GrjvIpPpxi_x0.Rs0LDb9IsJCU6Pu.HSjyJdmdFyhsk2dnkIDSXXnvb_Dr5rULh8z2FxRexELKGf
+ hF4K5X8LiyZFaezacebkqy6i84fRJajNhOviuyPAqhE00PfSJExEw9w3EtArdzNCRy.E21yyKE2c
+ 6MHGDGUCEkOiQuC5Z7mXgCKJ3Q0JBAA6vm4P0Mhj_XDS3wwKVyeRwbK83fwZWSvAqdn95WtnJrYw
+ O03kSrbd1FRP7ObSUc3YYe9bud.3.Y7DKn4Xj9FX9IiUCLDI992Zf4EQl4PRiJhk26BKXvycElD0
+ ZZvjZ6U045v_dSVjbem3h6ybAVGfe1o67j3dbKuykPvnJ8mg.P34y1YzEtaLCBHdn3ZOCUGO_6Fr
+ FXME.iz68Nx.o7n8asv6ZbogBuhH9W6IwWI9buYfX2LrW90AZgZTqMCiTA8O0Pn1TeS4O67BWiYP
+ AZqy9WmeACm8PDOeM7Ug4xthJ3WoTGDVyJeTsCJeofPOWQfwh9dSAHMUugPwRwd3GJtAG9v3vn8I
+ OAi67xF459mu7CXcHYLeb5hQaS3ft6ury97Rc2tISKopR0OS2ojC3q0fpk.TFgn8sH.imkiqHfcC
+ 9goVMCHSsW48FuvN3XP.9LTm2BSSXuEUoOX7s7874SB1cwGUseyy61bmmpP1Qno6hGAlrl7TG1fv
+ rz1WBbp4T.P7Vkq83FCiso78lxgq4W01K4nHUh9TFeqam_UMfAjTPubcMBtMAZcpeCYXiQT.tWG_
+ DVJBGQu2SeiTtRCDIPNvuUtx2Z3l66aiNzP_mvi82y.PvBmyiE0YF9go.kuS8n6SL43A0b5fY0w-
+ -
+X-Sonic-MF: <saidhaidrey@aol.com>
+X-Sonic-ID: 4e056bbc-c24a-4636-b244-39f7c2914407
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic303.consmr.mail.ne1.yahoo.com with HTTP; Sun, 30 Nov 2025 20:42:59 +0000
+Date: Sun, 30 Nov 2025 20:41:15 +0000 (UTC)
+From: "saidhaidrey@aol.com" <saidhaidrey@aol.com>
+To: Ace Haidrey <acehaidrey@gmail.com>
+Message-ID: <243122606.1041034.1764535275284@mail.yahoo.com>
+In-Reply-To: <20251129211418.929EB20678@onws.cameoez.com>
+References: <20251129211418.929EB20678@onws.cameoez.com>
+Subject: Fw: Thank you for your Rudolph & Me wholesale Order!
+MIME-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_1041033_2028967316.1764535275279"
+X-Mailer: WebService/1.1.24794 AolMailNorrin
+Content-Length: 25336
+
+------=_Part_1041033_2028967316.1764535275279
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+ 
+
+   ----- Forwarded Message ----- From: "info@rudolphandme.com" <info@rudolphandme.com>To: "saidhaidrey@aol.com" <saidhaidrey@aol.com>Cc: "cameoezorders@omeganetinc.net" <cameoezorders@omeganetinc.net>Sent: Saturday, November 29, 2025 at 04:16:35 PM ESTSubject: Thank you for your Rudolph & Me wholesale Order!  
+ Said Haidrey,
+
+
+Thank you for your Rudolph & Me wholesale Order!
+
+
+ 
+| SKU | Description | Qty | Unit Price | Extended |
+| 10-10 | SNOW FAMILY -10, ea.  | 12 | $4.25 | $51.00 |
+| 10-11 | SNOW FAMILY/ 11, ea.  | 12 | $4.25 | $51.00 |
+| 10-12 | SNOW FAMILY/ 12, ea.  | 12 | $4.25 | $51.00 |
+| 10-7 | SNOW FAMILY-7, ea.  | 24 | $4.25 | $102.00 |
+| 10-8 | SNOW FAMILY-8, ea.  | 12 | $4.25 | $51.00 |
+| 10-9 | SNOW FAMILY -9, ea.  | 12 | $4.25 | $51.00 |
+| 1121 | FOOTBALL FIELD, ea.  | 24 | $4.25 | $102.00 |
+| 1123 | BASEBALL DIAMOND, ea.  | 24 | $4.25 | $102.00 |
+| 1229 | CHIMNEY SANTA, ea.  | 12 | $4.25 | $51.00 |
+| 1280 | 1ST DAY OF SCHOOL GIRL, ea.  | 12 | $4.25 | $51.00 |
+| 1282 | PALS/ GIRL W DOG, ea.  | 12 | $4.25 | $51.00 |
+| 1338 | TUXEDO CAT IN WREATH, ea.  | 12 | $4.25 | $51.00 |
+| 144 | WEDDING ATTIRE, ea.  | 12 | $4.25 | $51.00 |
+| 145 | ENGAGED, ea.  | 12 | $4.00 | $48.00 |
+| 1579BB | MEGAPHONE CHEERLEADER/ BLUE BROWN, ea.  | 24 | $4.25 | $102.00 |
+| 1596 | Boy With Dog, ea.  | 12 | $4.25 | $51.00 |
+| 1632 | COUPLE WITH DOG, ea.  | 24 | $4.25 | $102.00 |
+| 1632B | COUPLE W/ BLACK DOG, ea.  | 12 | $4.25 | $51.00 |
+| 1664 | BICYCLE GIRL, ea.  | 12 | $4.25 | $51.00 |
+| 1666 | WORLD TRAVELERS, ea.  | 12 | $4.25 | $51.00 |
+| 1720 | Soccer Kick- Boy, ea.  | 24 | $4.25 | $102.00 |
+| 1721 | Soccer Kick- Girl, ea.  | 24 | $4.25 | $102.00 |
+| 1722 | Football Toss, ea.  | 24 | $4.25 | $102.00 |
+| 1723 | Baseball Hit- Boy, ea.  | 24 | $4.25 | $102.00 |
+| 1727 | Softball Hit- Girl, ea.  | 12 | $4.25 | $51.00 |
+| 1728 | Volleyball Serve- Girl, ea.  | 12 | $4.25 | $51.00 |
+| 1735 | KARATE/ BOY, ea.  | 12 | $4.25 | $51.00 |
+| 1736 | KARATE/ GIRL, ea.  | 12 | $4.25 | $51.00 |
+| 174 | AMBULANCE, ea.  | 12 | $4.00 | $48.00 |
+| 1779G | JOGGER GIRL, ea.  | 12 | $4.25 | $51.00 |
+| 1820 | SURFBOARD, ea.  | 24 | $4.00 | $96.00 |
+| 1840 | BEST DOG EVER, ea.  | 24 | $4.00 | $96.00 |
+| 2050 | NANA, ea.  | 12 | $4.00 | $48.00 |
+| 222 | PRINCESS CROWN-PINK, ea.  | 12 | $4.25 | $51.00 |
+| 222PU | PRINCESS CROWN-PURPLE, ea.  | 12 | $4.25 | $51.00 |
+| 226 | COAL STOCKING, ea.  | 12 | $4.00 | $48.00 |
+| 242 | BOW FRAME, ea.  | 36 | $4.25 | $153.00 |
+| 252 | BEAR HEART STOCKING, ea.  | 12 | $4.00 | $48.00 |
+| 270 | DOG BONE FRAME, ea.  | 36 | $4.25 | $153.00 |
+| 273 | DANCER, ea.  | 24 | $4.25 | $102.00 |
+| 276 | DORM ROOM, ea.  | 12 | $4.00 | $48.00 |
+| 278 | GLITTER STOCKING, ea.  | 12 | $4.00 | $48.00 |
+| 2G-10 | GREEN GLITTER TREE/ 10, ea.  | 12 | $4.75 | $57.00 |
+| 2G-12 | GREEN GLITTER TREE/ 12, ea.  | 12 | $4.75 | $57.00 |
+| 2G-15 | GREEN GLITTER TREE/ 15, ea.  | 12 | $4.75 | $57.00 |
+| 2G-7 | GREEN CHRISTMAS TREE-7, ea.  | 12 | $4.25 | $51.00 |
+| 2G-8 | GREEN CHRISTMAS TREE- 8, ea.  | 12 | $4.25 | $51.00 |
+| 302 | NEW DRIVER, ea.  | 12 | $4.00 | $48.00 |
+| 337 | GRANDMA, ea.  | 12 | $4.00 | $48.00 |
+| 355 | ORNAMENT PHOTO, ea.  | 24 | $4.25 | $102.00 |
+| 368 | CHRISTMAS PHOTO, ea.  | 48 | $4.25 | $204.00 |
+| 382 | CHRISTMAS COUPLE W/ CAT, ea.  | 24 | $4.00 | $96.00 |
+| 407 | MITTEN WREATH-15, ea.  | 12 | $4.50 | $54.00 |
+| 442 | FLYING, ea.  | 24 | $4.00 | $96.00 |
+| 46 | DRAMA STAR, ea.  | 12 | $4.00 | $48.00 |
+| 65 | DOG GONE CUTE BONE, ea.  | 24 | $4.00 | $96.00 |
+| 67 | SPORT BIKE, ea.  | 12 | $4.00 | $48.00 |
+| 69 | MOTORCYCLE, ea.  | 12 | $4.00 | $48.00 |
+| 729 | I DO, ea.  | 12 | $4.25 | $51.00 |
+| 75 | OUR 1ST AS MR. - MRS., ea.  | 12 | $4.00 | $48.00 |
+| 750RB | SOCCER BOY RED-BROWN, ea.  | 24 | $4.25 | $102.00 |
+| 750RY | SOCCER BOY RED-BLONDE, ea.  | 12 | $4.25 | $51.00 |
+| 751RB | SOCCER GIRL RED-BROWN, ea.  | 24 | $4.25 | $102.00 |
+| 751RY | SOCCER GIRL RED-BLONDE, ea.  | 12 | $4.25 | $51.00 |
+| 755 | FOOTBALL BOY, ea.  | 24 | $4.25 | $102.00 |
+| 790B | GRADUATE GIRL BROWN, ea.  | 12 | $4.25 | $51.00 |
+| 790Y | GRADUATE GIRL BLONDE, ea.  | 12 | $4.25 | $51.00 |
+| 791B | GRADUATE BOY BROWN, ea.  | 12 | $4.25 | $51.00 |
+| 791Y | GRADUATE BOY BLONDE, ea.  | 12 | $4.25 | $51.00 |
+| 8-7 | GINGERBREAD FAMILY- 7, ea.  | 24 | $4.50 | $108.00 |
+| 80 | ENGAGED, ea.  | 24 | $4.00 | $96.00 |
+| 84 | NEW PARENTS, ea.  | 24 | $4.00 | $96.00 |
+| 857B | WEIGHTLIFTER BROWN, ea.  | 24 | $4.25 | $102.00 |
+| 873B | EQUESTRIAN HORSE GIRL-BROWN, ea.  | 12 | $4.25 | $51.00 |
+| 91 | MUSIC, ea.  | 12 | $4.00 | $48.00 |
+| 94 | MERRY CHRISTMAS, ea.  | 24 | $4.00 | $96.00 |
+| 96 | MARCHING BAND, ea.  | 12 | $4.00 | $48.00 |
+| HH143 | CRUISE SHIP, ea.  | 12 | $4.00 | $48.00 |
+| HH38 | PINK PRINCESSS, ea.  | 12 | $4.00 | $48.00 |
+| ORPEN | BLACK PERSONALIZING PEN, ea.  | 6 | $3.75 | $22.50 |
+| Total (not including shipping) | $5,560.50 |
+
+
+
+
+| Additional Order Information |
+| Purchase Order #:  |  |
+| Order #:  | 571645 |
+| Allow Backorder:  | No |
+| Cancel Date:  | No Date Specified |
+| Ship Date: | No Date Specified |
+| User Comments:  | None Entered |
+| Customer Information |
+| User Name:  | SAIDHAIDREY@AOL.COM |
+| Buyer Name:  | Said Haidrey |
+| Company:  | CHRISTMAS CORNER |
+| Customer Acct #:  | 13400 |
+| Phone:  | 7148659872 |
+| Fax:  |  |
+| Email Addr:  | SAIDHAIDREY@AOL.COM |
+| Billing Information |
+| Billing Method:  | CallForCreditCard |
+| Billing Address:  | 21786 NORTHWOOD LN 
+LAKE FOREST, CA 92630 United States |
+| Shipping Information |
+| Shipping Name
+and Address:  |  
+CHRISTMAS CORNER
+21786 NORTHWOOD LN 
+LAKE FOREST, 92630  |
+|  |
+| End of Order# 571645 |
+
+
+  
+------=_Part_1041033_2028967316.1764535275279
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+<html><head></head><body><div class="ydpc7600557yahoo-style-wrap" style="font-family:arial;font-size:16px;"><div></div>
+        <div><br></div><div><br></div>
+        
+        </div><div id="ydpa8755d14yahoo_quoted_5020884864" class="ydpa8755d14yahoo_quoted"><div class="ydpa8755d14yahoo-style-wrap" style="font-family:arial;font-size:16px;">
+            <div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#26282a;">
+                <div>----- Forwarded Message -----</div>
+                <div class="ydpa8755d14quoted-text-header"><b>From:</b> "info@rudolphandme.com" &lt;info@rudolphandme.com&gt;</div><div class="ydpa8755d14quoted-text-header"><b>To:</b> "saidhaidrey@aol.com" &lt;saidhaidrey@aol.com&gt;</div><div class="ydpa8755d14quoted-text-header"><b>Cc:</b> "cameoezorders@omeganetinc.net" &lt;cameoezorders@omeganetinc.net&gt;</div><div class="ydpa8755d14quoted-text-header"><b>Sent:</b> Saturday, November 29, 2025 at 04:16:35 PM EST</div><div class="ydpa8755d14quoted-text-header"><b>Subject:</b> Thank you for your Rudolph &amp; Me wholesale Order!</div>
+                </div><div style="font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;font-size:13px;color:#26282a;border-left: 1px solid #ccc;padding-left: 8px;margin: 0px 0px 0px 8px" class="ydpa8755d14inline_reply_quote_container" data-split-quote-node="true">
+                <div><br></div>
+                <div><div id="ydpa8755d14yiv8716041921">Said Haidrey,<br><br><p>Thank you for your Rudolph &amp; Me wholesale Order!</p><br><br>
+
+  <table border="1" cellpadding="2" cellspacing="0">
+  <tbody><tr>
+    <td width="100" height="25" bgcolor="#cccccc"><b>SKU</b></td>
+    <td width="300" height="25" bgcolor="#cccccc"><b>Description</b></td>
+    <td width="40" height="25" bgcolor="#cccccc" align="right"><b>Qty</b></td>
+    <td width="80" height="25" bgcolor="#cccccc" align="right"><b>Unit Price</b></td>
+    <td width="80" height="25" bgcolor="#cccccc" align="right"><b>Extended</b></td>
+  </tr>
+  
+    <tr>
+      <td>10-10</td>
+      <td>SNOW FAMILY -10, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>10-11</td>
+      <td>SNOW FAMILY/ 11, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>10-12</td>
+      <td>SNOW FAMILY/ 12, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>10-7</td>
+      <td>SNOW FAMILY-7, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>10-8</td>
+      <td>SNOW FAMILY-8, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>10-9</td>
+      <td>SNOW FAMILY -9, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1121</td>
+      <td>FOOTBALL FIELD, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1123</td>
+      <td>BASEBALL DIAMOND, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1229</td>
+      <td>CHIMNEY SANTA, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1280</td>
+      <td>1ST DAY OF SCHOOL GIRL, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1282</td>
+      <td>PALS/ GIRL W DOG, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1338</td>
+      <td>TUXEDO CAT IN WREATH, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>144</td>
+      <td>WEDDING ATTIRE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>145</td>
+      <td>ENGAGED, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>1579BB</td>
+      <td>MEGAPHONE CHEERLEADER/ BLUE BROWN, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1596</td>
+      <td>Boy With Dog, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1632</td>
+      <td>COUPLE WITH DOG, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1632B</td>
+      <td>COUPLE W/ BLACK DOG, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1664</td>
+      <td>BICYCLE GIRL, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1666</td>
+      <td>WORLD TRAVELERS, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1720</td>
+      <td>Soccer Kick- Boy, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1721</td>
+      <td>Soccer Kick- Girl, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1722</td>
+      <td>Football Toss, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1723</td>
+      <td>Baseball Hit- Boy, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>1727</td>
+      <td>Softball Hit- Girl, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1728</td>
+      <td>Volleyball Serve- Girl, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1735</td>
+      <td>KARATE/ BOY, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1736</td>
+      <td>KARATE/ GIRL, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>174</td>
+      <td>AMBULANCE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>1779G</td>
+      <td>JOGGER GIRL, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>1820</td>
+      <td>SURFBOARD, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>1840</td>
+      <td>BEST DOG EVER, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>2050</td>
+      <td>NANA, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>222</td>
+      <td>PRINCESS CROWN-PINK, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>222PU</td>
+      <td>PRINCESS CROWN-PURPLE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>226</td>
+      <td>COAL STOCKING, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>242</td>
+      <td>BOW FRAME, ea.
+      </td>
+      <td align="right">36</td>
+      <td align="right">$4.25</td>
+      <td align="right">$153.00</td>
+    </tr>
+    
+    <tr>
+      <td>252</td>
+      <td>BEAR HEART STOCKING, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>270</td>
+      <td>DOG BONE FRAME, ea.
+      </td>
+      <td align="right">36</td>
+      <td align="right">$4.25</td>
+      <td align="right">$153.00</td>
+    </tr>
+    
+    <tr>
+      <td>273</td>
+      <td>DANCER, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>276</td>
+      <td>DORM ROOM, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>278</td>
+      <td>GLITTER STOCKING, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>2G-10</td>
+      <td>GREEN GLITTER TREE/ 10, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.75</td>
+      <td align="right">$57.00</td>
+    </tr>
+    
+    <tr>
+      <td>2G-12</td>
+      <td>GREEN GLITTER TREE/ 12, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.75</td>
+      <td align="right">$57.00</td>
+    </tr>
+    
+    <tr>
+      <td>2G-15</td>
+      <td>GREEN GLITTER TREE/ 15, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.75</td>
+      <td align="right">$57.00</td>
+    </tr>
+    
+    <tr>
+      <td>2G-7</td>
+      <td>GREEN CHRISTMAS TREE-7, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>2G-8</td>
+      <td>GREEN CHRISTMAS TREE- 8, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>302</td>
+      <td>NEW DRIVER, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>337</td>
+      <td>GRANDMA, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>355</td>
+      <td>ORNAMENT PHOTO, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>368</td>
+      <td>CHRISTMAS PHOTO, ea.
+      </td>
+      <td align="right">48</td>
+      <td align="right">$4.25</td>
+      <td align="right">$204.00</td>
+    </tr>
+    
+    <tr>
+      <td>382</td>
+      <td>CHRISTMAS COUPLE W/ CAT, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>407</td>
+      <td>MITTEN WREATH-15, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.50</td>
+      <td align="right">$54.00</td>
+    </tr>
+    
+    <tr>
+      <td>442</td>
+      <td>FLYING, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>46</td>
+      <td>DRAMA STAR, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>65</td>
+      <td>DOG GONE CUTE BONE, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>67</td>
+      <td>SPORT BIKE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>69</td>
+      <td>MOTORCYCLE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>729</td>
+      <td>I DO, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>75</td>
+      <td>OUR 1ST AS MR. - MRS., ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>750RB</td>
+      <td>SOCCER BOY RED-BROWN, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>750RY</td>
+      <td>SOCCER BOY RED-BLONDE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>751RB</td>
+      <td>SOCCER GIRL RED-BROWN, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>751RY</td>
+      <td>SOCCER GIRL RED-BLONDE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>755</td>
+      <td>FOOTBALL BOY, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>790B</td>
+      <td>GRADUATE GIRL BROWN, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>790Y</td>
+      <td>GRADUATE GIRL BLONDE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>791B</td>
+      <td>GRADUATE BOY BROWN, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>791Y</td>
+      <td>GRADUATE BOY BLONDE, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>8-7</td>
+      <td>GINGERBREAD FAMILY- 7, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.50</td>
+      <td align="right">$108.00</td>
+    </tr>
+    
+    <tr>
+      <td>80</td>
+      <td>ENGAGED, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>84</td>
+      <td>NEW PARENTS, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>857B</td>
+      <td>WEIGHTLIFTER BROWN, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.25</td>
+      <td align="right">$102.00</td>
+    </tr>
+    
+    <tr>
+      <td>873B</td>
+      <td>EQUESTRIAN HORSE GIRL-BROWN, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.25</td>
+      <td align="right">$51.00</td>
+    </tr>
+    
+    <tr>
+      <td>91</td>
+      <td>MUSIC, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>94</td>
+      <td>MERRY CHRISTMAS, ea.
+      </td>
+      <td align="right">24</td>
+      <td align="right">$4.00</td>
+      <td align="right">$96.00</td>
+    </tr>
+    
+    <tr>
+      <td>96</td>
+      <td>MARCHING BAND, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>HH143</td>
+      <td>CRUISE SHIP, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>HH38</td>
+      <td>PINK PRINCESSS, ea.
+      </td>
+      <td align="right">12</td>
+      <td align="right">$4.00</td>
+      <td align="right">$48.00</td>
+    </tr>
+    
+    <tr>
+      <td>ORPEN</td>
+      <td>BLACK PERSONALIZING PEN, ea.
+      </td>
+      <td align="right">6</td>
+      <td align="right">$3.75</td>
+      <td align="right">$22.50</td>
+    </tr>
+    
+    <tr>
+      <td colspan="4" align="right">Total (not including shipping)</td>
+      <td align="right">$5,560.50</td>
+    </tr></tbody></table><br><br><table border="0" cellpadding="2" cellspacing="0" width="450">
+  <tbody><tr>
+    <td colspan="2" height="25" bgcolor="#cccccc"><b>Additional Order Information</b></td>
+  </tr>
+  
+    <tr>
+      <td>Purchase Order #: </td>
+      <td></td>
+    </tr>
+    
+  <tr>
+    <td>Order #: </td>
+    <td>571645</td>
+  </tr>
+  
+  <tr>
+    <td>Allow Backorder: </td>
+    <td>No</td>
+  </tr>
+  
+  <tr>
+    <td>Cancel Date: </td>
+    <td>No Date Specified</td>
+  </tr>
+  
+  <tr>
+    <td>Ship Date:</td>
+    <td>No Date Specified</td>
+  </tr>
+  
+  <tr>
+    <td valign="top">User Comments: </td>
+    <td>None Entered</td>
+  </tr>
+  
+  <tr>
+    <td colspan="2" height="25" bgcolor="#cccccc"><b>Customer Information</b></td>
+  </tr>
+  
+  <tr>
+    <td>User Name: </td>
+    <td>SAIDHAIDREY@AOL.COM</td>
+  </tr>
+  
+  <tr>
+    <td>Buyer Name: </td>
+    <td>Said Haidrey</td>
+  </tr>
+  
+  <tr>
+    <td>Company: </td>
+    <td>CHRISTMAS CORNER</td>
+  </tr>
+  
+  <tr>
+    <td>Customer Acct #: </td>
+    <td>13400</td>
+  </tr>
+  
+  <tr>
+    <td>Phone: </td>
+    <td>7148659872</td>
+  </tr>
+  
+  <tr>
+    <td>Fax: </td>
+    <td></td>
+  </tr>
+  
+  <tr>
+    <td>Email Addr: </td>
+    <td>SAIDHAIDREY@AOL.COM</td>
+  </tr>
+  
+  <tr>
+    <td colspan="2" height="25" bgcolor="#cccccc"><b>Billing Information</b></td>
+  </tr>
+  
+  <tr>
+    <td>Billing Method: </td>
+    <td>CallForCreditCard</td>
+  </tr>
+  
+  <tr>
+    <td valign="top">Billing Address: </td>
+    <td>21786 NORTHWOOD LN <br>LAKE FOREST, CA 92630 United States</td>
+  </tr>
+  
+  <tr>
+    <td colspan="2" height="25" bgcolor="#cccccc"><b>Shipping Information</b></td>
+  </tr>
+  
+  <tr>
+    <td valign="top">Shipping Name<br>and Address: </td>
+    <td> <br>CHRISTMAS CORNER<br>21786 NORTHWOOD LN <br>LAKE FOREST,  92630 </td>
+  </tr>
+  <tr><td colspan="2" height="20"></td></tr>
+  <tr>
+    <td colspan="2" height="30" bgcolor="#cccccc" align="center">End of Order# 571645</td>
+  </tr>
+  </tbody></table><br>
+</div></div>
+            </div>
+        </div></div></body></html>
+------=_Part_1041033_2028967316.1764535275279--
