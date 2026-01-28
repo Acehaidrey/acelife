@@ -15,8 +15,10 @@
     - `data/raw/<provider>/backups/` (backups when overwriting normalized files)
   - `utils/` (shared helpers and constants)
     - `utils/schema.py` (canonical schema + helpers)
+    - `utils/base_parser.py` (BaseParser lifecycle for provider parsers)
   - `ingest.py` (loads normalized CSVs into DuckDB)
   - `app.py` (Streamlit dashboard)
+  - `cli.py` (single entrypoint for parse/fees/ingest)
   - `README.md` (usage + conventions)
 
 ## Phase 1: Foundation
@@ -37,6 +39,9 @@
 - Organize parsers by platform folder:
   - `parsers/eatstreet/parse_eatstreet_orders.py`
   - `parsers/eatstreet/update_eatstreet_fees.py`
+  - `parsers/eatstreet/extract_eatstreet_orders_raw.py`
+  - `parsers/eatstreet/extract_eatstreet_billings_raw.py`
+  - `parsers/eatstreet/normalize_eatstreet_from_raw.py`
   - `parsers/beyondmenu/parse_beyondmenu_orders.py`
   - `parsers/beyondmenu/parse_beyondmenu_billings.py` (kept but likely unused)
 - Update parsers to:
@@ -45,6 +50,12 @@
   - dedupe by `order_id`
   - report conflicts
   - write backups and missing-fee reports to `data/raw/<provider>/`
+  - use `BaseParser` for shared flow (load → parse → pre/post → validate → dedupe → write)
+  - for EatStreet, parse orders + billings mbox together to populate fees
+  - for BeyondMenu, drop rows where `Status != active`
+  - for EatStreet, treat raw CSVs as source of truth and append-only by `order_id`
+  - validation: each row must have exactly one real value in `tax` or `tax_withheld`; flag violations in `notes`
+  - log validation issues to `data/errors/errors.csv` (deduped by order_id/platform/provider/error_code)
 
 ## Phase 3: Ingestion
 - Build `ingest.py`:

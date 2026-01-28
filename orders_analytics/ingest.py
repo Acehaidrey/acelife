@@ -4,7 +4,7 @@ import os
 import duckdb
 import pandas as pd
 
-from orders_analytics.utils.constants import DEFAULT_DB_PATH, NORMALIZED_DIR
+from orders_analytics.utils.constants import DEFAULT_DB_PATH, NORMALIZED_DIR, ERRORS_PATH
 
 
 def ingest_normalized(db_path: str = DEFAULT_DB_PATH) -> int:
@@ -26,6 +26,10 @@ def ingest_normalized(db_path: str = DEFAULT_DB_PATH) -> int:
     conn = duckdb.connect(db_path)
     conn.register("orders_df", data)
     conn.execute("CREATE OR REPLACE TABLE orders_raw AS SELECT * FROM orders_df")
+    if os.path.exists(ERRORS_PATH):
+        errors_df = pd.read_csv(ERRORS_PATH)
+        conn.register("errors_df", errors_df)
+        conn.execute("CREATE OR REPLACE TABLE orders_errors AS SELECT * FROM errors_df")
     conn.close()
     return len(data)
 

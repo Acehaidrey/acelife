@@ -1,6 +1,7 @@
 DEFAULT_DB_PATH = "orders_analytics/data/orders.duckdb"
 NORMALIZED_DIR = "orders_analytics/data/normalized"
 RAW_DIR = "orders_analytics/data/raw"
+ERRORS_PATH = "orders_analytics/data/errors/errors.csv"
 
 DATE_GRAINS = ["day", "month", "year"]
 
