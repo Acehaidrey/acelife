@@ -1,0 +1,4 @@
+pandas>=2.3.0,<3.0.0
+duckdb>=1.4.0,<2.0.0
+streamlit>=1.53.0,<2.0.0
+watchdog

@@ -10,6 +10,7 @@ from typing import Iterable, Tuple
 import numpy as np
 import pandas as pd
 import requests
+import math
 
 from collections import defaultdict
 
@@ -51,6 +52,186 @@ def extract_item_number(item_name):
     matches = re.findall(r'\(([^)]+)\)', item_name)
     ret_val = matches[-1] if matches else item_name
     return ret_val.upper()
+
+
+def normalize_text(value: str) -> str:
+    return (value or "").upper()
+
+
+def infer_categories(item_number: str, item_name: str) -> str:
+    """Infer category hierarchy based on item number and name keywords."""
+    number = normalize_text(item_number)
+    name = normalize_text(item_name)
+
+    categories: list[str] = []
+
+    def add(category: str) -> None:
+        if category and category not in categories:
+            categories.append(category)
+
+    if number.startswith("PBS"):
+        add("Stocking (W3LQNKF77II35AUEVYTGCLXZ)")
+        if "BABY" in name:
+            add("Ornament > Baby")
+            if number.endswith("-P") or "PINK" in name:
+                add("Ornament > Baby > Baby Girl (Pink)")
+            elif number.endswith("-B") or "BLUE" in name:
+                add("Ornament > Baby > Baby Boy (Blue)")
+            else:
+                add("Ornament > Baby > Baby Neutral")
+        return ", ".join(categories)
+
+    if number.startswith("PF"):
+        add("Ornament")
+        add("Ornament > Picture Frame")
+    else:
+        add("Ornament")
+
+    if "EXPECTING" in name or "PREGNANT" in name:
+        add("Ornament > We're Expecting (Pregnancy)")
+
+    if number.startswith("DECO") or "DECO" in name:
+        add("Ornament > Personalization Supplies")
+
+    if any(number.startswith(prefix) for prefix in ("NFL", "NBA", "MLB", "NHL", "NCAA", "MLS")):
+        add("Ornament > Sports")
+
+    if "COUPLE" in name or "COUPLES" in name:
+        add("Ornament > Family of 2 (Couples)")
+
+    if "BABY" in name:
+        add("Ornament > Baby")
+        if number.endswith("-P") or "PINK" in name:
+            add("Ornament > Baby > Baby Girl (Pink)")
+        elif number.endswith("-B") or "BLUE" in name:
+            add("Ornament > Baby > Baby Boy (Blue)")
+        elif any(suffix in number for suffix in ("-RG", "-GN", "-GR")) or any(
+            keyword in name for keyword in ("NEUTRAL", "RED & GREEN", "TEAL")
+        ):
+            add("Ornament > Baby > Baby Neutral")
+        else:
+            add("Ornament > Baby > Baby Neutral")
+
+    if "CHILD" in name or "KID" in name:
+        add("Ornament > Child")
+
+    if any(keyword in name for keyword in ("DOG", "CAT", "PET", "PAW", "ANIMAL", "WOOF", "WHO SAVED WHO")):
+        add("Ornament > Pets/Animals")
+
+    if any(
+        keyword in name
+        for keyword in (
+            "SOCCER",
+            "BASEBALL",
+            "FOOTBALL",
+            "BASKETBALL",
+            "HOCKEY",
+            "GOLF",
+            "CHEER",
+            "SPORT",
+            "NFL",
+            "NBA",
+            "MLB",
+            "NHL",
+            "KARATE",
+            "JOGGER",
+        )
+    ):
+        add("Ornament > Sports")
+
+    if any(
+        keyword in name
+        for keyword in (
+            "NURSE",
+            "DOCTOR",
+            "TEACHER",
+            "POLICE",
+            "OFFICER",
+            "FIREFIGHTER",
+            "FIREMAN",
+            "DENTIST",
+            "CHEF",
+            "ENGINEER",
+            "ARMY",
+            "NAVY",
+            "MARINE",
+            "PILOT",
+            "MILITARY",
+            "OCCUPATION",
+        )
+    ):
+        add("Ornament > Occupation")
+
+    if any(
+        keyword in name
+        for keyword in (
+            "BIKE",
+            "CAMP",
+            "FISH",
+            "FISHING",
+            "CAMPER",
+            "CAMPING",
+            "HUNT",
+            "HUNTING",
+            "SKI",
+            "SNOWBOARD",
+            "DANCE",
+            "MUSIC",
+            "GUITAR",
+            "ORCHESTRA",
+            "MOTORCYCLE",
+            "MOTORBIKE",
+            "ESPRESSO",
+            "COFFEE",
+            "CAMERA",
+            "PHONE",
+            "TECH",
+            "GAMER",
+        )
+    ):
+        add("Ornament > Hobbies/Activities")
+
+    if "GENERAL" in name:
+        add("Ornament > General")
+
+    if "HOLIDAY" in name or "CHRISTMAS" in name or "XMAS" in name:
+        add("Ornament > Holiday Themed")
+
+    if any(
+        keyword in name
+        for keyword in (
+            "TRAVEL",
+            "POSTCARD",
+            "SUITCASE",
+            "VACATION",
+            "ROAD TRIP",
+            "ROADTRIP",
+            "CAMPER",
+            "RV",
+        )
+    ):
+        add("Ornament > Travel")
+
+    if any(keyword in name for keyword in ("HOUSE", "HOME", "DOOR", "FRONT DOOR")):
+        add("Ornament > House/Door")
+
+    family_size = None
+    if "-" in number:
+        suffix = number.split("-")[-1]
+        if suffix.isdigit():
+            family_size = int(suffix)
+    if family_size is None and "FAMILY OF" in name:
+        parts = name.split("FAMILY OF", 1)[-1].strip().split()
+        if parts and parts[0].isdigit():
+            family_size = int(parts[0])
+
+    if family_size:
+        if family_size == 2:
+            add("Ornament > Family of 2 (Couples)")
+        else:
+            add(f"Ornament > Family of {family_size}")
+
+    return ", ".join(categories)
 
 
 def add_price_for_items(item_no):
@@ -942,6 +1123,191 @@ def format_rm_invoice_received(rm_invoice_path, output_path=None):
     df.to_csv(output_path)
     print(f'Writing cleaned up inventory csv to {output_path}')
     return output_path
+
+
+def format_rm2025_inventory_received(rm_inventory_path, output_path=None):
+    """Format rm2025.csv inventory into the same shape expected by catalog updates."""
+    df = pd.read_csv(rm_inventory_path)
+    normalized_columns = {col.strip().lower(): col for col in df.columns}
+
+    required_columns = {'sku', 'description', 'qty'}
+    if not required_columns.issubset(normalized_columns.keys()):
+        missing = required_columns - set(normalized_columns.keys())
+        raise ValueError(f"Missing required columns in {rm_inventory_path}: {', '.join(sorted(missing))}")
+
+    df = df.rename(columns={
+        normalized_columns['sku']: 'SKU',
+        normalized_columns['description']: 'Description',
+        normalized_columns['qty']: 'Qty',
+    })
+    upc_col = normalized_columns.get('upc code')
+
+    df['Number'] = df['SKU'].astype(str).apply(lambda x: f'RM{x}' if not str(x).startswith('RM') else str(x))
+    df['CleanDescription'] = (
+        df['Description']
+        .astype(str)
+        .apply(lambda x: re.sub(r'\s+', ' ', x.strip()))
+        .apply(lambda x: re.sub(r'\s+ea\s*$', '', x, flags=re.IGNORECASE))
+    )
+
+    name_pairs = df.apply(
+        lambda row: prepare_item_names(row['Number'], row['CleanDescription']),
+        axis=1,
+        result_type='expand'
+    )
+    df[['Name', 'FormattedName']] = name_pairs
+
+    df['Price'] = df['Number'].apply(add_price_for_items)
+    df['TotalItemQuantity'] = pd.to_numeric(df['Qty'], errors='coerce').fillna(0).astype(int)
+    df['Quantity'] = df['TotalItemQuantity']
+    if upc_col:
+        df['SKU'] = (
+            df[upc_col]
+            .astype(str)
+            .apply(lambda x: re.sub(r'\s+', '', x.strip()))
+        )
+    else:
+        df['SKU'] = df['Number']
+
+    df = df.sort_values('Number', ascending=True).reset_index(drop=True)
+    df = df[[
+        'Number', 'Name', 'FormattedName', 'SKU',
+        'Quantity', 'TotalItemQuantity', 'Price',
+    ]]
+
+    print('Here is a preview of the items:')
+    print(df.head(50).to_string())
+    output_path = output_path or rm_inventory_path.replace('.csv', '_OUTPUT.csv')
+    df.to_csv(output_path, index=False)
+    print(f'Writing cleaned up inventory csv to {output_path}')
+    return output_path
+
+
+def write_missing_rows_from_catalog(catalog_path, invoice_path, output_path=None):
+    """Write only the catalog rows that correspond to the invoice items."""
+    invoice_df = pd.read_csv(invoice_path)
+    catalog_df = pd.read_csv(catalog_path)
+    catalog_df['ItemNumber'] = catalog_df['Item Name'].apply(extract_item_number)
+
+    missing_rows = catalog_df[catalog_df['ItemNumber'].isin(invoice_df['Number'])].copy()
+    quantity_map = dict(
+        zip(
+            invoice_df['Number'],
+            pd.to_numeric(invoice_df.get('TotalItemQuantity', 0), errors='coerce')
+            .fillna(0)
+            .astype(int),
+        )
+    )
+    missing_rows.loc[:, 'Categories'] = missing_rows.apply(
+        lambda row: infer_categories(str(row['ItemNumber']), str(row['Item Name'])),
+        axis=1,
+    )
+    missing_rows.loc[:, 'New Quantity Cerritos'] = missing_rows['ItemNumber'].apply(
+        lambda num: int(quantity_map.get(num, 0) // 2)
+    )
+    missing_rows.loc[:, 'New Quantity Mission Viejo'] = missing_rows['ItemNumber'].apply(
+        lambda num: int(math.ceil(quantity_map.get(num, 0) / 2))
+    )
+    if 'ItemNumber' in missing_rows.columns:
+        missing_rows = missing_rows.drop(columns=['ItemNumber'])
+
+    output_path = output_path or catalog_path.replace('.csv', '_MISSING_ONLY.csv')
+    missing_rows.to_csv(output_path, index=False)
+    print(f'Wrote missing-only catalog rows to {output_path}')
+    return output_path
+
+
+def upload_missing_item_photos(
+    client,
+    photo_dir: str,
+    missing_rows_csv: str,
+    skip_existing: bool = True,
+) -> None:
+    """Upload photos from a directory for the items listed in missing_rows_csv."""
+    df = pd.read_csv(missing_rows_csv)
+    if "Item Name" not in df.columns:
+        raise ValueError("missing_rows_csv must include an 'Item Name' column.")
+
+    photo_dir_path = Path(photo_dir)
+    if not photo_dir_path.exists():
+        raise FileNotFoundError(f"Photo directory not found: {photo_dir}")
+
+    photos_by_name = {}
+    for entry in photo_dir_path.iterdir():
+        if entry.is_file() and entry.suffix.lower() in {".jpg", ".jpeg", ".png"}:
+            photos_by_name[entry.stem.upper()] = entry
+
+    total_rows = len(df)
+    successes = 0
+    skipped = 0
+    failures = []
+
+    for row_index, row in df.iterrows():
+        item_name = str(row["Item Name"]).strip()
+        short_name = extract_item_number(item_name)
+        local_path = photos_by_name.get(short_name.upper())
+        if not local_path:
+            failures.append((short_name, "missing photo"))
+            print(f"[{row_index + 1}/{total_rows}] Missing photo for {short_name}", flush=True)
+            continue
+
+        try:
+            req = client.catalog.search_catalog_items(body={"text_filter": short_name}).body
+            items = req.get("items", [])
+        except Exception as exc:
+            failures.append((short_name, f"search error: {exc}"))
+            print(f"[{row_index + 1}/{total_rows}] Search failed for {short_name}: {exc}", flush=True)
+            continue
+
+        if not items:
+            failures.append((short_name, "no catalog items found"))
+            print(f"[{row_index + 1}/{total_rows}] No catalog items for {short_name}", flush=True)
+            continue
+
+        matched_item = None
+        for item in items:
+            item_short_name = extract_item_number(item["item_data"]["name"])
+            if item_short_name == short_name:
+                matched_item = item
+                break
+        if matched_item is None and len(items) == 1:
+            matched_item = items[0]
+
+        if matched_item is None:
+            failures.append((short_name, "multiple matches"))
+            print(f"[{row_index + 1}/{total_rows}] Multiple matches for {short_name}", flush=True)
+            continue
+
+        existing_images = matched_item["item_data"].get("image_ids") or []
+        if skip_existing and existing_images:
+            skipped += 1
+            print(f"[{row_index + 1}/{total_rows}] Skipping {short_name}: already has images.", flush=True)
+            continue
+
+        try:
+            upload_photo_to_square(
+                client,
+                matched_item["id"],
+                short_name,
+                matched_item["item_data"]["name"],
+                local_path,
+                edited=False,
+            )
+            successes += 1
+            print(f"[{row_index + 1}/{total_rows}] Uploaded photo for {short_name}", flush=True)
+        except Exception as exc:
+            failures.append((short_name, f"upload failed: {exc}"))
+            print(f"[{row_index + 1}/{total_rows}] Upload failed for {short_name}: {exc}", flush=True)
+
+    print(
+        f"Processed {total_rows} rows. Uploaded {successes} images. "
+        f"Skipped {skipped}. Failures: {len(failures)}.",
+        flush=True,
+    )
+    if failures:
+        print("Failed uploads:")
+        for style, reason in failures:
+            print(f"  {style}: {reason}")
 
 def update_missing_items_to_catalog(catalog_path, invoice_path):
     invoice_df = pd.read_csv(invoice_path)

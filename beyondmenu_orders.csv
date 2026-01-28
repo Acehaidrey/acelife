@@ -1,0 +1,17 @@
+Date,Order #,Time,Name,Type,Paid By,Subtotal,Amount,Credit Card,restaurant,order_datetime
+2/17/2024,102774116,01:12 PM,Hardman,Pickup,BM MC,27.97,31.13,31.13,Ameci Pizza and Pasta,2024-02-17T13:12:00
+7/22/2023,97532102,07:09 PM,Tralies,Delivery,BM MC,40.96,54.25,54.25,Aroma Pizza and Pasta,2023-07-22T19:09:00
+10/13/2023,99454748,07:23 PM,Bullard,Delivery,BM Visa,29.27,43.37,43.37,Aroma Pizza and Pasta,2023-10-13T19:23:00
+1/2/2024,101559574,04:53 PM,lowther,Pickup,BM Visa,95.93,104.35,104.35,Aroma Pizza and Pasta,2024-01-02T16:53:00
+4/28/2023,95248402,07:00 PM,Bullard,Delivery,BM Visa,43.97,62.15,62.15,Aroma Pizza and Pasta,2023-04-28T19:00:00
+8/15/2024,107688557,04:56 PM,Dempsey,Pickup,BM Visa,41.55,45.76,45.76,Ameci Pizza and Pasta,2024-08-15T16:56:00
+5/20/2023,95856817,06:01 PM,Parkinen,Delivery,BM Visa,29.95,40.75,40.75,Ameci Pizza and Pasta,2023-05-20T18:01:00
+7/15/2023,97345656,04:46 PM,Farris,Delivery,BM Visa,33.97,44.99,44.99,Ameci Pizza and Pasta,2023-07-15T16:46:00
+7/23/2023,97547333,03:46 PM,Gruter,Delivery,BM AMEX,51.14,64.09,64.09,Ameci Pizza and Pasta,2023-07-23T15:46:00
+3/31/2023,94469816,06:08 PM,Bullard,Delivery,BM MC,56.95,75.88,75.88,Aroma Pizza and Pasta,2023-03-31T18:08:00
+10/7/2023,99291611,10:57 AM,Jensen,Delivery,BM Visa,32.35,43.70,43.70,Ameci Pizza and Pasta,2023-10-07T10:57:00
+2/3/2024,102409976,06:08 PM,Jensen,Delivery,BM Visa,45.97,62.71,62.71,Ameci Pizza and Pasta,2024-02-03T18:08:00
+2/12/2023,93072062,05:01 PM,Lane,Delivery,BM Visa,56.46,71.83,71.83,Ameci Pizza and Pasta,2023-02-12T17:01:00
+6/30/2023,96950531,07:11 PM,Hasegawa,Pickup,BM MC,38.96,44.97,44.97,Ameci Pizza and Pasta,2023-06-30T19:11:00
+6/30/2023,96951135,08:17 PM,Hasegawa,Delivery,BM MC,38.96,49.97,49.97,Ameci Pizza and Pasta,2023-06-30T20:17:00
+4/8/2023,94701855,06:29 PM,Parkinen,Delivery,BM Visa,43.70,57.64,57.64,Ameci Pizza and Pasta,2023-04-08T18:29:00

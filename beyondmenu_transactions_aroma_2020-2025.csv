@@ -1,0 +1,51 @@
+D,Order #,Name,ASAP,Req Time,Type,Status,Amt,Viewed,Fax?,Store,Email,Phone,Address
+false,60413318,LouAnn McGeever,false,6/6 5:45 PM,Deliver,Active,25.73,Web/2:44 AM,true,aroma,l_mcgeever@cox.net,(949) 232-5608,"30 SANTA BARBARA CT, Foothill Ranch, CA 92610"
+false,62134403,Katie DeRose,true,7/30 6:26 PM,Deliver,Active,76.98,Email/11:01 AM,true,aroma,ksdero@gmail.com,(818) 416-2398,"26982 Safiro, Mission Viejo, CA 92691"
+false,68388995,Jennifer Sheasby,true,1/21 5:20 PM,Deliver,Active,50.88,--,true,aroma,shez4@sbcglobal.net,(714) 721-3962,"26 Cienega, Irvine, CA 92618"
+false,68707177,Kevin Rogers,true,1/29 5:41 PM,Pickup,Active,26.31,--,true,aroma,georgekmathis@gmail.com,(714) 200-8857,"1000 INDIGO PL, LAKE FOREST, CA 92630"
+false,68709509,Bryan Malolot,true,1/29 6:12 PM,Pickup,Active,32.94,--,true,aroma,auegrgyixm@privaterelay.appleid.com,(626) 393-6105,
+false,68798661,Justin Bool,true,2/1 1:12 PM,Pickup,Active,73.33,--,true,aroma,booljayj+bm@gmail.com,(949) 688-3149,
+false,68838716,Brian Sigler,true,2/2 5:40 PM,Pickup,Active,29.08,--,true,aroma,Siglerguitars@gmail.com,(949) 610-3723,
+false,68841141,Whitney Sum,true,2/2 9:20 PM,Deliver,Active,34.44,--,true,aroma,wcolella@csulb.edu,(949) 690-5810,"18 Lantana, Lake Forest, CA 92630"
+false,68856520,Kimberly Minarcin,true,2/3 2:46 PM,Deliver,Active,20.56,--,true,aroma,kymbu@hotmail.com,(949) 426-3096,"2200 Indigo Place, Lake Forest, CA 92630"
+false,68872616,Michael Munoz,true,2/3 5:36 PM,Pickup,Active,39.88,--,true,aroma,xable0162@yahoo.com,(949) 637-2596,
+false,68909172,Mark Van Baalen,true,2/4 5:52 PM,Pickup,Active,47.07,--,true,aroma,mrvb2u@gmail.com,(949) 212-7656,"22005 Newbridge Drive, Lake Forest, CA 92630"
+false,68958202,Dalya Bl,true,2/5 5:24 PM,Pickup,Active,48.46,--,true,aroma,dalya.jpg@gmail.com,(657) 254-9643,
+false,68958821,Vincent Levigne,true,2/5 5:31 PM,Pickup,Active,21.53,--,true,aroma,vince.levigne@gmail.com,(734) 834-0839,
+false,68963662,Kaleia Abraham,true,2/5 6:56 PM,Pickup,Active,22.62,--,true,aroma,kaleiaa18@icloud.com,(661) 993-1177,
+false,68963808,Michael Lewis,true,2/5 7:01 PM,Pickup,Active,73.63,--,true,aroma,Mlewis24@msn.com,(309) 706-2610,"3214 N Racine Ave, Chicago, IL 60657"
+false,68995376,Kathleen Bourque,true,2/6 4:25 PM,Deliver,Active,56.97,--,true,aroma,Knbourque80@gmail.com,(949) 386-9528,"1000 Indigo Place, Lake Forest, CA 92630"
+false,69007629,Susan Dosier,true,2/6 7:07 PM,Deliver,Active,38.51,--,true,aroma,smdosier@gmail.com,(949) 290-3753,"11 Heliotrope, Lake Forest, CA 92630"
+false,69007686,Andrew Valenzona,true,2/6 6:54 PM,Pickup,Active,55.04,--,true,aroma,ajayvalenzona94@gmail.com,(949) 275-3290,
+false,69007737,Zulema Silva,true,2/6 6:56 PM,Pickup,Active,41.99,--,true,aroma,z.silva189@gmail.com,(714) 421-7282,
+false,69008053,Liberty Martin,true,2/6 7:10 PM,Pickup,Active,40.24,--,true,aroma,libswim@gmail.com,(949) 923-7936,
+false,69009004,Whitney Sum,true,2/6 9:13 PM,Deliver,Active,33.68,--,true,aroma,wcolella@csulb.edu,(949) 690-5810,"18 Lantana, Lake Forest, CA 92630"
+false,69026091,jamie bailey,false,2/7 5:00 PM,Pickup,Active,52.62,--,true,aroma,bailey04@cox.net,(949) 735-9753,
+false,69029433,Kaleia Abraham,true,2/7 4:59 PM,Pickup,Active,26.93,--,true,aroma,kaleiaa18@icloud.com,(661) 993-1177,
+false,69029767,Ian Gould,true,2/7 5:22 PM,Deliver,Active,33.91,--,true,aroma,ian_gould13@hotmail.com,(714) 305-1380,"46 Rue Fontaine, Lake Forest, CA 92610"
+false,69031827,Jon Rolfe,true,2/7 6:30 PM,Pickup,Active,49.10,--,true,aroma,jarolfe7@aol.com,(937) 681-8376,
+false,69069628,Kimberly Minarcin,true,2/9 2:54 PM,Pickup,Active,14.00,--,true,aroma,kymbu@hotmail.com,(949) 426-3096,"2200 Indigo Place, Lake Forest, CA 92630"
+false,69079632,Kimberly Devilla,true,2/9 5:11 PM,Pickup,Active,19.65,--,true,aroma,kimberlyd949@gmail.com,(949) 226-9263,
+false,69153482,Whitney Sum,true,2/11 7:27 PM,Pickup,Active,12.94,--,true,aroma,wcolella@csulb.edu,(949) 690-5810,"18 Lantana, Lake Forest, CA 92630"
+false,69153861,Whitney Sum,true,2/11 9:27 PM,Deliver,Active,30.81,--,true,aroma,wcolella@csulb.edu,(949) 690-5810,"18 Lantana, Lake Forest, CA 92630"
+false,69535982,Tracy Pitzer,true,2/20 5:16 PM,Pickup,Active,41.99,--,true,aroma,tracypitzer@gmail.com,(949) 212-4634,
+false,69584107,Lori Bullard,true,2/21 7:26 PM,Deliver,Active,49.01,--,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,69761331,Kimberly Minarcin,true,2/26 2:49 PM,Pickup,Active,14.00,--,true,aroma,kymbu@hotmail.com,(949) 426-3096,"2200 Indigo Place, Lake Forest, CA 92630"
+false,70099268,Lori Bullard,true,3/5 7:23 PM,Deliver,Active,64.79,--,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,70313063,Kimberly Minarcin,true,3/11 2:39 PM,Pickup,Active,14.00,--,true,aroma,kymbu@hotmail.com,(949) 426-3096,"2200 Indigo Place, Lake Forest, CA 92630"
+false,70421281,Patrick bailey,false,3/13 5:15 PM,Pickup,Active,46.91,--,true,aroma,bailey04@cox.net,(949) 735-9753,
+false,70424228,Lori Bullard,true,3/13 5:39 PM,Deliver,Active,76.41,--,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,71230786,Mark Van Baalen,true,4/2 6:34 PM,Deliver,Active,47.84,--,true,aroma,mrvb2u@gmail.com,(949) 212-7656,"22005 Newbridge Drive, Lake Forest, CA 92630"
+false,71803560,Lori Bullard,true,4/17 6:50 PM,Deliver,Active,45.76,--,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,72161861,Kimberly Minarcin,true,4/28 2:37 PM,Pickup,Active,14.00,--,true,aroma,kymbu@hotmail.com,(949) 426-3096,"2200 Indigo Place, Lake Forest, CA 92630"
+false,75111208,Lori Bullard,true,7/26 7:35 PM,Deliver,Active,59.57,--,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,79654208,Rick Dressler,true,12/7 5:36 PM,Pickup,Active,31.99,--,true,aroma,rickdres@quickshots.com,(909) 327-7535,
+false,82570289,Deanna Abrahams,true,2/28 6:08 PM,Deliver,Active,57.41,--,true,aroma,dlabrahams@gmail.com,(949) 677-7486,"21291 Calle Balsa, Lake Forest, CA 92630"
+false,82788156,Deanna Abrahams,true,3/7 12:20 PM,Deliver,Active,75.81,--,true,aroma,dlabrahams@gmail.com,(949) 677-7486,"21291 Calle Balsa, Lake Forest, CA 92630"
+false,90982443,Lori Bullard,true,12/5 6:33 PM,Deliver,Active,46.82,App/6:28 PM,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,94469816,Lori Bullard,true,3/31 6:38 PM,Deliver,Active,75.88,Email/6:09 PM,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,95248402,Lori Bullard,true,4/28 7:30 PM,Deliver,Active,62.15,--,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,96993345,Mei Han Tso,true,7/2 3:43 PM,Deliver,Inactive,70.32,--,true,aroma,fulviocorriceia5389@gmail.com,(267) 231-6051,"105 Vanguard, Irvine, CA 92618"
+false,97532102,Rick Tralies,true,7/22 7:39 PM,Deliver,Active,54.25,Email/8:08 PM,true,aroma,rtralies@gmail.com,(731) 435-3211,"602 Catalunya, Lake Forest, CA 92630"
+false,99454748,Lori Bullard,true,10/13 7:53 PM,Deliver,Active,43.37,--,true,aroma,loribullard5@gmail.com,(949) 973-6794,"28035 Longford, Mission Viejo, CA 92692"
+false,101559574,glasgow lowther,true,1/2 5:09 PM,Pickup,Active,104.35,--,true,aroma,txjyvlhctgew850@gmail.com,(802) 866-0516,"1741 Norman Way, Madison, WI 53705"

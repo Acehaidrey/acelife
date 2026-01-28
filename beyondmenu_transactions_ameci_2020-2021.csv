@@ -1,0 +1,52 @@
+D,Order #,Name,ASAP,Req Time,Type,Status,Amt,Viewed,Fax?,Store,Email,Phone,Address
+false,56544268,Jose Garcia,true,1/3 11:42 AM,Deliver,Active,27.77,SMS/11:13 AM,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,56900899,Jose Garcia,true,1/16 2:55 PM,Deliver,Active,38.54,App/2:26 PM,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,56984316,Russ Jensen,true,1/18 6:37 PM,Deliver,Active,49.09,--,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,57092310,Jose Garcia,true,1/23 1:51 PM,Deliver,Active,27.77,--,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,57459556,Jose Garcia,true,2/5 5:18 PM,Deliver,Active,27.77,--,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,57693614,Jose Garcia,true,2/14 12:05 PM,Deliver,Active,27.77,Email/11:42 AM,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,57944171,Jose Garcia,true,2/22 4:34 PM,Deliver,Active,27.77,--,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,58093845,Jose Garcia,true,2/28 2:51 PM,Deliver,Active,29.93,Email/2:26 PM,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,58338310,Jose Garcia,true,3/8 12:08 PM,Deliver,Active,29.93,App/11:42 AM,true,ameci,planet008c@gmail.com,(949) 528-9425,"23333 Ridge Route Drive, Lake Forest, CA 92630"
+false,58364464,Valerie Tolstykh,true,3/9 12:19 PM,Deliver,Inactive,25.86,SMS/11:55 AM,true,ameci,valeria.tolstykh74@gmail.com,(714) 725-5896,"23331 El Toro Rd, Lake Forest, CA 92630"
+false,58646683,Randy Holcomb,true,3/22 5:23 PM,Pickup,Active,23.68,Email/6:25 PM,true,ameci,hulcster@gmail.com,(949) 306-1209,
+false,58700087,Russ Jensen,true,3/27 6:51 PM,Deliver,Active,99.80,SMS/7:06 PM,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,58754775,Joseph Sommers,true,3/31 6:46 PM,Deliver,Active,33.13,SMS/7:34 PM,true,ameci,joeysommers01@yahoo.com,(949) 309-1375,"20041 Osterman Road, Lake Forest, CA 92630"
+false,58827498,Victor Yamamoto,true,4/6 6:00 PM,Pickup,Active,41.34,Email/5:41 PM,true,ameci,vhyamamoto@cox.net,(714) 349-3940,"25002 Paseo Equestre, Lake Forest, CA 92630"
+false,58895761,Kathy Thomas,true,4/11 6:06 PM,Deliver,Active,32.88,Email/2:32 PM,true,ameci,alsveblast@gmail.com,(949) 586-7277,"24741 Via Princesa, Lake Forest, CA 92630"
+false,58913147,Jana McFadden,false,4/13 4:45 PM,Pickup,Active,28.15,SMS/4:23 PM,true,ameci,janamc@cox.net,(949) 951-6549,
+false,59056625,Jenna Etherington,true,4/21 6:57 PM,Deliver,Active,75.67,SMS/6:30 PM,true,ameci,jennausc21@yahoo.com,(562) 338-6553,"26312 West Grove Circle, Lake Forest, CA 92630"
+false,59113601,Karen Lewis,true,4/24 3:49 PM,Pickup,Active,19.50,--,true,ameci,allyry25@gmail.com,(949) 533-6962,
+false,59170682,Do Garcia,true,4/26 6:54 PM,Pickup,Active,28.42,Email/12:25 AM,true,ameci,dominicgarcia67@gmail.com,(949) 278-5595,
+false,59317044,Russ Jensen,true,5/2 5:53 PM,Pickup,Active,54.26,Email/2:06 PM,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,59526304,Christina Vicente,true,5/10 11:38 AM,Pickup,Active,44.30,--,true,ameci,christinav_24@hotmail.com,(949) 202-6370,
+false,59812280,Brian Park,true,5/19 1:05 PM,Pickup,Active,37.41,Email/2:34 PM,true,ameci,snguyenpa@gmail.com,(310) 528-2829,
+false,60214347,Melody Downey,true,5/31 5:05 PM,Pickup,Active,42.63,--,true,ameci,melodydowney@cox.net,(949) 294-9102,"25222 Grovewood, Lake Forest, CA 92630"
+false,60447159,mark sabatino,true,6/7 7:44 PM,Pickup,Active,34.68,Email/1:56 AM,true,ameci,marksabatino007@hotmail.com,(949) 310-9049,
+false,60596806,Donna Mailand,true,6/12 6:24 PM,Deliver,Active,40.95,--,true,ameci,donnaonlake2@cox.net,(949) 933-9353,"24266 Ontario Lane, LAKE FOREST, CA 92630"
+false,61161851,Gary Cummings,true,6/30 6:17 PM,Pickup,Active,29.22,--,true,ameci,gcbmenu@timbuk3.ml1.net,(949) 636-5151,
+false,61230449,Russ Jensen,true,7/2 7:21 PM,Deliver,Active,44.61,--,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,61901821,Justin Lamando,true,7/23 6:59 PM,Pickup,Active,26.01,--,true,ameci,nitsujet@gmail.com,(949) 878-1791,
+false,61945700,Russ Jensen,true,7/24 7:06 PM,Deliver,Active,41.10,Email/8:07 PM,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,61980499,Gary Cummings,true,7/25 6:06 PM,Pickup,Active,30.13,--,true,ameci,gcbmenu@timbuk3.ml1.net,(949) 636-5151,
+false,62408379,Heidi Moak,true,8/7 5:52 PM,Deliver,Active,65.04,App/3:41 AM,true,ameci,heidimoak@yahoo.com,(949) 306-2990,"24951 Avenida Bancal, Lake Forest, CA 92630"
+false,63284074,Nahum Aguilar,true,9/2 8:00 PM,Deliver,Active,61.47,--,true,ameci,Nahum.aguilar@gmail.com,(949) 304-7508,"64 Anacapa Court, Lake Forest, CA 92610"
+false,63880053,Vince Ying,true,9/20 11:31 AM,Pickup,Active,34.37,--,true,ameci,vinceying@outlook.com,(415) 894-0452,
+false,64143725,Steffenie Ellison,true,9/27 6:49 PM,Deliver,Active,54.23,--,true,ameci,steffenie@dpspermits.com,(949) 683-9862,"24642 Vía Raza, Lake Forest, CA 92630"
+false,64166085,Russ Jensen,true,9/28 5:49 PM,Deliver,Active,56.99,App/5:35 PM,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,64851752,Ava Fulton,true,10/18 1:38 PM,Deliver,Active,68.78,App/6:02 PM,true,ameci,avamarie62@hotmail.com,(714) 337-0483,"22851 Larkin Street, Lake Forest, CA 92630"
+false,65046291,Rick Blackwood,true,10/23 6:36 PM,Deliver,Active,34.10,App/6:02 PM,true,ameci,rcblackwood77@gmail.com,(714) 404-9137,"25665 Fallenwood, Lake Forest, CA 92630"
+false,65757386,Mark Pickering,true,11/12 6:23 PM,Deliver,Active,37.31,--,true,ameci,Pic4u@att.net,(949) 584-9742,"25022 Castlewood, Lake Forest, CA 92630"
+false,66585364,Russ Jensen,false,12/5 7:00 PM,Deliver,Active,104.18,App/1:41 PM,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,66622308,Steffenie Ellison,true,12/6 6:19 PM,Deliver,Active,52.06,--,true,ameci,steffenie@dpspermits.com,(949) 683-9862,"24642 Vía Raza, Lake Forest, CA 92630"
+false,66906373,Greg Satlow,true,12/14 8:23 PM,Deliver,Active,29.14,App/1:41 PM,true,ameci,gregsatlow@yahoo.com,(949) 837-0479,"24571 Vía Tequila, Lake Forest, CA 92630"
+false,67959950,Russ Jensen,true,1/9 7:04 PM,Deliver,Active,70.67,--,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,67960526,Jon F,true,1/9 7:08 PM,Pickup,Active,34.84,--,true,ameci,marathon1@gmail.com,(949) 315-5336,
+false,68850692,Jennifer Sheasby,false,2/3 5:15 PM,Deliver,Active,52.07,--,true,ameci,shez4@sbcglobal.net,(714) 721-3962,"26 Cienega, Irvine, CA 92618"
+false,68909624,Russ Jensen,true,2/4 6:04 PM,Pickup,Active,47.06,--,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,69007107,Steffenie Ellison,true,2/6 6:50 PM,Deliver,Active,44.63,--,true,ameci,steffenie@dpspermits.com,(949) 683-9862,"24642 Vía Raza, Lake Forest, CA 92630"
+false,72830042,Russ Jensen,true,5/16 6:50 PM,Deliver,Active,79.73,--,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,73346274,Russ Jensen,true,6/1 6:23 PM,Deliver,Active,49.99,SMS/5:54 PM,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,73944019,Gary Cummings,true,6/19 5:48 PM,Pickup,Active,30.30,--,true,ameci,gcbmenu@timbuk3.ml1.net,(949) 636-5151,
+false,74071566,Russ Jensen,true,6/24 12:00 PM,Deliver,Active,53.54,--,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"
+false,74628586,Russ Jensen,true,7/11 5:45 PM,Deliver,Active,50.76,Web/1:34 PM,true,ameci,russjensen59@gmail.com,(949) 616-4494,"26152 Vintage Woods Road, Lake Forest, CA 92630"

@@ -101,6 +101,8 @@ def infer_categories(item_number: str, item_name: str) -> str:
             "NBA",
             "MLB",
             "NHL",
+            "KARATE",
+            "JOGGER"
         )
     ):
         add("Ornament > Sports")
