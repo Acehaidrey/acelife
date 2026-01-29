@@ -19,7 +19,7 @@ running a Streamlit dashboard.
 
 ## Canonical Normalized Schema
 All order-level parsers should emit these columns in this order:
-`order_id, platform, provider, order_datetime, order_type, customer_name, phone, email, address, payment_type, restaurant_name, items, item_count, subtotal, tax, tax_withheld, tip, delivery_fee, total, processing_fee, commission_fee, adjustments, marketing_fee, misc_fee, notes`
+`order_id, platform, provider, order_datetime, order_type, customer_name, company_name, phone, email, address, payment_type, restaurant_name, items, item_count, subtotal, tax, tax_withheld, tip, delivery_fee, total, processing_fee, commission_fee, adjustments, marketing_fee, misc_fee, notes`
 
 ## Parser Conventions
 - BeyondMenu parser drops rows where `Status != active` (inactive orders are excluded).
@@ -39,6 +39,10 @@ All order-level parsers should emit these columns in this order:
   - `python3 orders_analytics/cli.py parse --platform eatstreet --extra billings_mbox=TakeoutESBM/Mail/Billings-Eatstreet.mbox`
 - BeyondMenu parse:
   - `python3 orders_analytics/cli.py parse --platform beyondmenu`
+- Foodja parse:
+  - `python3 orders_analytics/cli.py parse --platform foodja`
+- ezCater parse:
+  - `python3 orders_analytics/cli.py parse --platform ezcater`
 - (Optional) pass extra parser args: `--extra key=value` (repeatable)
 - (Optional) Update EatStreet normalized fees from billings (writes missing-fee list to raw):
   - `python3 orders_analytics/cli.py fees`

@@ -46,6 +46,9 @@ def merge_raw(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dict
 def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     normalized = []
     for row in rows:
+        customer_name = str(row.get("customer_name") or "")
+        if customer_name and "test" in customer_name.lower():
+            continue
         payment_type = row.get("payment_type", "")
         if str(row.get("payment_method", "") or "").lower() == "cash":
             payment_type = "cash"
@@ -94,6 +97,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 "order_datetime": order_dt,
                 "order_type": normalize_order_type(row.get("order_type", "")),
                 "customer_name": row.get("customer_name", ""),
+                "company_name": "",
                 "phone": row.get("phone", ""),
                 "email": row.get("email", ""),
                 "address": row.get("address", ""),

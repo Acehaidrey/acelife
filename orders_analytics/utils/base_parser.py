@@ -13,6 +13,7 @@ from orders_analytics.utils.validation import (
     validate_delivery_fee,
     validate_required_fields,
     validate_tax_fields,
+    validate_test_customer_names,
 )
 from orders_analytics.utils.constants import ERRORS_PATH
 
@@ -83,6 +84,7 @@ class BaseParser:
             validate_enum_fields,
             validate_delivery_fee,
             validate_tax_fields,
+            validate_test_customer_names,
         ):
             rows, errors = validator(rows, source=self.resolve_paths()[1])
             if errors:

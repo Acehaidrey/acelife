@@ -57,6 +57,14 @@ def run_parse(
         )
 
         runner = BeyondMenuOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == "foodja":
+        from orders_analytics.parsers.foodja.parse_foodja_orders import FoodjaOrdersParser
+
+        runner = FoodjaOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == "ezcater":
+        from orders_analytics.parsers.ezcater.parse_ezcater_orders import EzCaterOrdersParser
+
+        runner = EzCaterOrdersParser(input_path=input_path, out_path=out_path, **extras)
     else:
         raise ValueError(f"Unknown platform: {platform}")
 
@@ -98,7 +106,7 @@ def main() -> None:
     parse_cmd = subparsers.add_parser("parse", help="Run a platform parser.")
     parse_cmd.add_argument(
         "--platform",
-        choices=["eatstreet", "beyondmenu", "all"],
+        choices=["eatstreet", "beyondmenu", "foodja", "ezcater", "all"],
         default="all",
         help="Platform to parse.",
     )
@@ -223,7 +231,7 @@ def main() -> None:
     if args.command == "parse":
         platforms: List[str]
         if args.platform == "all":
-            platforms = ["eatstreet", "beyondmenu"]
+            platforms = ["eatstreet", "beyondmenu", "foodja", "ezcater"]
         else:
             platforms = [args.platform]
         base_extras = parse_extras(args.extra)

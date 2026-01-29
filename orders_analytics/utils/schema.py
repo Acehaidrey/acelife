@@ -11,6 +11,7 @@ CANONICAL_COLUMNS: List[str] = [
     "order_datetime",
     "order_type",
     "customer_name",
+    "company_name",
     "phone",
     "email",
     "address",

@@ -105,6 +105,7 @@ class BeyondMenuOrdersParser(BaseParser):
                 "order_datetime": df["order_datetime"],
                 "order_type": df["order_type"],
                 "customer_name": df.get("Name", "").fillna(""),
+                "company_name": "",
                 "phone": df.get("Phone", "").fillna(""),
                 "email": "",
                 "address": df.get("Address", "").fillna(""),

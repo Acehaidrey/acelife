@@ -16,6 +16,8 @@ DATE_GRAINS = ["day", "month", "year"]
 PLATFORMS = [
     "eatstreet",
     "beyondmenu",
+    "foodja",
+    "ezcater",
 ]
 
 PROVIDERS = [

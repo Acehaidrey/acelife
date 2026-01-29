@@ -129,6 +129,32 @@ def validate_enum_fields(
     return rows, errors
 
 
+def validate_test_customer_names(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        name = str(row.get("customer_name") or "").strip()
+        if not name:
+            continue
+        if "test" in name.lower():
+            notes = str(row.get("notes") or "").strip()
+            flag = "test_customer_name"
+            row["notes"] = f"{notes} | {flag}".strip(" |")
+            errors.append(
+                {
+                    "order_id": row.get("order_id", ""),
+                    "platform": row.get("platform", ""),
+                    "provider": row.get("provider", ""),
+                    "error_code": flag,
+                    "message": f"customer_name={name}",
+                    "source": source,
+                }
+            )
+    return rows, errors
+
+
 def validate_tax_fields(
     rows: List[Dict[str, str]],
     source: str,

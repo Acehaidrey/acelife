@@ -21,6 +21,7 @@ ORDER_COLUMNS = [
     "order_datetime",
     "order_type",
     "customer_name",
+    "company_name",
     "phone",
     "email",
     "address",
@@ -56,6 +57,7 @@ def get_connection() -> duckdb.DuckDBPyConnection:
             order_datetime TIMESTAMP,
             order_type TEXT,
             customer_name TEXT,
+            company_name TEXT,
             phone TEXT,
             email TEXT,
             address TEXT,
@@ -87,6 +89,7 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS restaurant_name TEXT")
     conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS item_count TEXT")
     conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS email TEXT")
+    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS company_name TEXT")
     conn.execute(
         "CREATE UNIQUE INDEX IF NOT EXISTS order_overrides_pk ON order_overrides(order_id, platform)"
     )
@@ -194,6 +197,7 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
         "order_datetime",
         "order_type",
         "customer_name",
+        "company_name",
         "phone",
         "email",
         "address",
@@ -262,7 +266,7 @@ def main() -> None:
     with col2:
         provider = st.selectbox("Provider", provider_options)
     with col3:
-        grain = st.selectbox("Date Grain", ["day", "month", "year"])
+        grain = st.selectbox("Date Grain", ["day", "month", "year"], index=1)
 
     min_date = data["order_datetime"].min()
     max_date = data["order_datetime"].max()
@@ -301,7 +305,19 @@ def main() -> None:
 
     st.caption(f"After filters: {len(filtered)} rows")
 
-    numeric_cols = ["subtotal", "tax", "tip", "delivery_fee", "total", "misc_fee", "commission_fee", "merchant_fee"]
+    numeric_cols = [
+        "subtotal",
+        "tax",
+        "tax_withheld",
+        "tip",
+        "delivery_fee",
+        "total",
+        "misc_fee",
+        "commission_fee",
+        "processing_fee",
+        "adjustments",
+        "marketing_fee",
+    ]
     for col in numeric_cols:
         if col in filtered.columns:
             filtered[col] = pd.to_numeric(filtered[col], errors="coerce")
@@ -317,6 +333,7 @@ def main() -> None:
             orders=("order_id", "count"),
             subtotal=("subtotal", "sum"),
             tax=("tax", "sum"),
+            tax_withheld=("tax_withheld", "sum"),
             tip=("tip", "sum"),
             delivery_fee=("delivery_fee", "sum"),
             total=("total", "sum"),
@@ -326,8 +343,33 @@ def main() -> None:
     )
 
     st.subheader("Summary")
-    st.dataframe(summary, width="stretch")
-    st.line_chart(summary.set_index("date_bucket")[["total", "subtotal", "tip"]])
+    money_cols = [
+        "subtotal",
+        "tax",
+        "tax_withheld",
+        "tip",
+        "delivery_fee",
+        "total",
+        "misc_fee",
+        "commission_fee",
+        "processing_fee",
+        "adjustments",
+        "marketing_fee",
+    ]
+    summary_column_config = {
+        col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in summary.columns
+    }
+    st.dataframe(summary, column_config=summary_column_config, width="stretch")
+    platform_summary = (
+        filtered.groupby(["date_bucket", "platform"], dropna=False)
+        .agg(total=("total", "sum"))
+        .reset_index()
+    )
+    platform_pivot = platform_summary.pivot_table(
+        index="date_bucket", columns="platform", values="total", fill_value=0.0
+    )
+    if not platform_pivot.empty:
+        st.line_chart(platform_pivot)
 
     provider_summary = (
         filtered.groupby(["date_bucket", "provider"], dropna=False)
@@ -351,13 +393,14 @@ def main() -> None:
             orders=("order_id", "count"),
             subtotal=("subtotal", "sum"),
             tax=("tax", "sum"),
+            tax_withheld=("tax_withheld", "sum"),
             tip=("tip", "sum"),
             delivery_fee=("delivery_fee", "sum"),
             total=("total", "sum"),
         )
         .reset_index()
     )
-    for col in ["misc_fee", "commission_fee", "processing_fee"]:
+    for col in ["misc_fee", "commission_fee", "processing_fee", "adjustments", "marketing_fee"]:
         if col in filtered.columns:
             extra = (
                 filtered.assign(
@@ -387,11 +430,14 @@ def main() -> None:
             "orders",
             "subtotal",
             "tax",
+            "tax_withheld",
             "tip",
             "delivery_fee",
             "misc_fee",
             "commission_fee",
             "processing_fee",
+            "adjustments",
+            "marketing_fee",
             "total",
         ]:
             if f"{col}_override" in monthly.columns:
@@ -402,7 +448,12 @@ def main() -> None:
             columns=[c for c in monthly.columns if c.endswith("_override")]
         )
     st.subheader("Monthly Rollup")
-    st.dataframe(monthly, width="stretch")
+    if "merchant_fee" in monthly.columns:
+        monthly = monthly.drop(columns=["merchant_fee"])
+    monthly_column_config = {
+        col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in monthly.columns
+    }
+    st.dataframe(monthly, column_config=monthly_column_config, width="stretch")
 
     st.subheader("Order Overrides")
     order_options = (
@@ -449,31 +500,37 @@ def main() -> None:
             conn.execute(
                 """
                 INSERT INTO order_overrides (
-                    order_id, platform, provider, restaurant, order_datetime, order_type,
-                    customer_name, phone, address, payment_type, subtotal, tax, tip,
-                    delivery_fee, misc_fee, commission_fee, processing_fee, total,
-                    items, items_count, notes, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    order_id, platform, provider, restaurant_name, order_datetime, order_type,
+                    customer_name, company_name, phone, email, address, payment_type,
+                    subtotal, tax, tax_withheld, tip, delivery_fee, misc_fee, commission_fee,
+                    processing_fee, adjustments, marketing_fee, total, items, item_count,
+                    notes, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (order_id, platform)
                 DO UPDATE SET
                     provider=excluded.provider,
-                    restaurant=excluded.restaurant,
+                    restaurant_name=excluded.restaurant_name,
                     order_datetime=excluded.order_datetime,
                     order_type=excluded.order_type,
                     customer_name=excluded.customer_name,
+                    company_name=excluded.company_name,
                     phone=excluded.phone,
+                    email=excluded.email,
                     address=excluded.address,
                     payment_type=excluded.payment_type,
                     subtotal=excluded.subtotal,
                     tax=excluded.tax,
+                    tax_withheld=excluded.tax_withheld,
                     tip=excluded.tip,
                     delivery_fee=excluded.delivery_fee,
                     misc_fee=excluded.misc_fee,
                     commission_fee=excluded.commission_fee,
                     processing_fee=excluded.processing_fee,
+                    adjustments=excluded.adjustments,
+                    marketing_fee=excluded.marketing_fee,
                     total=excluded.total,
                     items=excluded.items,
-                    items_count=excluded.items_count,
+                    item_count=excluded.item_count,
                     notes=excluded.notes,
                     updated_at=excluded.updated_at
                 """,
@@ -481,23 +538,28 @@ def main() -> None:
                     row["order_id"],
                     row["platform"],
                     row["provider"],
-                    row["restaurant"],
+                    row.get("restaurant_name", ""),
                     row["order_datetime"],
                     row["order_type"],
                     row["customer_name"],
+                    row.get("company_name", ""),
                     row["phone"],
+                    row.get("email", ""),
                     row["address"],
                     row["payment_type"],
                     to_float(subtotal),
                     to_float(tax),
+                    to_float(row.get("tax_withheld", "")),
                     to_float(tip),
                     to_float(delivery_fee),
                     to_float(misc_fee),
                     to_float(commission_fee),
                     to_float(processing_fee),
+                    to_float(row.get("adjustments", "")),
+                    to_float(row.get("marketing_fee", "")),
                     to_float(total),
                     row.get("items", ""),
-                    row.get("items_count", ""),
+                    row.get("item_count", ""),
                     notes,
                     datetime.utcnow(),
                 ),
@@ -583,7 +645,12 @@ def main() -> None:
                 st.success("Monthly override saved.")
 
     st.subheader("Filtered Orders")
-    st.dataframe(filtered, width="stretch")
+    filtered_column_config = {
+        col: st.column_config.NumberColumn(format="dollar")
+        for col in money_cols
+        if col in filtered.columns
+    }
+    st.dataframe(filtered, column_config=filtered_column_config, width="stretch")
 
     conn.close()
 

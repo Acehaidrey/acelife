@@ -319,8 +319,6 @@ def parse_orders(mbox_path: str) -> List[Dict[str, str]]:
 
         payment_type = classify_payment(payment_detail, payment_raw)
 
-        if customer_name and "test" in customer_name.lower():
-            continue
         orders.append(
             {
                 "order_id": order_id,
