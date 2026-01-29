@@ -30,6 +30,7 @@ CANONICAL_COLUMNS: List[str] = [
     "adjustments",
     "marketing_fee",
     "misc_fee",
+    "errors",
     "notes",
 ]
 

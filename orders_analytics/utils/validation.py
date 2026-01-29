@@ -12,6 +12,17 @@ def _is_real(value: str) -> bool:
         return False
 
 
+def _append_error(row: Dict[str, str], flag: str) -> None:
+    existing = str(row.get("errors") or "").strip()
+    if existing:
+        existing_flags = [e.strip() for e in existing.split("|")]
+        if flag in existing_flags:
+            return
+        row["errors"] = f"{existing} | {flag}"
+    else:
+        row["errors"] = flag
+
+
 def validate_required_fields(
     rows: List[Dict[str, str]],
     source: str,
@@ -21,9 +32,8 @@ def validate_required_fields(
     for row in rows:
         missing = [key for key in required if not str(row.get(key) or "").strip()]
         if missing:
-            notes = str(row.get("notes") or "").strip()
             flag = "missing_required_fields"
-            row["notes"] = f"{notes} | {flag}".strip(" |")
+            _append_error(row, flag)
             errors.append(
                 {
                     "order_id": row.get("order_id", ""),
@@ -48,9 +58,8 @@ def validate_delivery_fee(
             continue
         fee = str(row.get("delivery_fee") or "").strip()
         if not _is_real(fee):
-            notes = str(row.get("notes") or "").strip()
             flag = "delivery_fee_missing_for_delivery"
-            row["notes"] = f"{notes} | {flag}".strip(" |")
+            _append_error(row, flag)
             errors.append(
                 {
                     "order_id": row.get("order_id", ""),
@@ -98,9 +107,8 @@ def validate_enum_fields(
         norm_payment_type = normalize_payment_type(raw_payment_type)
 
         if raw_order_type and norm_order_type not in ("pickup", "delivery"):
-            notes = str(row.get("notes") or "").strip()
             flag = "invalid_order_type"
-            row["notes"] = f"{notes} | {flag}".strip(" |")
+            _append_error(row, flag)
             errors.append(
                 {
                     "order_id": row.get("order_id", ""),
@@ -113,9 +121,8 @@ def validate_enum_fields(
             )
 
         if raw_payment_type and norm_payment_type not in ("credit", "cash"):
-            notes = str(row.get("notes") or "").strip()
             flag = "invalid_payment_type"
-            row["notes"] = f"{notes} | {flag}".strip(" |")
+            _append_error(row, flag)
             errors.append(
                 {
                     "order_id": row.get("order_id", ""),
@@ -139,9 +146,8 @@ def validate_test_customer_names(
         if not name:
             continue
         if "test" in name.lower():
-            notes = str(row.get("notes") or "").strip()
             flag = "test_customer_name"
-            row["notes"] = f"{notes} | {flag}".strip(" |")
+            _append_error(row, flag)
             errors.append(
                 {
                     "order_id": row.get("order_id", ""),
@@ -166,9 +172,8 @@ def validate_tax_fields(
         tax_real = _is_real(tax_raw)
         tw_real = _is_real(tw_raw)
         if tax_real == tw_real:
-            notes = str(row.get("notes") or "").strip()
             flag = "tax_tax_withheld_needs_review"
-            row["notes"] = f"{notes} | {flag}".strip(" |")
+            _append_error(row, flag)
             errors.append(
                 {
                     "order_id": row.get("order_id", ""),
@@ -179,4 +184,35 @@ def validate_tax_fields(
                     "source": source,
                 }
             )
+    return rows, errors
+
+
+def validate_negative_fees(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    fee_fields = ["commission_fee", "processing_fee", "marketing_fee", "misc_fee"]
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        for field in fee_fields:
+            raw = str(row.get(field) or "").strip()
+            if raw == "":
+                continue
+            try:
+                value = float(raw)
+            except ValueError:
+                continue
+            if value < 0:
+                flag = "negative_fee_value"
+                _append_error(row, flag)
+                errors.append(
+                    {
+                        "order_id": row.get("order_id", ""),
+                        "platform": row.get("platform", ""),
+                        "provider": row.get("provider", ""),
+                        "error_code": flag,
+                        "message": f"{field}={raw}",
+                        "source": source,
+                    }
+                )
     return rows, errors

@@ -182,6 +182,7 @@ class EzCaterOrdersParser(BaseParser):
                     "adjustments": adjustments,
                     "marketing_fee": marketing_fee,
                     "misc_fee": parse_money(row.get("Misc Fees", "")),
+                    "errors": "",
                     "notes": " | ".join(notes),
                 }
             )

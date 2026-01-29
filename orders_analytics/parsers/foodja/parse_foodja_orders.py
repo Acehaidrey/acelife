@@ -110,6 +110,7 @@ class FoodjaOrdersParser(BaseParser):
                     "adjustments": "",
                     "marketing_fee": "",
                     "misc_fee": "",
+                    "errors": "",
                     "notes": " | ".join(notes),
                 }
             )

@@ -116,6 +116,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 "adjustments": "",
                 "marketing_fee": "",
                 "misc_fee": "",
+                "errors": "",
                 "notes": " | ".join(notes),
             }
         )

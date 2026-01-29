@@ -40,6 +40,7 @@ ORDER_COLUMNS = [
     "adjustments",
     "marketing_fee",
     "misc_fee",
+    "errors",
     "notes",
 ]
 
@@ -76,20 +77,11 @@ def get_connection() -> duckdb.DuckDBPyConnection:
             marketing_fee DOUBLE,
             misc_fee DOUBLE,
             notes TEXT,
+            errors TEXT,
             updated_at TIMESTAMP
         )
         """
     )
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS misc_fee DOUBLE")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS commission_fee DOUBLE")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS processing_fee DOUBLE")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS tax_withheld DOUBLE")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS adjustments DOUBLE")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS marketing_fee DOUBLE")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS restaurant_name TEXT")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS item_count TEXT")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS email TEXT")
-    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS company_name TEXT")
     conn.execute(
         "CREATE UNIQUE INDEX IF NOT EXISTS order_overrides_pk ON order_overrides(order_id, platform)"
     )
@@ -117,12 +109,6 @@ def get_connection() -> duckdb.DuckDBPyConnection:
         )
         """
     )
-    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS misc_fee DOUBLE")
-    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS commission_fee DOUBLE")
-    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS processing_fee DOUBLE")
-    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS tax_withheld DOUBLE")
-    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS adjustments DOUBLE")
-    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS marketing_fee DOUBLE")
     conn.execute(
         "CREATE UNIQUE INDEX IF NOT EXISTS monthly_overrides_pk ON monthly_overrides(platform, provider, year, month)"
     )
@@ -206,6 +192,7 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
         "item_count",
         "restaurant_name",
         "notes",
+        "errors",
     ]:
         override_col = f"{col}_override"
         if override_col in merged.columns:
@@ -282,7 +269,7 @@ def main() -> None:
     else:
         max_value = max_picker
         default_end = max_picker
-    default_start = min_date.date() if not pd.isna(min_date) else max_value
+    default_start = datetime(2020, 1, 1).date()
     if default_end < default_start:
         default_end = default_start
 
@@ -344,6 +331,8 @@ def main() -> None:
 
     st.subheader("Summary")
     money_cols = [
+        "cash_subtotal",
+        "credit_subtotal",
         "subtotal",
         "tax",
         "tax_withheld",
@@ -355,6 +344,7 @@ def main() -> None:
         "processing_fee",
         "adjustments",
         "marketing_fee",
+        "net_payout",
     ]
     summary_column_config = {
         col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in summary.columns
@@ -391,7 +381,8 @@ def main() -> None:
         .groupby(["platform", "provider", "year", "month"])
         .agg(
             orders=("order_id", "count"),
-            subtotal=("subtotal", "sum"),
+            cash_subtotal=("subtotal", lambda s: s[filtered.loc[s.index, "payment_type"] == "cash"].sum()),
+            credit_subtotal=("subtotal", lambda s: s[filtered.loc[s.index, "payment_type"] == "credit"].sum()),
             tax=("tax", "sum"),
             tax_withheld=("tax_withheld", "sum"),
             tip=("tip", "sum"),
@@ -400,6 +391,7 @@ def main() -> None:
         )
         .reset_index()
     )
+    monthly["subtotal"] = monthly["cash_subtotal"] + monthly["credit_subtotal"]
     for col in ["misc_fee", "commission_fee", "processing_fee", "adjustments", "marketing_fee"]:
         if col in filtered.columns:
             extra = (
@@ -428,6 +420,8 @@ def main() -> None:
         )
         for col in [
             "orders",
+            "cash_subtotal",
+            "credit_subtotal",
             "subtotal",
             "tax",
             "tax_withheld",
@@ -447,9 +441,21 @@ def main() -> None:
         monthly = monthly.drop(
             columns=[c for c in monthly.columns if c.endswith("_override")]
         )
+    def positive_only(series):
+        return series.where(series > 0, 0)
+
+    monthly["net_payout"] = (
+        monthly["credit_subtotal"]
+        + monthly["tax"]
+        + monthly["tip"]
+        + monthly["delivery_fee"]
+        + monthly["adjustments"]
+        - positive_only(monthly["commission_fee"])
+        - positive_only(monthly["processing_fee"])
+        - positive_only(monthly["marketing_fee"])
+        - positive_only(monthly["misc_fee"])
+    )
     st.subheader("Monthly Rollup")
-    if "merchant_fee" in monthly.columns:
-        monthly = monthly.drop(columns=["merchant_fee"])
     monthly_column_config = {
         col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in monthly.columns
     }
@@ -588,13 +594,18 @@ def main() -> None:
             with st.form("monthly_override_form"):
                 notes = st.text_area("Notes", value=row.get("notes", "") or "")
                 orders = st.text_input("Orders", value=str(row.get("orders", "")))
+                cash_subtotal = st.text_input("Cash Subtotal", value=str(row.get("cash_subtotal", "")))
+                credit_subtotal = st.text_input("Credit Subtotal", value=str(row.get("credit_subtotal", "")))
                 subtotal = st.text_input("Subtotal", value=str(row.get("subtotal", "")))
                 tax = st.text_input("Tax", value=str(row.get("tax", "")))
+                tax_withheld = st.text_input("Tax Withheld", value=str(row.get("tax_withheld", "")))
                 tip = st.text_input("Tip", value=str(row.get("tip", "")))
                 delivery_fee = st.text_input("Delivery Fee", value=str(row.get("delivery_fee", "")))
                 misc_fee = st.text_input("Misc Fee", value=str(row.get("misc_fee", "")))
                 commission_fee = st.text_input("Commission Fee", value=str(row.get("commission_fee", "")))
                 processing_fee = st.text_input("Processing Fee", value=str(row.get("processing_fee", "")))
+                adjustments = st.text_input("Adjustments", value=str(row.get("adjustments", "")))
+                marketing_fee = st.text_input("Marketing Fee", value=str(row.get("marketing_fee", "")))
                 total = st.text_input("Total", value=str(row.get("total", "")))
                 submitted = st.form_submit_button("Save Monthly Override")
             if submitted:
@@ -607,19 +618,25 @@ def main() -> None:
                 conn.execute(
                     """
                     INSERT INTO monthly_overrides (
-                        platform, provider, year, month, orders, subtotal, tax, tip,
-                        delivery_fee, misc_fee, commission_fee, processing_fee, total, notes, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        platform, provider, year, month, orders, cash_subtotal, credit_subtotal,
+                        subtotal, tax, tax_withheld, tip, delivery_fee, misc_fee, commission_fee,
+                        processing_fee, adjustments, marketing_fee, total, notes, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     ON CONFLICT (platform, provider, year, month)
                     DO UPDATE SET
                         orders=excluded.orders,
+                        cash_subtotal=excluded.cash_subtotal,
+                        credit_subtotal=excluded.credit_subtotal,
                         subtotal=excluded.subtotal,
                         tax=excluded.tax,
+                        tax_withheld=excluded.tax_withheld,
                         tip=excluded.tip,
                         delivery_fee=excluded.delivery_fee,
                         misc_fee=excluded.misc_fee,
                         commission_fee=excluded.commission_fee,
                         processing_fee=excluded.processing_fee,
+                        adjustments=excluded.adjustments,
+                        marketing_fee=excluded.marketing_fee,
                         total=excluded.total,
                         notes=excluded.notes,
                         updated_at=excluded.updated_at
@@ -630,13 +647,18 @@ def main() -> None:
                         year,
                         month,
                         to_float(orders),
+                        to_float(cash_subtotal),
+                        to_float(credit_subtotal),
                         to_float(subtotal),
                         to_float(tax),
+                        to_float(tax_withheld),
                         to_float(tip),
                         to_float(delivery_fee),
                         to_float(misc_fee),
                         to_float(commission_fee),
                         to_float(processing_fee),
+                        to_float(adjustments),
+                        to_float(marketing_fee),
                         to_float(total),
                         notes,
                         datetime.utcnow(),

@@ -123,6 +123,7 @@ class BeyondMenuOrdersParser(BaseParser):
                 "adjustments": "",
                 "marketing_fee": "",
                 "misc_fee": df.get("Misc Fee", "").fillna(""),
+                "errors": "",
                 "notes": df.get("Notes", "").fillna(""),
             }
         )

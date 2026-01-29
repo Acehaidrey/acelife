@@ -14,6 +14,7 @@ from orders_analytics.utils.validation import (
     validate_required_fields,
     validate_tax_fields,
     validate_test_customer_names,
+    validate_negative_fees,
 )
 from orders_analytics.utils.constants import ERRORS_PATH
 
@@ -70,6 +71,8 @@ class BaseParser:
         for row in rows:
             row["order_type"] = normalize_order_type(str(row.get("order_type") or ""))
             row["payment_type"] = normalize_payment_type(str(row.get("payment_type") or ""))
+            if "customer_name" in row:
+                row["customer_name"] = str(row.get("customer_name") or "").strip().title()
             for key, value in list(row.items()):
                 if value is None:
                     row[key] = ""
@@ -85,6 +88,7 @@ class BaseParser:
             validate_delivery_fee,
             validate_tax_fields,
             validate_test_customer_names,
+            validate_negative_fees,
         ):
             rows, errors = validator(rows, source=self.resolve_paths()[1])
             if errors:

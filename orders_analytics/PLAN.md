@@ -37,15 +37,13 @@
 
 ## Phase 2: Parsers
 - Organize parsers by platform folder:
-  - `parsers/eatstreet/parse_eatstreet_orders.py`
-  - `parsers/eatstreet/update_eatstreet_fees.py`
   - `parsers/eatstreet/extract_eatstreet_orders_raw.py`
   - `parsers/eatstreet/extract_eatstreet_billings_raw.py`
   - `parsers/eatstreet/normalize_eatstreet_from_raw.py`
   - `parsers/beyondmenu/parse_beyondmenu_orders.py`
-  - `parsers/beyondmenu/parse_beyondmenu_billings.py` (kept but likely unused)
   - `parsers/foodja/parse_foodja_orders.py`
   - `parsers/ezcater/parse_ezcater_orders.py`
+  - `parsers/_legacy/` (archived scripts; not used)
 - Update parsers to:
   - emit normalized columns
   - enforce ISO 8601 `order_datetime`
