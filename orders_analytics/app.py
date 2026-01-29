@@ -18,23 +18,27 @@ ORDER_COLUMNS = [
     "order_id",
     "platform",
     "provider",
-    "restaurant",
     "order_datetime",
     "order_type",
     "customer_name",
     "phone",
+    "email",
     "address",
     "payment_type",
+    "restaurant_name",
+    "items",
+    "item_count",
     "subtotal",
     "tax",
+    "tax_withheld",
     "tip",
     "delivery_fee",
-    "misc_fee",
-    "commission_fee",
-    "processing_fee",
     "total",
-    "items",
-    "items_count",
+    "processing_fee",
+    "commission_fee",
+    "adjustments",
+    "marketing_fee",
+    "misc_fee",
     "notes",
 ]
 
@@ -48,23 +52,27 @@ def get_connection() -> duckdb.DuckDBPyConnection:
             order_id TEXT,
             platform TEXT,
             provider TEXT,
-            restaurant TEXT,
+            restaurant_name TEXT,
             order_datetime TIMESTAMP,
             order_type TEXT,
             customer_name TEXT,
             phone TEXT,
+            email TEXT,
             address TEXT,
             payment_type TEXT,
+            items TEXT,
+            item_count TEXT,
             subtotal DOUBLE,
             tax DOUBLE,
+            tax_withheld DOUBLE,
             tip DOUBLE,
             delivery_fee DOUBLE,
-            misc_fee DOUBLE,
-            commission_fee DOUBLE,
-            processing_fee DOUBLE,
             total DOUBLE,
-            items TEXT,
-            items_count TEXT,
+            processing_fee DOUBLE,
+            commission_fee DOUBLE,
+            adjustments DOUBLE,
+            marketing_fee DOUBLE,
+            misc_fee DOUBLE,
             notes TEXT,
             updated_at TIMESTAMP
         )
@@ -73,6 +81,12 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS misc_fee DOUBLE")
     conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS commission_fee DOUBLE")
     conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS processing_fee DOUBLE")
+    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS tax_withheld DOUBLE")
+    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS adjustments DOUBLE")
+    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS marketing_fee DOUBLE")
+    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS restaurant_name TEXT")
+    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS item_count TEXT")
+    conn.execute("ALTER TABLE order_overrides ADD COLUMN IF NOT EXISTS email TEXT")
     conn.execute(
         "CREATE UNIQUE INDEX IF NOT EXISTS order_overrides_pk ON order_overrides(order_id, platform)"
     )
@@ -86,11 +100,14 @@ def get_connection() -> duckdb.DuckDBPyConnection:
             orders DOUBLE,
             subtotal DOUBLE,
             tax DOUBLE,
+            tax_withheld DOUBLE,
             tip DOUBLE,
             delivery_fee DOUBLE,
             misc_fee DOUBLE,
             commission_fee DOUBLE,
-            merchant_fee DOUBLE,
+            processing_fee DOUBLE,
+            adjustments DOUBLE,
+            marketing_fee DOUBLE,
             total DOUBLE,
             notes TEXT,
             updated_at TIMESTAMP
@@ -100,6 +117,9 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS misc_fee DOUBLE")
     conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS commission_fee DOUBLE")
     conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS processing_fee DOUBLE")
+    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS tax_withheld DOUBLE")
+    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS adjustments DOUBLE")
+    conn.execute("ALTER TABLE monthly_overrides ADD COLUMN IF NOT EXISTS marketing_fee DOUBLE")
     conn.execute(
         "CREATE UNIQUE INDEX IF NOT EXISTS monthly_overrides_pk ON monthly_overrides(platform, provider, year, month)"
     )
@@ -152,12 +172,15 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     numeric_cols = [
         "subtotal",
         "tax",
+        "tax_withheld",
         "tip",
         "delivery_fee",
-        "misc_fee",
-        "commission_fee",
-        "processing_fee",
         "total",
+        "processing_fee",
+        "commission_fee",
+        "adjustments",
+        "marketing_fee",
+        "misc_fee",
     ]
     for col in numeric_cols:
         if col in merged.columns:
@@ -168,15 +191,16 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
             merged[col] = merged[override_col].combine_first(merged[col])
     for col in [
         "provider",
-        "restaurant",
         "order_datetime",
         "order_type",
         "customer_name",
         "phone",
+        "email",
         "address",
         "payment_type",
         "items",
-        "items_count",
+        "item_count",
+        "restaurant_name",
         "notes",
     ]:
         override_col = f"{col}_override"

@@ -6,9 +6,11 @@ from typing import Dict, List
 
 import pandas as pd
 
+from orders_analytics.utils.constants import normalized_path, raw_path
+
 from orders_analytics.utils.schema import write_normalized_rows
-from orders_analytics.utils.validation import validate_tax_fields
-from orders_analytics.utils.errors import write_errors
+from orders_analytics.utils.validation import normalize_order_type, validate_tax_fields
+from orders_analytics.utils.errors import reconcile_errors
 from orders_analytics.utils.constants import ERRORS_PATH
 
 
@@ -60,10 +62,13 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         order_dt = row.get("order_datetime_iso", "") or row.get("order_datetime_raw", "")
         year = order_dt[:4]
 
-        tax_withheld = ""
-        if year and year.isdigit() and int(year) >= 2020 and subtotal is not None:
-            tax_withheld = str((subtotal * Decimal("0.0775")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
         row_tax = row.get("tax", "")
+        tax_withheld = ""
+        if not str(row_tax or "").strip():
+            if year and year.isdigit() and int(year) >= 2020 and subtotal is not None:
+                tax_withheld = str(
+                    (subtotal * Decimal("0.0775")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                )
 
         if not commission_fee and subtotal is not None:
             commission_fee = str((subtotal * Decimal("0.15")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
@@ -87,7 +92,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 "platform": row.get("platform", "EATSTREET"),
                 "provider": row.get("provider", ""),
                 "order_datetime": order_dt,
-                "order_type": row.get("order_type", ""),
+                "order_type": normalize_order_type(row.get("order_type", "")),
                 "customer_name": row.get("customer_name", ""),
                 "phone": row.get("phone", ""),
                 "email": row.get("email", ""),
@@ -123,7 +128,7 @@ def run(orders_raw_path: str, billings_raw_path: str, out_path: str) -> int:
         return 0
     normalized, errors = validate_tax_fields(normalized, source=out_path)
     write_normalized_rows(normalized, out_path)
-    write_errors(errors, ERRORS_PATH)
+    reconcile_errors(errors, ERRORS_PATH)
     print(f"Wrote {len(normalized)} rows to {out_path}")
     return len(normalized)
 
@@ -134,17 +139,17 @@ def main() -> None:
     )
     parser.add_argument(
         "--orders-raw",
-        default="orders_analytics/data/raw/eatstreet/orders_raw.csv",
+        default=raw_path("eatstreet", "orders_raw.csv"),
         help="Path to EatStreet orders raw CSV.",
     )
     parser.add_argument(
         "--billings-raw",
-        default="orders_analytics/data/raw/eatstreet/billings_raw.csv",
+        default=raw_path("eatstreet", "billings_raw.csv"),
         help="Path to EatStreet billings raw CSV.",
     )
     parser.add_argument(
         "--out",
-        default="orders_analytics/data/normalized/eatstreet_orders_normalized.csv",
+        default=normalized_path("eatstreet_orders_normalized.csv"),
         help="Output normalized CSV path.",
     )
     args = parser.parse_args()

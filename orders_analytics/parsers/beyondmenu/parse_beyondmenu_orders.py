@@ -11,6 +11,8 @@ import pandas as pd
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")))
 
 from orders_analytics.utils.base_parser import BaseParser
+from orders_analytics.utils.constants import normalized_path, raw_path
+from orders_analytics.utils.validation import normalize_order_type, normalize_payment_type
 
 
 def normalize_provider(store: str) -> str:
@@ -55,16 +57,6 @@ def title_with_state(address: str) -> str:
     return re.sub(r",\\s*([A-Za-z]{2})\\s+(\\d{5}(?:-\\d{4})?)$", repl, titled)
 
 
-def normalize_payment_type(value: str) -> str:
-    text = (value or "").strip().lower()
-    if not text:
-        return "credit"
-    if "cash" in text:
-        return "cash"
-    if "credit" in text or "card" in text:
-        return "credit"
-    return text
-
 
 
 class BeyondMenuOrdersParser(BaseParser):
@@ -72,10 +64,10 @@ class BeyondMenuOrdersParser(BaseParser):
     dedupe_key = "order_id"
 
     def default_input_path(self) -> str:
-        return "orders_analytics/data/raw/beyondmenu/BeyondMenu_Order_History.csv"
+        return raw_path("beyondmenu", "BeyondMenu_Order_History.csv")
 
     def default_out_path(self) -> str:
-        return "orders_analytics/data/normalized/beyondmenu_orders_normalized.csv"
+        return normalized_path("beyondmenu_orders_normalized.csv")
 
     def load_inputs(self, input_path: str):
         return pd.read_csv(input_path)
@@ -94,7 +86,7 @@ class BeyondMenuOrdersParser(BaseParser):
         )
         df["provider"] = df["Store"].apply(normalize_provider)
         df["restaurant"] = df["Store"].apply(normalize_restaurant)
-        df["order_type"] = df["Type"].astype(str).str.strip().str.lower()
+        df["order_type"] = df["Type"].astype(str).apply(normalize_order_type)
         df["Name"] = df["Name"].fillna("").astype(str).str.title()
         df["Address"] = df["Address"].fillna("").astype(str).apply(title_with_state)
 

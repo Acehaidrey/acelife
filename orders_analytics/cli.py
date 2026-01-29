@@ -32,6 +32,7 @@ def run_parse(
             extract_eatstreet_orders_raw,
             normalize_eatstreet_from_raw,
         )
+        from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
             "orders_mbox", "TakeoutESBM/Mail/Orders-Eatstreet.mbox"
@@ -39,15 +40,10 @@ def run_parse(
         billings = billings_mbox or extras.pop(
             "billings_mbox", "TakeoutESBM/Mail/Billings-Eatstreet.mbox"
         )
-        orders_raw = extras.pop(
-            "orders_raw", "orders_analytics/data/raw/eatstreet/orders_raw.csv"
-        )
-        billings_raw = extras.pop(
-            "billings_raw", "orders_analytics/data/raw/eatstreet/billings_raw.csv"
-        )
+        orders_raw = extras.pop("orders_raw", raw_path("eatstreet", "orders_raw.csv"))
+        billings_raw = extras.pop("billings_raw", raw_path("eatstreet", "billings_raw.csv"))
         normalized_out = out_path or extras.pop(
-            "normalized_out",
-            "orders_analytics/data/normalized/eatstreet_orders_normalized.csv",
+            "normalized_out", normalized_path("eatstreet_orders_normalized.csv")
         )
 
         extract_eatstreet_orders_raw.run(orders_mbox, orders_raw)
@@ -121,6 +117,8 @@ def main() -> None:
         help="Additional parser args as key=value (can repeat).",
     )
 
+    from orders_analytics.utils.constants import normalized_path, raw_path
+
     extract_cmd = subparsers.add_parser(
         "extract", help="Extract raw data from provider inputs (EatStreet only for now)."
     )
@@ -142,12 +140,12 @@ def main() -> None:
     )
     extract_cmd.add_argument(
         "--orders-raw",
-        default="orders_analytics/data/raw/eatstreet/orders_raw.csv",
+        default=raw_path("eatstreet", "orders_raw.csv"),
         help="Output orders raw CSV path.",
     )
     extract_cmd.add_argument(
         "--billings-raw",
-        default="orders_analytics/data/raw/eatstreet/billings_raw.csv",
+        default=raw_path("eatstreet", "billings_raw.csv"),
         help="Output billings raw CSV path.",
     )
 
@@ -162,17 +160,17 @@ def main() -> None:
     )
     normalize_cmd.add_argument(
         "--orders-raw",
-        default="orders_analytics/data/raw/eatstreet/orders_raw.csv",
+        default=raw_path("eatstreet", "orders_raw.csv"),
         help="Input orders raw CSV path.",
     )
     normalize_cmd.add_argument(
         "--billings-raw",
-        default="orders_analytics/data/raw/eatstreet/billings_raw.csv",
+        default=raw_path("eatstreet", "billings_raw.csv"),
         help="Input billings raw CSV path.",
     )
     normalize_cmd.add_argument(
         "--out",
-        default="orders_analytics/data/normalized/eatstreet_orders_normalized.csv",
+        default=normalized_path("eatstreet_orders_normalized.csv"),
         help="Output normalized CSV path.",
     )
     parse_cmd.add_argument("--out", help="Override output path.")
@@ -211,6 +209,15 @@ def main() -> None:
         help="Override DuckDB path (defaults to utils.constants.DEFAULT_DB_PATH).",
     )
 
+    errors_cmd = subparsers.add_parser(
+        "errors", help="Rebuild errors.csv by re-running validations."
+    )
+    errors_cmd.add_argument(
+        "--reset",
+        action="store_true",
+        help="Delete existing errors.csv before rebuilding.",
+    )
+
     args = parser.parse_args()
 
     if args.command == "parse":
@@ -232,6 +239,15 @@ def main() -> None:
         run_fees(args)
     elif args.command == "ingest":
         run_ingest(args.db_path)
+    elif args.command == "errors":
+        from orders_analytics.utils.constants import ERRORS_PATH
+
+        if args.reset and os.path.exists(ERRORS_PATH):
+            os.remove(ERRORS_PATH)
+            print(f"Deleted {ERRORS_PATH}")
+        # Re-run validations by re-normalizing/parsing platforms.
+        run_parse("eatstreet", None, None, None, {})
+        run_parse("beyondmenu", None, None, None, {})
     elif args.command == "extract":
         from orders_analytics.parsers.eatstreet import (
             extract_eatstreet_billings_raw,

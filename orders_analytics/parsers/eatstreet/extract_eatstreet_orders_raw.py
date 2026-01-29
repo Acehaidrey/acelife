@@ -10,6 +10,8 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
+from orders_analytics.utils.constants import raw_path
+
 RAW_COLUMNS = [
     "order_id",
     "platform",
@@ -317,6 +319,8 @@ def parse_orders(mbox_path: str) -> List[Dict[str, str]]:
 
         payment_type = classify_payment(payment_detail, payment_raw)
 
+        if customer_name and "test" in customer_name.lower():
+            continue
         orders.append(
             {
                 "order_id": order_id,
@@ -403,7 +407,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--out",
-        default="orders_analytics/data/raw/eatstreet/orders_raw.csv",
+        default=raw_path("eatstreet", "orders_raw.csv"),
         help="Output raw CSV path.",
     )
     args = parser.parse_args()

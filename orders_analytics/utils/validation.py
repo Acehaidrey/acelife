@@ -64,6 +64,71 @@ def validate_delivery_fee(
     return rows, errors
 
 
+def normalize_order_type(value: str) -> str:
+    text = (value or "").strip().lower()
+    if not text:
+        return ""
+    if text.startswith("pick"):
+        return "pickup"
+    if text.startswith("deliv"):
+        return "delivery"
+    return text
+
+
+def normalize_payment_type(value: str) -> str:
+    text = (value or "").strip().lower()
+    if not text:
+        return ""
+    if "cash" in text:
+        return "cash"
+    if "credit" in text or "card" in text:
+        return "credit"
+    return text
+
+
+def validate_enum_fields(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        raw_order_type = str(row.get("order_type") or "").strip()
+        raw_payment_type = str(row.get("payment_type") or "").strip()
+        norm_order_type = normalize_order_type(raw_order_type)
+        norm_payment_type = normalize_payment_type(raw_payment_type)
+
+        if raw_order_type and norm_order_type not in ("pickup", "delivery"):
+            notes = str(row.get("notes") or "").strip()
+            flag = "invalid_order_type"
+            row["notes"] = f"{notes} | {flag}".strip(" |")
+            errors.append(
+                {
+                    "order_id": row.get("order_id", ""),
+                    "platform": row.get("platform", ""),
+                    "provider": row.get("provider", ""),
+                    "error_code": flag,
+                    "message": f"order_type={raw_order_type}",
+                    "source": source,
+                }
+            )
+
+        if raw_payment_type and norm_payment_type not in ("credit", "cash"):
+            notes = str(row.get("notes") or "").strip()
+            flag = "invalid_payment_type"
+            row["notes"] = f"{notes} | {flag}".strip(" |")
+            errors.append(
+                {
+                    "order_id": row.get("order_id", ""),
+                    "platform": row.get("platform", ""),
+                    "provider": row.get("provider", ""),
+                    "error_code": flag,
+                    "message": f"payment_type={raw_payment_type}",
+                    "source": source,
+                }
+            )
+    return rows, errors
+
+
 def validate_tax_fields(
     rows: List[Dict[str, str]],
     source: str,

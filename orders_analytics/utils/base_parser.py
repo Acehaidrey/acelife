@@ -4,9 +4,12 @@ import os
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from orders_analytics.utils.errors import write_errors
+from orders_analytics.utils.errors import reconcile_errors
 from orders_analytics.utils.schema import canonicalize_rows, write_normalized_rows
 from orders_analytics.utils.validation import (
+    normalize_order_type,
+    normalize_payment_type,
+    validate_enum_fields,
     validate_delivery_fee,
     validate_required_fields,
     validate_tax_fields,
@@ -64,6 +67,8 @@ class BaseParser:
     def post_process(self, rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         # Normalize "nan"/None-like values to empty strings for consistency.
         for row in rows:
+            row["order_type"] = normalize_order_type(str(row.get("order_type") or ""))
+            row["payment_type"] = normalize_payment_type(str(row.get("payment_type") or ""))
             for key, value in list(row.items()):
                 if value is None:
                     row[key] = ""
@@ -75,6 +80,7 @@ class BaseParser:
                     row[key] = ""
         for validator in (
             validate_required_fields,
+            validate_enum_fields,
             validate_delivery_fee,
             validate_tax_fields,
         ):
@@ -144,6 +150,6 @@ class BaseParser:
         rows = canonicalize_rows(rows)
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
         write_normalized_rows(rows, out_path)
-        write_errors(self.stats.errors, ERRORS_PATH)
+        reconcile_errors(self.stats.errors, ERRORS_PATH)
         self.stats.rows_written = len(rows)
         return self.stats

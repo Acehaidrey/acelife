@@ -9,6 +9,8 @@ from typing import Dict, List, Tuple
 
 import pandas as pd
 
+from orders_analytics.utils.constants import raw_path
+
 RAW_COLUMNS = [
     "order_id",
     "payment_method",
@@ -156,7 +158,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--out",
-        default="orders_analytics/data/raw/eatstreet/billings_raw.csv",
+        default=raw_path("eatstreet", "billings_raw.csv"),
         help="Output raw CSV path.",
     )
     args = parser.parse_args()
