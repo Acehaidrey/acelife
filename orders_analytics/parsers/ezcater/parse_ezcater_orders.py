@@ -142,10 +142,11 @@ class EzCaterOrdersParser(BaseParser):
             adj = parse_money(row.get("Adjustments", ""))
             discounts = parse_money(row.get("Discounts", ""))
             promo_amt = parse_money(row.get("Promotion", ""))
-            if adj or discounts or promo_amt:
+            misc_fees = parse_money(row.get("Misc Fees", ""))
+            if adj or discounts or promo_amt or misc_fees:
                 try:
                     adjustments = str(
-                        (Decimal(adj or "0") + Decimal(discounts or "0") + Decimal(promo_amt or "0")).quantize(
+                        (Decimal(adj or "0") + Decimal(discounts or "0") + Decimal(promo_amt or "0") + Decimal(misc_fees or "0")).quantize(
                             Decimal("0.01"), rounding=ROUND_HALF_UP
                         )
                     )
@@ -181,7 +182,7 @@ class EzCaterOrdersParser(BaseParser):
                     "items": "",
                     "adjustments": adjustments,
                     "marketing_fee": marketing_fee,
-                    "misc_fee": parse_money(row.get("Misc Fees", "")),
+                    "misc_fee": "",
                     "errors": "",
                     "notes": " | ".join(notes),
                 }

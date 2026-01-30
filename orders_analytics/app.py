@@ -93,6 +93,8 @@ def get_connection() -> duckdb.DuckDBPyConnection:
             year INTEGER,
             month INTEGER,
             orders DOUBLE,
+            cash_subtotal DOUBLE,
+            credit_subtotal DOUBLE,
             subtotal DOUBLE,
             tax DOUBLE,
             tax_withheld DOUBLE,
@@ -178,9 +180,18 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
         if override_col in merged.columns:
             merged[override_col] = pd.to_numeric(merged[override_col], errors="coerce")
             merged[col] = merged[override_col].combine_first(merged[col])
+    # Handle order_datetime separately to avoid pandas trying to infer a strict format.
+    if "order_datetime" in merged.columns:
+        base_dt = pd.to_datetime(merged["order_datetime"], errors="coerce", utc=True, format="ISO8601")
+        override_col = "order_datetime_override"
+        if override_col in merged.columns:
+            override_dt = pd.to_datetime(merged[override_col], errors="coerce", utc=True, format="ISO8601")
+            merged["order_datetime"] = override_dt.combine_first(base_dt)
+        else:
+            merged["order_datetime"] = base_dt
+
     for col in [
         "provider",
-        "order_datetime",
         "order_type",
         "customer_name",
         "company_name",
@@ -197,6 +208,8 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
         override_col = f"{col}_override"
         if override_col in merged.columns:
             merged[col] = merged[override_col].combine_first(merged[col])
+    if "item_count" in merged.columns:
+        merged["item_count"] = pd.to_numeric(merged["item_count"], errors="coerce")
     merged["order_datetime"] = pd.to_datetime(
         merged["order_datetime"], errors="coerce", utc=True, format="ISO8601"
     )
@@ -224,6 +237,16 @@ def main() -> None:
 
     with st.sidebar:
         st.subheader("Data")
+        if st.button("Normalize + refresh (all platforms)"):
+            from orders_analytics.cli import run_normalize
+            from orders_analytics.utils.constants import ERRORS_PATH
+
+            if os.path.exists(ERRORS_PATH):
+                os.remove(ERRORS_PATH)
+            for platform in ["eatstreet", "beyondmenu", "foodja", "ezcater", "cater2me"]:
+                run_normalize(platform, None, None, None, None, {})
+            count = ingest_normalized(conn)
+            st.success(f"Normalized + ingested {count} rows.")
         if st.button("Rebuild orders_raw from CSVs"):
             conn.execute("DROP TABLE IF EXISTS orders_raw")
             count = ingest_normalized(conn)

@@ -57,6 +57,12 @@ def title_with_state(address: str) -> str:
     return re.sub(r",\\s*([A-Za-z]{2})\\s+(\\d{5}(?:-\\d{4})?)$", repl, titled)
 
 
+def negate_money_series(series: pd.Series) -> pd.Series:
+    numeric = pd.to_numeric(series.replace({"\$": "", ",": ""}, regex=True), errors="coerce")
+    negated = numeric * -1
+    return negated
+
+
 
 
 class BeyondMenuOrdersParser(BaseParser):
@@ -117,12 +123,12 @@ class BeyondMenuOrdersParser(BaseParser):
                 "total": df.get("Total", "").fillna(""),
                 "items": "",
                 "item_count": "",
-                "processing_fee": df.get("Merchant Fee", "").fillna(""),
-                "commission_fee": df.get("Commission Fee", "").fillna(""),
+                "processing_fee": negate_money_series(df.get("Merchant Fee", "").fillna("")),
+                "commission_fee": negate_money_series(df.get("Commission Fee", "").fillna("")),
                 "tax_withheld": "",
                 "adjustments": "",
                 "marketing_fee": "",
-                "misc_fee": df.get("Misc Fee", "").fillna(""),
+                "misc_fee": negate_money_series(df.get("Misc Fee", "").fillna("")),
                 "errors": "",
                 "notes": df.get("Notes", "").fillna(""),
             }

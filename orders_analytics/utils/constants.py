@@ -18,6 +18,7 @@ PLATFORMS = [
     "beyondmenu",
     "foodja",
     "ezcater",
+    "cater2me",
 ]
 
 PROVIDERS = [

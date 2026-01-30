@@ -3,6 +3,27 @@
 Local workspace for normalizing provider exports, ingesting into DuckDB, and
 running a Streamlit dashboard.
 
+## How It Works (Pipeline Overview)
+```
+Provider Inputs (mbox, PDFs, CSVs)
+        |
+        v
+  Extract (optional)
+  - mbox/PDF -> raw CSV
+        |
+        v
+  Normalize (BaseParser)
+  - map to canonical schema
+  - enforce enums + ISO datetimes
+  - validations -> errors.csv
+        |
+        v
+  Ingest -> DuckDB
+        |
+        v
+  Streamlit Dashboard
+```
+
 ## Structure
 - `parsers/` provider-specific scripts (input: mbox/csv, output: normalized CSV)
   - `parsers/<platform>/` platform-specific parsers
@@ -16,7 +37,7 @@ running a Streamlit dashboard.
 - `data/errors/errors.csv` validation errors log (deduped by order_id/platform/provider/error_code)
 - `ingest.py` load normalized CSVs into DuckDB
 - `app.py` Streamlit dashboard
-  - `cli.py` single entrypoint for parse/fees/ingest
+  - `cli.py` single entrypoint for extract/normalize/parse/fees/ingest
 
 ## Canonical Normalized Schema
 All order-level parsers should emit these columns in this order:
@@ -32,20 +53,25 @@ All order-level parsers should emit these columns in this order:
 - Normalized rows must have exactly one real value in `tax` or `tax_withheld`; violations are logged and annotated in `errors` as `tax_tax_withheld_needs_review`.
 - Validation issues are written to `data/errors/errors.csv` with `resolved` and `resolved_time` fields; duplicates (same order_id/platform/provider/error_code) are ignored.
 
-## Next Steps
-- EatStreet (recommended two-step):
+## Common CLI Flows
+- Extract only (mbox/PDF → raw CSV):
   - `python3 orders_analytics/cli.py extract --platform eatstreet`
+  - `python3 orders_analytics/cli.py extract --platform cater2me`
+- Normalize only (raw CSV → normalized CSV):
+  - `python3 orders_analytics/cli.py normalize --platform all`
   - `python3 orders_analytics/cli.py normalize --platform eatstreet`
-- Or one-step parse (extract + normalize):
-  - `python3 orders_analytics/cli.py parse --platform eatstreet --extra billings_mbox=TakeoutESBM/Mail/Billings-Eatstreet.mbox`
-- BeyondMenu parse:
-  - `python3 orders_analytics/cli.py parse --platform beyondmenu`
-- Foodja parse:
-  - `python3 orders_analytics/cli.py parse --platform foodja`
-- ezCater parse:
-  - `python3 orders_analytics/cli.py parse --platform ezcater`
-- (Optional) pass extra parser args: `--extra key=value` (repeatable)
-- (Optional) Update EatStreet normalized fees from billings (writes missing-fee list to raw):
+  - `python3 orders_analytics/cli.py normalize --platform cater2me`
+  - `--no-reset-errors` to keep existing `errors.csv` (default resets)
+- Parse (extract + normalize):
+  - `python3 orders_analytics/cli.py parse --platform eatstreet`
+  - `python3 orders_analytics/cli.py parse --platform cater2me`
+  - `python3 orders_analytics/cli.py parse --platform all`
+- CSV-based providers (BeyondMenu/Foodja/ezCater) are normalized directly from CSV inputs:
+  - `python3 orders_analytics/cli.py normalize --platform beyondmenu`
+  - `python3 orders_analytics/cli.py normalize --platform foodja`
+  - `python3 orders_analytics/cli.py normalize --platform ezcater`
+- Optional: pass extra parser args: `--extra key=value` (repeatable)
+- Optional: update EatStreet normalized fees from billings (writes missing-fee list to raw):
   - `python3 orders_analytics/cli.py fees` (legacy)
 - Ingest normalized CSVs into DuckDB:
   - `python3 orders_analytics/cli.py ingest`

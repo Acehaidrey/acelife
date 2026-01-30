@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Dict, List, Tuple
 
 
@@ -202,8 +203,8 @@ def validate_negative_fees(
                 value = float(raw)
             except ValueError:
                 continue
-            if value < 0:
-                flag = "negative_fee_value"
+            if value > 0:
+                flag = "fee_should_be_negative"
                 _append_error(row, flag)
                 errors.append(
                     {
@@ -215,4 +216,40 @@ def validate_negative_fees(
                         "source": source,
                     }
                 )
+    return rows, errors
+
+
+def _is_iso_datetime(value: str) -> bool:
+    text = str(value or "").strip()
+    if not text:
+        return False
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        datetime.fromisoformat(text)
+        return True
+    except ValueError:
+        return False
+
+
+def validate_order_datetime_iso(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        value = row.get("order_datetime", "")
+        if not _is_iso_datetime(value):
+            flag = "order_datetime_not_iso"
+            _append_error(row, flag)
+            errors.append(
+                {
+                    "order_id": row.get("order_id", ""),
+                    "platform": row.get("platform", ""),
+                    "provider": row.get("provider", ""),
+                    "error_code": flag,
+                    "message": f"order_datetime={value}",
+                    "source": source,
+                }
+            )
     return rows, errors

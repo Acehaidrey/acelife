@@ -72,7 +72,7 @@ class FoodjaOrdersParser(BaseParser):
             commission_fee = ""
             tax_withheld = ""
             if subtotal_dec is not None:
-                commission_fee = str((subtotal_dec * Decimal("0.30")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+                commission_fee = str((subtotal_dec * Decimal("-0.30")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
                 tax_withheld = str((subtotal_dec * Decimal("0.0775")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
 
             notes = []

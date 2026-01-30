@@ -18,7 +18,8 @@
     - `utils/base_parser.py` (BaseParser lifecycle for provider parsers)
   - `ingest.py` (loads normalized CSVs into DuckDB)
   - `app.py` (Streamlit dashboard)
-  - `cli.py` (single entrypoint for parse/fees/ingest)
+  - `cli.py` (single entrypoint for extract/normalize/parse/fees/ingest)
+  - `normalize --platform all` resets `errors.csv` by default (use `--no-reset-errors`)
   - `README.md` (usage + conventions)
 
 ## Phase 1: Foundation
@@ -43,6 +44,9 @@
   - `parsers/beyondmenu/parse_beyondmenu_orders.py`
   - `parsers/foodja/parse_foodja_orders.py`
   - `parsers/ezcater/parse_ezcater_orders.py`
+  - `parsers/cater2me/extract_cater2me_orders_raw.py`
+  - `parsers/cater2me/extract_cater2me_billings_raw.py`
+  - `parsers/cater2me/normalize_cater2me_from_raw.py`
   - `parsers/_legacy/` (archived scripts; not used)
 - Update parsers to:
   - emit normalized columns
@@ -56,6 +60,19 @@
   - for EatStreet, treat raw CSVs as source of truth and append-only by `order_id`
   - validation: each row must have exactly one real value in `tax` or `tax_withheld`; flag violations in `notes`
   - log validation issues to `data/errors/errors.csv` (deduped by order_id/platform/provider/error_code)
+
+## CLI Flows (Current)
+- Extract only (mbox/PDF → raw CSV):
+  - `cli.py extract --platform eatstreet`
+  - `cli.py extract --platform cater2me`
+- Normalize only (raw CSV → normalized CSV):
+  - `cli.py normalize --platform all`
+  - `cli.py normalize --platform eatstreet`
+  - `cli.py normalize --platform cater2me`
+  - CSV-based providers are normalized directly (BeyondMenu/Foodja/ezCater)
+  - `--no-reset-errors` to keep existing `errors.csv` (default resets)
+- Parse (extract + normalize):
+  - `cli.py parse --platform <platform|all>`
 
 ## Phase 3: Ingestion
 - Build `ingest.py`:
