@@ -9,14 +9,15 @@ import pandas as pd
 from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.validation import normalize_order_type
+from orders_analytics.utils.providers import Providers
 
 
 def normalize_provider(name: str) -> str:
     text = (name or "").lower()
     if "aroma" in text:
-        return "AROMA"
+        return Providers.AROMA
     if "ameci" in text:
-        return "AMECI"
+        return Providers.AMECI
     return ""
 
 

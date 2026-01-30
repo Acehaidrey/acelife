@@ -11,6 +11,7 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.providers import Providers
 
 RAW_COLUMNS = [
     "order_id",
@@ -244,9 +245,9 @@ def summarize_items(info: Optional[Dict]) -> str:
 def normalize_provider(restaurant: str) -> str:
     name = restaurant.lower()
     if "aroma" in name:
-        return "AROMA"
+        return Providers.AROMA
     if "ameci" in name:
-        return "AMECI"
+        return Providers.AMECI
     return ""
 
 

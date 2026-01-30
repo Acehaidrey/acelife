@@ -12,15 +12,16 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
+from orders_analytics.utils.providers import Providers
 from orders_analytics.utils.validation import normalize_order_type
 
 
 def normalize_provider(name: str) -> str:
     text = (name or "").lower()
     if "aroma" in text:
-        return "AROMA"
+        return Providers.AROMA
     if "ameci" in text:
-        return "AMECI"
+        return Providers.AMECI
     return ""
 
 

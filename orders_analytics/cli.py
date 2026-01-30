@@ -220,7 +220,7 @@ def main() -> None:
     parse_cmd = subparsers.add_parser("parse", help="Run a platform parser.")
     parse_cmd.add_argument(
         "--platform",
-        choices=["eatstreet", "beyondmenu", "foodja", "ezcater", "cater2me", "all"],
+        choices=[*Platforms.all_platforms(), "all"],
         default="all",
         help="Platform to parse.",
     )
@@ -246,7 +246,7 @@ def main() -> None:
     )
     extract_cmd.add_argument(
         "--platform",
-        choices=["eatstreet", "cater2me"],
+        choices=Platforms.mbox_platforms(),
         default="eatstreet",
         help="Platform to extract.",
     )
@@ -276,7 +276,7 @@ def main() -> None:
     )
     normalize_cmd.add_argument(
         "--platform",
-        choices=["eatstreet", "beyondmenu", "foodja", "ezcater", "cater2me", "all"],
+        choices=[*Platforms.all_platforms(), "all"],
         default="all",
         help="Platform to normalize.",
     )
@@ -354,7 +354,7 @@ def main() -> None:
     if args.command == "parse":
         platforms: List[str]
         if args.platform == "all":
-            platforms = ["eatstreet", "beyondmenu", "foodja", "ezcater", "cater2me"]
+            platforms = Platforms.all_platforms()
         else:
             platforms = [args.platform]
         base_extras = parse_extras(args.extra)
@@ -401,7 +401,7 @@ def main() -> None:
             print(f"Deleted {ERRORS_PATH}")
         platforms: List[str]
         if args.platform == "all":
-            platforms = ["eatstreet", "beyondmenu", "foodja", "ezcater", "cater2me"]
+            platforms = Platforms.all_platforms()
         else:
             platforms = [args.platform]
         base_extras = parse_extras(args.extra)
@@ -418,3 +418,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+from orders_analytics.utils.platforms import Platforms

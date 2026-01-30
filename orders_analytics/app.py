@@ -243,7 +243,9 @@ def main() -> None:
 
             if os.path.exists(ERRORS_PATH):
                 os.remove(ERRORS_PATH)
-            for platform in ["eatstreet", "beyondmenu", "foodja", "ezcater", "cater2me"]:
+            from orders_analytics.utils.platforms import Platforms
+
+            for platform in Platforms.all_platforms():
                 run_normalize(platform, None, None, None, None, {})
             count = ingest_normalized(conn)
             st.success(f"Normalized + ingested {count} rows.")
