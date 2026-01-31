@@ -6,6 +6,8 @@ from typing import Dict, List, Tuple, Optional
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from orders_analytics.utils.platforms import Platforms
+
 
 def parse_extras(values: Optional[List[str]]) -> Dict[str, str]:
     extras: Dict[str, str] = {}
@@ -89,6 +91,30 @@ def run_parse(
         normalize_cater2me_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[cater2me] extracted raw orders + billings and normalized.")
         return
+    elif platform == "menustar":
+        from orders_analytics.parsers.menustar import (
+            extract_menustar_billings_raw,
+            extract_menustar_orders_raw,
+            normalize_menustar_from_raw,
+        )
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_mbox = input_path or extras.pop(
+            "orders_mbox", "TakeoutESBM/Mail/Orders-Menustar.mbox"
+        )
+        billings = billings_mbox or extras.pop(
+            "billings_mbox", "TakeoutESBM/Mail/Billings-Menustar.mbox"
+        )
+        orders_raw = extras.pop("orders_raw", raw_path("menustar", "orders_raw.csv"))
+        billings_raw = extras.pop("billings_raw", raw_path("menustar", "billings_raw.csv"))
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("menustar_orders_normalized.csv")
+        )
+        extract_menustar_orders_raw.run(orders_mbox, orders_raw)
+        extract_menustar_billings_raw.run(billings, billings_raw)
+        normalize_menustar_from_raw.run(orders_raw, billings_raw, normalized_out)
+        print("[menustar] extracted raw orders + billings and normalized.")
+        return
     else:
         raise ValueError(f"Unknown platform: {platform}")
 
@@ -128,6 +154,15 @@ def run_extract(
 
         extract_cater2me_orders_raw.run(orders_mbox, orders_raw)
         extract_cater2me_billings_raw.run(billings_mbox, billings_raw)
+        return
+    if platform == "menustar":
+        from orders_analytics.parsers.menustar import (
+            extract_menustar_billings_raw,
+            extract_menustar_orders_raw,
+        )
+
+        extract_menustar_orders_raw.run(orders_mbox, orders_raw)
+        extract_menustar_billings_raw.run(billings_mbox, billings_raw)
         return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
@@ -171,6 +206,22 @@ def run_normalize(
         )
         normalize_cater2me_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
         print(f"[cater2me] normalized -> {normalized_out}")
+        return
+    if platform == "menustar":
+        from orders_analytics.parsers.menustar import normalize_menustar_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("menustar", "orders_raw.csv")
+        )
+        billings_raw_path = billings_raw or extras.pop(
+            "billings_raw", raw_path("menustar", "billings_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("menustar_orders_normalized.csv")
+        )
+        normalize_menustar_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        print(f"[menustar] normalized -> {normalized_out}")
         return
     if platform == "beyondmenu":
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
@@ -387,11 +438,16 @@ def main() -> None:
             billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Eatstreet.mbox"
             orders_raw = args.orders_raw or raw_path("eatstreet", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("eatstreet", "billings_raw.csv")
-        else:
+        elif args.platform == "cater2me":
             orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Cater2Me.mbox"
             billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Cater2Me.mbox"
             orders_raw = args.orders_raw or raw_path("cater2me", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("cater2me", "billings_raw.csv")
+        else:
+            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Menustar.mbox"
+            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Menustar.mbox"
+            orders_raw = args.orders_raw or raw_path("menustar", "orders_raw.csv")
+            billings_raw = args.billings_raw or raw_path("menustar", "billings_raw.csv")
         run_extract(args.platform, orders_mbox, billings_mbox, orders_raw, billings_raw)
     elif args.command == "normalize":
         from orders_analytics.utils.constants import ERRORS_PATH

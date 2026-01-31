@@ -91,6 +91,10 @@ def normalize_payment_type(value: str) -> str:
         return ""
     if "cash" in text:
         return "cash"
+    if "not paid" in text:
+        return "cash"
+    if "prepaid" in text:
+        return "credit"
     if "credit" in text or "card" in text:
         return "credit"
     return text
@@ -216,6 +220,32 @@ def validate_negative_fees(
                         "source": source,
                     }
                 )
+    return rows, errors
+
+
+def validate_cash_processing_fee(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        payment_type = normalize_payment_type(str(row.get("payment_type") or ""))
+        if payment_type != "cash":
+            continue
+        processing_fee = str(row.get("processing_fee") or "").strip()
+        if _is_real(processing_fee):
+            flag = "cash_processing_fee_should_be_zero"
+            _append_error(row, flag)
+            errors.append(
+                {
+                    "order_id": row.get("order_id", ""),
+                    "platform": row.get("platform", ""),
+                    "provider": row.get("provider", ""),
+                    "error_code": flag,
+                    "message": f"processing_fee={processing_fee}",
+                    "source": source,
+                }
+            )
     return rows, errors
 
 

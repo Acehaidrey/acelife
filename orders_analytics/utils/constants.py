@@ -13,18 +13,11 @@ def normalized_path(filename: str) -> str:
 
 DATE_GRAINS = ["day", "month", "year"]
 
-PLATFORMS = [
-    "eatstreet",
-    "beyondmenu",
-    "foodja",
-    "ezcater",
-    "cater2me",
-]
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.providers import Providers
 
-PROVIDERS = [
-    "aroma",
-    "ameci",
-]
+PLATFORMS = Platforms.all_platforms()
+PROVIDERS = Providers.all_providers()
 
 ORDER_TYPES = ["pickup", "delivery"]
 PAYMENT_TYPES = ["credit", "cash"]

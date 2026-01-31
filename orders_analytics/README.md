@@ -49,6 +49,9 @@ All order-level parsers should emit these columns in this order:
 - EatStreet flow is two-step:
   - Extract raw orders + billings CSVs from mbox (append-only by `order_id`).
   - Normalize from raw CSVs into canonical schema.
+- MenuStar flow is two-step:
+  - Extract orders from HTML mbox, billings from CSV/XLSX attachments.
+  - Allocate MenuStar Fees proportionally across prepaid orders by subtotal.
 - Raw EatStreet CSVs include an `added_at` timestamp that only updates when any field changes for an `order_id`.
 - Normalized rows must have exactly one real value in `tax` or `tax_withheld`; violations are logged and annotated in `errors` as `tax_tax_withheld_needs_review`.
 - Validation issues are written to `data/errors/errors.csv` with `resolved` and `resolved_time` fields; duplicates (same order_id/platform/provider/error_code) are ignored.
@@ -57,14 +60,17 @@ All order-level parsers should emit these columns in this order:
 - Extract only (mbox/PDF → raw CSV):
   - `python3 orders_analytics/cli.py extract --platform eatstreet`
   - `python3 orders_analytics/cli.py extract --platform cater2me`
+  - `python3 orders_analytics/cli.py extract --platform menustar`
 - Normalize only (raw CSV → normalized CSV):
   - `python3 orders_analytics/cli.py normalize --platform all`
   - `python3 orders_analytics/cli.py normalize --platform eatstreet`
   - `python3 orders_analytics/cli.py normalize --platform cater2me`
+  - `python3 orders_analytics/cli.py normalize --platform menustar`
   - `--no-reset-errors` to keep existing `errors.csv` (default resets)
 - Parse (extract + normalize):
   - `python3 orders_analytics/cli.py parse --platform eatstreet`
   - `python3 orders_analytics/cli.py parse --platform cater2me`
+  - `python3 orders_analytics/cli.py parse --platform menustar`
   - `python3 orders_analytics/cli.py parse --platform all`
 - CSV-based providers (BeyondMenu/Foodja/ezCater) are normalized directly from CSV inputs:
   - `python3 orders_analytics/cli.py normalize --platform beyondmenu`
@@ -77,3 +83,7 @@ All order-level parsers should emit these columns in this order:
   - `python3 orders_analytics/cli.py ingest`
 - Start the dashboard:
   - `streamlit run orders_analytics/app.py`
+
+## Requirements Notes
+- MenuStar billings may arrive as `.xlsx`. Install extras:
+  - `pip install -r orders_analytics/requirements.txt` (includes openpyxl)

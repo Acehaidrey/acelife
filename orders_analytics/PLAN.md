@@ -47,6 +47,9 @@
   - `parsers/cater2me/extract_cater2me_orders_raw.py`
   - `parsers/cater2me/extract_cater2me_billings_raw.py`
   - `parsers/cater2me/normalize_cater2me_from_raw.py`
+  - `parsers/menustar/extract_menustar_orders_raw.py`
+  - `parsers/menustar/extract_menustar_billings_raw.py`
+  - `parsers/menustar/normalize_menustar_from_raw.py`
   - `parsers/_legacy/` (archived scripts; not used)
 - Update parsers to:
   - emit normalized columns
@@ -65,10 +68,12 @@
 - Extract only (mbox/PDF → raw CSV):
   - `cli.py extract --platform eatstreet`
   - `cli.py extract --platform cater2me`
+  - `cli.py extract --platform menustar`
 - Normalize only (raw CSV → normalized CSV):
   - `cli.py normalize --platform all`
   - `cli.py normalize --platform eatstreet`
   - `cli.py normalize --platform cater2me`
+  - `cli.py normalize --platform menustar`
   - CSV-based providers are normalized directly (BeyondMenu/Foodja/ezCater)
   - `--no-reset-errors` to keep existing `errors.csv` (default resets)
 - Parse (extract + normalize):
