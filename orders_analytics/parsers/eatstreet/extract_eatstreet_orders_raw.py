@@ -11,7 +11,8 @@ from typing import Dict, List, Optional
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path
-from orders_analytics.utils.providers import Providers
+from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.normalize import normalize_datetime
 
 RAW_COLUMNS = [
     "order_id",
@@ -242,35 +243,15 @@ def summarize_items(info: Optional[Dict]) -> str:
     return "; ".join(n for n in names if n)
 
 
-def normalize_provider(restaurant: str) -> str:
-    name = restaurant.lower()
-    if "aroma" in name:
-        return Providers.AROMA
-    if "ameci" in name:
-        return Providers.AMECI
-    return ""
-
-
 def normalize_order_datetime(value: str) -> str:
     if not value:
         return ""
     text = value.strip()
-    try:
-        if text.endswith("Z"):
-            dt_value = dt.datetime.fromisoformat(text.replace("Z", "+00:00"))
-            return dt_value.isoformat()
-        if "T" in text:
-            dt_value = dt.datetime.fromisoformat(text)
-            return dt_value.isoformat()
-    except ValueError:
-        pass
-    for fmt in ("%I:%M %p %m/%d/%Y", "%m/%d/%Y %I:%M %p"):
-        try:
-            dt_value = dt.datetime.strptime(text, fmt)
-            return dt_value.isoformat()
-        except ValueError:
-            continue
-    return text
+    return normalize_datetime(
+        text,
+        formats=("%I:%M %p %m/%d/%Y", "%m/%d/%Y %I:%M %p"),
+        allow_iso=True,
+    )
 
 
 def parse_orders(mbox_path: str) -> List[Dict[str, str]]:

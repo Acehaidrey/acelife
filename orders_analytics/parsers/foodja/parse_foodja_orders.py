@@ -2,7 +2,6 @@
 import argparse
 import os
 import sys
-from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Dict, List
 
@@ -12,39 +11,16 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
-from orders_analytics.utils.providers import Providers
-
-
-def normalize_provider(location: str) -> str:
-    name = (location or "").lower()
-    if "aroma" in name:
-        return Providers.AROMA
-    if "ameci" in name:
-        return Providers.AMECI
-    return ""
+from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.normalize import normalize_datetime, normalize_money
 
 
 def normalize_date(value: str) -> str:
-    text = (value or "").strip()
-    if not text:
-        return ""
-    for fmt in ("%m/%d/%Y", "%m/%d/%y"):
-        try:
-            return datetime.strptime(text, fmt).isoformat()
-        except ValueError:
-            continue
-    return text
-
-
-def normalize_money(value: str) -> str:
-    text = (value or "").replace("$", "").replace(",", "").strip()
-    if text == "":
-        return ""
-    try:
-        amount = Decimal(text)
-        return str(amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
-    except InvalidOperation:
-        return text
+    return normalize_datetime(
+        value,
+        formats=("%m/%d/%Y", "%m/%d/%y"),
+        allow_iso=False,
+    )
 
 
 class FoodjaOrdersParser(BaseParser):

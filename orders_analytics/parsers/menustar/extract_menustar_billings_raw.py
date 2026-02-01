@@ -12,7 +12,8 @@ from typing import Dict, List
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path
-from orders_analytics.utils.providers import Providers
+from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.normalize import normalize_money
 
 RAW_COLUMNS = [
     "order_id",
@@ -35,35 +36,6 @@ RAW_COLUMNS = [
     "statement_source_file",
     "added_at",
 ]
-
-
-def normalize_provider(name: str) -> str:
-    text = (name or "").lower()
-    if "aroma" in text:
-        return Providers.AROMA
-    if "ameci" in text:
-        return Providers.AMECI
-    return ""
-
-
-def parse_money(value: str) -> str:
-    text = str(value or "").strip()
-    if text == "":
-        return ""
-    neg = False
-    if text.startswith("(") and text.endswith(")"):
-        neg = True
-        text = text[1:-1]
-    text = text.replace("$", "").replace(",", "").strip()
-    if text == "":
-        return ""
-    try:
-        amount = float(text)
-    except ValueError:
-        return ""
-    if neg:
-        amount = -amount
-    return f"{amount:.2f}"
 
 
 def parse_csv_rows(text: str, provider: str, filename: str) -> List[Dict[str, str]]:
@@ -90,15 +62,15 @@ def parse_csv_rows(text: str, provider: str, filename: str) -> List[Dict[str, st
             continue
         label = row[0].strip().lower()
         if label == "all orders":
-            summary["statement_all_orders"] = parse_money(row[1] if len(row) > 1 else "")
+            summary["statement_all_orders"] = normalize_money(row[1] if len(row) > 1 else "")
         elif label == "pre-paid orders":
-            summary["statement_prepaid_orders"] = parse_money(row[1] if len(row) > 1 else "")
+            summary["statement_prepaid_orders"] = normalize_money(row[1] if len(row) > 1 else "")
         elif label == "menustar fees":
-            summary["statement_menustar_fees"] = parse_money(row[1] if len(row) > 1 else "")
+            summary["statement_menustar_fees"] = normalize_money(row[1] if len(row) > 1 else "")
         elif label == "adjustments":
-            summary["statement_adjustments"] = parse_money(row[1] if len(row) > 1 else "")
+            summary["statement_adjustments"] = normalize_money(row[1] if len(row) > 1 else "")
         elif label == "net payout":
-            summary["statement_net_payout"] = parse_money(row[1] if len(row) > 1 else "")
+            summary["statement_net_payout"] = normalize_money(row[1] if len(row) > 1 else "")
 
     headers = reader[header_idx]
     data_rows = reader[header_idx + 1 :]
@@ -131,11 +103,11 @@ def parse_csv_rows(text: str, provider: str, filename: str) -> List[Dict[str, st
                 "order_datetime": order_datetime,
                 "order_type": record.get("Order Type", "").strip(),
                 "payment_type": record.get("Payment Type", "").strip(),
-                "subtotal": parse_money(record.get("Subtotal", "")),
-                "tax": parse_money(record.get("Tax", "")),
-                "delivery_fee": parse_money(record.get("Delivery Fee", "")),
-                "tip": parse_money(record.get("Tip", "")),
-                "total": parse_money(record.get("Total", "")),
+                "subtotal": normalize_money(record.get("Subtotal", "")),
+                "tax": normalize_money(record.get("Tax", "")),
+                "delivery_fee": normalize_money(record.get("Delivery Fee", "")),
+                "tip": normalize_money(record.get("Tip", "")),
+                "total": normalize_money(record.get("Total", "")),
                 **summary,
                 "statement_menustar_fees_allocated": "",
                 "statement_source_file": filename,

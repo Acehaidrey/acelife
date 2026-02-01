@@ -264,6 +264,105 @@ def run_ingest(db_path: Optional[str]) -> None:
     print(f"Ingested {count} rows into DuckDB.")
 
 
+def run_geocode(
+    input_path: str,
+    out_path: Optional[str],
+    cache_path: str,
+    batch_size: int,
+    api_key: Optional[str],
+    cache_only: bool,
+    counts_out: Optional[str],
+) -> None:
+    import pandas as pd
+
+    from orders_analytics.utils.geocodio import geocode_addresses, normalize_key, write_cache
+
+    df = pd.read_csv(input_path, dtype=str).fillna("")
+    cache = geocode_addresses(
+        df.to_dict("records"),
+        api_key=api_key,
+        cache_path=cache_path,
+        batch_size=batch_size,
+        cache_only=cache_only,
+    )
+    usage_counts = {}
+    formatted_platforms = {}
+    for _, row in df.iterrows():
+        address = str(row.get("address") or "").strip()
+        if not address:
+            continue
+        key = normalize_key(address)
+        record_key = (
+            str(row.get("platform") or ""),
+            str(row.get("provider") or ""),
+            str(row.get("order_id") or ""),
+        )
+        usage_counts.setdefault(key, set()).add(record_key)
+        formatted = str(row.get("address_formatted") or "").strip()
+        lat = str(row.get("lat") or "").strip()
+        lng = str(row.get("lng") or "").strip()
+        if formatted:
+            formatted_key = (formatted, lat, lng)
+            formatted_platforms.setdefault(formatted_key, set()).add(str(row.get("platform") or ""))
+    for key, records in usage_counts.items():
+        if key in cache:
+            cache[key]["usage_count"] = str(len(records))
+    for (formatted, lat, lng), platforms in formatted_platforms.items():
+        for cache_key, row in cache.items():
+            if (
+                str(row.get("formatted_address") or "").strip() == formatted
+                and str(row.get("lat") or "").strip() == lat
+                and str(row.get("lng") or "").strip() == lng
+            ):
+                existing = str(row.get("platform") or "")
+                merged = existing
+                for platform in platforms:
+                    if platform:
+                        if not merged:
+                            merged = platform
+                        elif platform not in [p.strip() for p in merged.split("|") if p.strip()]:
+                            merged = f"{merged} | {platform}"
+                row["platform"] = merged
+    updated = 0
+    for idx, row in df.iterrows():
+        address = str(row.get("address") or "").strip()
+        if not address:
+            continue
+        key = normalize_key(address)
+        cached = cache.get(key)
+        if not cached:
+            continue
+        formatted = str(cached.get("formatted_address") or "").strip()
+        if formatted:
+            df.at[idx, "address_formatted"] = formatted
+            df.at[idx, "lat"] = str(cached.get("lat") or "")
+            df.at[idx, "lng"] = str(cached.get("lng") or "")
+            updated += 1
+        else:
+            existing = str(row.get("errors") or "").strip()
+            flag = "geocode_no_formatted_address"
+            if flag not in existing:
+                df.at[idx, "errors"] = f"{existing} | {flag}" if existing else flag
+
+    output = out_path or input_path
+    df.to_csv(output, index=False)
+    print(f"Geocoded {updated} row(s) -> {output}")
+    if usage_counts:
+        write_cache(cache_path, cache)
+    if counts_out:
+        addr = df["address_formatted"].where(df["address_formatted"].str.strip() != "", df["address"])
+        counts = (
+            df.assign(address_key=addr)
+            .groupby(["address_key", "lat", "lng"], dropna=False)
+            .size()
+            .reset_index(name="count")
+        )
+        counts = counts[counts["address_key"].astype(str).str.strip() != ""]
+        counts = counts.sort_values("count", ascending=False)
+        counts.to_csv(counts_out, index=False)
+        print(f"Wrote address counts -> {counts_out}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Orders analytics CLI.")
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -391,6 +490,49 @@ def main() -> None:
         help="Override DuckDB path (defaults to utils.constants.DEFAULT_DB_PATH).",
     )
 
+    geocode_cmd = subparsers.add_parser(
+        "geocode", help="Geocode normalized addresses into formatted/lat/lng fields."
+    )
+    geocode_cmd.add_argument(
+        "--platform",
+        choices=[*Platforms.all_platforms(), "all"],
+        default="all",
+        help="Platform to geocode.",
+    )
+    geocode_cmd.add_argument("--input", help="Override normalized CSV path.")
+    geocode_cmd.add_argument("--out", help="Override output path (defaults to input).")
+    geocode_cmd.add_argument(
+        "--cache",
+        default="orders_analytics/data/raw/geocode_cache.csv",
+        help="Cache CSV path for geocode results.",
+    )
+    geocode_cmd.add_argument(
+        "--batch-size",
+        type=int,
+        default=100,
+        help="Batch size for Geocodio API requests.",
+    )
+    geocode_cmd.add_argument(
+        "--api-key",
+        default=None,
+        help="Override GEOCODE_API_KEY env var.",
+    )
+    geocode_cmd.add_argument(
+        "--all",
+        action="store_true",
+        help="Alias for --platform all.",
+    )
+    geocode_cmd.add_argument(
+        "--cache-only",
+        action="store_true",
+        help="Only use cached geocodes; do not call the API.",
+    )
+    geocode_cmd.add_argument(
+        "--counts-out",
+        default=None,
+        help="Write address counts CSV to this path.",
+    )
+
     errors_cmd = subparsers.add_parser(
         "errors", help="Rebuild errors.csv by re-running validations."
     )
@@ -469,6 +611,23 @@ def main() -> None:
                 args.orders_raw,
                 args.billings_raw,
                 dict(base_extras),
+            )
+    elif args.command == "geocode":
+        platforms: List[str]
+        if args.all or args.platform == "all":
+            platforms = Platforms.all_platforms()
+        else:
+            platforms = [args.platform]
+        for platform in platforms:
+            input_path = args.input or normalized_path(f"{platform}_orders_normalized.csv")
+            run_geocode(
+                input_path,
+                args.out,
+                args.cache,
+                args.batch_size,
+                args.api_key,
+                args.cache_only,
+                args.counts_out,
             )
 
 

@@ -11,6 +11,7 @@ import pandas as pd
 import pdfplumber
 
 from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.normalize import normalize_money
 
 RAW_COLUMNS = [
     "order_id",
@@ -36,11 +37,6 @@ RAW_COLUMNS = [
 def extract_pdf_text(payload: bytes) -> str:
     with pdfplumber.open(io.BytesIO(payload)) as pdf:
         return "\n".join(page.extract_text() or "" for page in pdf.pages)
-
-
-def parse_money(value: str) -> str:
-    text = value.replace("$", "").replace(",", "").strip()
-    return text
 
 
 def statement_period_range(text: str) -> tuple[str, str]:
@@ -97,7 +93,7 @@ def parse_order_lines(text: str) -> List[Dict[str, str]]:
         money = [t for t in tokens if re.match(r"^-?\$?\d[\d,]*\.\d{2}$", t)]
         if len(money) < 5:
             continue
-        pre_tax, tip, service_fee, processing_fee, order_total = [parse_money(m) for m in money[-5:]]
+        pre_tax, tip, service_fee, processing_fee, order_total = [normalize_money(m) for m in money[-5:]]
         first_money = money[-5]
         first_money_idx = tokens.index(first_money)
         headcount = tokens[first_money_idx - 1] if first_money_idx - 1 >= 0 else ""
@@ -152,7 +148,7 @@ def parse_adjustments(text: str) -> Dict[str, Dict[str, float]]:
         money = [t for t in tokens if re.match(r"^-?\$?\d[\d,]*\.\d{2}$", t)]
         if len(money) < 3:
             continue
-        total = parse_money(money[-1])
+        total = normalize_money(money[-1])
         try:
             total_val = float(total)
         except ValueError:

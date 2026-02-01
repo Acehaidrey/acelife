@@ -9,6 +9,16 @@ import argparse
 from typing import Dict, Iterable, List
 
 from orders_analytics.utils.schema import canonicalize_rows, write_normalized_rows
+from orders_analytics.utils.normalize import (
+    normalize_datetime,
+    normalize_money,
+    normalize_order_type,
+    normalize_payment_type,
+    normalize_address,
+    join_address_parts,
+    clean_text,
+)
+from orders_analytics.utils.providers import normalize_provider
 
 
 def parse_source_files(inputs: Iterable[str]) -> List[Dict[str, str]]:
@@ -19,7 +29,7 @@ def parse_source_files(inputs: Iterable[str]) -> List[Dict[str, str]]:
 
 
 def pre_process(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
-    # TODO: optional cleansing/standardization (dates, providers, etc.)
+    # TODO: optional cleansing/standardization (dates, providers, money, addresses, etc.)
     return rows
 
 

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
-import re
 import sys
-from datetime import datetime
 from typing import Dict, List
 
 import pandas as pd
@@ -12,17 +10,13 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
-from orders_analytics.utils.validation import normalize_order_type, normalize_payment_type
-from orders_analytics.utils.providers import Providers
-
-
-def normalize_provider(store: str) -> str:
-    name = (store or "").lower()
-    if "aroma" in name:
-        return Providers.AROMA
-    if "ameci" in name:
-        return Providers.AMECI
-    return ""
+from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.normalize import (
+    normalize_datetime,
+    normalize_order_type,
+    normalize_payment_type,
+    title_with_state,
+)
 
 
 def normalize_restaurant(store: str) -> str:
@@ -38,24 +32,11 @@ def normalize_order_datetime(req_time: str, year: str) -> str:
     if not req_time or not year:
         return ""
     text = f"{req_time.strip()} {year}".replace("  ", " ")
-    for fmt in ("%m/%d %I:%M %p %Y", "%m/%d %I:%M%p %Y"):
-        try:
-            return datetime.strptime(text, fmt).isoformat()
-        except ValueError:
-            continue
-    return ""
-
-
-def title_with_state(address: str) -> str:
-    value = (address or "").strip()
-    if not value:
-        return value
-    titled = value.title()
-
-    def repl(match):
-        return f", {match.group(1).upper()} {match.group(2)}"
-
-    return re.sub(r",\\s*([A-Za-z]{2})\\s+(\\d{5}(?:-\\d{4})?)$", repl, titled)
+    return normalize_datetime(
+        text,
+        formats=("%m/%d %I:%M %p %Y", "%m/%d %I:%M%p %Y"),
+        allow_iso=False,
+    )
 
 
 def negate_money_series(series: pd.Series) -> pd.Series:

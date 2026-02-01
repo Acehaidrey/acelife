@@ -10,6 +10,7 @@ from typing import Dict, List, Tuple
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.normalize import normalize_money
 
 RAW_COLUMNS = [
     "order_id",
@@ -39,10 +40,6 @@ def extract_html(msg) -> str:
             charset = msg.get_content_charset() or "utf-8"
             parts.append(payload.decode(charset, errors="replace"))
     return "\n".join(parts)
-
-
-def normalize_money(value: str) -> str:
-    return value.replace("$", "").replace(",", "").strip()
 
 
 def parse_fee_rows(html_text: str) -> List[Dict[str, str]]:

@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 import argparse
 import os
-from datetime import datetime
 from typing import Dict, List, Tuple
 
 import pandas as pd
 
 from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.base_parser import BaseParser
-from orders_analytics.utils.validation import normalize_order_type
-from orders_analytics.utils.providers import Providers
-
-
-def normalize_provider(name: str) -> str:
-    text = (name or "").lower()
-    if "aroma" in text:
-        return Providers.AROMA
-    if "ameci" in text:
-        return Providers.AMECI
-    return ""
+from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.normalize import normalize_datetime, normalize_order_type
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -47,7 +37,7 @@ def calc_tax_withheld(subtotal: str, rate: float = 0.0775) -> str:
     return f"{value * rate:.2f}"
 
 
-def normalize_datetime(order_date: str, order_time: str) -> str:
+def normalize_datetime_cater2me(order_date: str, order_time: str) -> str:
     if not order_date:
         return ""
     if not isinstance(order_date, str):
@@ -59,21 +49,20 @@ def normalize_datetime(order_date: str, order_time: str) -> str:
         if not isinstance(order_time, str):
             order_time = str(order_time)
         text = f"{text} {order_time.strip()}"
-    for fmt in (
-        "%a %m/%d %Y %H:%M",
-        "%a %m/%d %Y",
-        "%m/%d/%Y %H:%M",
-        "%m/%d/%Y",
-        "%m/%d/%y %H:%M",
-        "%m/%d/%y",
-        "%a %m/%d %y %H:%M",
-        "%a %m/%d %y",
-    ):
-        try:
-            return datetime.strptime(text, fmt).isoformat()
-        except ValueError:
-            continue
-    return text
+    return normalize_datetime(
+        text,
+        formats=(
+            "%a %m/%d %Y %H:%M",
+            "%a %m/%d %Y",
+            "%m/%d/%Y %H:%M",
+            "%m/%d/%Y",
+            "%m/%d/%y %H:%M",
+            "%m/%d/%y",
+            "%a %m/%d %y %H:%M",
+            "%a %m/%d %y",
+        ),
+        allow_iso=False,
+    )
 
 
 def merge_raw(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dict[str, str]]:
@@ -95,11 +84,11 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 "platform": "CATER2ME",
                 "provider": normalize_provider(row.get("restaurant_name", "")),
                 "restaurant_name": row.get("restaurant_name", ""),
-                "order_datetime": normalize_datetime(
+                "order_datetime": normalize_datetime_cater2me(
                     row.get("order_date_order", ""),
                     row.get("order_time", ""),
                 )
-                or normalize_datetime(row.get("order_date", ""), row.get("order_time", "")),
+                or normalize_datetime_cater2me(row.get("order_date", ""), row.get("order_time", "")),
                 "order_type": normalize_order_type("delivery"),
                 "customer_name": row.get("customer_name", ""),
                 "company_name": row.get("company_name", ""),

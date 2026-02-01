@@ -14,18 +14,20 @@
     - `data/raw/<provider>/` (raw exports, mbox files, ancillary outputs)
     - `data/raw/<provider>/backups/` (backups when overwriting normalized files)
   - `utils/` (shared helpers and constants)
-    - `utils/schema.py` (canonical schema + helpers)
-    - `utils/base_parser.py` (BaseParser lifecycle for provider parsers)
+  - `utils/schema.py` (canonical schema + helpers)
+  - `utils/base_parser.py` (BaseParser lifecycle for provider parsers)
+  - `utils/geocodio.py` (Geocodio client + cache helper)
   - `ingest.py` (loads normalized CSVs into DuckDB)
   - `app.py` (Streamlit dashboard)
   - `cli.py` (single entrypoint for extract/normalize/parse/fees/ingest)
   - `normalize --platform all` resets `errors.csv` by default (use `--no-reset-errors`)
+  - `geocode --all` enriches normalized addresses via Geocodio (optional)
   - `README.md` (usage + conventions)
 
 ## Phase 1: Foundation
 - Define a unified schema for normalized orders:
   - `order_id`, `platform`, `provider`, `order_datetime`, `order_type`
-  - `customer_name`, `phone`, `email`, `address`, `payment_type`
+  - `customer_name`, `phone`, `email`, `address`, `address_formatted`, `lat`, `lng`, `payment_type`
   - `subtotal`, `tax`, `tip`, `delivery_fee`, `total`
   - `item_count`, `processing_fee`, `commission_fee`, `items`, `restaurant_name`
   - `tax_withheld`, `adjustments`, `marketing_fee`, `misc_fee`, `notes`
@@ -78,6 +80,8 @@
   - `--no-reset-errors` to keep existing `errors.csv` (default resets)
 - Parse (extract + normalize):
   - `cli.py parse --platform <platform|all>`
+- Geocode (optional, after normalize):
+  - `cli.py geocode --platform <platform|all>`
 
 ## Phase 3: Ingestion
 - Build `ingest.py`:

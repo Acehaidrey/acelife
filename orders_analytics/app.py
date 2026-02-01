@@ -6,6 +6,7 @@ from datetime import datetime
 import duckdb
 import pandas as pd
 import streamlit as st
+import pydeck as pdk
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if REPO_ROOT not in sys.path:
@@ -25,6 +26,9 @@ ORDER_COLUMNS = [
     "phone",
     "email",
     "address",
+    "address_formatted",
+    "lat",
+    "lng",
     "payment_type",
     "restaurant_name",
     "items",
@@ -198,6 +202,9 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
         "phone",
         "email",
         "address",
+        "address_formatted",
+        "lat",
+        "lng",
         "payment_type",
         "items",
         "item_count",
@@ -338,113 +345,28 @@ def main() -> None:
         filtered[col] = filtered[col].fillna(0.0)
 
     filtered = add_date_grain(filtered, grain)
-
-    summary = (
-        filtered.groupby("date_bucket")
-        .agg(
-            orders=("order_id", "count"),
-            subtotal=("subtotal", "sum"),
-            tax=("tax", "sum"),
-            tax_withheld=("tax_withheld", "sum"),
-            tip=("tip", "sum"),
-            delivery_fee=("delivery_fee", "sum"),
-            total=("total", "sum"),
-        )
-        .reset_index()
-        .sort_values("date_bucket")
+    tab_summary, tab_overrides, tab_delivery = st.tabs(
+        ["Summary", "Overrides", "Delivery Map"]
     )
 
-    st.subheader("Summary")
-    money_cols = [
-        "cash_subtotal",
-        "credit_subtotal",
-        "subtotal",
-        "tax",
-        "tax_withheld",
-        "tip",
-        "delivery_fee",
-        "total",
-        "misc_fee",
-        "commission_fee",
-        "processing_fee",
-        "adjustments",
-        "marketing_fee",
-        "net_payout",
-    ]
-    summary_column_config = {
-        col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in summary.columns
-    }
-    st.dataframe(summary, column_config=summary_column_config, width="stretch")
-    platform_summary = (
-        filtered.groupby(["date_bucket", "platform"], dropna=False)
-        .agg(total=("total", "sum"))
-        .reset_index()
-    )
-    platform_pivot = platform_summary.pivot_table(
-        index="date_bucket", columns="platform", values="total", fill_value=0.0
-    )
-    if not platform_pivot.empty:
-        st.line_chart(platform_pivot)
-
-    provider_summary = (
-        filtered.groupby(["date_bucket", "provider"], dropna=False)
-        .agg(total=("total", "sum"))
-        .reset_index()
-    )
-    provider_pivot = provider_summary.pivot_table(
-        index="date_bucket", columns="provider", values="total", fill_value=0.0
-    )
-    if not provider_pivot.empty:
-        st.subheader("Total by Provider")
-        st.line_chart(provider_pivot)
-
-    monthly = (
-        filtered.assign(
-            year=filtered["order_datetime"].dt.year,
-            month=filtered["order_datetime"].dt.month,
-        )
-        .groupby(["platform", "provider", "year", "month"])
-        .agg(
-            orders=("order_id", "count"),
-            cash_subtotal=("subtotal", lambda s: s[filtered.loc[s.index, "payment_type"] == "cash"].sum()),
-            credit_subtotal=("subtotal", lambda s: s[filtered.loc[s.index, "payment_type"] == "credit"].sum()),
-            tax=("tax", "sum"),
-            tax_withheld=("tax_withheld", "sum"),
-            tip=("tip", "sum"),
-            delivery_fee=("delivery_fee", "sum"),
-            total=("total", "sum"),
-        )
-        .reset_index()
-    )
-    monthly["subtotal"] = monthly["cash_subtotal"] + monthly["credit_subtotal"]
-    for col in ["misc_fee", "commission_fee", "processing_fee", "adjustments", "marketing_fee"]:
-        if col in filtered.columns:
-            extra = (
-                filtered.assign(
-                    year=filtered["order_datetime"].dt.year,
-                    month=filtered["order_datetime"].dt.month,
-                )
-                .groupby(["platform", "provider", "year", "month"])[col]
-                .sum()
-                .reset_index()
+    with tab_summary:
+        summary = (
+            filtered.groupby("date_bucket")
+            .agg(
+                orders=("order_id", "count"),
+                subtotal=("subtotal", "sum"),
+                tax=("tax", "sum"),
+                tax_withheld=("tax_withheld", "sum"),
+                tip=("tip", "sum"),
+                delivery_fee=("delivery_fee", "sum"),
+                total=("total", "sum"),
             )
-            monthly = monthly.merge(
-                extra, on=["platform", "provider", "year", "month"], how="left"
-            )
-            monthly[col] = monthly[col].fillna(0.0)
-        else:
-            monthly[col] = 0.0
-    monthly = monthly.sort_values(["year", "month"], ascending=[False, False])
-    overrides = conn.execute("SELECT * FROM monthly_overrides").df()
-    if not overrides.empty:
-        monthly = monthly.merge(
-            overrides,
-            on=["platform", "provider", "year", "month"],
-            how="left",
-            suffixes=("", "_override"),
+            .reset_index()
+            .sort_values("date_bucket")
         )
-        for col in [
-            "orders",
+
+        st.subheader("Summary")
+        money_cols = [
             "cash_subtotal",
             "credit_subtotal",
             "subtotal",
@@ -452,188 +374,171 @@ def main() -> None:
             "tax_withheld",
             "tip",
             "delivery_fee",
+            "total",
             "misc_fee",
             "commission_fee",
             "processing_fee",
             "adjustments",
             "marketing_fee",
-            "total",
-        ]:
-            if f"{col}_override" in monthly.columns:
-                monthly[col] = monthly[f"{col}_override"].combine_first(monthly[col])
-        if "notes_override" in monthly.columns:
-            monthly["notes"] = monthly["notes"].combine_first(monthly["notes_override"])
-        monthly = monthly.drop(
-            columns=[c for c in monthly.columns if c.endswith("_override")]
-        )
-    def positive_only(series):
-        return series.where(series > 0, 0)
-
-    monthly["net_payout"] = (
-        monthly["credit_subtotal"]
-        + monthly["tax"]
-        + monthly["tip"]
-        + monthly["delivery_fee"]
-        + monthly["adjustments"]
-        - positive_only(monthly["commission_fee"])
-        - positive_only(monthly["processing_fee"])
-        - positive_only(monthly["marketing_fee"])
-        - positive_only(monthly["misc_fee"])
-    )
-    st.subheader("Monthly Rollup")
-    monthly_column_config = {
-        col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in monthly.columns
-    }
-    st.dataframe(monthly, column_config=monthly_column_config, width="stretch")
-
-    st.subheader("Order Overrides")
-    order_options = (
-        filtered[["order_id", "platform"]]
-        .dropna()
-        .astype(str)
-        .agg(" | ".join, axis=1)
-    )
-    if isinstance(order_options, pd.DataFrame):
-        order_options = order_options.iloc[:, 0]
-    order_options = order_options.dropna().unique().tolist()
-    order_choice = st.selectbox("Select Order", [""] + sorted(order_options))
-    if order_choice:
-        order_id, platform = [p.strip() for p in order_choice.split("|", 1)]
-        row_match = filtered[
-            (filtered["order_id"] == order_id) & (filtered["platform"] == platform)
+            "net_payout",
         ]
-        if row_match.empty:
-            st.warning("Selected order is not in the current filter set.")
-            row = None
-        else:
-            row = row_match.iloc[0]
-        if row is not None:
-            with st.form("order_override_form"):
-                notes = st.text_area("Notes", value=row.get("notes", "") or "")
-                subtotal = st.text_input("Subtotal", value=str(row.get("subtotal", "")))
-                tax = st.text_input("Tax", value=str(row.get("tax", "")))
-                tip = st.text_input("Tip", value=str(row.get("tip", "")))
-                delivery_fee = st.text_input("Delivery Fee", value=str(row.get("delivery_fee", "")))
-                misc_fee = st.text_input("Misc Fee", value=str(row.get("misc_fee", "")))
-                commission_fee = st.text_input("Commission Fee", value=str(row.get("commission_fee", "")))
-                processing_fee = st.text_input("Processing Fee", value=str(row.get("processing_fee", "")))
-                total = st.text_input("Total", value=str(row.get("total", "")))
-                submitted = st.form_submit_button("Save Overrides")
-        else:
-            submitted = False
-        if submitted and row is not None:
-            def to_float(value: str):
-                try:
-                    return float(value) if value != "" else None
-                except ValueError:
-                    return None
-
-            conn.execute(
-                """
-                INSERT INTO order_overrides (
-                    order_id, platform, provider, restaurant_name, order_datetime, order_type,
-                    customer_name, company_name, phone, email, address, payment_type,
-                    subtotal, tax, tax_withheld, tip, delivery_fee, misc_fee, commission_fee,
-                    processing_fee, adjustments, marketing_fee, total, items, item_count,
-                    notes, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT (order_id, platform)
-                DO UPDATE SET
-                    provider=excluded.provider,
-                    restaurant_name=excluded.restaurant_name,
-                    order_datetime=excluded.order_datetime,
-                    order_type=excluded.order_type,
-                    customer_name=excluded.customer_name,
-                    company_name=excluded.company_name,
-                    phone=excluded.phone,
-                    email=excluded.email,
-                    address=excluded.address,
-                    payment_type=excluded.payment_type,
-                    subtotal=excluded.subtotal,
-                    tax=excluded.tax,
-                    tax_withheld=excluded.tax_withheld,
-                    tip=excluded.tip,
-                    delivery_fee=excluded.delivery_fee,
-                    misc_fee=excluded.misc_fee,
-                    commission_fee=excluded.commission_fee,
-                    processing_fee=excluded.processing_fee,
-                    adjustments=excluded.adjustments,
-                    marketing_fee=excluded.marketing_fee,
-                    total=excluded.total,
-                    items=excluded.items,
-                    item_count=excluded.item_count,
-                    notes=excluded.notes,
-                    updated_at=excluded.updated_at
-                """,
-                (
-                    row["order_id"],
-                    row["platform"],
-                    row["provider"],
-                    row.get("restaurant_name", ""),
-                    row["order_datetime"],
-                    row["order_type"],
-                    row["customer_name"],
-                    row.get("company_name", ""),
-                    row["phone"],
-                    row.get("email", ""),
-                    row["address"],
-                    row["payment_type"],
-                    to_float(subtotal),
-                    to_float(tax),
-                    to_float(row.get("tax_withheld", "")),
-                    to_float(tip),
-                    to_float(delivery_fee),
-                    to_float(misc_fee),
-                    to_float(commission_fee),
-                    to_float(processing_fee),
-                    to_float(row.get("adjustments", "")),
-                    to_float(row.get("marketing_fee", "")),
-                    to_float(total),
-                    row.get("items", ""),
-                    row.get("item_count", ""),
-                    notes,
-                    datetime.utcnow(),
-                ),
-            )
-            st.success("Order override saved.")
-
-    st.subheader("Monthly Notes / Overrides")
-    if not monthly.empty:
-        monthly_choice = st.selectbox(
-            "Select Month",
-            [""] + [
-                f"{row.platform} | {row.provider} | {int(row.year)}-{int(row.month):02d}"
-                for row in monthly.itertuples()
-            ],
+        summary_column_config = {
+            col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in summary.columns
+        }
+        st.dataframe(summary, column_config=summary_column_config, width="stretch")
+        platform_summary = (
+            filtered.groupby(["date_bucket", "platform"], dropna=False)
+            .agg(total=("total", "sum"))
+            .reset_index()
         )
-        if monthly_choice:
-            platform, provider, year_month = [p.strip() for p in monthly_choice.split("|")]
-            year = int(year_month.split("-")[0])
-            month = int(year_month.split("-")[1])
-            row = monthly[
-                (monthly["platform"] == platform)
-                & (monthly["provider"] == provider)
-                & (monthly["year"] == year)
-                & (monthly["month"] == month)
-            ].iloc[0]
-            with st.form("monthly_override_form"):
-                notes = st.text_area("Notes", value=row.get("notes", "") or "")
-                orders = st.text_input("Orders", value=str(row.get("orders", "")))
-                cash_subtotal = st.text_input("Cash Subtotal", value=str(row.get("cash_subtotal", "")))
-                credit_subtotal = st.text_input("Credit Subtotal", value=str(row.get("credit_subtotal", "")))
-                subtotal = st.text_input("Subtotal", value=str(row.get("subtotal", "")))
-                tax = st.text_input("Tax", value=str(row.get("tax", "")))
-                tax_withheld = st.text_input("Tax Withheld", value=str(row.get("tax_withheld", "")))
-                tip = st.text_input("Tip", value=str(row.get("tip", "")))
-                delivery_fee = st.text_input("Delivery Fee", value=str(row.get("delivery_fee", "")))
-                misc_fee = st.text_input("Misc Fee", value=str(row.get("misc_fee", "")))
-                commission_fee = st.text_input("Commission Fee", value=str(row.get("commission_fee", "")))
-                processing_fee = st.text_input("Processing Fee", value=str(row.get("processing_fee", "")))
-                adjustments = st.text_input("Adjustments", value=str(row.get("adjustments", "")))
-                marketing_fee = st.text_input("Marketing Fee", value=str(row.get("marketing_fee", "")))
-                total = st.text_input("Total", value=str(row.get("total", "")))
-                submitted = st.form_submit_button("Save Monthly Override")
-            if submitted:
+        platform_pivot = platform_summary.pivot_table(
+            index="date_bucket", columns="platform", values="total", fill_value=0.0
+        )
+        if not platform_pivot.empty:
+            st.line_chart(platform_pivot)
+
+        provider_summary = (
+            filtered.groupby(["date_bucket", "provider"], dropna=False)
+            .agg(total=("total", "sum"))
+            .reset_index()
+        )
+        provider_pivot = provider_summary.pivot_table(
+            index="date_bucket", columns="provider", values="total", fill_value=0.0
+        )
+        if not provider_pivot.empty:
+            st.subheader("Total by Provider")
+            st.line_chart(provider_pivot)
+
+        monthly = (
+            filtered.assign(
+                year=filtered["order_datetime"].dt.year,
+                month=filtered["order_datetime"].dt.month,
+            )
+            .groupby(["platform", "provider", "year", "month"])
+            .agg(
+                orders=("order_id", "count"),
+                cash_subtotal=("subtotal", lambda s: s[filtered.loc[s.index, "payment_type"] == "cash"].sum()),
+                credit_subtotal=("subtotal", lambda s: s[filtered.loc[s.index, "payment_type"] == "credit"].sum()),
+                tax=("tax", "sum"),
+                tax_withheld=("tax_withheld", "sum"),
+                tip=("tip", "sum"),
+                delivery_fee=("delivery_fee", "sum"),
+                total=("total", "sum"),
+            )
+            .reset_index()
+        )
+        monthly["subtotal"] = monthly["cash_subtotal"] + monthly["credit_subtotal"]
+        for col in ["misc_fee", "commission_fee", "processing_fee", "adjustments", "marketing_fee"]:
+            if col in filtered.columns:
+                extra = (
+                    filtered.assign(
+                        year=filtered["order_datetime"].dt.year,
+                        month=filtered["order_datetime"].dt.month,
+                    )
+                    .groupby(["platform", "provider", "year", "month"])[col]
+                    .sum()
+                    .reset_index()
+                )
+                monthly = monthly.merge(
+                    extra, on=["platform", "provider", "year", "month"], how="left"
+                )
+                monthly[col] = monthly[col].fillna(0.0)
+            else:
+                monthly[col] = 0.0
+        monthly = monthly.sort_values(["year", "month"], ascending=[False, False])
+        overrides = conn.execute("SELECT * FROM monthly_overrides").df()
+        if not overrides.empty:
+            monthly = monthly.merge(
+                overrides,
+                on=["platform", "provider", "year", "month"],
+                how="left",
+                suffixes=("", "_override"),
+            )
+            for col in [
+                "orders",
+                "cash_subtotal",
+                "credit_subtotal",
+                "subtotal",
+                "tax",
+                "tax_withheld",
+                "tip",
+                "delivery_fee",
+                "misc_fee",
+                "commission_fee",
+                "processing_fee",
+                "adjustments",
+                "marketing_fee",
+                "total",
+            ]:
+                if f"{col}_override" in monthly.columns:
+                    monthly[col] = monthly[f"{col}_override"].combine_first(monthly[col])
+            if "notes_override" in monthly.columns:
+                monthly["notes"] = monthly["notes"].combine_first(monthly["notes_override"])
+            monthly = monthly.drop(
+                columns=[c for c in monthly.columns if c.endswith("_override")]
+            )
+        def positive_only(series):
+            return series.where(series > 0, 0)
+
+        monthly["net_payout"] = (
+            monthly["credit_subtotal"]
+            + monthly["tax"]
+            + monthly["tip"]
+            + monthly["delivery_fee"]
+            + monthly["adjustments"]
+            - positive_only(monthly["commission_fee"])
+            - positive_only(monthly["processing_fee"])
+            - positive_only(monthly["marketing_fee"])
+            - positive_only(monthly["misc_fee"])
+        )
+        def render_monthly_rollup() -> None:
+            st.subheader("Monthly Rollup")
+            monthly_column_config = {
+                col: st.column_config.NumberColumn(format="dollar")
+                for col in money_cols
+                if col in monthly.columns
+            }
+            st.dataframe(monthly, column_config=monthly_column_config, width="stretch")
+
+        render_monthly_rollup()
+
+    with tab_overrides:
+        st.subheader("Order Overrides")
+        order_options = (
+            filtered[["order_id", "platform"]]
+            .dropna()
+            .astype(str)
+            .agg(" | ".join, axis=1)
+        )
+        if isinstance(order_options, pd.DataFrame):
+            order_options = order_options.iloc[:, 0]
+        order_options = order_options.dropna().unique().tolist()
+        order_choice = st.selectbox("Select Order", [""] + sorted(order_options))
+        if order_choice:
+            order_id, platform = [p.strip() for p in order_choice.split("|", 1)]
+            row_match = filtered[
+                (filtered["order_id"] == order_id) & (filtered["platform"] == platform)
+            ]
+            if row_match.empty:
+                st.warning("Selected order is not in the current filter set.")
+                row = None
+            else:
+                row = row_match.iloc[0]
+            if row is not None:
+                with st.form("order_override_form"):
+                    notes = st.text_area("Notes", value=row.get("notes", "") or "")
+                    subtotal = st.text_input("Subtotal", value=str(row.get("subtotal", "")))
+                    tax = st.text_input("Tax", value=str(row.get("tax", "")))
+                    tip = st.text_input("Tip", value=str(row.get("tip", "")))
+                    delivery_fee = st.text_input("Delivery Fee", value=str(row.get("delivery_fee", "")))
+                    misc_fee = st.text_input("Misc Fee", value=str(row.get("misc_fee", "")))
+                    commission_fee = st.text_input("Commission Fee", value=str(row.get("commission_fee", "")))
+                    processing_fee = st.text_input("Processing Fee", value=str(row.get("processing_fee", "")))
+                    total = st.text_input("Total", value=str(row.get("total", "")))
+                    submitted = st.form_submit_button("Save Overrides")
+            else:
+                submitted = False
+            if submitted and row is not None:
                 def to_float(value: str):
                     try:
                         return float(value) if value != "" else None
@@ -642,16 +547,25 @@ def main() -> None:
 
                 conn.execute(
                     """
-                    INSERT INTO monthly_overrides (
-                        platform, provider, year, month, orders, cash_subtotal, credit_subtotal,
+                    INSERT INTO order_overrides (
+                        order_id, platform, provider, restaurant_name, order_datetime, order_type,
+                        customer_name, company_name, phone, email, address, payment_type,
                         subtotal, tax, tax_withheld, tip, delivery_fee, misc_fee, commission_fee,
-                        processing_fee, adjustments, marketing_fee, total, notes, updated_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ON CONFLICT (platform, provider, year, month)
+                        processing_fee, adjustments, marketing_fee, total, items, item_count,
+                        notes, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ON CONFLICT (order_id, platform)
                     DO UPDATE SET
-                        orders=excluded.orders,
-                        cash_subtotal=excluded.cash_subtotal,
-                        credit_subtotal=excluded.credit_subtotal,
+                        provider=excluded.provider,
+                        restaurant_name=excluded.restaurant_name,
+                        order_datetime=excluded.order_datetime,
+                        order_type=excluded.order_type,
+                        customer_name=excluded.customer_name,
+                        company_name=excluded.company_name,
+                        phone=excluded.phone,
+                        email=excluded.email,
+                        address=excluded.address,
+                        payment_type=excluded.payment_type,
                         subtotal=excluded.subtotal,
                         tax=excluded.tax,
                         tax_withheld=excluded.tax_withheld,
@@ -663,41 +577,190 @@ def main() -> None:
                         adjustments=excluded.adjustments,
                         marketing_fee=excluded.marketing_fee,
                         total=excluded.total,
+                        items=excluded.items,
+                        item_count=excluded.item_count,
                         notes=excluded.notes,
                         updated_at=excluded.updated_at
                     """,
                     (
-                        platform,
-                        provider,
-                        year,
-                        month,
-                        to_float(orders),
-                        to_float(cash_subtotal),
-                        to_float(credit_subtotal),
+                        row["order_id"],
+                        row["platform"],
+                        row["provider"],
+                        row.get("restaurant_name", ""),
+                        row["order_datetime"],
+                        row["order_type"],
+                        row["customer_name"],
+                        row.get("company_name", ""),
+                        row["phone"],
+                        row.get("email", ""),
+                        row["address"],
+                        row["payment_type"],
                         to_float(subtotal),
                         to_float(tax),
-                        to_float(tax_withheld),
+                        to_float(row.get("tax_withheld", "")),
                         to_float(tip),
                         to_float(delivery_fee),
                         to_float(misc_fee),
                         to_float(commission_fee),
                         to_float(processing_fee),
-                        to_float(adjustments),
-                        to_float(marketing_fee),
+                        to_float(row.get("adjustments", "")),
+                        to_float(row.get("marketing_fee", "")),
                         to_float(total),
+                        row.get("items", ""),
+                        row.get("item_count", ""),
                         notes,
                         datetime.utcnow(),
                     ),
                 )
+                st.success("Order override saved.")
+
+        st.subheader("Monthly Notes / Overrides")
+        if not monthly.empty:
+            monthly_choice = st.selectbox(
+                "Select Month",
+                [""] + [
+                    f"{row.platform} | {row.provider} | {int(row.year)}-{int(row.month):02d}"
+                    for row in monthly.itertuples()
+                ],
+            )
+            if monthly_choice:
+                platform, provider, year_month = [p.strip() for p in monthly_choice.split("|")]
+                year = int(year_month.split("-")[0])
+                month = int(year_month.split("-")[1])
+                row = monthly[
+                    (monthly["platform"] == platform)
+                    & (monthly["provider"] == provider)
+                    & (monthly["year"] == year)
+                    & (monthly["month"] == month)
+                ].iloc[0]
+                with st.form("monthly_override_form"):
+                    notes = st.text_area("Notes", value=row.get("notes", "") or "")
+                    orders = st.text_input("Orders", value=str(row.get("orders", "")))
+                    cash_subtotal = st.text_input("Cash Subtotal", value=str(row.get("cash_subtotal", "")))
+                    credit_subtotal = st.text_input("Credit Subtotal", value=str(row.get("credit_subtotal", "")))
+                    subtotal = st.text_input("Subtotal", value=str(row.get("subtotal", "")))
+                    tax = st.text_input("Tax", value=str(row.get("tax", "")))
+                    tax_withheld = st.text_input("Tax Withheld", value=str(row.get("tax_withheld", "")))
+                    tip = st.text_input("Tip", value=str(row.get("tip", "")))
+                    delivery_fee = st.text_input("Delivery Fee", value=str(row.get("delivery_fee", "")))
+                    misc_fee = st.text_input("Misc Fee", value=str(row.get("misc_fee", "")))
+                    commission_fee = st.text_input("Commission Fee", value=str(row.get("commission_fee", "")))
+                    processing_fee = st.text_input("Processing Fee", value=str(row.get("processing_fee", "")))
+                    adjustments = st.text_input("Adjustments", value=str(row.get("adjustments", "")))
+                    marketing_fee = st.text_input("Marketing Fee", value=str(row.get("marketing_fee", "")))
+                    total = st.text_input("Total", value=str(row.get("total", "")))
+                    submitted = st.form_submit_button("Save Monthly Override")
+                if submitted:
+                    def to_float(value: str):
+                        try:
+                            return float(value) if value != "" else None
+                        except ValueError:
+                            return None
+
+                    conn.execute(
+                        """
+                        INSERT INTO monthly_overrides (
+                            platform, provider, year, month, orders, cash_subtotal, credit_subtotal,
+                            subtotal, tax, tax_withheld, tip, delivery_fee, misc_fee, commission_fee,
+                            processing_fee, adjustments, marketing_fee, total, notes, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (platform, provider, year, month)
+                        DO UPDATE SET
+                            orders=excluded.orders,
+                            cash_subtotal=excluded.cash_subtotal,
+                            credit_subtotal=excluded.credit_subtotal,
+                            subtotal=excluded.subtotal,
+                            tax=excluded.tax,
+                            tax_withheld=excluded.tax_withheld,
+                            tip=excluded.tip,
+                            delivery_fee=excluded.delivery_fee,
+                            misc_fee=excluded.misc_fee,
+                            commission_fee=excluded.commission_fee,
+                            processing_fee=excluded.processing_fee,
+                            adjustments=excluded.adjustments,
+                            marketing_fee=excluded.marketing_fee,
+                            total=excluded.total,
+                            notes=excluded.notes,
+                            updated_at=excluded.updated_at
+                        """,
+                        (
+                            platform,
+                            provider,
+                            year,
+                            month,
+                            to_float(orders),
+                            to_float(cash_subtotal),
+                            to_float(credit_subtotal),
+                            to_float(subtotal),
+                            to_float(tax),
+                            to_float(tax_withheld),
+                            to_float(tip),
+                            to_float(delivery_fee),
+                            to_float(misc_fee),
+                            to_float(commission_fee),
+                            to_float(processing_fee),
+                            to_float(adjustments),
+                            to_float(marketing_fee),
+                            to_float(total),
+                            notes,
+                            datetime.utcnow(),
+                        ),
+                    )
                 st.success("Monthly override saved.")
 
-    st.subheader("Filtered Orders")
-    filtered_column_config = {
-        col: st.column_config.NumberColumn(format="dollar")
-        for col in money_cols
-        if col in filtered.columns
-    }
-    st.dataframe(filtered, column_config=filtered_column_config, width="stretch")
+        render_monthly_rollup()
+
+        st.subheader("Filtered Orders")
+        filtered_column_config = {
+            col: st.column_config.NumberColumn(format="dollar")
+            for col in money_cols
+            if col in filtered.columns
+        }
+        st.dataframe(filtered, column_config=filtered_column_config, width="stretch")
+
+    with tab_delivery:
+        if "lat" in filtered.columns and "lng" in filtered.columns:
+            geo = filtered.copy()
+            geo = geo[geo["order_type"] == "delivery"]
+            geo["lat"] = pd.to_numeric(geo["lat"], errors="coerce")
+            geo["lng"] = pd.to_numeric(geo["lng"], errors="coerce")
+            geo = geo.dropna(subset=["lat", "lng"])
+            if not geo.empty:
+                geo["address_display"] = geo["address_formatted"].where(
+                    geo["address_formatted"].astype(str).str.strip() != "", geo["address"]
+                )
+                unique_geo = geo.drop_duplicates(subset=["platform", "provider", "order_id"])
+                st.subheader("Delivery Heatmap")
+                heat_layer = pdk.Layer(
+                    "HeatmapLayer",
+                    data=unique_geo,
+                    get_position="[lng, lat]",
+                    radiusPixels=40,
+                    intensity=1.0,
+                    threshold=0.2,
+                )
+                st.pydeck_chart(
+                    pdk.Deck(
+                        map_style="light",
+                        initial_view_state=pdk.ViewState(
+                            latitude=unique_geo["lat"].mean(),
+                            longitude=unique_geo["lng"].mean(),
+                            zoom=10,
+                            pitch=0,
+                        ),
+                        layers=[heat_layer],
+                    )
+                )
+
+                st.subheader("Top 25 Delivery Addresses")
+                addr_counts = (
+                    unique_geo.groupby(["address_display", "lat", "lng"], dropna=False)
+                    .size()
+                    .reset_index(name="orders")
+                    .sort_values("orders", ascending=False)
+                    .head(25)
+                )
+                st.dataframe(addr_counts, width="stretch")
 
     conn.close()
 

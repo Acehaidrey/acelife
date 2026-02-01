@@ -9,7 +9,7 @@ from typing import Dict, List
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path
-from orders_analytics.utils.providers import Providers
+from orders_analytics.utils.providers import normalize_provider
 
 RAW_COLUMNS = [
     "order_id",
@@ -31,15 +31,6 @@ RAW_COLUMNS = [
     "total",
     "added_at",
 ]
-
-
-def normalize_provider(name: str) -> str:
-    text = (name or "").lower()
-    if "aroma" in text:
-        return Providers.AROMA
-    if "ameci" in text:
-        return Providers.AMECI
-    return ""
 
 
 def strip_html(html: str) -> str:

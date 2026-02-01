@@ -18,6 +18,10 @@ Provider Inputs (mbox, PDFs, CSVs)
   - validations -> errors.csv
         |
         v
+  Geocode (optional)
+  - fill address_formatted + lat/lng via Geocodio
+        |
+        v
   Ingest -> DuckDB
         |
         v
@@ -41,7 +45,7 @@ Provider Inputs (mbox, PDFs, CSVs)
 
 ## Canonical Normalized Schema
 All order-level parsers should emit these columns in this order:
-`order_id, platform, provider, order_datetime, order_type, customer_name, company_name, phone, email, address, payment_type, restaurant_name, items, item_count, subtotal, tax, tax_withheld, tip, delivery_fee, total, processing_fee, commission_fee, adjustments, marketing_fee, misc_fee, errors, notes`
+`order_id, platform, provider, order_datetime, order_type, customer_name, company_name, phone, email, address, address_formatted, lat, lng, payment_type, restaurant_name, items, item_count, subtotal, tax, tax_withheld, tip, delivery_fee, total, processing_fee, commission_fee, adjustments, marketing_fee, misc_fee, errors, notes`
 
 ## Parser Conventions
 - BeyondMenu parser drops rows where `Status != active` (inactive orders are excluded).
@@ -72,6 +76,9 @@ All order-level parsers should emit these columns in this order:
   - `python3 orders_analytics/cli.py parse --platform cater2me`
   - `python3 orders_analytics/cli.py parse --platform menustar`
   - `python3 orders_analytics/cli.py parse --platform all`
+- Geocode normalized addresses (optional, uses Geocodio + cache):
+  - `python3 orders_analytics/cli.py geocode --platform menustar`
+  - `python3 orders_analytics/cli.py geocode --all`
 - CSV-based providers (BeyondMenu/Foodja/ezCater) are normalized directly from CSV inputs:
   - `python3 orders_analytics/cli.py normalize --platform beyondmenu`
   - `python3 orders_analytics/cli.py normalize --platform foodja`
@@ -87,3 +94,6 @@ All order-level parsers should emit these columns in this order:
 ## Requirements Notes
 - MenuStar billings may arrive as `.xlsx`. Install extras:
   - `pip install -r orders_analytics/requirements.txt` (includes openpyxl)
+- Geocodio geocoding:
+  - add `GEOCODE_API_KEY` to `.env`
+  - cache stored at `orders_analytics/data/raw/geocode_cache.csv`

@@ -2,7 +2,6 @@
 import argparse
 import os
 import sys
-from datetime import datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Dict, List
 
@@ -12,49 +11,22 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
-from orders_analytics.utils.providers import Providers
-from orders_analytics.utils.validation import normalize_order_type
-
-
-def normalize_provider(name: str) -> str:
-    text = (name or "").lower()
-    if "aroma" in text:
-        return Providers.AROMA
-    if "ameci" in text:
-        return Providers.AMECI
-    return ""
-
-
-def parse_money(value: str) -> str:
-    text = str(value or "").strip()
-    if text == "":
-        return ""
-    neg = False
-    if text.startswith("(") and text.endswith(")"):
-        neg = True
-        text = text[1:-1]
-    text = text.replace("$", "").replace(",", "").strip()
-    if text == "":
-        return ""
-    try:
-        amount = Decimal(text)
-        if neg:
-            amount = -amount
-        return str(amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
-    except InvalidOperation:
-        return text
+from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.normalize import (
+    clean_text,
+    join_address_parts,
+    normalize_datetime,
+    normalize_money,
+    normalize_order_type,
+)
 
 
 def normalize_date(value: str) -> str:
-    text = (value or "").strip()
-    if not text:
-        return ""
-    for fmt in ("%m/%d/%Y %I:%M %p", "%m/%d/%Y"):
-        try:
-            return datetime.strptime(text, fmt).isoformat()
-        except ValueError:
-            continue
-    return text
+    return normalize_datetime(
+        value,
+        formats=("%m/%d/%Y %I:%M %p", "%m/%d/%Y"),
+        allow_iso=False,
+    )
 
 
 def format_address(row: pd.Series) -> str:
@@ -62,12 +34,8 @@ def format_address(row: pd.Series) -> str:
     city = str(row.get("City", "") or "").strip()
     state = str(row.get("State", "") or "").strip()
     zip_code = str(row.get("Zip Code", "") or "").strip()
-    parts = [street, ", ".join(p for p in [city, state] if p), zip_code]
-    return ", ".join([p for p in parts if p])
-
-
-def clean_text(value: str) -> str:
-    return str(value or "").replace("\r", " ").replace("\n", " ").strip()
+    city_state = ", ".join(p for p in [city, state] if p)
+    return join_address_parts([street, city_state, zip_code], sep=", ")
 
 
 class EzCaterOrdersParser(BaseParser):
@@ -127,8 +95,8 @@ class EzCaterOrdersParser(BaseParser):
                 notes.append(f"promo_code={promo}")
 
             marketing_fee = ""
-            ppp = parse_money(row.get("Preferred Partner Program", ""))
-            rewards = parse_money(row.get("ezRewards", ""))
+            ppp = normalize_money(row.get("Preferred Partner Program", ""))
+            rewards = normalize_money(row.get("ezRewards", ""))
             if ppp or rewards:
                 try:
                     marketing_fee = str(
@@ -140,10 +108,10 @@ class EzCaterOrdersParser(BaseParser):
                     marketing_fee = ""
 
             adjustments = ""
-            adj = parse_money(row.get("Adjustments", ""))
-            discounts = parse_money(row.get("Discounts", ""))
-            promo_amt = parse_money(row.get("Promotion", ""))
-            misc_fees = parse_money(row.get("Misc Fees", ""))
+            adj = normalize_money(row.get("Adjustments", ""))
+            discounts = normalize_money(row.get("Discounts", ""))
+            promo_amt = normalize_money(row.get("Promotion", ""))
+            misc_fees = normalize_money(row.get("Misc Fees", ""))
             if adj or discounts or promo_amt or misc_fees:
                 try:
                     adjustments = str(
@@ -171,15 +139,15 @@ class EzCaterOrdersParser(BaseParser):
                     "email": details.get("email", ""),
                     "address": address,
                     "payment_type": "credit",
-                    "subtotal": parse_money(row.get("Food Total", "")),
-                    "tax": parse_money(row.get("Sales Tax", "")),
-                    "tax_withheld": parse_money(row.get("Sales Tax Remitted by ezCater", "")),
-                    "tip": parse_money(row.get("Tip", "")),
-                    "delivery_fee": parse_money(row.get("Delivery Fee", "")),
-                    "total": parse_money(row.get("Caterer Total Due", "")) or parse_money(row.get("Food Total", "")),
+                    "subtotal": normalize_money(row.get("Food Total", "")),
+                    "tax": normalize_money(row.get("Sales Tax", "")),
+                    "tax_withheld": normalize_money(row.get("Sales Tax Remitted by ezCater", "")),
+                    "tip": normalize_money(row.get("Tip", "")),
+                    "delivery_fee": normalize_money(row.get("Delivery Fee", "")),
+                    "total": normalize_money(row.get("Caterer Total Due", "")) or normalize_money(row.get("Food Total", "")),
                     "item_count": "",
-                    "processing_fee": parse_money(row.get("Payment Transaction Fee", "")),
-                    "commission_fee": parse_money(row.get("Commission", "")),
+                    "processing_fee": normalize_money(row.get("Payment Transaction Fee", "")),
+                    "commission_fee": normalize_money(row.get("Commission", "")),
                     "items": "",
                     "adjustments": adjustments,
                     "marketing_fee": marketing_fee,

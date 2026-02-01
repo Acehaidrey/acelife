@@ -3,3 +3,4 @@ duckdb>=1.4.0,<2.0.0
 streamlit>=1.53.0,<2.0.0
 pdfplumber>=0.11.0,<1.0.0
 openpyxl>=3.1.2,<4.0.0
+requests>=2.32.0,<3.0.0

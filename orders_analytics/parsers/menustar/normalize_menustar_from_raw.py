@@ -9,29 +9,14 @@ import pandas as pd
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
-from orders_analytics.utils.validation import normalize_order_type, normalize_payment_type
-from orders_analytics.utils.providers import Providers
+from orders_analytics.utils.normalize import (
+    normalize_address,
+    normalize_order_type,
+    normalize_payment_type,
+)
+from orders_analytics.utils.providers import Providers, normalize_provider, normalize_datetime
 
 
-def normalize_provider(name: str) -> str:
-    text = (name or "").lower()
-    if "aroma" in text:
-        return Providers.AROMA
-    if "ameci" in text:
-        return Providers.AMECI
-    return ""
-
-
-def normalize_datetime(value: str) -> str:
-    text = str(value or "").strip()
-    if not text or text.lower() == "nan":
-        return ""
-    for fmt in ("%m/%d/%Y %H:%M:%S", "%m/%d/%Y %H:%M", "%m/%d/%Y"):
-        try:
-            return datetime.strptime(text, fmt).isoformat()
-        except ValueError:
-            continue
-    return text
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -72,6 +57,13 @@ def amount_equal(left: Optional[Decimal], right: Optional[Decimal]) -> bool:
     )
 
 
+def format_fee(value: Decimal) -> str:
+    quantized = value.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    if quantized == Decimal("0.00"):
+        return "0.00"
+    return str(quantized)
+
+
 def allocate_commission(
     billing_rows: List[Dict[str, str]]
 ) -> List[Dict[str, str]]:
@@ -96,10 +88,10 @@ def allocate_commission(
                             Decimal("0.01"), rounding=ROUND_HALF_UP
                         )
                     row["commission_fee"] = str(
-                        (commission * Decimal("-1")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                        format_fee(commission * Decimal("-1"))
                     )
                     row["processing_fee"] = str(
-                        (processing * Decimal("-1")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                        format_fee(processing * Decimal("-1"))
                     )
                 except InvalidOperation:
                     row["commission_fee"] = ""
@@ -153,10 +145,10 @@ def allocate_commission(
                 )
                 processing = (alloc - commission).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             row["commission_fee"] = str(
-                (commission * Decimal("-1")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                format_fee(commission * Decimal("-1"))
             )
             row["processing_fee"] = str(
-                (processing * Decimal("-1")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                format_fee(processing * Decimal("-1"))
             )
     return billing_rows
 
@@ -270,6 +262,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
             continue
         order_datetime = normalize_datetime(row.get("order_datetime_order") or row.get("order_datetime", ""))
         provider = row.get("provider") or normalize_provider(row.get("restaurant_name", ""))
+        address_raw = row.get("address_order", "") or row.get("address", "")
         normalized.append(
             {
                 "order_id": row.get("order_id_order", ""),
@@ -282,7 +275,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 "company_name": "",
                 "phone": row.get("phone_order", ""),
                 "email": row.get("email_order", ""),
-                "address": row.get("address_order", ""),
+                "address": normalize_address(address_raw) or address_raw,
                 "payment_type": normalize_payment_type(row.get("payment_type", "")),
                 "subtotal": row.get("subtotal", ""),
                 "tax": row.get("tax", ""),
