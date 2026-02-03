@@ -65,3 +65,4 @@ Concerns / follow-ups:
   - Tax: line containing `Tax` / `Taxes` (e.g., “California Department of Tax…”)
   - Total: `TOTAL $...`
   - Subtotal: sum of line-item amounts if possible, else `total - tax`
+  - Commission: Office Caterer charges a flat 30% on subtotal; we split as 27% commission + 3% processing (both negative) in normalized output.
