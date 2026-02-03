@@ -42,7 +42,7 @@ Concerns / follow-ups:
 - Normalization merges billings and overrides `total` with billings `amount_paid` (or invoice total). Mismatches recorded in `errors`.
   - All orders are pickup.
   - Drops `status=canceled` / `status=inactive` from normalized output.
-  - Commission/tax logic: `total` = billings (plus adjustments), `subtotal = total / 0.85`, `commission_fee = -(subtotal - total)`, `tax_withheld = subtotal * 0.0775`.
+  - Commission/tax logic: Foodee pays 85% (15% commission). `total` = billings (plus adjustments), `subtotal = total / 0.85`, `commission_fee = -(subtotal - total)`, `tax_withheld = subtotal * 0.0775`.
   - Manual adjustments in `data/raw/foodee/adjustments_raw.csv` (applied to billings total before recomputing).
 
 ## Food Runners
