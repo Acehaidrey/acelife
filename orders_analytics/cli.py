@@ -63,10 +63,20 @@ def run_parse(
         from orders_analytics.parsers.foodja.parse_foodja_orders import FoodjaOrdersParser
 
         runner = FoodjaOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == "fooda":
+        from orders_analytics.parsers.fooda.parse_fooda_orders import FoodaOrdersParser
+
+        runner = FoodaOrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == "ezcater":
         from orders_analytics.parsers.ezcater.parse_ezcater_orders import EzCaterOrdersParser
 
         runner = EzCaterOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == "deliverycom":
+        from orders_analytics.parsers.deliverycom.parse_deliverycom_orders import (
+            DeliveryComOrdersParser,
+        )
+
+        runner = DeliveryComOrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == "cater2me":
         from orders_analytics.parsers.cater2me import (
             extract_cater2me_billings_raw,
@@ -114,6 +124,96 @@ def run_parse(
         extract_menustar_billings_raw.run(billings, billings_raw)
         normalize_menustar_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[menustar] extracted raw orders + billings and normalized.")
+        return
+    elif platform == "deliverycom":
+        from orders_analytics.parsers.deliverycom import (
+            extract_deliverycom_billings_raw,
+            extract_deliverycom_orders_raw,
+            normalize_deliverycom_from_raw,
+        )
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_mbox = input_path or extras.pop(
+            "orders_mbox", "TakeoutESBM/Mail/Orders-DeliveryCom.mbox"
+        )
+        billings = billings_mbox or extras.pop(
+            "billings_mbox", "TakeoutESBM/Mail/Billings-DeliveryCom.mbox"
+        )
+        orders_raw = extras.pop("orders_raw", raw_path("deliverycom", "orders_raw.csv"))
+        billings_raw = extras.pop("billings_raw", raw_path("deliverycom", "billings_raw.csv"))
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("deliverycom_orders_normalized.csv")
+        )
+        extract_deliverycom_orders_raw.run(orders_mbox, orders_raw)
+        extract_deliverycom_billings_raw.run(billings, billings_raw)
+        normalize_deliverycom_from_raw.run(orders_raw, billings_raw, normalized_out)
+        print("[deliverycom] extracted raw orders + billings and normalized.")
+        return
+    elif platform == "foodee":
+        from orders_analytics.parsers.foodee import (
+            extract_foodee_billings_raw,
+            extract_foodee_orders_raw,
+            normalize_foodee_from_raw,
+        )
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_mbox = input_path or extras.pop(
+            "orders_mbox", "TakeoutESBM/Mail/Orders-Foodee.mbox"
+        )
+        billings = billings_mbox or extras.pop(
+            "billings_mbox", "TakeoutESBM/Mail/Billings-Foodee.mbox"
+        )
+        orders_raw = extras.pop("orders_raw", raw_path("foodee", "orders_raw.csv"))
+        billings_raw = extras.pop("billings_raw", raw_path("foodee", "billings_raw.csv"))
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("foodee_orders_normalized.csv")
+        )
+        extract_foodee_orders_raw.run(orders_mbox, orders_raw)
+        extract_foodee_billings_raw.run(billings, billings_raw)
+        normalize_foodee_from_raw.run(orders_raw, billings_raw, normalized_out)
+        print("[foodee] extracted raw orders + billings and normalized.")
+        return
+    elif platform == "foodrunners":
+        from orders_analytics.parsers.foodrunners import (
+            extract_foodrunners_billings_raw,
+            extract_foodrunners_orders_raw,
+            normalize_foodrunners_from_raw,
+        )
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_mbox = input_path or extras.pop(
+            "orders_mbox", "TakeoutESBM/Mail/Orders-FoodRunners.mbox"
+        )
+        billings = billings_mbox or extras.pop(
+            "billings_mbox", "TakeoutESBM/Mail/Billings-FoodRunners.mbox"
+        )
+        orders_raw = extras.pop("orders_raw", raw_path("foodrunners", "orders_raw.csv"))
+        billings_raw = extras.pop("billings_raw", raw_path("foodrunners", "billings_raw.csv"))
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("foodrunners_orders_normalized.csv")
+        )
+        extract_foodrunners_orders_raw.run(orders_mbox, orders_raw)
+        extract_foodrunners_billings_raw.run(billings, billings_raw)
+        normalize_foodrunners_from_raw.run(orders_raw, billings_raw, normalized_out)
+        print("[foodrunners] extracted raw orders + billings and normalized.")
+        return
+    elif platform == "officecaterer":
+        from orders_analytics.parsers.officecaterer import (
+            extract_officecaterer_orders_raw,
+            normalize_officecaterer_from_raw,
+        )
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_mbox = input_path or extras.pop(
+            "orders_mbox", "TakeoutESBM/Mail/Orders-Office Caterer.mbox"
+        )
+        orders_raw = extras.pop("orders_raw", raw_path("officecaterer", "orders_raw.csv"))
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("officecaterer_orders_normalized.csv")
+        )
+        extract_officecaterer_orders_raw.run(orders_mbox, orders_raw)
+        normalize_officecaterer_from_raw.run(orders_raw, normalized_out)
+        print("[officecaterer] extracted raw orders and normalized.")
         return
     else:
         raise ValueError(f"Unknown platform: {platform}")
@@ -163,6 +263,39 @@ def run_extract(
 
         extract_menustar_orders_raw.run(orders_mbox, orders_raw)
         extract_menustar_billings_raw.run(billings_mbox, billings_raw)
+        return
+    if platform == "deliverycom":
+        from orders_analytics.parsers.deliverycom import (
+            extract_deliverycom_billings_raw,
+            extract_deliverycom_orders_raw,
+        )
+
+        extract_deliverycom_orders_raw.run(orders_mbox, orders_raw)
+        extract_deliverycom_billings_raw.run(billings_mbox, billings_raw)
+        return
+    if platform == "foodee":
+        from orders_analytics.parsers.foodee import (
+            extract_foodee_billings_raw,
+            extract_foodee_orders_raw,
+        )
+
+        extract_foodee_orders_raw.run(orders_mbox, orders_raw)
+        extract_foodee_billings_raw.run(billings_mbox, billings_raw)
+        return
+    if platform == "foodrunners":
+        from orders_analytics.parsers.foodrunners import (
+            extract_foodrunners_billings_raw,
+            extract_foodrunners_orders_raw,
+        )
+
+        extract_foodrunners_orders_raw.run(orders_mbox, orders_raw)
+        sales_xlsx = "TakeoutESBM/Mail/foodrunners_202613021183548NetSales0.xlsx"
+        extract_foodrunners_billings_raw.run(billings_mbox, billings_raw, sales_xlsx)
+        return
+    if platform == "officecaterer":
+        from orders_analytics.parsers.officecaterer import extract_officecaterer_orders_raw
+
+        extract_officecaterer_orders_raw.run(orders_mbox, orders_raw)
         return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
@@ -223,6 +356,72 @@ def run_normalize(
         normalize_menustar_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
         print(f"[menustar] normalized -> {normalized_out}")
         return
+    if platform == "deliverycom":
+        from orders_analytics.parsers.deliverycom import normalize_deliverycom_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("deliverycom", "orders_raw.csv")
+        )
+        billings_raw_path = billings_raw or extras.pop(
+            "billings_raw", raw_path("deliverycom", "billings_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("deliverycom_orders_normalized.csv")
+        )
+        normalize_deliverycom_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        print(f"[deliverycom] normalized -> {normalized_out}")
+        return
+    if platform == "foodee":
+        from orders_analytics.parsers.foodee import normalize_foodee_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("foodee", "orders_raw.csv")
+        )
+        billings_raw_path = billings_raw or extras.pop(
+            "billings_raw", raw_path("foodee", "billings_raw.csv")
+        )
+        adjustments_raw_path = extras.pop(
+            "adjustments_raw", raw_path("foodee", "adjustments_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("foodee_orders_normalized.csv")
+        )
+        normalize_foodee_from_raw.run(
+            orders_raw_path, billings_raw_path, adjustments_raw_path, normalized_out
+        )
+        print(f"[foodee] normalized -> {normalized_out}")
+        return
+    if platform == "foodrunners":
+        from orders_analytics.parsers.foodrunners import normalize_foodrunners_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("foodrunners", "orders_raw.csv")
+        )
+        billings_raw_path = billings_raw or extras.pop(
+            "billings_raw", raw_path("foodrunners", "billings_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("foodrunners_orders_normalized.csv")
+        )
+        normalize_foodrunners_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        print(f"[foodrunners] normalized -> {normalized_out}")
+        return
+    if platform == "officecaterer":
+        from orders_analytics.parsers.officecaterer import normalize_officecaterer_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("officecaterer", "orders_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("officecaterer_orders_normalized.csv")
+        )
+        normalize_officecaterer_from_raw.run(orders_raw_path, normalized_out)
+        print(f"[officecaterer] normalized -> {normalized_out}")
+        return
     if platform == "beyondmenu":
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
             BeyondMenuOrdersParser,
@@ -233,6 +432,10 @@ def run_normalize(
         from orders_analytics.parsers.foodja.parse_foodja_orders import FoodjaOrdersParser
 
         runner = FoodjaOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == "fooda":
+        from orders_analytics.parsers.fooda.parse_fooda_orders import FoodaOrdersParser
+
+        runner = FoodaOrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == "ezcater":
         from orders_analytics.parsers.ezcater.parse_ezcater_orders import EzCaterOrdersParser
 
@@ -585,11 +788,31 @@ def main() -> None:
             billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Cater2Me.mbox"
             orders_raw = args.orders_raw or raw_path("cater2me", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("cater2me", "billings_raw.csv")
-        else:
+        elif args.platform == "menustar":
             orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Menustar.mbox"
             billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Menustar.mbox"
             orders_raw = args.orders_raw or raw_path("menustar", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("menustar", "billings_raw.csv")
+        elif args.platform == "foodee":
+            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Foodee.mbox"
+            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Foodee.mbox"
+            orders_raw = args.orders_raw or raw_path("foodee", "orders_raw.csv")
+            billings_raw = args.billings_raw or raw_path("foodee", "billings_raw.csv")
+        elif args.platform == "foodrunners":
+            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-FoodRunners.mbox"
+            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-FoodRunners.mbox"
+            orders_raw = args.orders_raw or raw_path("foodrunners", "orders_raw.csv")
+            billings_raw = args.billings_raw or raw_path("foodrunners", "billings_raw.csv")
+        elif args.platform == "officecaterer":
+            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Office Caterer.mbox"
+            billings_mbox = args.billings_mbox or ""
+            orders_raw = args.orders_raw or raw_path("officecaterer", "orders_raw.csv")
+            billings_raw = args.billings_raw or ""
+        else:
+            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-DeliveryCom.mbox"
+            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-DeliveryCom.mbox"
+            orders_raw = args.orders_raw or raw_path("deliverycom", "orders_raw.csv")
+            billings_raw = args.billings_raw or raw_path("deliverycom", "billings_raw.csv")
         run_extract(args.platform, orders_mbox, billings_mbox, orders_raw, billings_raw)
     elif args.command == "normalize":
         from orders_analytics.utils.constants import ERRORS_PATH

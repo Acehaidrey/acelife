@@ -52,6 +52,16 @@
   - `parsers/menustar/extract_menustar_orders_raw.py`
   - `parsers/menustar/extract_menustar_billings_raw.py`
   - `parsers/menustar/normalize_menustar_from_raw.py`
+  - `parsers/deliverycom/parse_deliverycom_orders.py`
+  - `parsers/deliverycom/extract_deliverycom_billings_raw.py`
+  - `parsers/foodee/extract_foodee_orders_raw.py`
+  - `parsers/foodee/extract_foodee_billings_raw.py`
+  - `parsers/foodee/normalize_foodee_from_raw.py`
+  - `parsers/foodrunners/extract_foodrunners_orders_raw.py`
+  - `parsers/foodrunners/extract_foodrunners_billings_raw.py`
+  - `parsers/foodrunners/normalize_foodrunners_from_raw.py`
+  - `parsers/officecaterer/extract_officecaterer_orders_raw.py`
+  - `parsers/officecaterer/normalize_officecaterer_from_raw.py`
   - `parsers/_legacy/` (archived scripts; not used)
 - Update parsers to:
   - emit normalized columns
@@ -71,6 +81,10 @@
   - `cli.py extract --platform eatstreet`
   - `cli.py extract --platform cater2me`
   - `cli.py extract --platform menustar`
+  - `cli.py extract --platform deliverycom`
+  - `cli.py extract --platform foodee`
+  - `cli.py extract --platform foodrunners`
+  - `cli.py extract --platform officecaterer`
 - Normalize only (raw CSV → normalized CSV):
   - `cli.py normalize --platform all`
   - `cli.py normalize --platform eatstreet`
@@ -80,6 +94,7 @@
   - `--no-reset-errors` to keep existing `errors.csv` (default resets)
 - Parse (extract + normalize):
   - `cli.py parse --platform <platform|all>`
+  - `cli.py parse --platform deliverycom`
 - Geocode (optional, after normalize):
   - `cli.py geocode --platform <platform|all>`
 

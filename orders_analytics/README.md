@@ -65,24 +65,40 @@ All order-level parsers should emit these columns in this order:
   - `python3 orders_analytics/cli.py extract --platform eatstreet`
   - `python3 orders_analytics/cli.py extract --platform cater2me`
   - `python3 orders_analytics/cli.py extract --platform menustar`
+  - `python3 orders_analytics/cli.py extract --platform deliverycom`
+  - `python3 orders_analytics/cli.py extract --platform foodee`
+  - `python3 orders_analytics/cli.py extract --platform foodrunners`
+  - `python3 orders_analytics/cli.py extract --platform officecaterer`
 - Normalize only (raw CSV → normalized CSV):
   - `python3 orders_analytics/cli.py normalize --platform all`
   - `python3 orders_analytics/cli.py normalize --platform eatstreet`
   - `python3 orders_analytics/cli.py normalize --platform cater2me`
   - `python3 orders_analytics/cli.py normalize --platform menustar`
+  - `python3 orders_analytics/cli.py normalize --platform foodee`
+  - `python3 orders_analytics/cli.py normalize --platform foodrunners`
+  - `python3 orders_analytics/cli.py normalize --platform officecaterer`
   - `--no-reset-errors` to keep existing `errors.csv` (default resets)
 - Parse (extract + normalize):
   - `python3 orders_analytics/cli.py parse --platform eatstreet`
   - `python3 orders_analytics/cli.py parse --platform cater2me`
   - `python3 orders_analytics/cli.py parse --platform menustar`
+  - `python3 orders_analytics/cli.py parse --platform deliverycom`
+  - `python3 orders_analytics/cli.py parse --platform foodee`
+  - `python3 orders_analytics/cli.py parse --platform foodrunners`
+  - `python3 orders_analytics/cli.py parse --platform officecaterer`
   - `python3 orders_analytics/cli.py parse --platform all`
 - Geocode normalized addresses (optional, uses Geocodio + cache):
   - `python3 orders_analytics/cli.py geocode --platform menustar`
   - `python3 orders_analytics/cli.py geocode --all`
-- CSV-based providers (BeyondMenu/Foodja/ezCater) are normalized directly from CSV inputs:
+- CSV-based providers (BeyondMenu/Foodja/Fooda/ezCater) are normalized directly from CSV inputs:
   - `python3 orders_analytics/cli.py normalize --platform beyondmenu`
   - `python3 orders_analytics/cli.py normalize --platform foodja`
+  - `python3 orders_analytics/cli.py normalize --platform fooda`
   - `python3 orders_analytics/cli.py normalize --platform ezcater`
+- Mbox-based providers (Delivery.com) use raw CSVs (extract → normalize, includes billings):
+  - `python3 orders_analytics/cli.py extract --platform deliverycom`
+  - `python3 orders_analytics/cli.py normalize --platform deliverycom`
+- Foodee normalization uses billings + manual adjustments in `data/raw/foodee/adjustments_raw.csv` to recompute subtotal/commission/tax_withheld.
 - Optional: pass extra parser args: `--extra key=value` (repeatable)
 - Optional: update EatStreet normalized fees from billings (writes missing-fee list to raw):
   - `python3 orders_analytics/cli.py fees` (legacy)
