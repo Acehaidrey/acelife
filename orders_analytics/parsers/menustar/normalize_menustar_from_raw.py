@@ -153,9 +153,11 @@ def allocate_commission(
     return billing_rows
 
 
-def merge_rows(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dict[str, str]]:
+def merge_rows(
+    orders_raw: pd.DataFrame, billings_raw: pd.DataFrame
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]], List[Dict[str, str]]]:
     if billings_raw.empty:
-        return []
+        return [], [], []
     billing_rows = billings_raw.to_dict("records")
     billing_rows = allocate_commission(billing_rows)
 
@@ -170,6 +172,7 @@ def merge_rows(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dic
             orders_by_day.setdefault(key, []).append(row_dict)
 
     merged: List[Dict[str, str]] = []
+    unmatched_billings: List[Dict[str, str]] = []
     for row in billing_rows:
         key = (
             normalize_provider_key(row.get("provider", "")),
@@ -250,19 +253,37 @@ def merge_rows(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dic
         order = {}
         if best_idx is not None:
             order = candidates.pop(best_idx)
+        else:
+            unmatched_billings.append(row)
         merged.append({**row, **{f"{k}_order": v for k, v in order.items()}})
-    return merged
+    unmatched_orders: List[Dict[str, str]] = []
+    for candidates in orders_by_day.values():
+        unmatched_orders.extend(candidates)
+    return merged, unmatched_billings, unmatched_orders
 
 
 def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     normalized: List[Dict[str, str]] = []
+    adjustments_seen: set[Tuple[str, str]] = set()
     for row in rows:
+        if not str(row.get("order_id_order") or row.get("order_id") or "").strip():
+            continue
         customer_name = str(row.get("customer_name_order") or "")
         if customer_name and "test" in customer_name.lower():
             continue
         order_datetime = normalize_datetime(row.get("order_datetime_order") or row.get("order_datetime", ""))
         provider = row.get("provider") or normalize_provider(row.get("restaurant_name", ""))
         address_raw = row.get("address_order", "") or row.get("address", "")
+        statement_adjustment = str(row.get("statement_adjustments", "") or "").strip()
+        statement_source = str(row.get("statement_source_file", "") or "").strip()
+        statement_key = (statement_source, statement_adjustment)
+        adjustments_value = ""
+        notes = ""
+        if statement_adjustment and statement_adjustment not in ("0", "0.00"):
+            if statement_key not in adjustments_seen:
+                adjustments_seen.add(statement_key)
+                adjustments_value = statement_adjustment
+                notes = "statement_adjustment_applied"
         normalized.append(
             {
                 "order_id": row.get("order_id_order", ""),
@@ -287,11 +308,11 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 "processing_fee": row.get("processing_fee", ""),
                 "commission_fee": row.get("commission_fee", ""),
                 "items": row.get("items_order", ""),
-                "adjustments": row.get("statement_adjustments", ""),
+                "adjustments": adjustments_value,
                 "marketing_fee": "",
                 "misc_fee": "",
                 "errors": "",
-                "notes": "",
+                "notes": notes,
             }
         )
     return normalized
@@ -301,8 +322,16 @@ class MenuStarNormalizer(BaseParser):
     platform = "MENUSTAR"
     provider = ""
 
-    def __init__(self, orders_raw_path: str = "", billings_raw_path: str = "", out_path: str = ""):
-        super().__init__(input_path=orders_raw_path, out_path=out_path, billings_raw=billings_raw_path)
+    def __init__(
+        self,
+        orders_raw_path: str = "",
+        billings_raw_path: str = "",
+        out_path: str = "",
+        **kwargs,
+    ):
+        super().__init__(
+            input_path=orders_raw_path, out_path=out_path, billings_raw=billings_raw_path, **kwargs
+        )
 
     def default_input_path(self) -> str:
         return raw_path("menustar", "orders_raw.csv")
@@ -323,7 +352,39 @@ class MenuStarNormalizer(BaseParser):
         }
 
     def parse_rows(self, inputs: Dict[str, pd.DataFrame]) -> List[Dict[str, str]]:
-        rows = merge_rows(inputs["orders_raw"], inputs["billings_raw"])
+        rows, unmatched_billings, unmatched_orders = merge_rows(
+            inputs["orders_raw"], inputs["billings_raw"]
+        )
+        if unmatched_orders:
+            orders_report = [
+                {
+                    "order_id": row.get("order_id", ""),
+                    "provider": row.get("provider", ""),
+                    "restaurant_name": row.get("restaurant_name", ""),
+                    "order_datetime": row.get("order_datetime", ""),
+                    "subtotal": row.get("subtotal", ""),
+                    "tax": row.get("tax", ""),
+                    "total": row.get("total", ""),
+                }
+                for row in unmatched_orders
+            ]
+            orders_path = raw_path("menustar", "orders_missing_billings.csv")
+            pd.DataFrame(orders_report).to_csv(orders_path, index=False)
+        if unmatched_billings:
+            billings_report = [
+                {
+                    "provider": row.get("provider", ""),
+                    "restaurant_name": row.get("restaurant_name", ""),
+                    "order_datetime": row.get("order_datetime", ""),
+                    "subtotal": row.get("subtotal", ""),
+                    "tax": row.get("tax", ""),
+                    "total": row.get("total", ""),
+                    "statement_source_file": row.get("statement_source_file", ""),
+                }
+                for row in unmatched_billings
+            ]
+            billings_path = raw_path("menustar", "billings_missing_orders.csv")
+            pd.DataFrame(billings_report).to_csv(billings_path, index=False)
         return normalize_rows(rows)
 
 

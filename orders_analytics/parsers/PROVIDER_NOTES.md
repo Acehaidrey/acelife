@@ -59,7 +59,40 @@ Concerns / follow-ups:
   - Applies statement payout (`Balance pay`) and settlement ID to each order row.
 - Normalization merges billings and overrides `subtotal/tax` when available; mismatches recorded in `errors`.
  - All orders are pickup.
- - Manual cancellations live in `data/raw/foodrunners/cancellations_raw.csv` and are removed from normalized output.
+- Manual cancellations live in `data/raw/foodrunners/cancellations_raw.csv` and are removed from normalized output.
+
+## BeyondMenu
+- Source: `orders_analytics/data/raw/beyondmenu/BeyondMenu_Order_History.csv`
+- Parser: `parsers/beyondmenu/parse_beyondmenu_orders.py` (CSV import)
+  - Filters `Status=active` only; inactive orders are excluded.
+  - Order datetime: `Req Time` + `year` using `MM/DD HH:MM am/pm` format.
+  - Provider/restaurant: provider normalized from `Store`; Aroma/Ameci names standardized.
+  - Address: title-cased with state abbreviation preserved.
+  - Fees: `Merchant Fee`, `Commission Fee`, and `Misc Fee` are negated.
+  - Payment type: from `Payment Type` (or `Payment`) normalized.
+
+## EatStreet
+- Sources: `Takeout/Mail/Orders-Eatstreet.mbox`, `Takeout/Mail/Billings-Eatstreet.mbox`
+- Orders parser: `parsers/eatstreet/extract_eatstreet_orders_raw.py`
+  - Header extraction scans `<td>` blocks and selects the one where the first span is `PICKUP/DELIVERY` and the next span is the restaurant name.
+  - Fixes cases where “Order ready for pickup at:” appeared before the restaurant line.
+- Normalizer: `parsers/eatstreet/normalize_eatstreet_from_raw.py` (BaseParser)
+  - Commission/processing fees are always negative (if present).
+  - If tax is missing and year >= 2020, `tax_withheld` is estimated at 7.75% of subtotal.
+  - If fees are missing, estimates: commission = 15% of subtotal; processing = 4.3% of subtotal.
+  - Payment type is overridden to cash when billings `payment_method` = cash.
+
+## MenuStar
+- Sources: `Takeout/Mail/Orders-Menustar.mbox`, `Takeout/Mail/Billings-Menustar.mbox`
+- Orders parser: `parsers/menustar/extract_menustar_orders_raw.py` (email HTML)
+- Billings parser: `parsers/menustar/extract_menustar_billings_raw.py` (CSV/XLSX attachments)
+  - Statement summary fields captured: all orders, prepaid orders, fees, adjustments, net payout.
+  - Statement fees are allocated across orders by subtotal with round‑robin cents to match statement totals.
+- Normalizer: `parsers/menustar/normalize_menustar_from_raw.py`
+  - Billings do not include order_id; matching uses provider + order_date and best‑match on amounts/order type/payment type.
+  - Commission is 70% of MenuStar fees and processing is 30% (cash orders get commission only).
+  - Drops rows with missing order_id after merge (billing‑only rows with no match).
+  - Statement adjustments are statement‑level and currently copied into each matched order row.
 
 ## Office Caterer
 - Sources: `Takeout/Mail/Orders-OfficeCaterer.mbox`, `Takeout/Mail/Billings-OfficeCaterer.mbox` (PDF attachments)
