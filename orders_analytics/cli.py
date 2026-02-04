@@ -7,6 +7,7 @@ from typing import Dict, List, Tuple, Optional
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.constants import takeout_path
 
 
 def parse_extras(values: Optional[List[str]]) -> Dict[str, str]:
@@ -37,10 +38,10 @@ def run_parse(
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", "TakeoutESBM/Mail/Orders-Eatstreet.mbox"
+            "orders_mbox", takeout_path("Mail", "Orders-Eatstreet.mbox")
         )
         billings = billings_mbox or extras.pop(
-            "billings_mbox", "TakeoutESBM/Mail/Billings-Eatstreet.mbox"
+            "billings_mbox", takeout_path("Mail", "Billings-Eatstreet.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("eatstreet", "orders_raw.csv"))
         billings_raw = extras.pop("billings_raw", raw_path("eatstreet", "billings_raw.csv"))
@@ -86,10 +87,10 @@ def run_parse(
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", "TakeoutESBM/Mail/Orders-Cater2Me.mbox"
+            "orders_mbox", takeout_path("Mail", "Orders-Cater2Me.mbox")
         )
         billings = billings_mbox or extras.pop(
-            "billings_mbox", "TakeoutESBM/Mail/Billings-Cater2Me.mbox"
+            "billings_mbox", takeout_path("Mail", "Billings-Cater2Me.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("cater2me", "orders_raw.csv"))
         billings_raw = extras.pop("billings_raw", raw_path("cater2me", "billings_raw.csv"))
@@ -110,10 +111,10 @@ def run_parse(
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", "TakeoutESBM/Mail/Orders-Menustar.mbox"
+            "orders_mbox", takeout_path("Mail", "Orders-Menustar.mbox")
         )
         billings = billings_mbox or extras.pop(
-            "billings_mbox", "TakeoutESBM/Mail/Billings-Menustar.mbox"
+            "billings_mbox", takeout_path("Mail", "Billings-Menustar.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("menustar", "orders_raw.csv"))
         billings_raw = extras.pop("billings_raw", raw_path("menustar", "billings_raw.csv"))
@@ -134,10 +135,10 @@ def run_parse(
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", "TakeoutESBM/Mail/Orders-DeliveryCom.mbox"
+            "orders_mbox", takeout_path("Mail", "Orders-DeliveryCom.mbox")
         )
         billings = billings_mbox or extras.pop(
-            "billings_mbox", "TakeoutESBM/Mail/Billings-DeliveryCom.mbox"
+            "billings_mbox", takeout_path("Mail", "Billings-DeliveryCom.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("deliverycom", "orders_raw.csv"))
         billings_raw = extras.pop("billings_raw", raw_path("deliverycom", "billings_raw.csv"))
@@ -158,10 +159,10 @@ def run_parse(
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", "TakeoutESBM/Mail/Orders-Foodee.mbox"
+            "orders_mbox", takeout_path("Mail", "Orders-Foodee.mbox")
         )
         billings = billings_mbox or extras.pop(
-            "billings_mbox", "TakeoutESBM/Mail/Billings-Foodee.mbox"
+            "billings_mbox", takeout_path("Mail", "Billings-Foodee.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("foodee", "orders_raw.csv"))
         billings_raw = extras.pop("billings_raw", raw_path("foodee", "billings_raw.csv"))
@@ -182,10 +183,10 @@ def run_parse(
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", "TakeoutESBM/Mail/Orders-FoodRunners.mbox"
+            "orders_mbox", takeout_path("Mail", "Orders-FoodRunners.mbox")
         )
         billings = billings_mbox or extras.pop(
-            "billings_mbox", "TakeoutESBM/Mail/Billings-FoodRunners.mbox"
+            "billings_mbox", takeout_path("Mail", "Billings-FoodRunners.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("foodrunners", "orders_raw.csv"))
         billings_raw = extras.pop("billings_raw", raw_path("foodrunners", "billings_raw.csv"))
@@ -205,7 +206,7 @@ def run_parse(
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", "TakeoutESBM/Mail/Orders-Office Caterer.mbox"
+            "orders_mbox", takeout_path("Mail", "Orders-Office Caterer.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("officecaterer", "orders_raw.csv"))
         normalized_out = out_path or extras.pop(
@@ -289,7 +290,7 @@ def run_extract(
         )
 
         extract_foodrunners_orders_raw.run(orders_mbox, orders_raw)
-        sales_xlsx = "TakeoutESBM/Mail/foodrunners_202613021183548NetSales0.xlsx"
+        sales_xlsx = takeout_path("Mail", "foodrunners_202613021183548NetSales0.xlsx")
         extract_foodrunners_billings_raw.run(billings_mbox, billings_raw, sales_xlsx)
         return
     if platform == "officecaterer":
@@ -662,7 +663,7 @@ def main() -> None:
     fees_cmd = subparsers.add_parser("fees", help="Update EatStreet fees from billings.")
     fees_cmd.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Billings-Eatstreet.mbox",
+        default=takeout_path("Mail", "Billings-Eatstreet.mbox"),
         help="Path to Billings-Eatstreet.mbox",
     )
     fees_cmd.add_argument(
@@ -779,38 +780,38 @@ def main() -> None:
         from orders_analytics.utils.constants import raw_path
 
         if args.platform == "eatstreet":
-            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Eatstreet.mbox"
-            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Eatstreet.mbox"
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Eatstreet.mbox")
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Eatstreet.mbox")
             orders_raw = args.orders_raw or raw_path("eatstreet", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("eatstreet", "billings_raw.csv")
         elif args.platform == "cater2me":
-            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Cater2Me.mbox"
-            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Cater2Me.mbox"
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Cater2Me.mbox")
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Cater2Me.mbox")
             orders_raw = args.orders_raw or raw_path("cater2me", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("cater2me", "billings_raw.csv")
         elif args.platform == "menustar":
-            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Menustar.mbox"
-            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Menustar.mbox"
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Menustar.mbox")
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Menustar.mbox")
             orders_raw = args.orders_raw or raw_path("menustar", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("menustar", "billings_raw.csv")
         elif args.platform == "foodee":
-            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Foodee.mbox"
-            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-Foodee.mbox"
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Foodee.mbox")
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Foodee.mbox")
             orders_raw = args.orders_raw or raw_path("foodee", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("foodee", "billings_raw.csv")
         elif args.platform == "foodrunners":
-            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-FoodRunners.mbox"
-            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-FoodRunners.mbox"
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-FoodRunners.mbox")
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-FoodRunners.mbox")
             orders_raw = args.orders_raw or raw_path("foodrunners", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("foodrunners", "billings_raw.csv")
         elif args.platform == "officecaterer":
-            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-Office Caterer.mbox"
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Office Caterer.mbox")
             billings_mbox = args.billings_mbox or ""
             orders_raw = args.orders_raw or raw_path("officecaterer", "orders_raw.csv")
             billings_raw = args.billings_raw or ""
         else:
-            orders_mbox = args.orders_mbox or "TakeoutESBM/Mail/Orders-DeliveryCom.mbox"
-            billings_mbox = args.billings_mbox or "TakeoutESBM/Mail/Billings-DeliveryCom.mbox"
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")
             orders_raw = args.orders_raw or raw_path("deliverycom", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("deliverycom", "billings_raw.csv")
         run_extract(args.platform, orders_mbox, billings_mbox, orders_raw, billings_raw)

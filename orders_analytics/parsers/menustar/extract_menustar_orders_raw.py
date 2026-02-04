@@ -8,7 +8,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.providers import normalize_provider
 
 RAW_COLUMNS = [
@@ -275,7 +275,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract Menustar orders from mbox HTML.")
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Orders-Menustar.mbox",
+        default=takeout_path("Mail", "Orders-Menustar.mbox"),
         help="Path to Orders-Menustar.mbox",
     )
     parser.add_argument(

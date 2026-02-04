@@ -11,7 +11,7 @@ from typing import Dict, List
 
 import pandas as pd
 
-from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.normalize import normalize_money
 
@@ -228,7 +228,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract Menustar billings from mbox attachments.")
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Billings-Menustar.mbox",
+        default=takeout_path("Mail", "Billings-Menustar.mbox"),
         help="Path to Billings-Menustar.mbox",
     )
     parser.add_argument(

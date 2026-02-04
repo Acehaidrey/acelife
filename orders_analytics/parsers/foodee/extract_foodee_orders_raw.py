@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Set
 import pandas as pd
 
 from orders_analytics.parsers.deliverycom.parse_deliverycom_orders import html_to_lines
-from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.normalize import normalize_datetime, normalize_money
 
 RAW_COLUMNS = [
@@ -338,7 +338,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract Foodee orders from mbox.")
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Orders-Foodee.mbox",
+        default=takeout_path("Mail", "Orders-Foodee.mbox"),
         help="Path to Orders-Foodee.mbox",
     )
     parser.add_argument(

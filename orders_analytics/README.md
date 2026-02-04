@@ -110,6 +110,7 @@ All order-level parsers should emit these columns in this order:
 ## Requirements Notes
 - MenuStar billings may arrive as `.xlsx`. Install extras:
   - `pip install -r orders_analytics/requirements.txt` (includes openpyxl)
+- Mbox inputs live under `Takeout/Mail` (configurable via `TAKEOUT_DIR` in `orders_analytics/utils/constants.py`).
 - Geocodio geocoding:
   - add `GEOCODE_API_KEY` to `.env`
   - cache stored at `orders_analytics/data/raw/geocode_cache.csv`

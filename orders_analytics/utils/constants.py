@@ -2,6 +2,7 @@ DEFAULT_DB_PATH = "orders_analytics/data/orders.duckdb"
 NORMALIZED_DIR = "orders_analytics/data/normalized"
 RAW_DIR = "orders_analytics/data/raw"
 ERRORS_PATH = "orders_analytics/data/errors/errors.csv"
+TAKEOUT_DIR = "Takeout"
 
 
 def raw_path(*parts: str) -> str:
@@ -10,6 +11,10 @@ def raw_path(*parts: str) -> str:
 
 def normalized_path(filename: str) -> str:
     return "/".join([NORMALIZED_DIR, filename])
+
+
+def takeout_path(*parts: str) -> str:
+    return "/".join([TAKEOUT_DIR, *parts])
 
 DATE_GRAINS = ["day", "month", "year"]
 

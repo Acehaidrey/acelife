@@ -9,6 +9,7 @@ import shutil
 from typing import Dict, List, Tuple
 
 import pandas as pd
+from orders_analytics.utils.constants import takeout_path
 
 
 def extract_html(msg) -> str:
@@ -162,7 +163,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Billings-Eatstreet.mbox",
+        default=takeout_path("Mail", "Billings-Eatstreet.mbox"),
         help="Path to Billings-Eatstreet.mbox",
     )
     parser.add_argument(

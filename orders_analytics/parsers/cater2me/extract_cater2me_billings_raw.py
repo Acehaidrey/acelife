@@ -10,7 +10,7 @@ from typing import Dict, List
 import pandas as pd
 import pdfplumber
 
-from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.normalize import normalize_money
 
 RAW_COLUMNS = [
@@ -257,7 +257,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract Cater2Me billing PDFs to raw CSV.")
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Billings-Cater2Me.mbox",
+        default=takeout_path("Mail", "Billings-Cater2Me.mbox"),
         help="Path to Billings-Cater2Me.mbox",
     )
     parser.add_argument(

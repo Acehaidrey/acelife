@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.normalize import normalize_datetime
 
@@ -382,7 +382,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract EatStreet orders mbox to raw CSV.")
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Orders-Eatstreet.mbox",
+        default=takeout_path("Mail", "Orders-Eatstreet.mbox"),
         help="Path to Orders-Eatstreet.mbox",
     )
     parser.add_argument(

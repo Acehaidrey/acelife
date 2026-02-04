@@ -10,7 +10,7 @@ from typing import Dict, List
 import pandas as pd
 import pdfplumber
 
-from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.normalize import normalize_datetime, normalize_money
 from orders_analytics.utils.providers import normalize_provider
 
@@ -209,7 +209,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract Office Caterer orders from mbox PDFs.")
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Orders-Office Caterer.mbox",
+        default=takeout_path("Mail", "Orders-Office Caterer.mbox"),
         help="Path to Orders-Office Caterer.mbox",
     )
     parser.add_argument(

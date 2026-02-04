@@ -13,6 +13,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.parsers.eatstreet.update_eatstreet_fees import parse_billings_mbox
+from orders_analytics.utils.constants import takeout_path
 
 
 def extract_html(msg) -> str:
@@ -344,10 +345,10 @@ class EatStreetOrdersParser(BaseParser):
         self.billings_mbox = billings_mbox or kwargs.get("billings_mbox")
 
     def default_input_path(self) -> str:
-        return "TakeoutESBM/Mail/Orders-Eatstreet.mbox"
+        return takeout_path("Mail", "Orders-Eatstreet.mbox")
 
     def default_billings_path(self) -> str:
-        return "TakeoutESBM/Mail/Billings-Eatstreet.mbox"
+        return takeout_path("Mail", "Billings-Eatstreet.mbox")
 
     def default_out_path(self) -> str:
         return "orders_analytics/data/normalized/eatstreet_orders_normalized.csv"

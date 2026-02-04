@@ -7,6 +7,7 @@ import os
 import re
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
+from orders_analytics.utils.constants import takeout_path
 
 
 def extract_parts(msg) -> Tuple[str, str]:
@@ -295,7 +296,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--mbox",
-        default="TakeoutESBM/Mail/Billings-BeyondMenu.mbox",
+        default=takeout_path("Mail", "Billings-BeyondMenu.mbox"),
         help="Path to Billings-BeyondMenu.mbox",
     )
     parser.add_argument(
