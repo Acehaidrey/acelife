@@ -200,21 +200,33 @@ def run_parse(
         return
     elif platform == "officecaterer":
         from orders_analytics.parsers.officecaterer import (
+            extract_officecaterer_billings_raw,
             extract_officecaterer_orders_raw,
             normalize_officecaterer_from_raw,
         )
         from orders_analytics.utils.constants import normalized_path, raw_path
 
         orders_mbox = input_path or extras.pop(
-            "orders_mbox", takeout_path("Mail", "Orders-Office Caterer.mbox")
+            "orders_mbox", takeout_path("Mail", "Orders-OfficeCaterer.mbox")
+        )
+        billings = billings_mbox or extras.pop(
+            "billings_mbox", takeout_path("Mail", "Billings-OfficeCaterer.mbox")
         )
         orders_raw = extras.pop("orders_raw", raw_path("officecaterer", "orders_raw.csv"))
+        billings_raw = extras.pop(
+            "billings_raw", raw_path("officecaterer", "billings_raw.csv")
+        )
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("officecaterer_orders_normalized.csv")
         )
         extract_officecaterer_orders_raw.run(orders_mbox, orders_raw)
-        normalize_officecaterer_from_raw.run(orders_raw, normalized_out)
-        print("[officecaterer] extracted raw orders and normalized.")
+        extract_officecaterer_billings_raw.run(billings, billings_raw)
+        normalize_officecaterer_from_raw.run(
+            orders_raw,
+            normalized_out,
+            billings_raw_path=billings_raw,
+        )
+        print("[officecaterer] extracted raw orders + billings and normalized.")
         return
     else:
         raise ValueError(f"Unknown platform: {platform}")
@@ -290,13 +302,16 @@ def run_extract(
         )
 
         extract_foodrunners_orders_raw.run(orders_mbox, orders_raw)
-        sales_xlsx = takeout_path("Mail", "foodrunners_202613021183548NetSales0.xlsx")
-        extract_foodrunners_billings_raw.run(billings_mbox, billings_raw, sales_xlsx)
+        extract_foodrunners_billings_raw.run(billings_mbox, billings_raw)
         return
     if platform == "officecaterer":
-        from orders_analytics.parsers.officecaterer import extract_officecaterer_orders_raw
+        from orders_analytics.parsers.officecaterer import (
+            extract_officecaterer_billings_raw,
+            extract_officecaterer_orders_raw,
+        )
 
         extract_officecaterer_orders_raw.run(orders_mbox, orders_raw)
+        extract_officecaterer_billings_raw.run(billings_mbox, billings_raw)
         return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
@@ -308,7 +323,11 @@ def run_normalize(
     orders_raw: Optional[str],
     billings_raw: Optional[str],
     extras: Dict[str, str],
+    reset_errors: bool = False,
 ) -> None:
+    if reset_errors:
+        extras = dict(extras)
+        extras["reset_errors"] = True
     if platform == "eatstreet":
         from orders_analytics.parsers.eatstreet import normalize_eatstreet_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
@@ -322,7 +341,9 @@ def run_normalize(
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("eatstreet_orders_normalized.csv")
         )
-        normalize_eatstreet_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        normalize_eatstreet_from_raw.run(
+            orders_raw_path, billings_raw_path, normalized_out, reset_errors=reset_errors
+        )
         print(f"[eatstreet] normalized -> {normalized_out}")
         return
     if platform == "cater2me":
@@ -338,7 +359,9 @@ def run_normalize(
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("cater2me_orders_normalized.csv")
         )
-        normalize_cater2me_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        normalize_cater2me_from_raw.run(
+            orders_raw_path, billings_raw_path, normalized_out, reset_errors=reset_errors
+        )
         print(f"[cater2me] normalized -> {normalized_out}")
         return
     if platform == "menustar":
@@ -354,7 +377,9 @@ def run_normalize(
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("menustar_orders_normalized.csv")
         )
-        normalize_menustar_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        normalize_menustar_from_raw.run(
+            orders_raw_path, billings_raw_path, normalized_out, reset_errors=reset_errors
+        )
         print(f"[menustar] normalized -> {normalized_out}")
         return
     if platform == "deliverycom":
@@ -370,7 +395,9 @@ def run_normalize(
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("deliverycom_orders_normalized.csv")
         )
-        normalize_deliverycom_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        normalize_deliverycom_from_raw.run(
+            orders_raw_path, billings_raw_path, normalized_out, reset_errors=reset_errors
+        )
         print(f"[deliverycom] normalized -> {normalized_out}")
         return
     if platform == "foodee":
@@ -390,7 +417,11 @@ def run_normalize(
             "normalized_out", normalized_path("foodee_orders_normalized.csv")
         )
         normalize_foodee_from_raw.run(
-            orders_raw_path, billings_raw_path, adjustments_raw_path, normalized_out
+            orders_raw_path,
+            billings_raw_path,
+            adjustments_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
         )
         print(f"[foodee] normalized -> {normalized_out}")
         return
@@ -407,7 +438,9 @@ def run_normalize(
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("foodrunners_orders_normalized.csv")
         )
-        normalize_foodrunners_from_raw.run(orders_raw_path, billings_raw_path, normalized_out)
+        normalize_foodrunners_from_raw.run(
+            orders_raw_path, billings_raw_path, normalized_out, reset_errors=reset_errors
+        )
         print(f"[foodrunners] normalized -> {normalized_out}")
         return
     if platform == "officecaterer":
@@ -417,10 +450,18 @@ def run_normalize(
         orders_raw_path = orders_raw or extras.pop(
             "orders_raw", raw_path("officecaterer", "orders_raw.csv")
         )
+        billings_raw_path = billings_raw or extras.pop(
+            "billings_raw", raw_path("officecaterer", "billings_raw.csv")
+        )
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("officecaterer_orders_normalized.csv")
         )
-        normalize_officecaterer_from_raw.run(orders_raw_path, normalized_out)
+        normalize_officecaterer_from_raw.run(
+            orders_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
+            billings_raw_path=billings_raw_path,
+        )
         print(f"[officecaterer] normalized -> {normalized_out}")
         return
     if platform == "beyondmenu":
@@ -805,10 +846,12 @@ def main() -> None:
             orders_raw = args.orders_raw or raw_path("foodrunners", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("foodrunners", "billings_raw.csv")
         elif args.platform == "officecaterer":
-            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Office Caterer.mbox")
-            billings_mbox = args.billings_mbox or ""
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-OfficeCaterer.mbox")
+            billings_mbox = args.billings_mbox or takeout_path(
+                "Mail", "Billings-OfficeCaterer.mbox"
+            )
             orders_raw = args.orders_raw or raw_path("officecaterer", "orders_raw.csv")
-            billings_raw = args.billings_raw or ""
+            billings_raw = args.billings_raw or raw_path("officecaterer", "billings_raw.csv")
         else:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")
@@ -818,7 +861,7 @@ def main() -> None:
     elif args.command == "normalize":
         from orders_analytics.utils.constants import ERRORS_PATH
 
-        if args.reset_errors and os.path.exists(ERRORS_PATH):
+        if args.reset_errors and args.platform == "all" and os.path.exists(ERRORS_PATH):
             os.remove(ERRORS_PATH)
             print(f"Deleted {ERRORS_PATH}")
         platforms: List[str]
@@ -835,6 +878,7 @@ def main() -> None:
                 args.orders_raw,
                 args.billings_raw,
                 dict(base_extras),
+                reset_errors=args.reset_errors,
             )
     elif args.command == "geocode":
         platforms: List[str]

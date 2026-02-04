@@ -60,7 +60,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 "adjustments": "",
                 "marketing_fee": "",
                 "misc_fee": "",
-                "errors": "",
+                "errors": row.get("errors", ""),
                 "notes": row.get("notes", ""),
             }
         )
@@ -78,16 +78,61 @@ class OfficeCatererNormalizer(BaseParser):
         return normalized_path("officecaterer_orders_normalized.csv")
 
     def load_inputs(self, input_path: str):
-        return load_raw(input_path)
+        billings_path = self.extra.get("billings_raw") or raw_path(
+            "officecaterer", "billings_raw.csv"
+        )
+        return {
+            "orders_raw": load_raw(input_path),
+            "billings_raw": load_raw(billings_path),
+        }
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
-        return normalize_rows(inputs.to_dict("records"))
+        orders = inputs["orders_raw"].to_dict("records")
+        billings = inputs["billings_raw"].to_dict("records")
+        if billings:
+            billings_map = {str(row.get("order_id", "")).strip(): row for row in billings}
+            for row in orders:
+                order_id = str(row.get("order_id", "")).strip()
+                billing = billings_map.get(order_id)
+                if not billing:
+                    continue
+                mismatches = []
+                for field in ("subtotal", "tax"):
+                    order_val = row.get(field, "")
+                    billing_val = billing.get(field, "")
+                    if billing_val:
+                        row[field] = billing_val
+                    if order_val and billing_val and order_val != billing_val:
+                        mismatches.append(
+                            f"{field} mismatch (orders={order_val}, billings={billing_val})"
+                        )
+                if billing.get("restaurant_name") and not row.get("restaurant_name"):
+                    row["restaurant_name"] = billing.get("restaurant_name")
+                if billing.get("provider") and not row.get("provider"):
+                    row["provider"] = billing.get("provider")
+                notes = []
+                for key in ("statement_date", "period_start", "period_end", "payout", "statement_id"):
+                    value = billing.get(key, "")
+                    if value:
+                        notes.append(f"{key}={value}")
+                if notes:
+                    row["notes"] = " | ".join([row.get("notes", ""), *notes]).strip(" |")
+                if mismatches:
+                    row["errors"] = " | ".join([row.get("errors", ""), *mismatches]).strip(" |")
+        return normalize_rows(orders)
 
 
-def run(orders_raw_path: str, out_path: str) -> int:
+def run(
+    orders_raw_path: str,
+    out_path: str,
+    reset_errors: bool = False,
+    billings_raw_path: str = "",
+) -> int:
     parser = OfficeCatererNormalizer(
         input_path=orders_raw_path,
         out_path=out_path,
+        billings_raw=billings_raw_path or raw_path("officecaterer", "billings_raw.csv"),
+        reset_errors=reset_errors,
     )
     stats = parser.run()
     print(f"Wrote {stats.rows_written} rows to {parser.resolve_paths()[1]}")
@@ -106,8 +151,13 @@ def main() -> None:
         default=normalized_path("officecaterer_orders_normalized.csv"),
         help="Output normalized CSV path.",
     )
+    parser.add_argument(
+        "--billings-raw",
+        default=raw_path("officecaterer", "billings_raw.csv"),
+        help="Path to Office Caterer billings raw CSV.",
+    )
     args = parser.parse_args()
-    run(args.orders_raw, args.out)
+    run(args.orders_raw, args.out, billings_raw_path=args.billings_raw)
 
 
 if __name__ == "__main__":

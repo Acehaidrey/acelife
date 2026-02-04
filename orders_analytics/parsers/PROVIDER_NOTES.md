@@ -55,13 +55,14 @@ Concerns / follow-ups:
 - Notes: `Restaurant Instructions` block (if present)
 - Billings parser: `parsers/foodrunners/extract_foodrunners_billings_raw.py` (PDF payments summary)
   - Pulls per-order `subtotal` and `tax` from statement table.
-  - Captures commission/merchant fee and payout only when statement has a single order.
+  - Allocates statement commission (25%) and merchant fee (2%) across all orders by subtotal, with round-robin cents to match the statement totals exactly.
+  - Applies statement payout (`Balance pay`) and settlement ID to each order row.
 - Normalization merges billings and overrides `subtotal/tax` when available; mismatches recorded in `errors`.
  - All orders are pickup.
  - Manual cancellations live in `data/raw/foodrunners/cancellations_raw.csv` and are removed from normalized output.
 
 ## Office Caterer
-- Source: `Takeout/Mail/Orders-Office Caterer.mbox` (PDF attachments)
+- Sources: `Takeout/Mail/Orders-OfficeCaterer.mbox`, `Takeout/Mail/Billings-OfficeCaterer.mbox` (PDF attachments)
 - Parser: `parsers/officecaterer/extract_officecaterer_orders_raw.py`
   - Order ID: `P.O. NO.`
   - Order date/time: `DATE` + `PICK UP TIME`
@@ -69,3 +70,6 @@ Concerns / follow-ups:
   - Total: `TOTAL $...`
   - Subtotal: sum of line-item amounts if possible, else `total - tax`
   - Commission: Office Caterer charges a flat 30% on subtotal; we split as 27% commission + 3% processing (both negative) in normalized output.
+- Billings parser: `parsers/officecaterer/extract_officecaterer_billings_raw.py`
+  - Pulls per-order `amount` (subtotal), `tax`, `commission`, and `payable amount` from statement PDFs.
+  - Captures statement date, period start/end, and restaurant name.
