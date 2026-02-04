@@ -106,23 +106,39 @@ def extract_header_fields(html_text: str) -> Dict[str, str]:
     if not type_match:
         return fields
 
-    td_match = re.search(
-        r"<td[^>]*>(?:(?!</td>).)*(DELIVERY|PICKUP)(?:(?!</td>).)*</td>",
-        html_text,
-        re.IGNORECASE | re.DOTALL,
-    )
-    if not td_match:
-        fields["order_type"] = type_match.group(1).strip().lower()
+    td_blocks = re.findall(r"<td[^>]*>.*?</td>", html_text, re.IGNORECASE | re.DOTALL)
+    candidate_spans = []
+    for block in td_blocks:
+        if not re.search(r"\b(DELIVERY|PICKUP)\b", block, re.IGNORECASE):
+            continue
+        spans = extract_spans_from_block(block)
+        if not spans:
+            continue
+        first = spans[0].strip().lower()
+        if first in ("pickup", "delivery"):
+            candidate_spans.append(spans)
+
+    selected = None
+    for spans in candidate_spans:
+        if len(spans) < 2:
+            continue
+        second = spans[1].strip().lower()
+        if "pickup" in second or "delivery" in second or "order ready" in second:
+            continue
+        selected = spans
+        break
+    if not selected and candidate_spans:
+        selected = candidate_spans[0]
+
+    if selected:
+        fields["order_type"] = selected[0].strip().lower()
+        if len(selected) > 1:
+            fields["restaurant"] = selected[1]
+        if len(selected) > 2:
+            fields["order_date"] = selected[2]
         return fields
 
-    spans = extract_spans_from_block(td_match.group(0))
-    if spans:
-        order_type = spans[0].strip().lower()
-        fields["order_type"] = order_type
-        if len(spans) > 1:
-            fields["restaurant"] = spans[1]
-        if len(spans) > 2:
-            fields["order_date"] = spans[2]
+    fields["order_type"] = type_match.group(1).strip().lower()
     return fields
 
 

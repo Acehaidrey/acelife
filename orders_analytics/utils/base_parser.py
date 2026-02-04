@@ -4,7 +4,7 @@ import os
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from orders_analytics.utils.errors import reconcile_errors
+from orders_analytics.utils.errors import reconcile_errors, clear_errors_for_platform
 from orders_analytics.utils.schema import canonicalize_rows, write_normalized_rows
 from orders_analytics.utils.validation import (
     normalize_order_type,
@@ -46,6 +46,7 @@ class BaseParser:
         self.input_path = input_path
         self.out_path = out_path
         self.stats = ParseStats()
+        self.reset_errors = bool(kwargs.pop("reset_errors", False))
         self.extra = kwargs
 
     def default_input_path(self) -> str:
@@ -160,6 +161,8 @@ class BaseParser:
         rows = canonicalize_rows(rows)
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
         write_normalized_rows(rows, out_path)
+        if self.reset_errors:
+            clear_errors_for_platform(ERRORS_PATH, self.platform)
         reconcile_errors(self.stats.errors, ERRORS_PATH)
         self.stats.rows_written = len(rows)
         return self.stats

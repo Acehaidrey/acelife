@@ -6,16 +6,14 @@ from typing import Dict, List
 
 import pandas as pd
 
+from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
 
-from orders_analytics.utils.schema import write_normalized_rows
 from orders_analytics.utils.validation import normalize_order_type, validate_tax_fields
-from orders_analytics.utils.errors import reconcile_errors
-from orders_analytics.utils.constants import ERRORS_PATH
 
 
 def load_raw(path: str) -> pd.DataFrame:
-    if not os.path.exists(path):
+    if not path or not os.path.exists(path):
         return pd.DataFrame()
     return pd.read_csv(path, dtype=str).fillna("")
 
@@ -76,6 +74,13 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         if not commission_fee and subtotal is not None:
             commission_fee = str((subtotal * Decimal("0.15")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
             notes.append("commission_fee_estimated_15pct_subtotal")
+        if commission_fee:
+            try:
+                fee_val = Decimal(str(commission_fee))
+                if fee_val > 0:
+                    commission_fee = str((-fee_val).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+            except InvalidOperation:
+                pass
 
         if payment_type == "credit":
             if not processing_fee and subtotal is not None:
@@ -84,6 +89,14 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         else:
             if not processing_fee:
                 processing_fee = "0.00"
+
+        if processing_fee:
+            try:
+                fee_val = Decimal(str(processing_fee))
+                if fee_val > 0:
+                    processing_fee = str((-fee_val).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+            except InvalidOperation:
+                pass
 
         if notes:
             notes.append("verify_with_platform")
@@ -123,19 +136,52 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     return normalized
 
 
-def run(orders_raw_path: str, billings_raw_path: str, out_path: str) -> int:
-    orders_raw = load_raw(orders_raw_path)
-    billings_raw = load_raw(billings_raw_path)
-    rows = merge_raw(orders_raw, billings_raw)
-    normalized = normalize_rows(rows)
-    if not normalized:
-        print("No rows to normalize.")
-        return 0
-    normalized, errors = validate_tax_fields(normalized, source=out_path)
-    write_normalized_rows(normalized, out_path)
-    reconcile_errors(errors, ERRORS_PATH)
-    print(f"Wrote {len(normalized)} rows to {out_path}")
-    return len(normalized)
+class EatstreetNormalizer(BaseParser):
+    platform = "EATSTREET"
+    provider = ""
+
+    def default_input_path(self) -> str:
+        return raw_path("eatstreet", "orders_raw.csv")
+
+    def default_out_path(self) -> str:
+        return normalized_path("eatstreet_orders_normalized.csv")
+
+    def load_inputs(self, input_path: str):
+        billings_path = self.extra.get("billings_raw") or raw_path(
+            "eatstreet", "billings_raw.csv"
+        )
+        return {
+            "orders_raw": load_raw(input_path),
+            "billings_raw": load_raw(billings_path),
+        }
+
+    def parse_rows(self, inputs) -> List[Dict[str, str]]:
+        rows = merge_raw(inputs["orders_raw"], inputs["billings_raw"])
+        return normalize_rows(rows)
+
+    def post_process(self, rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
+        rows = super().post_process(rows)
+        rows, errors = validate_tax_fields(rows, source=self.resolve_paths()[1])
+        if errors:
+            self.stats.errors.extend(errors)
+        return rows
+
+
+def run(
+    orders_raw_path: str,
+    billings_raw_path: str,
+    out_path: str,
+    reset_errors: bool = False,
+) -> int:
+    parser = EatstreetNormalizer(
+        input_path=orders_raw_path,
+        out_path=out_path,
+        billings_raw=billings_raw_path,
+        reset_errors=reset_errors,
+    )
+    stats = parser.run()
+    print(f"Wrote {stats.rows_written} rows to {parser.resolve_paths()[1]}")
+    return stats.rows_written
 
 
 def main() -> None:

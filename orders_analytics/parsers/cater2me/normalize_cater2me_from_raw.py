@@ -146,11 +146,17 @@ class Cater2MeNormalizer(BaseParser):
         return normalize_rows(rows)
 
 
-def run(orders_raw_path: str, billings_raw_path: str, out_path: str) -> int:
+def run(
+    orders_raw_path: str,
+    billings_raw_path: str,
+    out_path: str,
+    reset_errors: bool = False,
+) -> int:
     parser = Cater2MeNormalizer(
         orders_raw_path=orders_raw_path,
         billings_raw_path=billings_raw_path,
         out_path=out_path,
+        reset_errors=reset_errors,
     )
     stats = parser.run()
     print(f"Wrote {stats.rows_written} rows to {parser.resolve_paths()[1]}")

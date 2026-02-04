@@ -111,3 +111,14 @@ def reconcile_errors(errors: List[Dict[str, str]], path: str) -> int:
     df = df.reindex(columns=ERROR_COLUMNS, fill_value="")
     df.to_csv(path, index=False)
     return inserted
+
+
+def clear_errors_for_platform(path: str, platform: str) -> None:
+    platform_key = str(platform or "").strip().upper()
+    if not platform_key or not os.path.exists(path):
+        return
+    df = pd.read_csv(path, dtype=str).fillna("")
+    if "platform" not in df.columns:
+        return
+    df = df[df["platform"].str.upper() != platform_key]
+    df.to_csv(path, index=False)
