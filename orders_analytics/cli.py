@@ -313,6 +313,14 @@ def run_extract(
         extract_officecaterer_orders_raw.run(orders_mbox, orders_raw)
         extract_officecaterer_billings_raw.run(billings_mbox, billings_raw)
         return
+    if platform == "menufy":
+        from orders_analytics.parsers.menufy import extract_menufy_orders_raw
+
+        orders_root = "Takeout/Menufy/orders"
+        emails_csv = "Takeout/Menufy/Customer_Emails_02-05-2026.csv"
+        addresses_csv = "Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv"
+        extract_menufy_orders_raw.run(orders_root, orders_raw, emails_csv, addresses_csv)
+        return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
 
@@ -464,6 +472,21 @@ def run_normalize(
         )
         print(f"[officecaterer] normalized -> {normalized_out}")
         return
+    if platform == "menufy":
+        from orders_analytics.parsers.menufy import normalize_menufy_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("menufy", "orders_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("menufy_orders_normalized.csv")
+        )
+        normalize_menufy_from_raw.run(
+            orders_raw_path, normalized_out, reset_errors=reset_errors
+        )
+        print(f"[menufy] normalized -> {normalized_out}")
+        return
     if platform == "beyondmenu":
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
             BeyondMenuOrdersParser,
@@ -519,8 +542,17 @@ def run_geocode(
     counts_out: Optional[str],
 ) -> None:
     import pandas as pd
+    import os
 
     from orders_analytics.utils.geocodio import geocode_addresses, normalize_key, write_cache
+    from orders_analytics.utils.geocodio import _load_env
+
+    _load_env()
+
+    if not cache_only:
+        key = api_key or os.getenv("GEOCODE_API_KEY", "").strip()
+        if not key:
+            raise ValueError("GEOCODE_API_KEY is required unless --cache-only is set.")
 
     df = pd.read_csv(input_path, dtype=str).fillna("")
     cache = geocode_addresses(
@@ -641,7 +673,7 @@ def main() -> None:
     )
     extract_cmd.add_argument(
         "--platform",
-        choices=Platforms.mbox_platforms(),
+        choices=[*Platforms.mbox_platforms(), "menufy"],
         default="eatstreet",
         help="Platform to extract.",
     )
@@ -852,6 +884,11 @@ def main() -> None:
             )
             orders_raw = args.orders_raw or raw_path("officecaterer", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("officecaterer", "billings_raw.csv")
+        elif args.platform == "menufy":
+            orders_mbox = args.orders_mbox or ""
+            billings_mbox = args.billings_mbox or ""
+            orders_raw = args.orders_raw or raw_path("menufy", "orders_raw.csv")
+            billings_raw = args.billings_raw or ""
         else:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")

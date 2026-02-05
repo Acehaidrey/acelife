@@ -113,3 +113,14 @@ Concerns / follow-ups:
 - Billings parser: `parsers/officecaterer/extract_officecaterer_billings_raw.py`
   - Pulls per-order `amount` (subtotal), `tax`, `commission`, and `payable amount` from statement PDFs.
   - Captures statement date, period start/end, and restaurant name.
+
+## Menufy
+- Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
+- Customers: `Takeout/Menufy/Customer_Emails_02-05-2026.csv`, `Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv`
+- Refunds: `Takeout/Menufy/orders/**/Refunds.csv` (matched by date + location + customer name)
+- Parser: `parsers/menufy/extract_menufy_orders_raw.py`
+  - Payment type: “Paid Online” → credit, “Paid In‑Store” → cash.
+  - Order type: delivery if `Customer Carryout or Delivery Charge` > 0, else pickup.
+  - Refunds: stored as `adjustments` with `notes=refund`.
+  - Customer email/address matched by phone if available, else by full name.
+  - `order_id` is a deterministic hash of date+location+customer+amounts+payment_type (since Menufy exports lack order ids).

@@ -13,6 +13,7 @@ class Platforms:
     FOODEE = "foodee"
     FOODRUNNERS = "foodrunners"
     OFFICECATERER = "officecaterer"
+    MENUFY = "menufy"
 
     @classmethod
     def all_platforms(cls) -> list[str]:
@@ -28,11 +29,12 @@ class Platforms:
             cls.FOODEE,
             cls.FOODRUNNERS,
             cls.OFFICECATERER,
+            cls.MENUFY,
         ]
 
     @classmethod
     def csv_platforms(cls) -> list[str]:
-        return [cls.BEYONDMENU, cls.FOODJA, cls.FOODA, cls.EZCATER]
+        return [cls.BEYONDMENU, cls.FOODJA, cls.FOODA, cls.EZCATER, cls.MENUFY]
 
     @classmethod
     def mbox_platforms(cls) -> list[str]:
