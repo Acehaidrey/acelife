@@ -209,8 +209,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract Office Caterer orders from mbox PDFs.")
     parser.add_argument(
         "--mbox",
-        default=takeout_path("Mail", "Orders-Office Caterer.mbox"),
-        help="Path to Orders-Office Caterer.mbox",
+        default=takeout_path("Mail", "Orders-OfficeCaterer.mbox"),
+        help="Path to Orders-OfficeCaterer.mbox",
     )
     parser.add_argument(
         "--out",
