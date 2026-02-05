@@ -121,6 +121,14 @@ Concerns / follow-ups:
 - Parser: `parsers/menufy/extract_menufy_orders_raw.py`
   - Payment type: “Paid Online” → credit, “Paid In‑Store” → cash.
   - Order type: delivery if `Customer Carryout or Delivery Charge` > 0, else pickup.
-  - Refunds: stored as `adjustments` with `notes=refund`.
+  - Refunds: stored as `adjustments` with `notes=refund=<amount>`.
   - Customer email/address matched by phone if available, else by full name.
   - `order_id` is a deterministic hash of date+location+customer+amounts+payment_type (since Menufy exports lack order ids).
+ - Normalizer: `parsers/menufy/normalize_menufy_from_raw.py`
+   - `upcharges` + `customer_fees` → `adjustments` (positive).
+   - `customer_fees` → `commission_fee` (negative).
+   - `restaurant_fees` → `processing_fee` (negative).
+   - `delivery_service` → `misc_fee`.
+   - `tax_withholdings` → `tax_withheld`.
+   - `tax_payout` should match `tax`; mismatch adds `errors=tax_payout_mismatch`.
+   - `total_payout` is appended to `notes` (e.g., `total_payout=15.35`).
