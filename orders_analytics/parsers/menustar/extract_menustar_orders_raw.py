@@ -4,6 +4,7 @@ import datetime as dt
 import mailbox
 import os
 import re
+from email.utils import parsedate_to_datetime
 from typing import Dict, List
 
 import pandas as pd
@@ -46,7 +47,7 @@ def next_nonempty(lines: List[str], start: int) -> str:
     return ""
 
 
-def parse_datetime(text: str) -> str:
+def parse_datetime(text: str, default_year: str = "") -> str:
     # Example: "Estimated Pickup Time: 5:39 - 5:49 PM Nov.5, 2024"
     match = re.search(
         r"Estimated\s+(Pickup|Delivery)\s+Time:\s*(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})\s*(AM|PM)\s*([A-Za-z]+)\.?\s*(\d{1,2}),\s*(\d{4})",
@@ -64,6 +65,22 @@ def parse_datetime(text: str) -> str:
                 return dt.datetime.strptime(raw, fmt).isoformat()
             except ValueError:
                 continue
+    # Example: "Estimated Delivery Time: Fri - Nov06 12:00 PM"
+    match = re.search(
+        r"Estimated\s+(Pickup|Delivery)\s+Time:\s*[A-Za-z]+\s*-\s*([A-Za-z]+)\.?\s*(\d{1,2})\s*(\d{1,2}:\d{2})\s*(AM|PM)",
+        text,
+        re.IGNORECASE,
+    )
+    if match and default_year:
+        month = match.group(2)
+        day = match.group(3)
+        time_part = f"{match.group(4)} {match.group(5)}"
+        raw = f"{month} {day} {default_year} {time_part}"
+        for fmt in ("%b %d %Y %I:%M %p", "%B %d %Y %I:%M %p"):
+            try:
+                return dt.datetime.strptime(raw, fmt).isoformat()
+            except ValueError:
+                continue
     return ""
 
 
@@ -75,7 +92,7 @@ def parse_order_type(text: str) -> str:
     return ""
 
 
-def parse_order(html: str, subject: str) -> Dict[str, str]:
+def parse_order(html: str, subject: str, msg_date: str) -> Dict[str, str]:
     text = strip_html(html)
     lines = [l for l in text.splitlines()]
     order_id = ""
@@ -96,7 +113,13 @@ def parse_order(html: str, subject: str) -> Dict[str, str]:
     provider = normalize_provider(restaurant)
 
     order_type = parse_order_type(text)
-    order_datetime = parse_datetime(text)
+    default_year = ""
+    if msg_date:
+        try:
+            default_year = str(parsedate_to_datetime(msg_date).year)
+        except Exception:
+            default_year = ""
+    order_datetime = parse_datetime(text, default_year=default_year)
 
     customer_name = ""
     phone = ""
@@ -209,6 +232,7 @@ def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
         subject = msg.get("subject", "")
+        msg_date = msg.get("date", "")
         html = ""
         if msg.is_multipart():
             for part in msg.walk():
@@ -217,7 +241,7 @@ def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
                     html = payload.decode(errors="ignore")
                     break
         if html.strip():
-            row = parse_order(html, subject)
+            row = parse_order(html, subject, msg_date)
             if row.get("order_id"):
                 rows.append(row)
     return rows

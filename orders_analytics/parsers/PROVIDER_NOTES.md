@@ -88,11 +88,18 @@ Concerns / follow-ups:
 - Billings parser: `parsers/menustar/extract_menustar_billings_raw.py` (CSV/XLSX attachments)
   - Statement summary fields captured: all orders, prepaid orders, fees, adjustments, net payout.
   - Statement fees are allocated across orders by subtotal with round‑robin cents to match statement totals.
+  - Filters out non‑Aroma Ameci locations: allows `Ameci Pizza & Pasta` (plain), allows numeric suffixes (e.g., “(1)”), allows `(...Trabuco...)`, and excludes known other locations (Castaic, Newhall, Woodland Hills, San Fernando, Mission Blvd).
+  - Dedupes statement rows by provider + order_datetime + order_type + payment_type + amounts (subtotal/tax/delivery_fee/tip/total). Date string is normalized before comparison.
+  - When duplicate rows collide, prefers the row with the most non‑blank fields; if tied, prefers the latest `statement_email_date`.
+  - Skipped statements are printed with email date + filename for audit.
 - Normalizer: `parsers/menustar/normalize_menustar_from_raw.py`
-  - Billings do not include order_id; matching uses provider + order_date and best‑match on amounts/order type/payment type.
+  - Billings do not include order_id; matching uses provider + order_date and strict amount/type/payment matching.
+  - Second‑pass matching fixes bad billing dates: for unmatched orders and billings, matches on strict amounts/types and closest date, then records `notes=order_date=... billing_date=...` and uses order date for normalized output.
+  - Writes back matched order_id into `billings_raw.csv` for audit.
   - Commission is 70% of MenuStar fees and processing is 30% (cash orders get commission only).
   - Drops rows with missing order_id after merge (billing‑only rows with no match).
-  - Statement adjustments are statement‑level and currently copied into each matched order row.
+  - Statement adjustments are statement‑level; applied once per statement to a single matched order with `notes=statement_adjustment_applied`.
+  - Missing-match reports are written to `data/raw/menustar/orders_missing_billings.csv` and `data/raw/menustar/billings_missing_orders.csv` (rows with all zero/blank amounts are filtered).
 
 ## Office Caterer
 - Sources: `Takeout/Mail/Orders-OfficeCaterer.mbox`, `Takeout/Mail/Billings-OfficeCaterer.mbox` (PDF attachments)

@@ -2,6 +2,7 @@
 import argparse
 import os
 from datetime import datetime
+import datetime as dt
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Dict, List, Tuple, Optional
 
@@ -173,6 +174,35 @@ def merge_rows(
 
     merged: List[Dict[str, str]] = []
     unmatched_billings: List[Dict[str, str]] = []
+    def strict_match(row: Dict[str, str], candidate: Dict[str, str]) -> bool:
+        billing_amounts = {
+            "subtotal": parse_decimal(row.get("subtotal", "")),
+            "tax": parse_decimal(row.get("tax", "")),
+            "delivery_fee": parse_decimal(row.get("delivery_fee", "")),
+            "tip": parse_decimal(row.get("tip", "")),
+            "total": parse_decimal(row.get("total", "")),
+        }
+        candidate_amounts = {
+            "subtotal": parse_decimal(candidate.get("subtotal", "")),
+            "tax": parse_decimal(candidate.get("tax", "")),
+            "delivery_fee": parse_decimal(candidate.get("delivery_fee", "")),
+            "tip": parse_decimal(candidate.get("tip", "")),
+            "total": parse_decimal(candidate.get("total", "")),
+        }
+        for field in ("subtotal", "tax", "delivery_fee", "tip", "total"):
+            if billing_amounts[field] is None or candidate_amounts[field] is None:
+                continue
+            if not amount_equal(billing_amounts[field], candidate_amounts[field]):
+                return False
+        billing_order_type = normalize_order_type(str(row.get("order_type", ""))).strip()
+        candidate_order_type = normalize_order_type(str(candidate.get("order_type", ""))).strip()
+        if billing_order_type and candidate_order_type and billing_order_type != candidate_order_type:
+            return False
+        billing_payment_type = normalize_payment_type(str(row.get("payment_type", ""))).strip()
+        candidate_payment_type = normalize_payment_type(str(candidate.get("payment_type", ""))).strip()
+        if billing_payment_type and candidate_payment_type and billing_payment_type != candidate_payment_type:
+            return False
+        return True
     for row in billing_rows:
         key = (
             normalize_provider_key(row.get("provider", "")),
@@ -203,18 +233,30 @@ def merge_rows(
                 "tip": parse_decimal(candidate.get("tip", "")),
                 "total": parse_decimal(candidate.get("total", "")),
             }
+            strict_ok = True
             for field in ("subtotal", "tax", "delivery_fee", "tip", "total"):
-                if amount_equal(billing_amounts[field], candidate_amounts[field]):
-                    score += 2
+                if billing_amounts[field] is None or candidate_amounts[field] is None:
+                    continue
+                if not amount_equal(billing_amounts[field], candidate_amounts[field]):
+                    strict_ok = False
+                    break
+                score += 2
 
             candidate_order_type = normalize_order_type(str(candidate.get("order_type", ""))).strip()
             if billing_order_type and candidate_order_type and billing_order_type == candidate_order_type:
                 score += 1
+            elif billing_order_type and candidate_order_type and billing_order_type != candidate_order_type:
+                strict_ok = False
             candidate_payment_type = normalize_payment_type(
                 str(candidate.get("payment_type", ""))
             ).strip()
             if billing_payment_type and candidate_payment_type and billing_payment_type == candidate_payment_type:
                 score += 1
+            elif billing_payment_type and candidate_payment_type and billing_payment_type != candidate_payment_type:
+                strict_ok = False
+
+            if not strict_ok:
+                continue
 
             total_diff = None
             if billing_amounts["total"] is not None and candidate_amounts["total"] is not None:
@@ -256,6 +298,78 @@ def merge_rows(
         else:
             unmatched_billings.append(row)
         merged.append({**row, **{f"{k}_order": v for k, v in order.items()}})
+    # Second pass: match remaining orders to remaining billings by strict amounts/types and closest date.
+    if unmatched_billings:
+        def parse_dt(value: str) -> Optional[dt.datetime]:
+            if not value:
+                return None
+            try:
+                return dt.datetime.fromisoformat(value.replace("Z", "+00:00"))
+            except ValueError:
+                for fmt in ("%m/%d/%Y %H:%M:%S", "%m/%d/%Y %H:%M"):
+                    try:
+                        return dt.datetime.strptime(value, fmt)
+                    except ValueError:
+                        continue
+            return None
+
+        def billing_key(row: Dict[str, str]) -> str:
+            return "|".join(
+                [
+                    str(row.get("provider", "")).strip(),
+                    str(row.get("order_datetime", "")).strip(),
+                    str(row.get("order_type", "")).strip(),
+                    str(row.get("payment_type", "")).strip(),
+                    str(row.get("subtotal", "")).strip(),
+                    str(row.get("tax", "")).strip(),
+                    str(row.get("delivery_fee", "")).strip(),
+                    str(row.get("tip", "")).strip(),
+                    str(row.get("total", "")).strip(),
+                ]
+            )
+
+        merged_index = {billing_key(row): row for row in merged}
+        unmatched_orders = []
+        for candidates in orders_by_day.values():
+            unmatched_orders.extend(candidates)
+        remaining_billings = list(unmatched_billings)
+        still_unmatched_orders: List[Dict[str, str]] = []
+
+        for order in unmatched_orders:
+            order_provider = normalize_provider_key(order.get("provider", ""))
+            order_dt = parse_dt(str(order.get("order_datetime", "")))
+            best_idx = None
+            best_diff = None
+            for idx, billing in enumerate(remaining_billings):
+                if normalize_provider_key(billing.get("provider", "")) != order_provider:
+                    continue
+                if not strict_match(billing, order):
+                    continue
+                billing_dt = parse_dt(str(billing.get("order_datetime", "")))
+                if order_dt and billing_dt:
+                    diff = abs((order_dt - billing_dt).total_seconds())
+                else:
+                    diff = float("inf")
+                if best_diff is None or diff < best_diff:
+                    best_diff = diff
+                    best_idx = idx
+            if best_idx is None:
+                still_unmatched_orders.append(order)
+                continue
+            billing = remaining_billings.pop(best_idx)
+            key = billing_key(billing)
+            target = merged_index.get(key)
+            note = f"order_date={order.get('order_datetime','')} billing_date={billing.get('order_datetime','')}"
+            if target is not None:
+                for k, v in order.items():
+                    target[f"{k}_order"] = v
+                target["date_mismatch_note"] = note
+            else:
+                merged.append({**billing, **{f"{k}_order": v for k, v in order.items()}, "date_mismatch_note": note})
+        unmatched_billings = remaining_billings
+        unmatched_orders = still_unmatched_orders
+        return merged, unmatched_billings, unmatched_orders
+
     unmatched_orders: List[Dict[str, str]] = []
     for candidates in orders_by_day.values():
         unmatched_orders.extend(candidates)
@@ -284,6 +398,9 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 adjustments_seen.add(statement_key)
                 adjustments_value = statement_adjustment
                 notes = "statement_adjustment_applied"
+        if row.get("date_mismatch_note"):
+            note = row.get("date_mismatch_note", "")
+            notes = " | ".join([notes, note]).strip(" |")
         normalized.append(
             {
                 "order_id": row.get("order_id_order", ""),
@@ -355,6 +472,43 @@ class MenuStarNormalizer(BaseParser):
         rows, unmatched_billings, unmatched_orders = merge_rows(
             inputs["orders_raw"], inputs["billings_raw"]
         )
+        # Write back matched order_id into billings_raw for audit.
+        billings_path = self.extra.get("billings_raw") or raw_path("menustar", "billings_raw.csv")
+        if not inputs["billings_raw"].empty:
+            billings_df = inputs["billings_raw"].copy()
+
+            def billing_key(row: Dict[str, str]) -> str:
+                return "|".join(
+                    [
+                        str(row.get("provider", "")).strip(),
+                        str(row.get("order_datetime", "")).strip(),
+                        str(row.get("order_type", "")).strip(),
+                        str(row.get("payment_type", "")).strip(),
+                        str(row.get("subtotal", "")).strip(),
+                        str(row.get("tax", "")).strip(),
+                        str(row.get("delivery_fee", "")).strip(),
+                        str(row.get("tip", "")).strip(),
+                        str(row.get("total", "")).strip(),
+                    ]
+                )
+
+            match_map = {
+                billing_key(row): row.get("order_id_order", "")
+                for row in rows
+                if str(row.get("order_id_order", "")).strip()
+            }
+            updated = False
+            for idx, row in billings_df.iterrows():
+                key = billing_key(row)
+                match_id = match_map.get(key, "")
+                if not match_id:
+                    continue
+                current = str(row.get("order_id", "") or "").strip()
+                if current != match_id:
+                    billings_df.at[idx, "order_id"] = match_id
+                    updated = True
+            if updated:
+                billings_df.to_csv(billings_path, index=False)
         if unmatched_orders:
             orders_report = [
                 {
@@ -367,6 +521,14 @@ class MenuStarNormalizer(BaseParser):
                     "total": row.get("total", ""),
                 }
                 for row in unmatched_orders
+            ]
+            orders_report = [
+                row
+                for row in orders_report
+                if any(
+                    str(row.get(field, "")).strip() not in ("", "0", "0.00")
+                    for field in ("subtotal", "tax", "total")
+                )
             ]
             orders_path = raw_path("menustar", "orders_missing_billings.csv")
             pd.DataFrame(orders_report).to_csv(orders_path, index=False)
@@ -382,6 +544,14 @@ class MenuStarNormalizer(BaseParser):
                     "statement_source_file": row.get("statement_source_file", ""),
                 }
                 for row in unmatched_billings
+            ]
+            billings_report = [
+                row
+                for row in billings_report
+                if any(
+                    str(row.get(field, "")).strip() not in ("", "0", "0.00")
+                    for field in ("subtotal", "tax", "total")
+                )
             ]
             billings_path = raw_path("menustar", "billings_missing_orders.csv")
             pd.DataFrame(billings_report).to_csv(billings_path, index=False)

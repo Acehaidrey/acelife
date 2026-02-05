@@ -6,8 +6,9 @@ import io
 import mailbox
 import os
 import re
+from email.utils import parsedate_to_datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import pandas as pd
 
@@ -27,6 +28,7 @@ RAW_COLUMNS = [
     "delivery_fee",
     "tip",
     "total",
+    "statement_email_date",
     "statement_all_orders",
     "statement_prepaid_orders",
     "statement_menustar_fees",
@@ -37,8 +39,36 @@ RAW_COLUMNS = [
     "added_at",
 ]
 
+FORBIDDEN_AMECI_LOCATIONS = [
+    "castaic",
+    "newhall",
+    "woodland hills",
+    "san fernando",
+    "mission blvd",
+]
 
-def parse_csv_rows(text: str, provider: str, filename: str) -> List[Dict[str, str]]:
+
+def allowed_menustar_restaurant(name: str) -> tuple[bool, str]:
+    text = str(name or "").strip()
+    lowered = text.lower()
+    if "ameci pizza & pasta" not in lowered:
+        return True, ""
+    if any(loc in lowered for loc in FORBIDDEN_AMECI_LOCATIONS):
+        return False, "forbidden_ameci_location"
+    paren_match = re.search(r"\(([^)]*)\)", text)
+    if paren_match:
+        content = paren_match.group(1).strip()
+        if content.isdigit():
+            return True, ""
+        if "trabuco" in content.lower():
+            return True, ""
+        return False, "non_trabuco_ameci_location"
+    return True, ""
+
+
+def parse_csv_rows(
+    text: str, provider: str, filename: str, statement_email_date: str
+) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     summary = {
         "statement_all_orders": "",
@@ -108,6 +138,7 @@ def parse_csv_rows(text: str, provider: str, filename: str) -> List[Dict[str, st
                 "delivery_fee": normalize_money(record.get("Delivery Fee", "")),
                 "tip": normalize_money(record.get("Tip", "")),
                 "total": normalize_money(record.get("Total", "")),
+                "statement_email_date": statement_email_date,
                 **summary,
                 "statement_menustar_fees_allocated": "",
                 "statement_source_file": filename,
@@ -143,12 +174,14 @@ def parse_csv_rows(text: str, provider: str, filename: str) -> List[Dict[str, st
     return rows
 
 
-def read_attachment_rows(payload: bytes, filename: str) -> List[Dict[str, str]]:
+def read_attachment_rows(
+    payload: bytes, filename: str, statement_email_date: str
+) -> List[Dict[str, str]]:
     lower = filename.lower()
     provider = normalize_provider(filename)
     if lower.endswith(".csv"):
         text = payload.decode(errors="ignore")
-        return parse_csv_rows(text, provider, filename)
+        return parse_csv_rows(text, provider, filename, statement_email_date)
     if lower.endswith(".xlsx"):
         try:
             df = pd.read_excel(io.BytesIO(payload))
@@ -156,22 +189,46 @@ def read_attachment_rows(payload: bytes, filename: str) -> List[Dict[str, str]]:
             print("Missing openpyxl; skipping xlsx attachment:", filename)
             return []
         text = df.to_csv(index=False)
-        return parse_csv_rows(text, provider, filename)
+        return parse_csv_rows(text, provider, filename, statement_email_date)
     return []
 
 
 def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
+    skipped: List[Dict[str, str]] = []
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
+        msg_date = msg.get("date", "")
+        statement_email_date = ""
+        if msg_date:
+            try:
+                statement_email_date = parsedate_to_datetime(msg_date).isoformat()
+            except Exception:
+                statement_email_date = ""
         for part in msg.walk():
             filename = part.get_filename()
             if not filename:
                 continue
             if not filename.lower().endswith((".csv", ".xlsx")):
                 continue
+            restaurant_name = filename.replace(".csv", "").replace(".xlsx", "").strip()
+            allowed, reason = allowed_menustar_restaurant(restaurant_name)
+            if not allowed:
+                skipped.append(
+                    {
+                        "email_date": msg_date,
+                        "statement_source_file": filename,
+                        "restaurant_name": restaurant_name,
+                        "reason": reason,
+                    }
+                )
+                continue
             payload = part.get_payload(decode=True) or b""
-            rows.extend(read_attachment_rows(payload, filename))
+            rows.extend(read_attachment_rows(payload, filename, statement_email_date))
+    if skipped:
+        df = pd.DataFrame(skipped)
+        print("Skipped MenuStar billing statements:")
+        print(df.to_string(index=False))
     return rows
 
 
@@ -183,30 +240,85 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
     else:
         existing_rows = []
 
-    existing_map = {
-        f"{row.get('provider','')}|{row.get('order_datetime','')}|{row.get('subtotal','')}|{row.get('total','')}": row
-        for row in existing_rows
-    }
+    # Drop previously stored rows from non-Trabuco Ameci locations.
+    if existing_rows:
+        filtered_rows = []
+        skipped_existing = 0
+        for row in existing_rows:
+            restaurant_name = row.get("restaurant_name", "")
+            allowed, _ = allowed_menustar_restaurant(restaurant_name)
+            if not allowed:
+                skipped_existing += 1
+                continue
+            filtered_rows.append(row)
+        if skipped_existing:
+            print(f"Removed {skipped_existing} existing MenuStar billing row(s) from non-target locations.")
+        existing_rows = filtered_rows
+
+    def normalize_dt_key(value: str) -> str:
+        text = str(value or "").strip()
+        if not text:
+            return ""
+        try:
+            return dt.datetime.fromisoformat(text.replace("Z", "+00:00")).isoformat()
+        except ValueError:
+            for fmt in ("%m/%d/%Y %H:%M:%S", "%m/%d/%Y %H:%M"):
+                try:
+                    return dt.datetime.strptime(text, fmt).isoformat()
+                except ValueError:
+                    continue
+        return text
+
+    def dedupe_key(row: Dict[str, str]) -> str:
+        return "|".join(
+            [
+                str(row.get("provider", "")).strip(),
+                normalize_dt_key(row.get("order_datetime", "")),
+                str(row.get("order_type", "")).strip(),
+                str(row.get("payment_type", "")).strip(),
+                str(row.get("subtotal", "")).strip(),
+                str(row.get("tax", "")).strip(),
+                str(row.get("delivery_fee", "")).strip(),
+                str(row.get("tip", "")).strip(),
+                str(row.get("total", "")).strip(),
+            ]
+        )
+
+    def non_blank_count(row: Dict[str, str]) -> int:
+        return sum(1 for value in row.values() if str(value or "").strip())
+
+    def parse_email_dt(value: str) -> Optional[dt.datetime]:
+        if not value:
+            return None
+        try:
+            return dt.datetime.fromisoformat(value)
+        except ValueError:
+            return None
+
+    existing_map = {dedupe_key(row): row for row in existing_rows}
     updated = 0
     for row in new_rows:
-        key = f"{row.get('provider','')}|{row.get('order_datetime','')}|{row.get('subtotal','')}|{row.get('total','')}"
+        key = dedupe_key(row)
         current = existing_map.get(key)
         if current is None:
             row["added_at"] = now
             existing_map[key] = row
             updated += 1
             continue
-        changed = False
-        for col in RAW_COLUMNS:
-            if col == "added_at":
-                continue
-            old_val = str(current.get(col, "") or "")
-            new_val = str(row.get(col, "") or "")
-            if old_val != new_val:
-                current[col] = new_val
-                changed = True
-        if changed:
-            current["added_at"] = now
+        # Prefer the row with the most non-blank fields; if tied, prefer latest email date.
+        current_score = non_blank_count(current)
+        new_score = non_blank_count(row)
+        replace = False
+        if new_score > current_score:
+            replace = True
+        elif new_score == current_score:
+            current_dt = parse_email_dt(str(current.get("statement_email_date", "")))
+            new_dt = parse_email_dt(str(row.get("statement_email_date", "")))
+            if new_dt and (not current_dt or new_dt > current_dt):
+                replace = True
+        if replace:
+            row["added_at"] = now
+            existing_map[key] = row
             updated += 1
 
     final_rows = list(existing_map.values())
