@@ -131,4 +131,11 @@ Concerns / follow-ups:
    - `delivery_service` → `misc_fee`.
    - `tax_withholdings` → `tax_withheld`.
    - `tax_payout` should match `tax`; mismatch adds `errors=tax_payout_mismatch`.
-   - `total_payout` is appended to `notes` (e.g., `total_payout=15.35`).
+  - `total_payout` is appended to `notes` (e.g., `total_payout=15.35`).
+
+## Slice
+- Source: `Takeout/Slice/*.pdf` (Order Activity Report)
+- Parser: `parsers/slice/extract_slice_orders_raw.py`
+  - Reads the Orders table (page 2+).
+  - Captures Date/Time, Order ID, payment type (Credit/Phone), order type (Pickup/Delivery), Subtotal, Customer Delivery Fee, Order Adjust., Tax, Tips, Order Total, Partnership Fee, Processing Fee.
+  - Order datetime is built from the date line + the time line beneath each row.

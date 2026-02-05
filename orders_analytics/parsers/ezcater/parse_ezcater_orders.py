@@ -19,6 +19,7 @@ from orders_analytics.utils.normalize import (
     normalize_money,
     normalize_order_type,
 )
+from orders_analytics.utils.order_types import OrderTypes
 
 
 def normalize_date(value: str) -> str:
@@ -81,9 +82,9 @@ class EzCaterOrdersParser(BaseParser):
                 continue
             location = row.get("Store Name", "") or row.get("Location", "")
             source = str(row.get("Source", "") or "")
-            order_type = normalize_order_type(source) or "delivery"
+            order_type = normalize_order_type(source) or OrderTypes.DELIVERY
             if "relish" in source.lower():
-                order_type = "pickup"
+                order_type = OrderTypes.PICKUP
             notes = []
             status = row.get("Status", "")
             promo = row.get("Promotion Code", "")
@@ -132,7 +133,9 @@ class EzCaterOrdersParser(BaseParser):
                     "provider": normalize_provider(location),
                     "restaurant_name": location,
                     "order_datetime": normalize_date(row.get("Event Date", "")),
-                    "order_type": order_type if order_type in ("pickup", "delivery") else "delivery",
+                    "order_type": order_type
+                    if order_type in (OrderTypes.PICKUP, OrderTypes.DELIVERY)
+                    else OrderTypes.DELIVERY,
                     "customer_name": details.get("customer_name", ""),
                     "company_name": details.get("company_name", ""),
                     "phone": details.get("phone", ""),

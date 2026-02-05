@@ -13,6 +13,7 @@ import pandas as pd
 from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.normalize import normalize_datetime
+from orders_analytics.utils.order_types import OrderTypes
 
 RAW_COLUMNS = [
     "order_id",
@@ -115,7 +116,7 @@ def extract_header_fields(html_text: str) -> Dict[str, str]:
         if not spans:
             continue
         first = spans[0].strip().lower()
-        if first in ("pickup", "delivery"):
+        if first in (OrderTypes.PICKUP, OrderTypes.DELIVERY):
             candidate_spans.append(spans)
 
     selected = None
@@ -298,9 +299,9 @@ def parse_orders(mbox_path: str) -> List[Dict[str, str]]:
         if order_info:
             order_id = str(order_info.get("id", "") or "")
             phone = order_info.get("phoneNumber", "") or phone
-            order_type = "delivery" if order_info.get("delivery") else order_type
+            order_type = OrderTypes.DELIVERY if order_info.get("delivery") else order_type
             if order_info.get("delivery") is False:
-                order_type = "pickup"
+                order_type = OrderTypes.PICKUP
             order_date = order_info.get("deliverAt", "") or order_date
             payment_raw = order_info.get("payment", "") or ""
             items_summary = summarize_items(order_info)
@@ -309,7 +310,7 @@ def parse_orders(mbox_path: str) -> List[Dict[str, str]]:
             if order_info.get("delivery"):
                 address = format_address_from_info(order_info)
 
-        if not address and order_type == "delivery":
+        if not address and order_type == OrderTypes.DELIVERY:
             address_lines = extract_delivery_address(html_text)
             address = format_address_from_lines(address_lines)
         if address:

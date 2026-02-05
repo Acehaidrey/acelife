@@ -20,9 +20,11 @@ DATE_GRAINS = ["day", "month", "year"]
 
 from orders_analytics.utils.platforms import Platforms
 from orders_analytics.utils.providers import Providers
+from orders_analytics.utils.order_types import OrderTypes
+from orders_analytics.utils.payment_types import PaymentTypes
 
 PLATFORMS = Platforms.all_platforms()
 PROVIDERS = Providers.all_providers()
 
-ORDER_TYPES = ["pickup", "delivery"]
-PAYMENT_TYPES = ["credit", "cash"]
+ORDER_TYPES = OrderTypes.get_all()
+PAYMENT_TYPES = PaymentTypes.get_all()

@@ -9,6 +9,7 @@ from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.normalize import normalize_datetime, normalize_order_type
+from orders_analytics.utils.order_types import OrderTypes
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -89,7 +90,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                     row.get("order_time", ""),
                 )
                 or normalize_datetime_cater2me(row.get("order_date", ""), row.get("order_time", "")),
-                "order_type": normalize_order_type("delivery"),
+                "order_type": normalize_order_type(OrderTypes.DELIVERY),
                 "customer_name": row.get("customer_name", ""),
                 "company_name": row.get("company_name", ""),
                 "phone": row.get("phone", ""),

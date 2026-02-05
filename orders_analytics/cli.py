@@ -321,6 +321,12 @@ def run_extract(
         addresses_csv = "Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv"
         extract_menufy_orders_raw.run(orders_root, orders_raw, emails_csv, addresses_csv)
         return
+    if platform == "slice":
+        from orders_analytics.parsers.slice import extract_slice_orders_raw
+
+        orders_root = "Takeout/Slice"
+        extract_slice_orders_raw.run(orders_root, orders_raw)
+        return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
 
@@ -486,6 +492,27 @@ def run_normalize(
             orders_raw_path, normalized_out, reset_errors=reset_errors
         )
         print(f"[menufy] normalized -> {normalized_out}")
+        return
+    if platform == "slice":
+        from orders_analytics.parsers.slice import normalize_slice_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("slice", "orders_raw.csv")
+        )
+        adjustments_raw_path = extras.pop(
+            "adjustments_raw", raw_path("slice", "adjustments_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("slice_orders_normalized.csv")
+        )
+        normalize_slice_from_raw.run(
+            orders_raw_path,
+            adjustments_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
+        )
+        print(f"[slice] normalized -> {normalized_out}")
         return
     if platform == "beyondmenu":
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
@@ -673,7 +700,7 @@ def main() -> None:
     )
     extract_cmd.add_argument(
         "--platform",
-        choices=[*Platforms.mbox_platforms(), "menufy"],
+        choices=[*Platforms.mbox_platforms(), "menufy", "slice"],
         default="eatstreet",
         help="Platform to extract.",
     )
@@ -888,6 +915,11 @@ def main() -> None:
             orders_mbox = args.orders_mbox or ""
             billings_mbox = args.billings_mbox or ""
             orders_raw = args.orders_raw or raw_path("menufy", "orders_raw.csv")
+            billings_raw = args.billings_raw or ""
+        elif args.platform == "slice":
+            orders_mbox = args.orders_mbox or ""
+            billings_mbox = args.billings_mbox or ""
+            orders_raw = args.orders_raw or raw_path("slice", "orders_raw.csv")
             billings_raw = args.billings_raw or ""
         else:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")

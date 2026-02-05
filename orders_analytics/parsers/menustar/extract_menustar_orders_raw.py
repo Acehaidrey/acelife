@@ -11,6 +11,7 @@ import pandas as pd
 
 from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.order_types import OrderTypes
 
 RAW_COLUMNS = [
     "order_id",
@@ -86,9 +87,9 @@ def parse_datetime(text: str, default_year: str = "") -> str:
 
 def parse_order_type(text: str) -> str:
     if re.search(r"\bDelivery\b", text, re.IGNORECASE):
-        return "delivery"
+        return OrderTypes.DELIVERY
     if re.search(r"\bPickup\b", text, re.IGNORECASE):
-        return "pickup"
+        return OrderTypes.PICKUP
     return ""
 
 

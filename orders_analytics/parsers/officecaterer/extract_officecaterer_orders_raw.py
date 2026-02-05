@@ -13,6 +13,7 @@ import pdfplumber
 from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.normalize import normalize_datetime, normalize_money
 from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.order_types import OrderTypes
 
 RAW_COLUMNS = [
     "order_id",
@@ -122,7 +123,7 @@ def parse_pdf(payload: bytes) -> Dict[str, str]:
         "provider": provider,
         "restaurant_name": restaurant_name,
         "order_datetime": order_datetime,
-        "order_type": "pickup",
+        "order_type": OrderTypes.PICKUP,
         "customer_name": "",
         "company_name": "",
         "phone": "",

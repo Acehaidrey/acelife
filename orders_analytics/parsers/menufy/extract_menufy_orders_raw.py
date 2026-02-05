@@ -11,6 +11,7 @@ import pandas as pd
 from orders_analytics.utils.constants import raw_path
 from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.providers import normalize_provider
+from orders_analytics.utils.order_types import OrderTypes
 
 RAW_COLUMNS = [
     "order_id",
@@ -155,7 +156,11 @@ def parse_orders_csv(path: str, payment_type: str, refunds: Dict[Tuple[str, str,
         provider = normalize_provider(location)
         restaurant_name = location
         delivery_fee = normalize_money(row.get("Customer Carryout or Delivery Charge", ""))
-        order_type = "delivery" if delivery_fee and delivery_fee not in ("0", "0.00") else "pickup"
+        order_type = (
+            OrderTypes.DELIVERY
+            if delivery_fee and delivery_fee not in ("0", "0.00")
+            else OrderTypes.PICKUP
+        )
         subtotal = normalize_money(row.get("Subtotal", ""))
         upcharges = normalize_money(row.get("Upcharges", ""))
         tax = normalize_money(row.get("Tax", ""))

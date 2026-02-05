@@ -3,6 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Dict, List, Tuple
 
+from orders_analytics.utils.order_types import OrderTypes
+from orders_analytics.utils.payment_types import PaymentTypes
+
 
 def _is_real(value: str) -> bool:
     if value == "":
@@ -55,7 +58,7 @@ def validate_delivery_fee(
     errors: List[Dict[str, str]] = []
     for row in rows:
         order_type = str(row.get("order_type") or "").strip().lower()
-        if order_type != "delivery":
+        if order_type != OrderTypes.DELIVERY:
             continue
         fee = str(row.get("delivery_fee") or "").strip()
         if not _is_real(fee):
@@ -78,10 +81,12 @@ def normalize_order_type(value: str) -> str:
     text = (value or "").strip().lower()
     if not text:
         return ""
+    if text == OrderTypes.PHONE_CALL:
+        return OrderTypes.PHONE_CALL
     if text.startswith("pick"):
-        return "pickup"
+        return OrderTypes.PICKUP
     if text.startswith("deliv"):
-        return "delivery"
+        return OrderTypes.DELIVERY
     return text
 
 
@@ -111,7 +116,7 @@ def validate_enum_fields(
         norm_order_type = normalize_order_type(raw_order_type)
         norm_payment_type = normalize_payment_type(raw_payment_type)
 
-        if raw_order_type and norm_order_type not in ("pickup", "delivery"):
+        if raw_order_type and norm_order_type not in OrderTypes.get_all():
             flag = "invalid_order_type"
             _append_error(row, flag)
             errors.append(
@@ -125,7 +130,7 @@ def validate_enum_fields(
                 }
             )
 
-        if raw_payment_type and norm_payment_type not in ("credit", "cash"):
+        if raw_payment_type and norm_payment_type not in PaymentTypes.get_all():
             flag = "invalid_payment_type"
             _append_error(row, flag)
             errors.append(
@@ -176,6 +181,9 @@ def validate_tax_fields(
         tw_raw = str(row.get("tax_withheld") or "").strip()
         tax_real = _is_real(tax_raw)
         tw_real = _is_real(tw_raw)
+        order_type = str(row.get("order_type") or "").strip().lower()
+        if order_type == OrderTypes.PHONE_CALL and not tax_real and not tw_real:
+            continue
         if tax_real == tw_real:
             flag = "tax_tax_withheld_needs_review"
             _append_error(row, flag)

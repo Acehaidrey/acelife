@@ -721,7 +721,9 @@ def main() -> None:
     with tab_delivery:
         if "lat" in filtered.columns and "lng" in filtered.columns:
             geo = filtered.copy()
-            geo = geo[geo["order_type"] == "delivery"]
+            from orders_analytics.utils.order_types import OrderTypes
+
+            geo = geo[geo["order_type"] == OrderTypes.DELIVERY]
             geo["lat"] = pd.to_numeric(geo["lat"], errors="coerce")
             geo["lng"] = pd.to_numeric(geo["lng"], errors="coerce")
             geo = geo.dropna(subset=["lat", "lng"])

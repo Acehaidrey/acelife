@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.parsers.eatstreet.update_eatstreet_fees import parse_billings_mbox
 from orders_analytics.utils.constants import takeout_path
+from orders_analytics.utils.order_types import OrderTypes
 
 
 def extract_html(msg) -> str:
@@ -258,9 +259,9 @@ def parse_orders(mbox_path: str) -> Tuple[List[Dict[str, str]], int]:
         if order_info:
             order_id = str(order_info.get("id", "") or "")
             phone = order_info.get("phoneNumber", "") or phone
-            order_type = "delivery" if order_info.get("delivery") else order_type
+            order_type = OrderTypes.DELIVERY if order_info.get("delivery") else order_type
             if order_info.get("delivery") is False:
-                order_type = "pickup"
+                order_type = OrderTypes.PICKUP
             order_date = order_info.get("deliverAt", "") or order_date
             payment_raw = order_info.get("payment", "") or ""
             items_summary = summarize_items(order_info)
@@ -269,7 +270,7 @@ def parse_orders(mbox_path: str) -> Tuple[List[Dict[str, str]], int]:
             if order_info.get("delivery"):
                 address = format_address_from_info(order_info)
 
-        if not address and order_type == "delivery":
+        if not address and order_type == OrderTypes.DELIVERY:
             address_lines = extract_delivery_address(html_text)
             address = format_address_from_lines(address_lines)
 

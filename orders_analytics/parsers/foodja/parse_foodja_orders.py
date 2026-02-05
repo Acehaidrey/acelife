@@ -13,6 +13,7 @@ from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.normalize import normalize_datetime, normalize_money
+from orders_analytics.utils.order_types import OrderTypes
 
 
 def normalize_date(value: str) -> str:
@@ -67,7 +68,7 @@ class FoodjaOrdersParser(BaseParser):
                     "provider": normalize_provider(location),
                     "restaurant_name": location,
                     "order_datetime": normalize_date(row.get("Delivery Date", "")),
-                    "order_type": "pickup",
+                    "order_type": OrderTypes.PICKUP,
                     "customer_name": "",
                     "company_name": "",
                     "phone": "",

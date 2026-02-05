@@ -13,6 +13,7 @@ import pandas as pd
 from orders_analytics.parsers.deliverycom.parse_deliverycom_orders import html_to_lines
 from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.normalize import normalize_datetime, normalize_money
+from orders_analytics.utils.order_types import OrderTypes
 
 RAW_COLUMNS = [
     "order_id",
@@ -201,9 +202,9 @@ def parse_order(lines: List[str], msg_date: str, subject: str) -> Optional[Dict[
             order_id = match.group(0)
     if not order_id:
         return None
-    order_type = "pickup" if any("Order Pickup time" in line for line in lines) else ""
+    order_type = OrderTypes.PICKUP if any("Order Pickup time" in line for line in lines) else ""
     if any("Order Delivery time" in line for line in lines):
-        order_type = "delivery"
+        order_type = OrderTypes.DELIVERY
 
     order_datetime = parse_order_datetime(lines, msg_date)
     subtotal = parse_money_line(lines, "Subtotal")
