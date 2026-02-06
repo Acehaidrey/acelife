@@ -45,7 +45,8 @@ Provider Inputs (mbox, PDFs, CSVs)
 
 ## Canonical Normalized Schema
 All order-level parsers should emit these columns in this order:
-`order_id, platform, provider, order_datetime, order_type, customer_name, company_name, phone, email, address, address_formatted, lat, lng, payment_type, restaurant_name, items, item_count, subtotal, tax, tax_withheld, tip, delivery_fee, total, processing_fee, commission_fee, adjustments, marketing_fee, misc_fee, errors, notes`
+`order_id, platform, provider, order_datetime, order_type, payment_type, subtotal, tax, tax_withheld, tip, delivery_fee, total, commission_fee, processing_fee, adjustments, marketing_fee, misc_fee, payout, expected_payout, customer_name, company_name, phone, email, address, address_formatted, lat, lng, restaurant_name, items, item_count, notes, errors`
+`expected_payout` is computed in BaseParser from normalized money fields.
 
 ## Parser Conventions
 - BeyondMenu parser drops rows where `Status != active` (inactive orders are excluded).

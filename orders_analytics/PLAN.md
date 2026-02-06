@@ -26,11 +26,12 @@
 
 ## Phase 1: Foundation
 - Define a unified schema for normalized orders:
-  - `order_id`, `platform`, `provider`, `order_datetime`, `order_type`
-  - `customer_name`, `phone`, `email`, `address`, `address_formatted`, `lat`, `lng`, `payment_type`
-  - `subtotal`, `tax`, `tip`, `delivery_fee`, `total`
-  - `item_count`, `processing_fee`, `commission_fee`, `items`, `restaurant_name`
-  - `tax_withheld`, `adjustments`, `marketing_fee`, `misc_fee`, `notes`
+  - `order_id`, `platform`, `provider`, `order_datetime`, `order_type`, `payment_type`
+  - `subtotal`, `tax`, `tax_withheld`, `tip`, `delivery_fee`, `total`
+  - `commission_fee`, `processing_fee`, `adjustments`, `marketing_fee`, `misc_fee`
+  - `payout`, `expected_payout`
+  - `customer_name`, `phone`, `email`, `address`, `address_formatted`, `lat`, `lng`
+  - `restaurant_name`, `items`, `item_count`, `notes`, `errors`
 - Add a constants module for:
   - provider names, platform names, currency fields
   - canonical date parsing formats
@@ -70,6 +71,7 @@
   - report conflicts
   - write backups and missing-fee reports to `data/raw/<provider>/`
   - use `BaseParser` for shared flow (load → parse → pre/post → validate → dedupe → write)
+  - compute `expected_payout` from normalized money fields and validate against `payout` when present
   - for EatStreet, parse orders + billings mbox together to populate fees
   - for BeyondMenu, drop rows where `Status != active`
   - for EatStreet, treat raw CSVs as source of truth and append-only by `order_id`

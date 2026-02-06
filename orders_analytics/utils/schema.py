@@ -121,5 +121,4 @@ def compute_expected_payout(row: Dict[str, str]) -> str:
     for fee in (commission_fee, processing_fee, marketing_fee, misc_fee):
         if fee is not None:
             expected += fee
-
     return f"{expected.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)}"

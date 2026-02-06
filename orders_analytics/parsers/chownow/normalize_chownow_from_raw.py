@@ -273,6 +273,25 @@ class ChowNowNormalizer(BaseParser):
     platform = "CHOWNOW"
     provider = ""
 
+    def compute_expected_payout(self, row: Dict[str, str]) -> str:
+        expected = super().compute_expected_payout(row)
+        if not expected:
+            return expected
+        notes = str(row.get("notes") or "")
+        support_fee = ""
+        if "support_local_fee=" in notes:
+            for part in notes.split("|"):
+                part = part.strip()
+                if part.startswith("support_local_fee="):
+                    support_fee = part.split("=", 1)[1]
+                    break
+        if not support_fee:
+            return expected
+        try:
+            return f"{(Decimal(expected) + parse_decimal(support_fee)):.2f}"
+        except InvalidOperation:
+            return expected
+
     def default_input_path(self) -> str:
         return raw_path("chownow", "billings_raw.csv")
 

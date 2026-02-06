@@ -71,6 +71,9 @@ class BaseParser:
     def pre_process(self, rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         return rows
 
+    def compute_expected_payout(self, row: Dict[str, str]) -> str:
+        return compute_expected_payout(row)
+
     def post_process(self, rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         # Normalize "nan"/None-like values to empty strings for consistency.
         for row in rows:
@@ -88,7 +91,7 @@ class BaseParser:
                 if isinstance(value, str) and value.strip().lower() == "nan":
                     row[key] = ""
             if not str(row.get("expected_payout") or "").strip():
-                row["expected_payout"] = compute_expected_payout(row)
+                row["expected_payout"] = self.compute_expected_payout(row)
         for validator in (
             validate_canonical_columns,
             validate_required_fields,

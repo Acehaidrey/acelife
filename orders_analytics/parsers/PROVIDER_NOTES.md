@@ -170,9 +170,12 @@ Concerns / follow-ups:
   - Provider/restaurant fall back to billings `Restaurant Name` if missing; provider inferred from restaurant.
   - `Order Type = Full Refund` rows are not emitted as separate records; refund amounts are summed into
     `adjustments` for the matching order_id, with `refund_total=...` in notes.
+  - `payout` is taken from Disbursement Amount, including any Full Refund disbursement rows rolled into
+    the original order_id payout.
   - Support Local Fee handling:
     - If support_local_fee exists in orders_raw notes, `total` = billing Gross + support_local_fee.
     - `adjustments` includes a negative support_local_fee to offset payout.
+    - `expected_payout` adds support_local_fee on top of the base payout math (ChowNow-only override).
   - Promotions / Bucks:
     - `Bucks` in billings are treated as positive and mapped to `marketing_fee` as negative.
     - If Bucks is present, it overrides promotions from orders; otherwise promotions are used.

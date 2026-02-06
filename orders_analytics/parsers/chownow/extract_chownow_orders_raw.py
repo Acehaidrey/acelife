@@ -190,8 +190,10 @@ def parse_order(text: str, subject: str, email_date: str) -> Dict[str, str]:
                 in_items = False
                 continue
             if line.strip():
-                items.append(line.strip())
-                if re.match(r"^\d+\s+", line.strip()):
+                cleaned = re.sub(r"^-{2,}\s*", "", line.strip())
+                if cleaned:
+                    items.append(cleaned)
+                if re.match(r"^\d+\s+", cleaned):
                     item_count += 1
 
     subtotal = ""
