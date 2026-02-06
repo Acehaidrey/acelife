@@ -16,6 +16,7 @@ from orders_analytics.utils.normalize import normalize_money
 
 RAW_COLUMNS = [
     "billing_date",
+    "billing_datetime",
     "total_order_count",
     "total_sales",
     "average_check",
@@ -68,8 +69,10 @@ def parse_summary_html_text(html: str, source_file: str, email_date: str) -> Dic
             commission_percentage = f"{(float(total_service_fees) / float(total_sales) * 100):.2f}"
     except ValueError:
         commission_percentage = ""
+    billing_datetime = f"{billing_date}T00:00:00" if billing_date else ""
     return {
         "billing_date": billing_date,
+        "billing_datetime": billing_datetime,
         "total_order_count": total_order_count,
         "total_sales": total_sales,
         "average_check": average_check,
@@ -108,8 +111,10 @@ def parse_summary_pdf_text(text: str, source_file: str, email_date: str) -> Dict
             commission_percentage = f"{(float(total_service_fees) / float(total_sales) * 100):.2f}"
     except ValueError:
         commission_percentage = ""
+    billing_datetime = f"{billing_date}T00:00:00" if billing_date else ""
     return {
         "billing_date": billing_date,
+        "billing_datetime": billing_datetime,
         "total_order_count": total_order_count,
         "total_sales": total_sales,
         "average_check": average_check,
