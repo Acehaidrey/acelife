@@ -116,6 +116,11 @@ Concerns / follow-ups:
 - Normalization: `parsers/officecaterer/normalize_officecaterer_from_raw.py`
   - Billings `payout` is mapped to normalized `payout` (removed from notes).
 
+## ezCater
+- Source: `data/raw/ezcater/ezcater_all_orders_from_2020_2020-01-01_2026-01-01_2026-01-29 - Order Data.csv`
+- Parser: `parsers/ezcater/parse_ezcater_orders.py`
+  - `payout` is mapped from `Caterer Total Due`.
+
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
 - Customers: `Takeout/Menufy/Customer_Emails_02-05-2026.csv`, `Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv`

@@ -20,6 +20,9 @@ from orders_analytics.utils.normalize import (
     normalize_order_type,
 )
 from orders_analytics.utils.order_types import OrderTypes
+from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def normalize_date(value: str) -> str:
@@ -82,8 +85,12 @@ class EzCaterOrdersParser(BaseParser):
                 continue
             location = row.get("Store Name", "") or row.get("Location", "")
             source = str(row.get("Source", "") or "")
-            order_type = normalize_order_type(source) or OrderTypes.DELIVERY
-            if "relish" in source.lower():
+            source_lower = source.lower()
+            if "delivery" in source_lower:
+                order_type = OrderTypes.DELIVERY
+            else:
+                order_type = OrderTypes.PICKUP
+            if "relish" in source_lower:
                 order_type = OrderTypes.PICKUP
             notes = []
             status = row.get("Status", "")
@@ -127,37 +134,35 @@ class EzCaterOrdersParser(BaseParser):
             address = details.get("address", "") or format_address(row)
 
             rows.append(
-                {
-                    "order_id": order_id,
-                    "platform": "EZCATER",
-                    "provider": normalize_provider(location),
-                    "restaurant_name": location,
-                    "order_datetime": normalize_date(row.get("Event Date", "")),
-                    "order_type": order_type
+                build_normalized_row(
+                    Platforms.EZCATER.upper(),
+                    order_id=order_id,
+                    provider=normalize_provider(location),
+                    restaurant_name=location,
+                    order_datetime=normalize_date(row.get("Event Date", "")),
+                    order_type=order_type
                     if order_type in (OrderTypes.PICKUP, OrderTypes.DELIVERY)
                     else OrderTypes.DELIVERY,
-                    "customer_name": details.get("customer_name", ""),
-                    "company_name": details.get("company_name", ""),
-                    "phone": details.get("phone", ""),
-                    "email": details.get("email", ""),
-                    "address": address,
-                    "payment_type": "credit",
-                    "subtotal": normalize_money(row.get("Food Total", "")),
-                    "tax": normalize_money(row.get("Sales Tax", "")),
-                    "tax_withheld": normalize_money(row.get("Sales Tax Remitted by ezCater", "")),
-                    "tip": normalize_money(row.get("Tip", "")),
-                    "delivery_fee": normalize_money(row.get("Delivery Fee", "")),
-                    "total": normalize_money(row.get("Caterer Total Due", "")) or normalize_money(row.get("Food Total", "")),
-                    "item_count": "",
-                    "processing_fee": normalize_money(row.get("Payment Transaction Fee", "")),
-                    "commission_fee": normalize_money(row.get("Commission", "")),
-                    "items": "",
-                    "adjustments": adjustments,
-                    "marketing_fee": marketing_fee,
-                    "misc_fee": "",
-                    "errors": "",
-                    "notes": " | ".join(notes),
-                }
+                    customer_name=details.get("customer_name", ""),
+                    company_name=details.get("company_name", ""),
+                    phone=details.get("phone", ""),
+                    email=details.get("email", ""),
+                    address=address,
+                    payment_type=PaymentTypes.CREDIT,
+                    subtotal=normalize_money(row.get("Food Total", "")),
+                    tax=normalize_money(row.get("Sales Tax", "")),
+                    tax_withheld=normalize_money(row.get("Sales Tax Remitted by ezCater", "")),
+                    tip=normalize_money(row.get("Tip", "")),
+                    delivery_fee=normalize_money(row.get("Delivery Fee", "")),
+                    total=normalize_money(row.get("Food Total", "")),
+                    payout=normalize_money(row.get("Caterer Total Due", "")),
+                    processing_fee=normalize_money(row.get("Payment Transaction Fee", "")),
+                    commission_fee=normalize_money(row.get("Commission", "")),
+                    adjustments=adjustments,
+                    marketing_fee=marketing_fee,
+                    errors="",
+                    notes=" | ".join(notes),
+                )
             )
         return rows
 
