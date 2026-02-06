@@ -14,6 +14,9 @@ from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.normalize import normalize_datetime, normalize_money
 from orders_analytics.utils.order_types import OrderTypes
+from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def normalize_date(value: str) -> str:
@@ -61,36 +64,40 @@ class FoodjaOrdersParser(BaseParser):
             if check_date:
                 notes.append(f"check_date={check_date}")
 
+            payout = ""
+            processing_fee = "0.00"
+            if subtotal_dec is not None and commission_fee:
+                try:
+                    payout = str(
+                        (
+                            subtotal_dec
+                            + Decimal(commission_fee)
+                            + Decimal(processing_fee or "0")
+                        ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                    )
+                except InvalidOperation:
+                    payout = ""
             rows.append(
-                {
-                    "order_id": row.get("Order #", ""),
-                    "platform": "FOODJA",
-                    "provider": normalize_provider(location),
-                    "restaurant_name": location,
-                    "order_datetime": normalize_date(row.get("Delivery Date", "")),
-                    "order_type": OrderTypes.PICKUP,
-                    "customer_name": "",
-                    "company_name": "",
-                    "phone": "",
-                    "email": "",
-                    "address": "",
-                    "payment_type": "credit",
-                    "subtotal": subtotal,
-                    "tax": "",
-                    "tax_withheld": tax_withheld,
-                    "tip": "",
-                    "delivery_fee": "",
-                    "total": subtotal,
-                    "item_count": "",
-                    "processing_fee": "0.00",
-                    "commission_fee": commission_fee,
-                    "items": "",
-                    "adjustments": "",
-                    "marketing_fee": "",
-                    "misc_fee": "",
-                    "errors": "",
-                    "notes": " | ".join(notes),
-                }
+                build_normalized_row(
+                    Platforms.FOODJA.upper(),
+                    order_id=row.get("Order #", ""),
+                    provider=normalize_provider(location),
+                    restaurant_name=location,
+                    order_datetime=normalize_date(row.get("Delivery Date", "")),
+                    order_type=OrderTypes.PICKUP,
+                    payment_type=PaymentTypes.CREDIT,
+                    subtotal=subtotal,
+                    tax="",
+                    tax_withheld=tax_withheld,
+                    tip="",
+                    delivery_fee="",
+                    total=subtotal,
+                    processing_fee=processing_fee,
+                    commission_fee=commission_fee,
+                    payout=payout,
+                    errors="",
+                    notes=" | ".join(notes),
+                )
             )
         return rows
 

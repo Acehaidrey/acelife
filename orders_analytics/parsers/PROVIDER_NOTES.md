@@ -61,6 +61,13 @@ Concerns / follow-ups:
  - All orders are pickup.
 - Manual cancellations live in `data/raw/foodrunners/cancellations_raw.csv` and are removed from normalized output.
 
+## Foodja
+- Source: `data/raw/foodja/oex-orders-01-28-26.csv`
+- Parser: `parsers/foodja/parse_foodja_orders.py`
+  - Commission fee = 30% of subtotal (negative).
+  - Tax withheld = 7.75% of subtotal.
+  - `payout` = subtotal + commission_fee + processing_fee.
+
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/BeyondMenu_Order_History.csv`
 - Parser: `parsers/beyondmenu/parse_beyondmenu_orders.py` (CSV import)
