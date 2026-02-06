@@ -44,7 +44,7 @@ def dedupe_orders(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def compute_commission(values: pd.Series) -> pd.Series:
-    commission = values * 0.02
+    commission = values * 0.025
     return commission.clip(lower=0.50, upper=2.00)
 
 
@@ -54,7 +54,7 @@ def main() -> None:
         "--commission-base",
         choices=("subtotal", "total"),
         default="subtotal",
-        help="Column to base the 2%% commission on.",
+        help="Column to base the 2.5%% commission on.",
     )
     parser.add_argument(
         "--out",
