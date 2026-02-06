@@ -54,6 +54,8 @@ def synth_adjustment_id(adjustment_datetime: str, description: str) -> str:
     desc = str(description or "").strip().lower()
     if "hardware" in desc:
         suffix = "HARDWARE"
+    elif "promo" in desc or "credit" in desc:
+        suffix = "PROMO"
     else:
         suffix = "ADJUSTMENT"
     return f"{prefix}_{suffix}"
@@ -151,6 +153,10 @@ def normalize_rows(
         notes = []
         if synth.get("adjustment_description"):
             notes.append(synth["adjustment_description"])
+        if synth.get("adjustment_amount"):
+            amount_note = normalize_money(f"{synth['adjustment_amount']:.2f}")
+            notes.append(f"adjustment_amount={amount_note}")
+        adjustments_value = normalize_money(f"{synth['adjustment_amount']:.2f}")
         normalized.append(
             build_normalized_row(
                 Platforms.SLICE.upper(),
@@ -160,7 +166,18 @@ def normalize_rows(
                 order_datetime=synth.get("order_datetime", ""),
                 order_type=OrderTypes.PHONE_CALL,
                 payment_type=PaymentTypes.CASH,
-                adjustments=normalize_money(f"{synth['adjustment_amount']:.2f}"),
+                subtotal="0.00",
+                tax="0.00",
+                tax_withheld="0.00",
+                tip="0.00",
+                delivery_fee="0.00",
+                total="0.00",
+                commission_fee="0.00",
+                processing_fee="0.00",
+                marketing_fee="0.00",
+                misc_fee="0.00",
+                adjustments=adjustments_value,
+                payout=adjustments_value,
                 errors="adjustment_only",
                 notes=" | ".join([note for note in notes if note]),
             )
@@ -172,6 +189,7 @@ def normalize_rows(
         total = sum((amount for amount, _, _ in items), Decimal("0.00"))
         notes = [desc for _, desc, _ in items if desc]
         adjustment_datetime = items[0][2] if items else ""
+        adjustments_value = normalize_money(f"{total:.2f}")
         normalized.append(
             build_normalized_row(
                 Platforms.SLICE.upper(),
@@ -179,7 +197,19 @@ def normalize_rows(
                 provider=provider_default,
                 restaurant_name=restaurant_default,
                 order_datetime=adjustment_datetime,
-                adjustments=normalize_money(f"{total:.2f}"),
+                payment_type=PaymentTypes.CASH,
+                subtotal="0.00",
+                tax="0.00",
+                tax_withheld="0.00",
+                tip="0.00",
+                delivery_fee="0.00",
+                total="0.00",
+                commission_fee="0.00",
+                processing_fee="0.00",
+                marketing_fee="0.00",
+                misc_fee="0.00",
+                adjustments=adjustments_value,
+                payout=adjustments_value,
                 errors="adjustment_only",
                 notes=" | ".join([note for note in notes if note]),
             )
