@@ -43,9 +43,11 @@ def dedupe_orders(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop(columns=["__score"])
 
 
-def compute_commission(values: pd.Series) -> pd.Series:
-    commission = values * 0.025
-    return commission.clip(lower=0.50, upper=2.00)
+def compute_commission(values: pd.Series, rate: float, clip: bool = True) -> pd.Series:
+    commission = values * rate
+    if clip:
+        return commission.clip(lower=0.50, upper=2.00)
+    return commission
 
 
 def main() -> None:
@@ -80,7 +82,9 @@ def main() -> None:
     base_col = "total" if args.commission_base == "total" else "subtotal"
     if base_col not in orders.columns:
         orders[base_col] = 0.0
-    orders["commission_calc"] = compute_commission(orders[base_col])
+    orders["commission_calc"] = compute_commission(orders[base_col], 0.025, clip=True)
+    orders["commission_calc_no_clip"] = compute_commission(orders[base_col], 0.025, clip=False)
+    orders["commission_calc_225_clip"] = compute_commission(orders[base_col], 0.0225, clip=True)
 
     billings["billing_date_dt"] = pd.to_datetime(billings.get("billing_date", ""), errors="coerce")
     billings = billings.dropna(subset=["billing_date_dt"])
@@ -119,6 +123,8 @@ def main() -> None:
                 "subtotal_sum": float(subset["subtotal"].sum()),
                 "total_sum": float(subset["total"].sum()),
                 "commission_sum": float(subset["commission_calc"].sum()),
+                "commission_sum_no_clip": float(subset["commission_calc_no_clip"].sum()),
+                "commission_sum_225_clip": float(subset["commission_calc_225_clip"].sum()),
             }
         )
 
@@ -140,6 +146,12 @@ def main() -> None:
     merged["order_count_diff"] = merged["orders_count"] - merged["billed_order_count"]
     merged["total_sales_diff"] = merged["total_sum"] - merged["billed_total_sales"]
     merged["service_fees_diff"] = merged["commission_sum"] - merged["billed_service_fees"]
+    merged["service_fees_diff_no_clip"] = (
+        merged["commission_sum_no_clip"] - merged["billed_service_fees"]
+    )
+    merged["service_fees_diff_225_clip"] = (
+        merged["commission_sum_225_clip"] - merged["billed_service_fees"]
+    )
     merged["order_counts_match"] = merged["order_count_diff"] == 0
     merged["total_match"] = merged["total_sales_diff"].abs() <= 0.01
 
@@ -147,10 +159,14 @@ def main() -> None:
         "subtotal_sum",
         "total_sum",
         "commission_sum",
+        "commission_sum_no_clip",
+        "commission_sum_225_clip",
         "billed_total_sales",
         "billed_service_fees",
         "total_sales_diff",
         "service_fees_diff",
+        "service_fees_diff_no_clip",
+        "service_fees_diff_225_clip",
     ]:
         merged[col] = pd.to_numeric(merged[col], errors="coerce").round(2)
 
