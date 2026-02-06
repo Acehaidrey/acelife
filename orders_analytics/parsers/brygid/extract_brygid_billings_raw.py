@@ -45,6 +45,18 @@ def normalize_date(value: str) -> str:
     return text
 
 
+def to_iso_datetime(value: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    for fmt in ("%m/%d/%Y", "%m/%d/%y", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(text, fmt).strftime("%Y-%m-%dT00:00:00")
+        except ValueError:
+            continue
+    return ""
+
+
 def parse_summary_html_text(html: str, source_file: str, email_date: str) -> Dict[str, str]:
     def find(label: str) -> str:
         match = re.search(
@@ -69,7 +81,7 @@ def parse_summary_html_text(html: str, source_file: str, email_date: str) -> Dic
             commission_percentage = f"{(float(total_service_fees) / float(total_sales) * 100):.2f}"
     except ValueError:
         commission_percentage = ""
-    billing_datetime = f"{billing_date}T00:00:00" if billing_date else ""
+    billing_datetime = to_iso_datetime(billing_date)
     return {
         "billing_date": billing_date,
         "billing_datetime": billing_datetime,
@@ -111,7 +123,7 @@ def parse_summary_pdf_text(text: str, source_file: str, email_date: str) -> Dict
             commission_percentage = f"{(float(total_service_fees) / float(total_sales) * 100):.2f}"
     except ValueError:
         commission_percentage = ""
-    billing_datetime = f"{billing_date}T00:00:00" if billing_date else ""
+    billing_datetime = to_iso_datetime(billing_date)
     return {
         "billing_date": billing_date,
         "billing_datetime": billing_datetime,
@@ -296,7 +308,7 @@ def run(mbox_path: str, out_path: str) -> int:
     if "billing_datetime" in df.columns:
         sort_key = pd.to_datetime(
             df["billing_datetime"],
-            format="%m/%d/%YT%H:%M:%S",
+            format="%Y-%m-%dT%H:%M:%S",
             errors="coerce",
         )
         df = df.assign(_sort_key=sort_key).sort_values(
