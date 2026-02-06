@@ -81,6 +81,25 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 processing_fee = normalize_money(f"{-(subtotal * 0.02):.2f}")
                 note = "billings missing; fees/tax estimated from subtotal"
                 row["errors"] = " | ".join([row.get("errors", ""), note]).strip(" |")
+        subtotal = row.get("subtotal", "")
+        tip = row.get("tip", "")
+        delivery_fee = row.get("delivery_fee", "")
+        total = ""
+        try:
+            total_val = float(subtotal or 0) + float(tax or 0) + float(tip or 0) + float(delivery_fee or 0)
+            total = f"{total_val:.2f}" if total_val else ""
+        except ValueError:
+            total = ""
+        payout = ""
+        try:
+            payout_val = (
+                float(total or 0)
+                + float(commission_fee or 0)
+                + float(processing_fee or 0)
+            )
+            payout = f"{payout_val:.2f}" if payout_val else ""
+        except ValueError:
+            payout = ""
         normalized.append(
             build_normalized_row(
                 Platforms.FOODRUNNERS.upper(),
@@ -95,16 +114,17 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 email=row.get("email", ""),
                 address=row.get("address", ""),
                 payment_type=PaymentTypes.CREDIT,
-                subtotal=row.get("subtotal", ""),
+                subtotal=subtotal,
                 tax=tax,
                 tax_withheld="",
-                tip=row.get("tip", ""),
-                delivery_fee=row.get("delivery_fee", ""),
-                total=row.get("total", ""),
+                tip=tip,
+                delivery_fee=delivery_fee,
+                total=total,
                 item_count=row.get("item_count", ""),
                 processing_fee=processing_fee,
                 commission_fee=commission_fee,
                 items=row.get("items", ""),
+                payout=payout,
                 errors=row.get("errors", ""),
                 notes="",
             )

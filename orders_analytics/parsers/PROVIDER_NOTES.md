@@ -59,6 +59,8 @@ Concerns / follow-ups:
   - Applies statement payout (`Balance pay`) and settlement ID to each order row.
 - Normalization merges billings and overrides `subtotal/tax` when available; mismatches recorded in `errors`.
  - All orders are pickup.
+ - `total` = subtotal + tax (+ tip/delivery_fee if present).
+ - `payout` = total + commission_fee + processing_fee.
 - Manual cancellations live in `data/raw/foodrunners/cancellations_raw.csv` and are removed from normalized output.
 
 ## Foodja
