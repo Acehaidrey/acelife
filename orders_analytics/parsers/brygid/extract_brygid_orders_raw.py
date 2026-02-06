@@ -66,66 +66,83 @@ def _strip_tags(value: str) -> str:
     return text.strip()
 
 
-def _extract_field(html: str, label: str) -> str:
+def _html_to_text(html: str) -> str:
+    text = re.sub(r"<br\s*/?>", "\n", html, flags=re.IGNORECASE)
+    text = re.sub(r"</(tr|td)>", "\n", text, flags=re.IGNORECASE)
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = html_lib.unescape(text)
+    text = re.sub(r"[ \t]+", " ", text)
+    text = re.sub(r"\n\s*\n+", "\n", text)
+    return text.strip()
+
+
+def _extract_field(text: str, label: str) -> str:
+    match = re.search(rf"{re.escape(label)}\s*:?\s*([^\n]+)", text, flags=re.IGNORECASE)
+    return match.group(1).strip() if match else ""
+
+
+def _extract_amount(label: str, text: str) -> str:
     match = re.search(
-        rf"{re.escape(label)}\s*:?\s*(?:</?[^>]+>)*\s*([^<]+)",
-        html,
+        rf"{re.escape(label)}\s*:?\s*(\$?[-\d,.]+)",
+        text,
         flags=re.IGNORECASE,
     )
-    return _strip_tags(match.group(1)) if match else ""
-
-
-def _extract_amount(label: str, html: str) -> str:
-    match = re.search(rf"{re.escape(label)}\s*:?\s*(\$?[-\d,.]+)", html, flags=re.IGNORECASE)
     return normalize_money(match.group(1)) if match else ""
 
 
 def parse_order(html: str) -> Dict[str, str]:
+    cutoff = html.lower().find("powered by brygid")
+    if cutoff != -1:
+        html = html[:cutoff]
+    text = _html_to_text(html)
     order_id = ""
-    match = re.search(r"Order#(\d+)", html, flags=re.IGNORECASE)
+    match = re.search(r"Order#\s*:?\s*(\d+)", text, flags=re.IGNORECASE)
     if match:
         order_id = match.group(1)
-    placed_on = _extract_field(html, "Placed On")
-    customer_name = _extract_field(html, "Customer Name")
-    phone = _extract_field(html, "Phone")
-    email = _extract_field(html, "Email")
+    placed_on = _extract_field(text, "Placed On")
+    customer_name = _extract_field(text, "Customer Name")
+    phone = _extract_field(text, "Phone")
+    email = _extract_field(text, "Email")
 
     restaurant_name = ""
     restaurant_match = re.search(r"<font[^>]*>\s*([^<]+)\s*</font>", html, flags=re.IGNORECASE)
     if restaurant_match:
         restaurant_name = _strip_tags(restaurant_match.group(1))
+    if not restaurant_name:
+        lines = [line.strip() for line in text.split("\n") if line.strip()]
+        for idx, line in enumerate(lines):
+            if line.lower().startswith("online order"):
+                for next_line in lines[idx + 1 :]:
+                    if next_line.lower().startswith("order#"):
+                        break
+                    restaurant_name = next_line
+                    break
+                break
 
     order_type = OrderTypes.PICKUP
-    header_match = re.search(r"Online Order\s*\(([^)]+)\)", html, flags=re.IGNORECASE)
+    header_match = re.search(r"Online Order\s*\(([^)]+)\)", text, flags=re.IGNORECASE)
     if header_match and "delivery" in header_match.group(1).lower():
         order_type = OrderTypes.DELIVERY
 
     payment_type = "credit"
-    if re.search(r"Pay with Cash", html, flags=re.IGNORECASE):
+    if re.search(r"Pay with Cash", text, flags=re.IGNORECASE):
         payment_type = "cash"
 
-    street = _extract_field(html, "Street")
-    city_state = _extract_field(html, "City/State")
+    street = _extract_field(text, "Street")
+    city_state = _extract_field(text, "City/State")
     address = ", ".join([part for part in [street, city_state] if part])
 
-    subtotal = _extract_amount("Subtotal", html)
-    tax = _extract_amount("Taxes", html)
-    tip = _extract_amount("Gratuity", html)
-    delivery_fee = _extract_amount("Delivery Charge", html) or _extract_amount("Delivery Fee", html)
-    total = _extract_amount("Order Total", html) or _extract_amount("Total", html)
+    subtotal = _extract_amount("Subtotal", text)
+    tax = _extract_amount("Taxes", text) or _extract_amount("Sales Tax", text)
+    tip = _extract_amount("Gratuity", text)
+    delivery_fee = _extract_amount("Delivery Charge", text) or _extract_amount("Delivery Fee", text)
+    total = _extract_amount("Order Total", text) or _extract_amount("Total", text)
 
     items = []
     item_count = 0
-    item_rows = re.findall(
-        r"<tr>\s*<td>\s*(\d+)\s*</td>.*?<td[^>]*>(.*?)</td>\s*<td[^>]*>\s*\$",
-        html,
-        flags=re.IGNORECASE | re.DOTALL,
-    )
-    for qty, item_html in item_rows:
-        cleaned = _strip_tags(item_html)
-        if not cleaned:
-            continue
-        item_name = cleaned.split("\n", 1)[0].strip()
+    item_lines = re.findall(r"\b(\d+)\s+([A-Za-z][^\n]+)", text)
+    for qty, name in item_lines:
+        item_name = name.strip()
         if item_name:
             items.append(item_name)
             try:
