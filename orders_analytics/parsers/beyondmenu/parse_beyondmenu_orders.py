@@ -17,6 +17,9 @@ from orders_analytics.utils.normalize import (
     normalize_payment_type,
     title_with_state,
 )
+from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def normalize_restaurant(store: str) -> str:
@@ -84,38 +87,38 @@ class BeyondMenuOrdersParser(BaseParser):
         elif "Payment" in df.columns:
             payment_source = df.get("Payment", "")
 
-        normalized = pd.DataFrame(
-            {
-                "order_id": df["Order #"],
-                "platform": "BEYONDMENU",
-                "provider": df["provider"],
-                "restaurant_name": df["restaurant"],
-                "order_datetime": df["order_datetime"],
-                "order_type": df["order_type"],
-                "customer_name": df.get("Name", "").fillna(""),
-                "company_name": "",
-                "phone": df.get("Phone", "").fillna(""),
-                "email": "",
-                "address": df.get("Address", "").fillna(""),
-                "payment_type": payment_source.apply(normalize_payment_type) if hasattr(payment_source, "apply") else "credit",
-                "subtotal": df.get("Subtotal", "").fillna(""),
-                "tax": df.get("Tax", "").fillna(""),
-                "tip": df.get("Tip", "").fillna(""),
-                "delivery_fee": df.get("Delivery Fee", "").fillna(""),
-                "total": df.get("Total", "").fillna(""),
-                "items": "",
-                "item_count": "",
-                "processing_fee": negate_money_series(df.get("Merchant Fee", "").fillna("")),
-                "commission_fee": negate_money_series(df.get("Commission Fee", "").fillna("")),
-                "tax_withheld": "",
-                "adjustments": "",
-                "marketing_fee": "",
-                "misc_fee": negate_money_series(df.get("Misc Fee", "").fillna("")),
-                "errors": "",
-                "notes": df.get("Notes", "").fillna(""),
-            }
-        )
-        return normalized.to_dict("records")
+        if hasattr(payment_source, "apply"):
+            payment_series = payment_source.apply(normalize_payment_type)
+        else:
+            payment_series = pd.Series([PaymentTypes.CREDIT] * len(df))
+
+        df = df.reset_index(drop=True)
+        rows: List[Dict[str, str]] = []
+        for idx, row in df.iterrows():
+            rows.append(
+                build_normalized_row(
+                    Platforms.BEYONDMENU.upper(),
+                    order_id=str(row.get("Order #", "")),
+                    provider=str(row.get("provider", "")),
+                    restaurant_name=str(row.get("restaurant", "")),
+                    order_datetime=str(row.get("order_datetime", "")),
+                    order_type=str(row.get("order_type", "")),
+                    customer_name=str(row.get("Name", "")),
+                    phone=str(row.get("Phone", "")),
+                    address=str(row.get("Address", "")),
+                    payment_type=str(payment_series.iloc[idx] or PaymentTypes.CREDIT),
+                    subtotal=str(row.get("Subtotal", "")),
+                    tax=str(row.get("Tax", "")),
+                    tip=str(row.get("Tip", "")),
+                    delivery_fee=str(row.get("Delivery Fee", "")),
+                    total=str(row.get("Total", "")),
+                    processing_fee=str(negate_money_series(pd.Series([row.get("Merchant Fee", "")])).iloc[0]),
+                    commission_fee=str(negate_money_series(pd.Series([row.get("Commission Fee", "")])).iloc[0]),
+                    misc_fee=str(negate_money_series(pd.Series([row.get("Misc Fee", "")])).iloc[0]),
+                    notes=str(row.get("Notes", "")),
+                )
+            )
+        return rows
 
 
 def main() -> None:
