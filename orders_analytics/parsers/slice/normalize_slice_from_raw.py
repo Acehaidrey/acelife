@@ -117,6 +117,12 @@ def normalize_rows(
                 notes.append(description)
         adjustments_total = order_adjustments + extra_adjustments
 
+        payout_total = (
+            parse_decimal(normalize_dash_zero(row.get("total", "")))
+            + parse_decimal(normalize_dash_zero(row.get("processing_fee", "")))
+            + parse_decimal(normalize_money(row.get("partnership_fee", "")))
+            - parse_decimal(normalize_dash_zero(row.get("tax", "")))
+        )
         normalized.append(
             build_normalized_row(
                 Platforms.SLICE.upper(),
@@ -135,6 +141,7 @@ def normalize_rows(
                 processing_fee=normalize_dash_zero(row.get("processing_fee", "")),
                 commission_fee=normalize_money(row.get("partnership_fee", "")),
                 adjustments=normalize_money(f"{adjustments_total:.2f}"),
+                payout=normalize_money(f"{payout_total:.2f}"),
                 errors="",
                 notes=" | ".join([note for note in notes if note]),
             )

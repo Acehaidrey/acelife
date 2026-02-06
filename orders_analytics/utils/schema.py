@@ -108,17 +108,24 @@ def compute_expected_payout(row: Dict[str, str]) -> str:
         return ""
 
     expected = Decimal("0.00")
-    if subtotal is not None:
-        expected += subtotal
-    if tax is not None:
-        expected += tax
-    if tip is not None:
-        expected += tip
-    if delivery_fee is not None:
-        expected += delivery_fee
-    if adjustments is not None:
-        expected += adjustments
-    for fee in (commission_fee, processing_fee, marketing_fee, misc_fee):
-        if fee is not None:
-            expected += fee
+    from orders_analytics.utils.payment_types import PaymentTypes
+    payment_type = str(row.get("payment_type") or "").strip().lower()
+    if payment_type == PaymentTypes.CASH:
+        if commission_fee is None:
+            return ""
+        expected = commission_fee
+    else:
+        if subtotal is not None:
+            expected += subtotal
+        if tax is not None:
+            expected += tax
+        if tip is not None:
+            expected += tip
+        if delivery_fee is not None:
+            expected += delivery_fee
+        if adjustments is not None:
+            expected += adjustments
+        for fee in (commission_fee, processing_fee, marketing_fee, misc_fee):
+            if fee is not None:
+                expected += fee
     return f"{expected.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)}"

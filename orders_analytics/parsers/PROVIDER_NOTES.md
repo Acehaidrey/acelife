@@ -113,6 +113,8 @@ Concerns / follow-ups:
 - Billings parser: `parsers/officecaterer/extract_officecaterer_billings_raw.py`
   - Pulls per-order `amount` (subtotal), `tax`, `commission`, and `payable amount` from statement PDFs.
   - Captures statement date, period start/end, and restaurant name.
+- Normalization: `parsers/officecaterer/normalize_officecaterer_from_raw.py`
+  - Billings `payout` is mapped to normalized `payout` (removed from notes).
 
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
@@ -138,6 +140,8 @@ Concerns / follow-ups:
 - Parser: `parsers/slice/extract_slice_orders_raw.py`
   - Reads the Orders table (page 2+).
   - Captures Date/Time, Order ID, payment type (Credit/Phone), order type (Pickup/Delivery), Subtotal, Customer Delivery Fee, Order Adjust., Tax, Tips, Order Total, Partnership Fee, Processing Fee.
+- Normalization: `parsers/slice/normalize_slice_from_raw.py`
+  - `payout` = total + partnership_fee + processing_fee - tax_withheld (tax column).
   - Order datetime is built from the date line + the time line beneath each row.
 
 ## ChowNow
