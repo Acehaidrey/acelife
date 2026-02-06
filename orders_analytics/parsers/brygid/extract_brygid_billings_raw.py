@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import argparse
-import glob
+import io
+import mailbox
 import os
 import re
+from email.utils import parsedate_to_datetime
 from typing import Dict, List
 
 import pdfplumber
@@ -25,9 +27,7 @@ RAW_COLUMNS = [
 ]
 
 
-def parse_summary_html(path: str) -> Dict[str, str]:
-    with open(path, encoding="utf-8", errors="replace") as handle:
-        html = handle.read()
+def parse_summary_html_text(html: str, source_file: str, email_date: str) -> Dict[str, str]:
     def find(label: str) -> str:
         match = re.search(
             rf"{re.escape(label)}\s*:?</b></td>\s*<td[^>]*>\s*([^<]+)",
@@ -37,6 +37,7 @@ def parse_summary_html(path: str) -> Dict[str, str]:
         if not match:
             match = re.search(rf"{re.escape(label)}\s*:?\\s*([^<\\n]+)", html, flags=re.IGNORECASE)
         return match.group(1).strip() if match else ""
+
     billing_date = find("Billing Date")
     total_order_count = find("Total Order Count")
     total_sales = normalize_money(find("Total Sales"))
@@ -56,14 +57,14 @@ def parse_summary_html(path: str) -> Dict[str, str]:
         "average_check": average_check,
         "total_service_fees": total_service_fees,
         "commission_percentage": commission_percentage,
-        "source_file": os.path.basename(path),
-        "email_date": "",
+        "source_file": source_file,
+        "email_date": email_date,
     }
 
 
-def parse_invoice_pdf(path: str) -> str:
+def parse_invoice_pdf_payload(payload: bytes) -> str:
     invoice = ""
-    with pdfplumber.open(path) as pdf:
+    with pdfplumber.open(io.BytesIO(payload)) as pdf:
         for page in pdf.pages:
             text = page.extract_text() or ""
             match = re.search(r"Invoice\s*#\s*([A-Za-z0-9-]+)", text, flags=re.IGNORECASE)
@@ -73,21 +74,51 @@ def parse_invoice_pdf(path: str) -> str:
     return invoice
 
 
-def run(mail_dir: str, out_path: str) -> int:
+def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
-    html_files = glob.glob(os.path.join(mail_dir, "*Order-Summary*.html"))
-    for path in html_files:
-        rows.append(parse_summary_html(path))
-    invoice_files = glob.glob(os.path.join(mail_dir, "*Invoice*.pdf"))
-    invoice_numbers = []
-    for path in invoice_files:
-        invoice = parse_invoice_pdf(path)
-        if invoice:
-            invoice_numbers.append(invoice)
-    if invoice_numbers:
-        # If multiple summaries, just attach first invoice number to each summary row.
-        for row in rows:
-            row["invoice_number"] = invoice_numbers[0]
+    mbox = mailbox.mbox(mbox_path)
+    for msg in mbox:
+        email_date = ""
+        if msg.get("Date"):
+            try:
+                email_date = parsedate_to_datetime(msg.get("Date")).isoformat()
+            except (TypeError, ValueError):
+                email_date = ""
+        html_rows: List[Dict[str, str]] = []
+        invoice_numbers: List[str] = []
+        if msg.is_multipart():
+            for part in msg.walk():
+                filename = part.get_filename() or ""
+                content_type = part.get_content_type()
+                payload = part.get_payload(decode=True) or b""
+                if not payload:
+                    continue
+                if content_type == "text/html" or filename.lower().endswith(".html"):
+                    try:
+                        html_text = payload.decode(part.get_content_charset() or "utf-8", errors="replace")
+                    except (LookupError, TypeError):
+                        html_text = payload.decode(errors="replace")
+                    html_rows.append(
+                        parse_summary_html_text(
+                            html_text,
+                            filename or os.path.basename(mbox_path),
+                            email_date,
+                        )
+                    )
+                elif content_type == "application/pdf" or filename.lower().endswith(".pdf"):
+                    invoice = parse_invoice_pdf_payload(payload)
+                    if invoice:
+                        invoice_numbers.append(invoice)
+        # Attach invoice number from same email when available.
+        if invoice_numbers:
+            for row in html_rows:
+                row["invoice_number"] = invoice_numbers[0]
+        rows.extend(html_rows)
+    return rows
+
+
+def run(mbox_path: str, out_path: str) -> int:
+    rows = parse_mbox(mbox_path)
     if not rows:
         return 0
     now = pd.Timestamp.utcnow().isoformat()
@@ -99,11 +130,11 @@ def run(mail_dir: str, out_path: str) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Extract Brygid billings summary from HTML/PDF files.")
+    parser = argparse.ArgumentParser(description="Extract Brygid billings summary from mbox attachments.")
     parser.add_argument(
-        "--mail-dir",
-        default=takeout_path("Mail"),
-        help="Directory containing Brygid summary HTML/PDF files.",
+        "--mbox",
+        default=takeout_path("Mail", "Billings-Brygid.mbox"),
+        help="Path to Billings-Brygid.mbox",
     )
     parser.add_argument(
         "--out",
@@ -111,7 +142,7 @@ def main() -> None:
         help="Output raw CSV path.",
     )
     args = parser.parse_args()
-    count = run(args.mail_dir, args.out)
+    count = run(args.mbox, args.out)
     print(f"Wrote {count} rows to {args.out}")
 
 

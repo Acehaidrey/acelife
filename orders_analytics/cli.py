@@ -230,6 +230,7 @@ def run_parse(
         return
     elif platform == "brygid":
         from orders_analytics.parsers.brygid import (
+            extract_brygid_billings_raw,
             extract_brygid_orders_raw,
             normalize_brygid_from_raw,
         )
@@ -243,6 +244,10 @@ def run_parse(
             "normalized_out", normalized_path("brygid_orders_normalized.csv")
         )
         extract_brygid_orders_raw.run(orders_mbox, orders_raw)
+        extract_brygid_billings_raw.run(
+            takeout_path("Mail", "Billings-Brygid.mbox"),
+            raw_path("brygid", "billings_raw.csv"),
+        )
         normalize_brygid_from_raw.run(orders_raw, normalized_out)
         print("[brygid] extracted raw orders and normalized.")
         return
@@ -361,10 +366,18 @@ def run_extract(
         extract_chownow_billings_raw.run(billings_mbox, billings_raw)
         return
     if platform == "brygid":
-        from orders_analytics.parsers.brygid import extract_brygid_orders_raw
+        from orders_analytics.parsers.brygid import (
+            extract_brygid_billings_raw,
+            extract_brygid_orders_raw,
+        )
+        from orders_analytics.utils.constants import raw_path
 
         orders_mbox = takeout_path("Mail", "Orders-Brygid.mbox")
         extract_brygid_orders_raw.run(orders_mbox, orders_raw)
+        extract_brygid_billings_raw.run(
+            takeout_path("Mail", "Billings-Brygid.mbox"),
+            raw_path("brygid", "billings_raw.csv"),
+        )
         return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
