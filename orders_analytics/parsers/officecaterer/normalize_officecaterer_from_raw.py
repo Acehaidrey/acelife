@@ -8,6 +8,9 @@ import pandas as pd
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.validation import normalize_order_type
+from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -31,38 +34,32 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 commission_fee = ""
                 processing_fee = ""
         normalized.append(
-            {
-                "order_id": row.get("order_id", ""),
-                "platform": "OFFICECATERER",
-                "provider": row.get("provider", ""),
-                "restaurant_name": row.get("restaurant_name", ""),
-                "order_datetime": row.get("order_datetime", ""),
-                "order_type": normalize_order_type(row.get("order_type", "")),
-                "customer_name": row.get("customer_name", ""),
-                "company_name": row.get("company_name", ""),
-                "phone": row.get("phone", ""),
-                "email": row.get("email", ""),
-                "address": row.get("address", ""),
-                "address_formatted": "",
-                "lat": "",
-                "lng": "",
-                "payment_type": "credit",
-                "subtotal": row.get("subtotal", ""),
-                "tax": row.get("tax", ""),
-                "tax_withheld": "",
-                "tip": row.get("tip", ""),
-                "delivery_fee": row.get("delivery_fee", ""),
-                "total": row.get("total", ""),
-                "item_count": row.get("item_count", ""),
-                "processing_fee": processing_fee,
-                "commission_fee": commission_fee,
-                "items": row.get("items", ""),
-                "adjustments": "",
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": row.get("errors", ""),
-                "notes": row.get("notes", ""),
-            }
+            build_normalized_row(
+                Platforms.OFFICECATERER.upper(),
+                order_id=row.get("order_id", ""),
+                provider=row.get("provider", ""),
+                restaurant_name=row.get("restaurant_name", ""),
+                order_datetime=row.get("order_datetime", ""),
+                order_type=normalize_order_type(row.get("order_type", "")),
+                customer_name=row.get("customer_name", ""),
+                company_name=row.get("company_name", ""),
+                phone=row.get("phone", ""),
+                email=row.get("email", ""),
+                address=row.get("address", ""),
+                payment_type=PaymentTypes.CREDIT,
+                subtotal=row.get("subtotal", ""),
+                tax=row.get("tax", ""),
+                tax_withheld="",
+                tip=row.get("tip", ""),
+                delivery_fee=row.get("delivery_fee", ""),
+                total=row.get("total", ""),
+                item_count=row.get("item_count", ""),
+                processing_fee=processing_fee,
+                commission_fee=commission_fee,
+                items=row.get("items", ""),
+                errors=row.get("errors", ""),
+                notes=row.get("notes", ""),
+            )
         )
     return normalized
 

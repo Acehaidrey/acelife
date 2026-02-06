@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Dict, List, Tuple
 
 from orders_analytics.utils.order_types import OrderTypes
+from orders_analytics.utils.schema import CANONICAL_COLUMNS
 from orders_analytics.utils.payment_types import PaymentTypes
 
 
@@ -228,6 +229,30 @@ def validate_negative_fees(
                         "source": source,
                     }
                 )
+    return rows, errors
+
+
+def validate_canonical_columns(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        missing = [col for col in CANONICAL_COLUMNS if col not in row]
+        if not missing:
+            continue
+        flag = "missing_canonical_columns"
+        _append_error(row, flag)
+        errors.append(
+            {
+                "order_id": row.get("order_id", ""),
+                "platform": row.get("platform", ""),
+                "provider": row.get("provider", ""),
+                "error_code": flag,
+                "message": f"missing={','.join(missing)}",
+                "source": source,
+            }
+        )
     return rows, errors
 
 

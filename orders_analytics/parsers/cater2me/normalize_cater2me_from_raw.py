@@ -10,6 +10,9 @@ from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.normalize import normalize_datetime, normalize_order_type
 from orders_analytics.utils.order_types import OrderTypes
+from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -80,39 +83,37 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     for row in rows:
         item_count = max_int(row.get("item_count", ""), row.get("headcount", ""))
         normalized.append(
-            {
-                "order_id": row.get("order_id", ""),
-                "platform": "CATER2ME",
-                "provider": normalize_provider(row.get("restaurant_name", "")),
-                "restaurant_name": row.get("restaurant_name", ""),
-                "order_datetime": normalize_datetime_cater2me(
+            build_normalized_row(
+                Platforms.CATER2ME.upper(),
+                order_id=row.get("order_id", ""),
+                provider=normalize_provider(row.get("restaurant_name", "")),
+                restaurant_name=row.get("restaurant_name", ""),
+                order_datetime=normalize_datetime_cater2me(
                     row.get("order_date_order", ""),
                     row.get("order_time", ""),
                 )
                 or normalize_datetime_cater2me(row.get("order_date", ""), row.get("order_time", "")),
-                "order_type": normalize_order_type(OrderTypes.DELIVERY),
-                "customer_name": row.get("customer_name", ""),
-                "company_name": row.get("company_name", ""),
-                "phone": row.get("phone", ""),
-                "email": row.get("email", ""),
-                "address": row.get("address", ""),
-                "payment_type": "credit",
-                "subtotal": row.get("pre_tax", ""),
-                "tax": "",
-                "tax_withheld": calc_tax_withheld(row.get("pre_tax", "")),
-                "tip": row.get("tip", ""),
-                "delivery_fee": row.get("adjustments_delivery_fee", ""),
-                "total": row.get("order_total", ""),
-                "item_count": item_count,
-                "processing_fee": row.get("processing_fee", ""),
-                "commission_fee": row.get("service_fee", ""),
-                "items": row.get("items", ""),
-                "adjustments": row.get("adjustments_total", ""),
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": "",
-                "notes": row.get("adjustments_notes", ""),
-            }
+                order_type=normalize_order_type(OrderTypes.DELIVERY),
+                customer_name=row.get("customer_name", ""),
+                company_name=row.get("company_name", ""),
+                phone=row.get("phone", ""),
+                email=row.get("email", ""),
+                address=row.get("address", ""),
+                payment_type=PaymentTypes.CREDIT,
+                subtotal=row.get("pre_tax", ""),
+                tax="",
+                tax_withheld=calc_tax_withheld(row.get("pre_tax", "")),
+                tip=row.get("tip", ""),
+                delivery_fee=row.get("adjustments_delivery_fee", ""),
+                total=row.get("order_total", ""),
+                item_count=item_count,
+                processing_fee=row.get("processing_fee", ""),
+                commission_fee=row.get("service_fee", ""),
+                items=row.get("items", ""),
+                adjustments=row.get("adjustments_total", ""),
+                errors="",
+                notes=row.get("adjustments_notes", ""),
+            )
         )
     return normalized
 

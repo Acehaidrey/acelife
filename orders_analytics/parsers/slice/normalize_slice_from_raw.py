@@ -13,6 +13,8 @@ from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.validation import normalize_order_type, normalize_payment_type
 from orders_analytics.utils.order_types import OrderTypes
 from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -116,38 +118,26 @@ def normalize_rows(
         adjustments_total = order_adjustments + extra_adjustments
 
         normalized.append(
-            {
-                "order_id": order_id,
-                "platform": "SLICE",
-                "provider": row.get("provider", ""),
-                "restaurant_name": row.get("restaurant_name", ""),
-                "order_datetime": row.get("order_datetime", ""),
-                "order_type": normalize_order_type_for_slice(row.get("order_type", "")),
-                "customer_name": "",
-                "company_name": "",
-                "phone": "",
-                "email": "",
-                "address": "",
-                "address_formatted": "",
-                "lat": "",
-                "lng": "",
-                "payment_type": normalize_payment_type(row.get("payment_type", "")),
-                "subtotal": normalize_dash_zero(row.get("subtotal", "")),
-                "tax": "",
-                "tax_withheld": normalize_dash_zero(row.get("tax", "")),
-                "tip": normalize_dash_zero(row.get("tip", "")),
-                "delivery_fee": normalize_dash_zero(row.get("customer_delivery_fee", "")),
-                "total": normalize_dash_zero(row.get("total", "")),
-                "item_count": "",
-                "processing_fee": normalize_dash_zero(row.get("processing_fee", "")),
-                "commission_fee": normalize_money(row.get("partnership_fee", "")),
-                "items": "",
-                "adjustments": normalize_money(f"{adjustments_total:.2f}"),
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": "",
-                "notes": " | ".join([note for note in notes if note]),
-            }
+            build_normalized_row(
+                Platforms.SLICE.upper(),
+                order_id=order_id,
+                provider=row.get("provider", ""),
+                restaurant_name=row.get("restaurant_name", ""),
+                order_datetime=row.get("order_datetime", ""),
+                order_type=normalize_order_type_for_slice(row.get("order_type", "")),
+                payment_type=normalize_payment_type(row.get("payment_type", "")),
+                subtotal=normalize_dash_zero(row.get("subtotal", "")),
+                tax="",
+                tax_withheld=normalize_dash_zero(row.get("tax", "")),
+                tip=normalize_dash_zero(row.get("tip", "")),
+                delivery_fee=normalize_dash_zero(row.get("customer_delivery_fee", "")),
+                total=normalize_dash_zero(row.get("total", "")),
+                processing_fee=normalize_dash_zero(row.get("processing_fee", "")),
+                commission_fee=normalize_money(row.get("partnership_fee", "")),
+                adjustments=normalize_money(f"{adjustments_total:.2f}"),
+                errors="",
+                notes=" | ".join([note for note in notes if note]),
+            )
         )
 
     for synth in synthetic_rows:
@@ -155,38 +145,18 @@ def normalize_rows(
         if synth.get("adjustment_description"):
             notes.append(synth["adjustment_description"])
         normalized.append(
-            {
-                "order_id": synth["order_id"],
-                "platform": "SLICE",
-                "provider": provider_default,
-                "restaurant_name": restaurant_default,
-                "order_datetime": synth.get("order_datetime", ""),
-                "order_type": OrderTypes.PHONE_CALL,
-                "customer_name": "",
-                "company_name": "",
-                "phone": "",
-                "email": "",
-                "address": "",
-                "address_formatted": "",
-                "lat": "",
-                "lng": "",
-                "payment_type": PaymentTypes.CASH,
-                "subtotal": "",
-                "tax": "",
-                "tax_withheld": "",
-                "tip": "",
-                "delivery_fee": "",
-                "total": "",
-                "item_count": "",
-                "processing_fee": "",
-                "commission_fee": "",
-                "items": "",
-                "adjustments": normalize_money(f"{synth['adjustment_amount']:.2f}"),
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": "adjustment_only",
-                "notes": " | ".join([note for note in notes if note]),
-            }
+            build_normalized_row(
+                Platforms.SLICE.upper(),
+                order_id=synth["order_id"],
+                provider=provider_default,
+                restaurant_name=restaurant_default,
+                order_datetime=synth.get("order_datetime", ""),
+                order_type=OrderTypes.PHONE_CALL,
+                payment_type=PaymentTypes.CASH,
+                adjustments=normalize_money(f"{synth['adjustment_amount']:.2f}"),
+                errors="adjustment_only",
+                notes=" | ".join([note for note in notes if note]),
+            )
         )
 
     for order_id, items in adjustments_map.items():
@@ -196,38 +166,16 @@ def normalize_rows(
         notes = [desc for _, desc, _ in items if desc]
         adjustment_datetime = items[0][2] if items else ""
         normalized.append(
-            {
-                "order_id": order_id,
-                "platform": "SLICE",
-                "provider": provider_default,
-                "restaurant_name": restaurant_default,
-                "order_datetime": adjustment_datetime,
-                "order_type": "",
-                "customer_name": "",
-                "company_name": "",
-                "phone": "",
-                "email": "",
-                "address": "",
-                "address_formatted": "",
-                "lat": "",
-                "lng": "",
-                "payment_type": "",
-                "subtotal": "",
-                "tax": "",
-                "tax_withheld": "",
-                "tip": "",
-                "delivery_fee": "",
-                "total": "",
-                "item_count": "",
-                "processing_fee": "",
-                "commission_fee": "",
-                "items": "",
-                "adjustments": normalize_money(f"{total:.2f}"),
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": "adjustment_only",
-                "notes": " | ".join([note for note in notes if note]),
-            }
+            build_normalized_row(
+                Platforms.SLICE.upper(),
+                order_id=order_id,
+                provider=provider_default,
+                restaurant_name=restaurant_default,
+                order_datetime=adjustment_datetime,
+                adjustments=normalize_money(f"{total:.2f}"),
+                errors="adjustment_only",
+                notes=" | ".join([note for note in notes if note]),
+            )
         )
 
     return normalized

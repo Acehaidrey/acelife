@@ -57,3 +57,14 @@ def write_normalized_rows(rows: Iterable[Dict[str, str]], path: str) -> None:
         writer.writeheader()
         for row in canonicalize_rows(rows):
             writer.writerow(row)
+
+
+def build_normalized_row(platform: str, **kwargs: str) -> Dict[str, str]:
+    unknown = [key for key in kwargs.keys() if key not in CANONICAL_COLUMNS]
+    if unknown:
+        raise KeyError(f"Unknown normalized fields: {', '.join(sorted(unknown))}")
+    row = {col: "" for col in CANONICAL_COLUMNS}
+    row["platform"] = platform
+    for key, value in kwargs.items():
+        row[key] = "" if value is None else value
+    return row

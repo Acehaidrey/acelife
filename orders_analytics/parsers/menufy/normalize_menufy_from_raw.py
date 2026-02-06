@@ -10,6 +10,8 @@ from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.validation import normalize_order_type, normalize_payment_type
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -57,42 +59,35 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
             notes.append(f"total_payout={total_payout}")
 
         normalized.append(
-            {
-                "order_id": row.get("order_id", ""),
-                "platform": "MENUFY",
-                "provider": row.get("provider", ""),
-                "restaurant_name": row.get("restaurant_name", ""),
-                "order_datetime": row.get("order_datetime", ""),
-                "order_type": normalize_order_type(row.get("order_type", "")),
-                "customer_name": row.get("customer_name", ""),
-                "company_name": "",
-                "phone": row.get("phone", ""),
-                "email": row.get("email", ""),
-                "address": row.get("address", ""),
-                "address_formatted": "",
-                "lat": "",
-                "lng": "",
-                "payment_type": normalize_payment_type(row.get("payment_type", "")),
-                "subtotal": row.get("subtotal", ""),
-                "tax": tax,
-                "tax_withheld": normalize_money(row.get("tax_withholdings", "")),
-                "tip": row.get("tip", ""),
-                "delivery_fee": row.get("delivery_fee", ""),
-                "total": row.get("total", ""),
-                "item_count": "",
-                "processing_fee": normalize_money(
+            build_normalized_row(
+                Platforms.MENUFY.upper(),
+                order_id=row.get("order_id", ""),
+                provider=row.get("provider", ""),
+                restaurant_name=row.get("restaurant_name", ""),
+                order_datetime=row.get("order_datetime", ""),
+                order_type=normalize_order_type(row.get("order_type", "")),
+                customer_name=row.get("customer_name", ""),
+                phone=row.get("phone", ""),
+                email=row.get("email", ""),
+                address=row.get("address", ""),
+                payment_type=normalize_payment_type(row.get("payment_type", "")),
+                subtotal=row.get("subtotal", ""),
+                tax=tax,
+                tax_withheld=normalize_money(row.get("tax_withholdings", "")),
+                tip=row.get("tip", ""),
+                delivery_fee=row.get("delivery_fee", ""),
+                total=row.get("total", ""),
+                processing_fee=normalize_money(
                     f"{-parse_decimal(row.get('restaurant_fees', '')):.2f}"
                 )
                 if row.get("restaurant_fees", "")
                 else "",
-                "commission_fee": normalize_money(f"{-customer_fees:.2f}") if customer_fees else "",
-                "items": "",
-                "adjustments": normalize_money(adjustments_total),
-                "marketing_fee": "",
-                "misc_fee": normalize_money(row.get("delivery_service", "")),
-                "errors": errors,
-                "notes": " | ".join([n for n in notes if n]),
-            }
+                commission_fee=normalize_money(f"{-customer_fees:.2f}") if customer_fees else "",
+                adjustments=normalize_money(adjustments_total),
+                misc_fee=normalize_money(row.get("delivery_service", "")),
+                errors=errors,
+                notes=" | ".join([n for n in notes if n]),
+            )
         )
     return normalized
 

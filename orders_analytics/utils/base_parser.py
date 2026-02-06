@@ -17,6 +17,7 @@ from orders_analytics.utils.validation import (
     validate_negative_fees,
     validate_cash_processing_fee,
     validate_order_datetime_iso,
+    validate_canonical_columns,
 )
 from orders_analytics.utils.constants import ERRORS_PATH
 
@@ -86,6 +87,7 @@ class BaseParser:
                 if isinstance(value, str) and value.strip().lower() == "nan":
                     row[key] = ""
         for validator in (
+            validate_canonical_columns,
             validate_required_fields,
             validate_enum_fields,
             validate_delivery_fee,

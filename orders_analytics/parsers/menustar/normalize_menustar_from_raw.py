@@ -16,6 +16,8 @@ from orders_analytics.utils.normalize import (
     normalize_payment_type,
 )
 from orders_analytics.utils.providers import Providers, normalize_provider, normalize_datetime
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 
@@ -402,35 +404,32 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
             note = row.get("date_mismatch_note", "")
             notes = " | ".join([notes, note]).strip(" |")
         normalized.append(
-            {
-                "order_id": row.get("order_id_order", ""),
-                "platform": "MENUSTAR",
-                "provider": provider,
-                "restaurant_name": row.get("restaurant_name", ""),
-                "order_datetime": order_datetime,
-                "order_type": normalize_order_type(row.get("order_type", "")),
-                "customer_name": row.get("customer_name_order", ""),
-                "company_name": "",
-                "phone": row.get("phone_order", ""),
-                "email": row.get("email_order", ""),
-                "address": normalize_address(address_raw) or address_raw,
-                "payment_type": normalize_payment_type(row.get("payment_type", "")),
-                "subtotal": row.get("subtotal", ""),
-                "tax": row.get("tax", ""),
-                "tax_withheld": "",
-                "tip": row.get("tip", ""),
-                "delivery_fee": row.get("delivery_fee", ""),
-                "total": row.get("total", ""),
-                "item_count": row.get("item_count_order", ""),
-                "processing_fee": row.get("processing_fee", ""),
-                "commission_fee": row.get("commission_fee", ""),
-                "items": row.get("items_order", ""),
-                "adjustments": adjustments_value,
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": "",
-                "notes": notes,
-            }
+            build_normalized_row(
+                Platforms.MENUSTAR.upper(),
+                order_id=row.get("order_id_order", ""),
+                provider=provider,
+                restaurant_name=row.get("restaurant_name", ""),
+                order_datetime=order_datetime,
+                order_type=normalize_order_type(row.get("order_type", "")),
+                customer_name=row.get("customer_name_order", ""),
+                phone=row.get("phone_order", ""),
+                email=row.get("email_order", ""),
+                address=normalize_address(address_raw) or address_raw,
+                payment_type=normalize_payment_type(row.get("payment_type", "")),
+                subtotal=row.get("subtotal", ""),
+                tax=row.get("tax", ""),
+                tax_withheld="",
+                tip=row.get("tip", ""),
+                delivery_fee=row.get("delivery_fee", ""),
+                total=row.get("total", ""),
+                item_count=row.get("item_count_order", ""),
+                processing_fee=row.get("processing_fee", ""),
+                commission_fee=row.get("commission_fee", ""),
+                items=row.get("items_order", ""),
+                adjustments=adjustments_value,
+                errors="",
+                notes=notes,
+            )
         )
     return normalized
 

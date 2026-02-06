@@ -11,6 +11,9 @@ from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.validation import normalize_order_type
 from orders_analytics.utils.order_types import OrderTypes
+from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -91,38 +94,32 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         if "status=canceled" in notes or "status=inactive" in notes:
             continue
         normalized.append(
-            {
-                "order_id": row.get("order_id", ""),
-                "platform": "FOODEE",
-                "provider": row.get("provider", ""),
-                "restaurant_name": row.get("restaurant_name", ""),
-                "order_datetime": row.get("order_datetime", ""),
-                "order_type": OrderTypes.PICKUP,
-                "customer_name": row.get("customer_name", ""),
-                "company_name": row.get("company_name", ""),
-                "phone": row.get("phone", ""),
-                "email": row.get("email", ""),
-                "address": row.get("address", ""),
-                "address_formatted": "",
-                "lat": "",
-                "lng": "",
-                "payment_type": "credit",
-                "subtotal": row.get("subtotal", ""),
-                "tax": row.get("tax", ""),
-                "tax_withheld": row.get("tax_withheld", ""),
-                "tip": row.get("tip", ""),
-                "delivery_fee": row.get("delivery_fee", ""),
-                "total": row.get("total", ""),
-                "item_count": row.get("item_count", ""),
-                "processing_fee": "",
-                "commission_fee": row.get("commission_fee", ""),
-                "items": row.get("items", ""),
-                "adjustments": row.get("adjustments", ""),
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": row.get("errors", ""),
-                "notes": row.get("notes", ""),
-            }
+            build_normalized_row(
+                Platforms.FOODEE.upper(),
+                order_id=row.get("order_id", ""),
+                provider=row.get("provider", ""),
+                restaurant_name=row.get("restaurant_name", ""),
+                order_datetime=row.get("order_datetime", ""),
+                order_type=OrderTypes.PICKUP,
+                customer_name=row.get("customer_name", ""),
+                company_name=row.get("company_name", ""),
+                phone=row.get("phone", ""),
+                email=row.get("email", ""),
+                address=row.get("address", ""),
+                payment_type=PaymentTypes.CREDIT,
+                subtotal=row.get("subtotal", ""),
+                tax=row.get("tax", ""),
+                tax_withheld=row.get("tax_withheld", ""),
+                tip=row.get("tip", ""),
+                delivery_fee=row.get("delivery_fee", ""),
+                total=row.get("total", ""),
+                item_count=row.get("item_count", ""),
+                commission_fee=row.get("commission_fee", ""),
+                items=row.get("items", ""),
+                adjustments=row.get("adjustments", ""),
+                errors=row.get("errors", ""),
+                notes=row.get("notes", ""),
+            )
         )
     return normalized
 

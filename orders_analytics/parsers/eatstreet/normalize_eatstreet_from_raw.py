@@ -10,6 +10,8 @@ from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
 
 from orders_analytics.utils.validation import normalize_order_type, validate_tax_fields
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -103,35 +105,31 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         if payment_type == "cash" and (processing_fee == "" or processing_fee is None):
             processing_fee = "0.00"
         normalized.append(
-            {
-                "order_id": row.get("order_id", ""),
-                "platform": row.get("platform", "EATSTREET"),
-                "provider": row.get("provider", ""),
-                "order_datetime": order_dt,
-                "order_type": normalize_order_type(row.get("order_type", "")),
-                "customer_name": row.get("customer_name", ""),
-                "company_name": "",
-                "phone": row.get("phone", ""),
-                "email": row.get("email", ""),
-                "address": row.get("address", ""),
-                "payment_type": payment_type,
-                "subtotal": row.get("subtotal", ""),
-                "tax": row_tax,
-                "tip": row.get("tip", ""),
-                "delivery_fee": row.get("delivery_fee", ""),
-                "total": row.get("total", ""),
-                "item_count": row.get("item_count", ""),
-                "processing_fee": processing_fee,
-                "commission_fee": commission_fee,
-                "restaurant_name": row.get("restaurant_name", ""),
-                "items": row.get("items", ""),
-                "tax_withheld": tax_withheld,
-                "adjustments": "",
-                "marketing_fee": "",
-                "misc_fee": "",
-                "errors": "",
-                "notes": " | ".join(notes),
-            }
+            build_normalized_row(
+                (row.get("platform") or Platforms.EATSTREET).upper(),
+                order_id=row.get("order_id", ""),
+                provider=row.get("provider", ""),
+                order_datetime=order_dt,
+                order_type=normalize_order_type(row.get("order_type", "")),
+                customer_name=row.get("customer_name", ""),
+                phone=row.get("phone", ""),
+                email=row.get("email", ""),
+                address=row.get("address", ""),
+                payment_type=payment_type,
+                subtotal=row.get("subtotal", ""),
+                tax=row_tax,
+                tax_withheld=tax_withheld,
+                tip=row.get("tip", ""),
+                delivery_fee=row.get("delivery_fee", ""),
+                total=row.get("total", ""),
+                item_count=row.get("item_count", ""),
+                processing_fee=processing_fee,
+                commission_fee=commission_fee,
+                restaurant_name=row.get("restaurant_name", ""),
+                items=row.get("items", ""),
+                errors="",
+                notes=" | ".join(notes),
+            )
         )
     return normalized
 

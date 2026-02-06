@@ -12,6 +12,8 @@ from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.order_types import OrderTypes
 from orders_analytics.utils.validation import normalize_order_type
 from orders_analytics.utils.payment_types import PaymentTypes
+from orders_analytics.utils.platforms import Platforms
+from orders_analytics.utils.schema import build_normalized_row
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -227,38 +229,34 @@ def normalize_rows(
             continue
 
         normalized.append(
-            {
-                "order_id": order_id,
-                "platform": "CHOWNOW",
-                "provider": provider,
-                "restaurant_name": restaurant_name,
-                "order_datetime": order_datetime,
-                "order_type": order_type,
-                "customer_name": customer_name,
-                "company_name": "",
-                "phone": order.get("phone", ""),
-                "email": order.get("email", ""),
-                "address": order.get("address", ""),
-                "address_formatted": "",
-                "lat": "",
-                "lng": "",
-                "payment_type": payment_type,
-                "subtotal": subtotal,
-                "tax": tax,
-                "tax_withheld": "",
-                "tip": tip,
-                "delivery_fee": delivery_fee,
-                "total": total,
-                "item_count": order.get("item_count", ""),
-                "processing_fee": transaction_fee,
-                "commission_fee": commission_fee,
-                "items": order.get("items", ""),
-                "adjustments": adjustments_value,
-                "marketing_fee": marketing_fee,
-                "misc_fee": misc_fee,
-                "errors": " | ".join(errors),
-                "notes": " | ".join([n for n in notes if n]),
-            }
+            build_normalized_row(
+                Platforms.CHOWNOW.upper(),
+                order_id=order_id,
+                provider=provider,
+                restaurant_name=restaurant_name,
+                order_datetime=order_datetime,
+                order_type=order_type,
+                customer_name=customer_name,
+                phone=order.get("phone", ""),
+                email=order.get("email", ""),
+                address=order.get("address", ""),
+                payment_type=payment_type,
+                subtotal=subtotal,
+                tax=tax,
+                tax_withheld="",
+                tip=tip,
+                delivery_fee=delivery_fee,
+                total=total,
+                item_count=order.get("item_count", ""),
+                processing_fee=transaction_fee,
+                commission_fee=commission_fee,
+                items=order.get("items", ""),
+                adjustments=adjustments_value,
+                marketing_fee=marketing_fee,
+                misc_fee=misc_fee,
+                errors=" | ".join(errors),
+                notes=" | ".join([n for n in notes if n]),
+            )
         )
     return normalized
 
