@@ -26,6 +26,8 @@ RAW_COLUMNS = [
     "invoice_number",
     "due_date",
     "invoice_total",
+    "other_service_charges",
+    "notes",
     "source_file",
     "invoice_source_file",
     "email_date",
@@ -283,6 +285,21 @@ def run(mbox_path: str, out_path: str) -> int:
     rows = [row for row in parse_mbox(mbox_path) if row.get("billing_date")]
     if not rows:
         return 0
+    adjustments_path = raw_path("brygid", "adjustments_raw.csv")
+    adjustments = {}
+    if os.path.exists(adjustments_path):
+        try:
+            adj_df = pd.read_csv(adjustments_path, dtype=str).fillna("")
+            for record in adj_df.to_dict("records"):
+                key = normalize_date(record.get("billing_date", ""))
+                if not key:
+                    continue
+                adjustments[key] = {
+                    "other_service_charges": normalize_money(record.get("other_service_charges", "")),
+                    "notes": record.get("notes", "").strip(),
+                }
+        except Exception:
+            adjustments = {}
     def score(row: Dict[str, str]) -> int:
         return sum(1 for value in row.values() if str(value or "").strip())
     deduped: Dict[str, Dict[str, str]] = {}
@@ -301,6 +318,16 @@ def run(mbox_path: str, out_path: str) -> int:
             if str(row.get("email_date", "")) > str(current.get("email_date", "")):
                 deduped[key] = row
     rows = list(deduped.values())
+    if adjustments:
+        for row in rows:
+            key = normalize_date(row.get("billing_date", ""))
+            adj = adjustments.get(key)
+            if not adj:
+                continue
+            if adj.get("other_service_charges"):
+                row["other_service_charges"] = adj["other_service_charges"]
+            if adj.get("notes"):
+                row["notes"] = " | ".join([row.get("notes", ""), adj["notes"]]).strip(" |")
     now = pd.Timestamp.utcnow().isoformat()
     for row in rows:
         row["added_at"] = now
