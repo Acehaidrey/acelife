@@ -82,6 +82,15 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     normalized = []
     for row in rows:
         item_count = max_int(row.get("item_count", ""), row.get("headcount", ""))
+        subtotal = row.get("pre_tax", "")
+        tip = row.get("tip", "")
+        delivery_fee = row.get("adjustments_delivery_fee", "")
+        total = ""
+        try:
+            total_val = float(subtotal or 0) + float(tip or 0) + float(delivery_fee or 0)
+            total = f"{total_val:.2f}" if total_val else ""
+        except ValueError:
+            total = ""
         normalized.append(
             build_normalized_row(
                 Platforms.CATER2ME.upper(),
@@ -100,17 +109,18 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 email=row.get("email", ""),
                 address=row.get("address", ""),
                 payment_type=PaymentTypes.CREDIT,
-                subtotal=row.get("pre_tax", ""),
+                subtotal=subtotal,
                 tax="",
                 tax_withheld=calc_tax_withheld(row.get("pre_tax", "")),
-                tip=row.get("tip", ""),
-                delivery_fee=row.get("adjustments_delivery_fee", ""),
-                total=row.get("order_total", ""),
+                tip=tip,
+                delivery_fee=delivery_fee,
+                total=total,
                 item_count=item_count,
                 processing_fee=row.get("processing_fee", ""),
                 commission_fee=row.get("service_fee", ""),
                 items=row.get("items", ""),
                 adjustments=row.get("adjustments_total", ""),
+                payout=row.get("order_total", ""),
                 errors="",
                 notes=row.get("adjustments_notes", ""),
             )
@@ -122,8 +132,19 @@ class Cater2MeNormalizer(BaseParser):
     platform = "CATER2ME"
     provider = ""
 
-    def __init__(self, orders_raw_path: str = "", billings_raw_path: str = "", out_path: str = ""):
-        super().__init__(input_path=orders_raw_path, out_path=out_path, billings_raw=billings_raw_path)
+    def __init__(
+        self,
+        orders_raw_path: str = "",
+        billings_raw_path: str = "",
+        out_path: str = "",
+        **kwargs,
+    ):
+        super().__init__(
+            input_path=orders_raw_path,
+            out_path=out_path,
+            billings_raw=billings_raw_path,
+            **kwargs,
+        )
 
     def default_input_path(self) -> str:
         return raw_path("cater2me", "orders_raw.csv")

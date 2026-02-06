@@ -121,6 +121,12 @@ Concerns / follow-ups:
 - Parser: `parsers/ezcater/parse_ezcater_orders.py`
   - `payout` is mapped from `Caterer Total Due`.
 
+## Cater2Me
+- Sources: `Takeout/Mail/Orders-Cater2Me.mbox`, `Takeout/Mail/Billings-Cater2Me.mbox`
+- Normalization: `parsers/cater2me/normalize_cater2me_from_raw.py`
+  - `total` = pre_tax + tip + adjustments_delivery_fee (computed).
+  - `payout` is mapped from billings `order_total`.
+
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
 - Customers: `Takeout/Menufy/Customer_Emails_02-05-2026.csv`, `Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv`
