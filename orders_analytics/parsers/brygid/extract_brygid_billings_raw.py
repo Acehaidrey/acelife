@@ -292,8 +292,11 @@ def run(mbox_path: str, out_path: str) -> int:
     now = pd.Timestamp.utcnow().isoformat()
     for row in rows:
         row["added_at"] = now
+    df = pd.DataFrame(rows).reindex(columns=RAW_COLUMNS)
+    if "billing_datetime" in df.columns:
+        df = df.sort_values(by="billing_datetime", ascending=True, kind="stable")
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    pd.DataFrame(rows).reindex(columns=RAW_COLUMNS).to_csv(out_path, index=False)
+    df.to_csv(out_path, index=False)
     return len(rows)
 
 
