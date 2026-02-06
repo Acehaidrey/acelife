@@ -327,6 +327,21 @@ def run_extract(
         orders_root = "Takeout/Slice"
         extract_slice_orders_raw.run(orders_root, orders_raw)
         return
+    if platform == "chownow":
+        from orders_analytics.parsers.chownow import (
+            extract_chownow_orders_raw,
+            extract_chownow_billings_raw,
+        )
+
+        orders_mbox = takeout_path("Mail", "Orders-ChowNow.mbox")
+        billings_mbox = takeout_path("Mail", "Billings-ChowNow.mbox")
+        customer_files = [
+            "Takeout/Chownow/CustomerOrders_lastran_06Feb26.xls",
+            "Takeout/Chownow/CustomerOrders_lastran_06Feb26 (1).xls",
+        ]
+        extract_chownow_orders_raw.run(orders_mbox, orders_raw, customer_files)
+        extract_chownow_billings_raw.run(billings_mbox, billings_raw)
+        return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
 
@@ -513,6 +528,31 @@ def run_normalize(
             reset_errors=reset_errors,
         )
         print(f"[slice] normalized -> {normalized_out}")
+        return
+    if platform == "chownow":
+        from orders_analytics.parsers.chownow import normalize_chownow_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("chownow", "orders_raw.csv")
+        )
+        billings_raw_path = billings_raw or extras.pop(
+            "billings_raw", raw_path("chownow", "billings_raw.csv")
+        )
+        cancellations_raw_path = extras.pop(
+            "cancellations_raw", raw_path("chownow", "cancellations_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("chownow_orders_normalized.csv")
+        )
+        normalize_chownow_from_raw.run(
+            orders_raw_path,
+            billings_raw_path,
+            cancellations_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
+        )
+        print(f"[chownow] normalized -> {normalized_out}")
         return
     if platform == "beyondmenu":
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
@@ -921,6 +961,11 @@ def main() -> None:
             billings_mbox = args.billings_mbox or ""
             orders_raw = args.orders_raw or raw_path("slice", "orders_raw.csv")
             billings_raw = args.billings_raw or ""
+        elif args.platform == "chownow":
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-ChowNow.mbox")
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-ChowNow.mbox")
+            orders_raw = args.orders_raw or raw_path("chownow", "orders_raw.csv")
+            billings_raw = args.billings_raw or raw_path("chownow", "billings_raw.csv")
         else:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")

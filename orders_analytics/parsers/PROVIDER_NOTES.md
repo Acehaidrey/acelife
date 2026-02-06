@@ -139,3 +139,16 @@ Concerns / follow-ups:
   - Reads the Orders table (page 2+).
   - Captures Date/Time, Order ID, payment type (Credit/Phone), order type (Pickup/Delivery), Subtotal, Customer Delivery Fee, Order Adjust., Tax, Tips, Order Total, Partnership Fee, Processing Fee.
   - Order datetime is built from the date line + the time line beneath each row.
+
+## ChowNow
+- Sources:
+  - Orders: `Takeout/Mail/Orders-ChowNow.mbox`
+  - Billings: `Takeout/Mail/Billings-ChowNow.mbox` (xls attachments)
+- Orders parser: `parsers/chownow/extract_chownow_orders_raw.py`
+  - Parses plain-text emails for order details, customer info, and totals.
+  - Order type is inferred from `Order Type` (Pickup/Delivery/Uber).
+  - Support Local Fee (if present) is appended to `notes`.
+- Billings parser: `parsers/chownow/extract_chownow_billings_raw.py`
+  - Reads DisbursementReport/Daily/Weekly/Monthly XLS attachments.
+  - Keeps only rows with `Order Id` (drops daily summary/Net Disbursement rows).
+  - Full Refund rows remain (Order Type = Full Refund) and should be treated as adjustments by order_id during normalization.
