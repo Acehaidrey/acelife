@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from orders_analytics.utils.errors import reconcile_errors, clear_errors_for_platform
@@ -113,6 +114,16 @@ class BaseParser:
             rows = apply_cache_to_rows(rows)
         except Exception:
             pass
+        def sort_key(row: Dict[str, str]) -> tuple:
+            value = str(row.get("order_datetime") or "").strip()
+            if not value:
+                return (1, "")
+            try:
+                return (0, datetime.fromisoformat(value.replace("Z", "+00:00")))
+            except ValueError:
+                return (0, value)
+
+        rows = sorted(rows, key=sort_key)
         return rows
 
     def validate(self, rows: List[Dict[str, str]]) -> List[str]:

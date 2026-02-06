@@ -56,6 +56,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 item_count=row.get("item_count", ""),
                 processing_fee=processing_fee,
                 commission_fee=commission_fee,
+                payout=row.get("payout", ""),
                 items=row.get("items", ""),
                 errors=row.get("errors", ""),
                 notes=row.get("notes", ""),
@@ -108,10 +109,12 @@ class OfficeCatererNormalizer(BaseParser):
                 if billing.get("provider") and not row.get("provider"):
                     row["provider"] = billing.get("provider")
                 notes = []
-                for key in ("statement_date", "period_start", "period_end", "payout", "statement_id"):
+                for key in ("statement_date", "period_start", "period_end", "statement_id"):
                     value = billing.get(key, "")
                     if value:
                         notes.append(f"{key}={value}")
+                if billing.get("payout"):
+                    row["payout"] = billing.get("payout")
                 if notes:
                     row["notes"] = " | ".join([row.get("notes", ""), *notes]).strip(" |")
                 if mismatches:
