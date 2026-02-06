@@ -147,8 +147,40 @@ Concerns / follow-ups:
 - Orders parser: `parsers/chownow/extract_chownow_orders_raw.py`
   - Parses plain-text emails for order details, customer info, and totals.
   - Order type is inferred from `Order Type` (Pickup/Delivery/Uber).
-  - Support Local Fee (if present) is appended to `notes`.
+  - Support Local Fee (if present) is appended to `notes` and captured for totals math.
+  - Promotions:
+    - `Promotions:` line captured when present.
+    - If the email shows “$X of your credit has been applied…”, promotions are set to `-X.XX`.
+    - When both “Grand Total” and “Total” appear, `Grand Total` wins for `total`.
+    - If promotions are present and no explicit customer paid line exists, `total` is recomputed as
+      subtotal + tax + tip + delivery_fee + support_local_fee, and `customer_paid` is set to the
+      original total (customer paid).
+  - Adds `customer_paid` column when present in the email.
+  - Customer emails are enriched from:
+    - `Takeout/Chownow/CustomerOrders_lastran_06Feb26.xls`
+    - `Takeout/Chownow/CustomerOrders_lastran_06Feb26 (1).xls`
+    - Match is case/whitespace-insensitive on customer name.
 - Billings parser: `parsers/chownow/extract_chownow_billings_raw.py`
   - Reads DisbursementReport/Daily/Weekly/Monthly XLS attachments.
   - Keeps only rows with `Order Id` (drops daily summary/Net Disbursement rows).
-  - Full Refund rows remain (Order Type = Full Refund) and should be treated as adjustments by order_id during normalization.
+  - Normalizes Order Id as integer string (no .0).
+- Normalization: `parsers/chownow/normalize_chownow_from_raw.py`
+  - Billings is source of truth; orders_raw used for customer info + order notes.
+  - Order datetime prefers billings `Order Date` + `Order Time (PST)`; fallback to orders_raw.
+  - Provider/restaurant fall back to billings `Restaurant Name` if missing; provider inferred from restaurant.
+  - `Order Type = Full Refund` rows are not emitted as separate records; refund amounts are summed into
+    `adjustments` for the matching order_id, with `refund_total=...` in notes.
+  - Support Local Fee handling:
+    - If support_local_fee exists in orders_raw notes, `total` = billing Gross + support_local_fee.
+    - `adjustments` includes a negative support_local_fee to offset payout.
+  - Promotions / Bucks:
+    - `Bucks` in billings are treated as positive and mapped to `marketing_fee` as negative.
+    - If Bucks is present, it overrides promotions from orders; otherwise promotions are used.
+  - Flex delivery:
+    - Delivery fee = `Delivery Fee` + `Flex Delivery Fee`.
+    - Flex delivery fee + flex tips are added to notes (only when non-zero).
+    - If Flex Delivery Fee is present and order_type is delivery, the order is treated as pickup.
+  - Payment type:
+    - If Card Type includes “cash” or “collect”, payment_type = cash; else credit.
+  - Test orders:
+    - Any order where customer_name contains “test order” is dropped from normalized output.
