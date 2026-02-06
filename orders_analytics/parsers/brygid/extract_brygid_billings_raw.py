@@ -294,7 +294,16 @@ def run(mbox_path: str, out_path: str) -> int:
         row["added_at"] = now
     df = pd.DataFrame(rows).reindex(columns=RAW_COLUMNS)
     if "billing_datetime" in df.columns:
-        df = df.sort_values(by="billing_datetime", ascending=True, kind="stable")
+        sort_key = pd.to_datetime(
+            df["billing_datetime"],
+            format="%m/%d/%YT%H:%M:%S",
+            errors="coerce",
+        )
+        df = df.assign(_sort_key=sort_key).sort_values(
+            by="_sort_key",
+            ascending=True,
+            kind="stable",
+        ).drop(columns=["_sort_key"])
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     df.to_csv(out_path, index=False)
     return len(rows)
