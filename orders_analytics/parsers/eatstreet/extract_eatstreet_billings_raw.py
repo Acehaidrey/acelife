@@ -5,6 +5,7 @@ import html
 import mailbox
 import os
 import re
+from email.utils import parsedate_to_datetime
 from typing import Dict, List, Tuple
 
 import pandas as pd
@@ -20,6 +21,8 @@ RAW_COLUMNS = [
     "processing_fee",
     "commission_fee",
     "raw_tokens",
+    "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -88,10 +91,20 @@ def parse_billings_mbox(mbox_path: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
+        email_date = ""
+        if msg.get("Date"):
+            try:
+                email_date = parsedate_to_datetime(msg.get("Date")).isoformat()
+            except (TypeError, ValueError):
+                email_date = ""
         html_text = extract_html(msg)
         if not html_text:
             continue
-        rows.extend(parse_fee_rows(html_text))
+        parsed_rows = parse_fee_rows(html_text)
+        for row in parsed_rows:
+            row["source_file"] = os.path.basename(mbox_path)
+            row["email_date"] = email_date
+        rows.extend(parsed_rows)
     return rows
 
 

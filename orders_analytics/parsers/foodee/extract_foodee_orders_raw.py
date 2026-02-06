@@ -34,6 +34,8 @@ RAW_COLUMNS = [
     "delivery_fee",
     "total",
     "notes",
+    "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -313,6 +315,12 @@ def run(mbox_path: str, out_path: str) -> int:
     canceled_ids: Set[str] = set()
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
+        email_date = ""
+        if msg.get("Date"):
+            try:
+                email_date = parsedate_to_datetime(msg.get("Date")).isoformat()
+            except (TypeError, ValueError):
+                email_date = ""
         text = extract_text(msg)
         if not text:
             continue
@@ -323,6 +331,8 @@ def run(mbox_path: str, out_path: str) -> int:
             canceled_ids.add(order_id)
         parsed = parse_order(lines, msg.get("Date", ""), subject)
         if parsed:
+            parsed["source_file"] = os.path.basename(mbox_path)
+            parsed["email_date"] = email_date
             rows.append(parsed)
     if canceled_ids:
         for row in rows:

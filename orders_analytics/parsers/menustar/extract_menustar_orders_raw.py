@@ -31,6 +31,8 @@ RAW_COLUMNS = [
     "delivery_fee",
     "tip",
     "total",
+    "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -232,6 +234,12 @@ def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
+        email_date = ""
+        if msg.get("Date"):
+            try:
+                email_date = parsedate_to_datetime(msg.get("Date")).isoformat()
+            except (TypeError, ValueError):
+                email_date = ""
         subject = msg.get("subject", "")
         msg_date = msg.get("date", "")
         html = ""
@@ -244,6 +252,8 @@ def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
         if html.strip():
             row = parse_order(html, subject, msg_date)
             if row.get("order_id"):
+                row["source_file"] = os.path.basename(mbox_path)
+                row["email_date"] = email_date
                 rows.append(row)
     return rows
 

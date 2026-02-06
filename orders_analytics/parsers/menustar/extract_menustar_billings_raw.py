@@ -36,6 +36,8 @@ RAW_COLUMNS = [
     "statement_adjustments",
     "statement_net_payout",
     "statement_source_file",
+    "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -142,6 +144,8 @@ def parse_csv_rows(
                 **summary,
                 "statement_menustar_fees_allocated": "",
                 "statement_source_file": filename,
+                "source_file": filename,
+                "email_date": statement_email_date,
             }
         )
     # Allocate MenuStar Fees across all orders by subtotal.

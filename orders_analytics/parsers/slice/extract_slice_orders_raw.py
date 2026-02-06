@@ -32,6 +32,7 @@ RAW_COLUMNS = [
     "statement_period_end",
     "account_id",
     "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -44,6 +45,7 @@ ADJUSTMENT_COLUMNS = [
     "statement_period_end",
     "account_id",
     "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -55,6 +57,7 @@ STATEMENT_COLUMNS = [
     "statement_period_end",
     "account_id",
     "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -451,6 +454,7 @@ def parse_pdf(
                         "statement_period_end": period["statement_period_end"],
                         "account_id": account_id,
                         "source_file": os.path.basename(path),
+                        "email_date": "",
                     }
                 )
 
@@ -474,6 +478,7 @@ def parse_pdf(
                             "statement_period_end": period["statement_period_end"],
                             "account_id": account_id,
                             "source_file": os.path.basename(path),
+                            "email_date": "",
                         }
                     )
 
@@ -506,6 +511,7 @@ def parse_pdf(
                         "statement_period_end": period["statement_period_end"],
                         "account_id": account_id,
                         "source_file": os.path.basename(path),
+                        "email_date": "",
                     }
                 )
             continue
@@ -556,6 +562,7 @@ def parse_pdf(
                 "statement_period_end": period["statement_period_end"],
                 "account_id": account_id,
                 "source_file": os.path.basename(path),
+                "email_date": "",
             }
         )
 

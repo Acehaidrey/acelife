@@ -39,6 +39,7 @@ RAW_COLUMNS = [
     "adjustments",
     "notes",
     "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -208,6 +209,7 @@ def parse_orders_csv(path: str, payment_type: str, refunds: Dict[Tuple[str, str,
                 "adjustments": adjustments,
                 "notes": notes,
                 "source_file": os.path.basename(path),
+                "email_date": "",
             }
         )
     return rows

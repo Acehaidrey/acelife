@@ -5,6 +5,7 @@ import io
 import mailbox
 import os
 import re
+from email.utils import parsedate_to_datetime
 from typing import Dict, List
 
 import pandas as pd
@@ -30,6 +31,8 @@ RAW_COLUMNS = [
     "statement_period_end",
     "statement_date",
     "restaurant_name",
+    "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -196,12 +199,23 @@ def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
+        email_date = ""
+        if msg.get("Date"):
+            try:
+                email_date = parsedate_to_datetime(msg.get("Date")).isoformat()
+            except (TypeError, ValueError):
+                email_date = ""
         for part in msg.walk():
             if part.get_content_type() == "application/pdf":
                 payload = part.get_payload(decode=True)
                 if not payload:
                     continue
-                rows.extend(parse_pdf(payload))
+                filename = part.get_filename() or ""
+                parsed_rows = parse_pdf(payload)
+                for row in parsed_rows:
+                    row["source_file"] = filename
+                    row["email_date"] = email_date
+                rows.extend(parsed_rows)
     return rows
 
 

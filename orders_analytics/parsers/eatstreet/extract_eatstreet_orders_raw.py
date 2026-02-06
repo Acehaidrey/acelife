@@ -6,6 +6,7 @@ import json
 import mailbox
 import os
 import re
+from email.utils import parsedate_to_datetime
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -37,6 +38,8 @@ RAW_COLUMNS = [
     "total",
     "items",
     "item_count",
+    "source_file",
+    "email_date",
     "added_at",
 ]
 
@@ -275,6 +278,12 @@ def parse_orders(mbox_path: str) -> List[Dict[str, str]]:
     orders: List[Dict[str, str]] = []
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
+        email_date = ""
+        if msg.get("Date"):
+            try:
+                email_date = parsedate_to_datetime(msg.get("Date")).isoformat()
+            except (TypeError, ValueError):
+                email_date = ""
         html_text = extract_html(msg)
         if not html_text:
             continue
@@ -341,6 +350,8 @@ def parse_orders(mbox_path: str) -> List[Dict[str, str]]:
                 "total": fees.get("TOTAL", ""),
                 "items": items_summary,
                 "item_count": items_count,
+                "source_file": os.path.basename(mbox_path),
+                "email_date": email_date,
             }
         )
     return orders
