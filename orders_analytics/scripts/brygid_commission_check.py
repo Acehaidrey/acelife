@@ -44,7 +44,7 @@ def dedupe_orders(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def compute_commission(values: pd.Series) -> pd.Series:
-    commission = values * 0.025
+    commission = values * 0.02
     return commission.clip(lower=0.50, upper=2.00)
 
 
@@ -53,8 +53,8 @@ def main() -> None:
     parser.add_argument(
         "--commission-base",
         choices=("subtotal", "total"),
-        default="total",
-        help="Column to base the 2.5%% commission on.",
+        default="subtotal",
+        help="Column to base the 2%% commission on.",
     )
     parser.add_argument(
         "--out",
@@ -140,6 +140,8 @@ def main() -> None:
     merged["order_count_diff"] = merged["orders_count"] - merged["billed_order_count"]
     merged["total_sales_diff"] = merged["total_sum"] - merged["billed_total_sales"]
     merged["service_fees_diff"] = merged["commission_sum"] - merged["billed_service_fees"]
+    merged["order_counts_match"] = merged["order_count_diff"] == 0
+    merged["total_match"] = merged["total_sales_diff"].abs() <= 0.01
 
     for col in [
         "subtotal_sum",
