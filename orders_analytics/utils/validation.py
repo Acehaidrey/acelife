@@ -256,6 +256,37 @@ def validate_canonical_columns(
     return rows, errors
 
 
+def validate_payout_expected(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        payout_raw = str(row.get("payout") or "").strip()
+        expected_raw = str(row.get("expected_payout") or "").strip()
+        if not payout_raw or not expected_raw:
+            continue
+        try:
+            payout_val = float(payout_raw.replace("$", "").replace(",", ""))
+            expected_val = float(expected_raw.replace("$", "").replace(",", ""))
+        except ValueError:
+            continue
+        if abs(payout_val - expected_val) > 0.01:
+            flag = "payout_expected_mismatch"
+            _append_error(row, flag)
+            errors.append(
+                {
+                    "order_id": row.get("order_id", ""),
+                    "platform": row.get("platform", ""),
+                    "provider": row.get("provider", ""),
+                    "error_code": flag,
+                    "message": f"payout={payout_raw} expected={expected_raw}",
+                    "source": source,
+                }
+            )
+    return rows, errors
+
+
 def validate_cash_processing_fee(
     rows: List[Dict[str, str]],
     source: str,

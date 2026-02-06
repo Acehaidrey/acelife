@@ -245,3 +245,29 @@ def geocode_addresses(
     if cache_updated:
         _write_cache(cache_path, cache)
     return cache
+
+
+def apply_cache_to_rows(
+    rows: List[Dict[str, str]],
+    cache_path: str = DEFAULT_CACHE_PATH,
+) -> List[Dict[str, str]]:
+    cache = _read_cache(cache_path)
+    for row in rows:
+        address = str(row.get("address") or "").strip()
+        if not address:
+            continue
+        key = normalize_key(address)
+        cached = cache.get(key)
+        if not cached:
+            continue
+        formatted = str(cached.get("formatted_address") or "").strip()
+        if formatted:
+            row["address_formatted"] = formatted
+            row["lat"] = str(cached.get("lat") or "")
+            row["lng"] = str(cached.get("lng") or "")
+        else:
+            existing = str(row.get("errors") or "").strip()
+            flag = "geocode_no_formatted_address"
+            if flag not in existing:
+                row["errors"] = f"{existing} | {flag}" if existing else flag
+    return rows

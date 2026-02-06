@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from orders_analytics.utils.errors import reconcile_errors, clear_errors_for_platform
-from orders_analytics.utils.schema import canonicalize_rows, write_normalized_rows
+from orders_analytics.utils.schema import canonicalize_rows, write_normalized_rows, compute_expected_payout
 from orders_analytics.utils.validation import (
     normalize_order_type,
     normalize_payment_type,
@@ -18,6 +18,7 @@ from orders_analytics.utils.validation import (
     validate_cash_processing_fee,
     validate_order_datetime_iso,
     validate_canonical_columns,
+    validate_payout_expected,
 )
 from orders_analytics.utils.constants import ERRORS_PATH
 
@@ -86,6 +87,8 @@ class BaseParser:
                     continue
                 if isinstance(value, str) and value.strip().lower() == "nan":
                     row[key] = ""
+            if not str(row.get("expected_payout") or "").strip():
+                row["expected_payout"] = compute_expected_payout(row)
         for validator in (
             validate_canonical_columns,
             validate_required_fields,
@@ -96,10 +99,17 @@ class BaseParser:
             validate_negative_fees,
             validate_cash_processing_fee,
             validate_order_datetime_iso,
+            validate_payout_expected,
         ):
             rows, errors = validator(rows, source=self.resolve_paths()[1])
             if errors:
                 self.stats.errors.extend(errors)
+        try:
+            from orders_analytics.utils.geocodio import apply_cache_to_rows
+
+            rows = apply_cache_to_rows(rows)
+        except Exception:
+            pass
         return rows
 
     def validate(self, rows: List[Dict[str, str]]) -> List[str]:

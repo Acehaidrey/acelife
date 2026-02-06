@@ -64,6 +64,7 @@ def normalize_rows(
     orders_map = build_orders_map(orders)
     refund_totals: Dict[str, Decimal] = {}
     refund_notes: Dict[str, str] = {}
+    refund_disbursements: Dict[str, Decimal] = {}
     for row in billings:
         order_id = str(row.get("Order Id", "")).strip()
         if not order_id:
@@ -76,6 +77,11 @@ def normalize_rows(
                 continue
             refund_totals[order_id] = refund_totals.get(order_id, Decimal("0.00")) + amount
             refund_notes[order_id] = f"refund_total={normalize_money(f'{refund_totals[order_id]:.2f}')}"
+            disbursement = parse_decimal(normalize_money(row.get("Disbursement Amount", "")))
+            if disbursement != Decimal("0.00"):
+                refund_disbursements[order_id] = (
+                    refund_disbursements.get(order_id, Decimal("0.00")) + disbursement
+                )
     normalized: List[Dict[str, str]] = []
     for row in billings:
         order_id = str(row.get("Order Id", "")).strip()
@@ -121,8 +127,9 @@ def normalize_rows(
         if withheld_date:
             notes.append(f"withheld_date={withheld_date}")
         disbursement_amount = normalize_money(row.get("Disbursement Amount", ""))
-        if disbursement_amount:
-            notes.append(f"disbursement_amount={disbursement_amount}")
+        if refund_disbursements.get(order_id):
+            disbursement_total = parse_decimal(disbursement_amount) + refund_disbursements[order_id]
+            disbursement_amount = normalize_money(f"{disbursement_total:.2f}")
 
         refund_total = refund_totals.get(order_id, Decimal("0.00"))
         if refund_total != Decimal("0.00"):
@@ -254,6 +261,7 @@ def normalize_rows(
                 adjustments=adjustments_value,
                 marketing_fee=marketing_fee,
                 misc_fee=misc_fee,
+                payout=disbursement_amount,
                 errors=" | ".join(errors),
                 notes=" | ".join([n for n in notes if n]),
             )
