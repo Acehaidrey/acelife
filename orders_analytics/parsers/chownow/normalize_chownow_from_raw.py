@@ -113,6 +113,7 @@ def normalize_rows(
         transaction_fee = normalize_money(row.get("Transaction Fee", ""))
         commission_fee = sum_money(row.get("Finder's Fee", ""), row.get("External Partner Fee", ""))
         misc_fee = normalize_money(row.get("Faxes Sent", ""))
+        bucks = normalize_money(row.get("Bucks", ""))
         refund_amount = normalize_money(row.get("Refund Amount", ""))
         withheld_date = str(row.get("Withheld Date", "")).strip()
         if withheld_date:
@@ -124,10 +125,31 @@ def normalize_rows(
         refund_total = refund_totals.get(order_id, Decimal("0.00"))
         if refund_total != Decimal("0.00"):
             notes.append(refund_notes.get(order_id, f"refund_total={refund_total:.2f}"))
+
+        support_fee = Decimal("0.00")
+        if order_notes:
+            for part in order_notes.split("|"):
+                part = part.strip()
+                if part.startswith("support_local_fee="):
+                    support_fee = parse_decimal(part.split("=", 1)[1])
+                    break
+
         adjustments_total = refund_total if refund_total != Decimal("0.00") else parse_decimal(refund_amount)
+        if support_fee != Decimal("0.00"):
+            adjustments_total += -support_fee
         adjustments_value = normalize_money(f"{adjustments_total:.2f}") if adjustments_total != Decimal("0.00") else ""
 
+        promo_value = Decimal("0.00")
+        promotions = normalize_money(order.get("promotions", ""))
+        if bucks:
+            promo_value = -parse_decimal(bucks)
+        elif promotions:
+            promo_value = parse_decimal(promotions)
+        marketing_fee = normalize_money(f"{promo_value:.2f}") if promo_value != Decimal("0.00") else ""
+
         total = normalize_money(row.get("Gross", ""))
+        if support_fee != Decimal("0.00") and total:
+            total = normalize_money(f"{(parse_decimal(total) + support_fee):.2f}")
 
         order_type_raw = str(order.get("order_type", "")).strip()
         order_type = normalize_order_type(order_type_raw)
@@ -137,6 +159,8 @@ def normalize_rows(
                 order_type = OrderTypes.PICKUP
             elif "delivery" in billing_type:
                 order_type = OrderTypes.DELIVERY
+        if flex_delivery_fee and flex_delivery_fee != "0.00" and order_type == OrderTypes.DELIVERY:
+            order_type = OrderTypes.PICKUP
         if not order:
             notes.append("order_record_missing")
 
@@ -159,7 +183,17 @@ def normalize_rows(
         mismatch("tax", tax, order.get("tax", ""))
         mismatch("delivery_fee", delivery_fee, order.get("delivery_fee", ""))
         mismatch("tip", tip, order.get("tip", ""))
-        mismatch("total", total, order.get("total", ""))
+        order_total = order.get("total", "")
+        order_customer_paid = order.get("customer_paid", "")
+        order_promotions = normalize_money(order.get("promotions", ""))
+        if order_customer_paid and order_promotions:
+            try:
+                order_total = normalize_money(
+                    f"{(parse_decimal(order_customer_paid) - parse_decimal(order_promotions)):.2f}"
+                )
+            except Exception:
+                pass
+        mismatch("total", total, order_total)
 
         order_datetime = order.get("order_datetime", "").strip()
         if not order_datetime:
@@ -220,7 +254,7 @@ def normalize_rows(
                 "commission_fee": commission_fee,
                 "items": order.get("items", ""),
                 "adjustments": adjustments_value,
-                "marketing_fee": "",
+                "marketing_fee": marketing_fee,
                 "misc_fee": misc_fee,
                 "errors": " | ".join(errors),
                 "notes": " | ".join([n for n in notes if n]),

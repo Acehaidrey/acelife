@@ -31,6 +31,8 @@ RAW_COLUMNS = [
     "tax",
     "tip",
     "delivery_fee",
+    "promotions",
+    "customer_paid",
     "total",
     "notes",
     "source_file",
@@ -71,6 +73,16 @@ LABELS = {
 def parse_amount_line(line: str) -> str:
     match = re.search(r"(-?\$?\d[\d,]*\.\d{2})", line)
     return normalize_money(match.group(1)) if match else ""
+
+
+def parse_decimal(value: str) -> float:
+    text = str(value or "").strip().replace("$", "").replace(",", "")
+    if not text:
+        return 0.0
+    try:
+        return float(text)
+    except ValueError:
+        return 0.0
 
 
 def normalize_order_type(raw: str) -> str:
@@ -186,7 +198,11 @@ def parse_order(text: str, subject: str, email_date: str) -> Dict[str, str]:
     tax = ""
     tip = ""
     delivery_fee = ""
+    promotions = ""
+    customer_paid = ""
     total = ""
+    grand_total = ""
+    support_local_fee = ""
     for line in lines:
         lower = line.strip().lower()
         if lower.startswith("sub-total:") or lower.startswith("item total:"):
@@ -197,8 +213,34 @@ def parse_order(text: str, subject: str, email_date: str) -> Dict[str, str]:
             tip = parse_amount_line(line)
         elif lower.startswith("delivery fee:") or lower.startswith("delivery fee"):
             delivery_fee = parse_amount_line(line)
-        elif lower.startswith("total:") or lower.startswith("*grand total"):
+        elif lower.startswith("promotions:"):
+            promotions = parse_amount_line(line)
+        elif lower.startswith("customer paid:"):
+            customer_paid = parse_amount_line(line)
+        elif lower.startswith("support local fee:"):
+            support_local_fee = parse_amount_line(line)
+            if support_local_fee:
+                note = f"support_local_fee={support_local_fee}"
+                if note not in notes:
+                    notes.append(note)
+        elif lower.startswith("grand total:") or lower.startswith("*grand total"):
+            grand_total = parse_amount_line(line)
+        elif lower.startswith("total:"):
             total = parse_amount_line(line)
+        elif "credit has been applied" in lower and "(" in line and ")" in line:
+            credit_match = re.search(r"\(([-$\d.,]+)\)", line)
+            if credit_match:
+                amount = normalize_money(credit_match.group(1))
+                if amount and not str(amount).startswith("-"):
+                    amount = f"-{amount}"
+                promotions = amount
+    if grand_total:
+        total = grand_total
+    elif promotions and not customer_paid:
+        customer_paid = total
+        total = normalize_money(
+            f"{(parse_decimal(subtotal) + parse_decimal(tax) + parse_decimal(tip) + parse_decimal(delivery_fee) + parse_decimal(support_local_fee)):.2f}"
+        )
 
     provider = normalize_provider(restaurant_name) if restaurant_name else ""
 
@@ -219,6 +261,8 @@ def parse_order(text: str, subject: str, email_date: str) -> Dict[str, str]:
         "tax": tax,
         "tip": tip,
         "delivery_fee": delivery_fee,
+        "promotions": promotions,
+        "customer_paid": customer_paid,
         "total": total,
         "notes": " | ".join(notes),
         "source_file": "",
