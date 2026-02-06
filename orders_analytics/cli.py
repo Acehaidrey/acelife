@@ -228,6 +228,24 @@ def run_parse(
         )
         print("[officecaterer] extracted raw orders + billings and normalized.")
         return
+    elif platform == "brygid":
+        from orders_analytics.parsers.brygid import (
+            extract_brygid_orders_raw,
+            normalize_brygid_from_raw,
+        )
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_mbox = input_path or extras.pop(
+            "orders_mbox", takeout_path("Mail", "Orders-Brygid.mbox")
+        )
+        orders_raw = extras.pop("orders_raw", raw_path("brygid", "orders_raw.csv"))
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("brygid_orders_normalized.csv")
+        )
+        extract_brygid_orders_raw.run(orders_mbox, orders_raw)
+        normalize_brygid_from_raw.run(orders_raw, normalized_out)
+        print("[brygid] extracted raw orders and normalized.")
+        return
     else:
         raise ValueError(f"Unknown platform: {platform}")
 
@@ -341,6 +359,12 @@ def run_extract(
         ]
         extract_chownow_orders_raw.run(orders_mbox, orders_raw, customer_files)
         extract_chownow_billings_raw.run(billings_mbox, billings_raw)
+        return
+    if platform == "brygid":
+        from orders_analytics.parsers.brygid import extract_brygid_orders_raw
+
+        orders_mbox = takeout_path("Mail", "Orders-Brygid.mbox")
+        extract_brygid_orders_raw.run(orders_mbox, orders_raw)
         return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
@@ -553,6 +577,23 @@ def run_normalize(
             reset_errors=reset_errors,
         )
         print(f"[chownow] normalized -> {normalized_out}")
+        return
+    if platform == "brygid":
+        from orders_analytics.parsers.brygid import normalize_brygid_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("brygid", "orders_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("brygid_orders_normalized.csv")
+        )
+        normalize_brygid_from_raw.run(
+            orders_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
+        )
+        print(f"[brygid] normalized -> {normalized_out}")
         return
     if platform == "beyondmenu":
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
@@ -966,6 +1007,11 @@ def main() -> None:
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-ChowNow.mbox")
             orders_raw = args.orders_raw or raw_path("chownow", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("chownow", "billings_raw.csv")
+        elif args.platform == "brygid":
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Brygid.mbox")
+            billings_mbox = args.billings_mbox or ""
+            orders_raw = args.orders_raw or raw_path("brygid", "orders_raw.csv")
+            billings_raw = args.billings_raw or ""
         else:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")

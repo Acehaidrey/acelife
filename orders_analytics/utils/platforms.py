@@ -16,6 +16,7 @@ class Platforms:
     MENUFY = "menufy"
     SLICE = "slice"
     CHOWNOW = "chownow"
+    BRYGID = "brygid"
 
     @classmethod
     def all_platforms(cls) -> list[str]:
@@ -34,6 +35,7 @@ class Platforms:
             cls.MENUFY,
             cls.SLICE,
             cls.CHOWNOW,
+            cls.BRYGID,
         ]
 
     @classmethod
@@ -58,4 +60,5 @@ class Platforms:
             cls.FOODRUNNERS,
             cls.OFFICECATERER,
             cls.CHOWNOW,
+            cls.BRYGID,
         ]

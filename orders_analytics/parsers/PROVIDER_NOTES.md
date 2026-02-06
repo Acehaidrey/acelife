@@ -42,8 +42,9 @@ Concerns / follow-ups:
 - Normalization merges billings and overrides `total` with billings `amount_paid` (or invoice total). Mismatches recorded in `errors`.
   - All orders are pickup.
   - Drops `status=canceled` / `status=inactive` from normalized output.
-  - Commission/tax logic: Foodee billings reflect the 15% commission (net 85% payout), so we divide by 0.85 to recover the true subtotal. `total` = billings (plus adjustments), `subtotal = total / 0.85`, `commission_fee = -(subtotal - total)`, `tax_withheld = subtotal * 0.0775`.
+  - Commission/tax logic: Foodee billings reflect the 15% commission (net 85% payout), so we divide by 0.85 to recover the true subtotal. `payout` = billings (plus adjustments), `subtotal = payout / 0.85`, `commission_fee = -(subtotal - payout)`, `tax_withheld = subtotal * 0.0775`.
   - Manual adjustments in `data/raw/foodee/adjustments_raw.csv` (applied to billings total before recomputing).
+  - `payout` is mapped from billings (amount_paid/invoice_total). `total` is computed as subtotal + tax + tip + delivery_fee.
 
 ## Food Runners
 - Sources: `Takeout/Mail/Orders-FoodRunners.mbox`, `Takeout/Mail/Billings-FoodRunners.mbox`
@@ -69,6 +70,15 @@ Concerns / follow-ups:
   - Commission fee = 30% of subtotal (negative).
   - Tax withheld = 7.75% of subtotal.
   - `payout` = subtotal + commission_fee + processing_fee.
+
+## Brygid
+- Sources: `Takeout/Mail/Orders-Brygid.mbox` (HTML emails)
+- Parser: `parsers/brygid/extract_brygid_orders_raw.py`
+  - Captures Order#, Placed On, customer name/phone/email, payment type (cash vs card), totals (subtotal/tax/tip/delivery/total).
+  - Address uses `Street` + `City/State` lines when present.
+  - Order type inferred from “Online Order (Delivery/Takeout)” header.
+- Normalizer: `parsers/brygid/normalize_brygid_from_raw.py`
+  - Parses Placed On into ISO datetime.
 
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/BeyondMenu_Order_History.csv`
@@ -152,8 +162,8 @@ Concerns / follow-ups:
    - `restaurant_fees` → `processing_fee` (negative).
    - `delivery_service` → `misc_fee`.
    - `tax_withholdings` → `tax_withheld`.
-   - `tax_payout` should match `tax`; mismatch adds `errors=tax_payout_mismatch`.
-  - `total_payout` is appended to `notes` (e.g., `total_payout=15.35`).
+ - `tax_payout` should match `tax`; mismatch adds `errors=tax_payout_mismatch`.
+  - `total_payout` is mapped to `payout`.
 
 ## Slice
 - Source: `Takeout/Slice/*.pdf` (Order Activity Report)

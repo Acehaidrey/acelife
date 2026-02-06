@@ -55,8 +55,6 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         if refund_note:
             notes.append(refund_note)
         total_payout = normalize_money(row.get("total_payout", ""))
-        if total_payout:
-            notes.append(f"total_payout={total_payout}")
 
         normalized.append(
             build_normalized_row(
@@ -85,6 +83,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 commission_fee=normalize_money(f"{-customer_fees:.2f}") if customer_fees else "",
                 adjustments=normalize_money(adjustments_total),
                 misc_fee=normalize_money(row.get("delivery_service", "")),
+                payout=total_payout,
                 errors=errors,
                 notes=" | ".join([n for n in notes if n]),
             )

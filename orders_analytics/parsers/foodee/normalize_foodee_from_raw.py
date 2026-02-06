@@ -93,6 +93,16 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         notes = (row.get("notes") or "").lower()
         if "status=canceled" in notes or "status=inactive" in notes:
             continue
+        subtotal = row.get("subtotal", "")
+        tax = row.get("tax", "")
+        tip = row.get("tip", "")
+        delivery_fee = row.get("delivery_fee", "")
+        total = ""
+        try:
+            total_val = float(subtotal or 0) + float(tax or 0) + float(tip or 0) + float(delivery_fee or 0)
+            total = f"{total_val:.2f}" if total_val else ""
+        except ValueError:
+            total = ""
         normalized.append(
             build_normalized_row(
                 Platforms.FOODEE.upper(),
@@ -107,16 +117,17 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 email=row.get("email", ""),
                 address=row.get("address", ""),
                 payment_type=PaymentTypes.CREDIT,
-                subtotal=row.get("subtotal", ""),
-                tax=row.get("tax", ""),
+                subtotal=subtotal,
+                tax=tax,
                 tax_withheld=row.get("tax_withheld", ""),
-                tip=row.get("tip", ""),
-                delivery_fee=row.get("delivery_fee", ""),
-                total=row.get("total", ""),
+                tip=tip,
+                delivery_fee=delivery_fee,
+                total=total,
                 item_count=row.get("item_count", ""),
                 commission_fee=row.get("commission_fee", ""),
                 items=row.get("items", ""),
                 adjustments=row.get("adjustments", ""),
+                payout=row.get("total", ""),
                 errors=row.get("errors", ""),
                 notes=row.get("notes", ""),
             )
