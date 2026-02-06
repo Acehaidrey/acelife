@@ -147,21 +147,21 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     if not any(row[0] == "orders_raw" for row in tables):
         return pd.DataFrame()
     raw = conn.execute("SELECT * FROM orders_raw").df()
+    for col in ORDER_COLUMNS:
+        if col not in raw.columns:
+            raw[col] = ""
     overrides = conn.execute("SELECT * FROM order_overrides").df()
     if overrides.empty:
         raw["order_datetime"] = pd.to_datetime(
             raw["order_datetime"], errors="coerce", utc=True, format="ISO8601"
         )
         raw["order_datetime"] = raw["order_datetime"].dt.tz_convert(None)
-        for col in ORDER_COLUMNS:
-            if col not in raw.columns:
-                raw[col] = ""
         return raw[ORDER_COLUMNS]
 
     merged = raw.merge(
         overrides,
         on=["order_id", "platform"],
-        how="left",
+        how="outer",
         suffixes=("", "_override"),
     )
     numeric_cols = [
@@ -448,10 +448,22 @@ def main() -> None:
         monthly = monthly.sort_values(["year", "month"], ascending=[False, False])
         overrides = conn.execute("SELECT * FROM monthly_overrides").df()
         if not overrides.empty:
+            if platform != "ALL":
+                overrides = overrides[overrides["platform"] == platform]
+            if provider != "ALL":
+                overrides = overrides[overrides["provider"] == provider]
+            overrides["date_bucket"] = pd.to_datetime(
+                dict(year=overrides["year"], month=overrides["month"], day=1),
+                errors="coerce",
+            )
+            overrides = overrides[
+                (overrides["date_bucket"] >= pd.to_datetime(start_date))
+                & (overrides["date_bucket"] <= pd.to_datetime(end_date))
+            ].drop(columns=["date_bucket"])
             monthly = monthly.merge(
                 overrides,
                 on=["platform", "provider", "year", "month"],
-                how="left",
+                how="outer",
                 suffixes=("", "_override"),
             )
             for col in [
@@ -470,13 +482,18 @@ def main() -> None:
                 "marketing_fee",
                 "total",
             ]:
+                if col in monthly.columns:
+                    monthly[col] = monthly[col].fillna(0.0)
                 if f"{col}_override" in monthly.columns:
                     monthly[col] = monthly[f"{col}_override"].combine_first(monthly[col])
             if "notes_override" in monthly.columns:
+                if "notes" not in monthly.columns:
+                    monthly["notes"] = ""
                 monthly["notes"] = monthly["notes"].combine_first(monthly["notes_override"])
             monthly = monthly.drop(
                 columns=[c for c in monthly.columns if c.endswith("_override")]
             )
+            monthly = monthly.sort_values(["year", "month"], ascending=[False, False])
         def positive_only(series):
             return series.where(series > 0, 0)
 
@@ -504,6 +521,145 @@ def main() -> None:
 
     with tab_overrides:
         st.subheader("Order Overrides")
+        from orders_analytics.utils.order_types import OrderTypes
+        from orders_analytics.utils.payment_types import PaymentTypes
+
+        def to_float(value: str):
+            try:
+                return float(value) if value != "" else None
+            except ValueError:
+                return None
+
+        def to_datetime(value: str):
+            if not value:
+                return None
+            parsed = pd.to_datetime(value, errors="coerce", utc=True, format="ISO8601")
+            if pd.isna(parsed):
+                parsed = pd.to_datetime(value, errors="coerce", utc=True)
+            if pd.isna(parsed):
+                return None
+            return parsed.to_pydatetime()
+
+        platform_choices = sorted(data["platform"].dropna().unique().tolist())
+        provider_choices = sorted(data["provider"].dropna().unique().tolist())
+        with st.expander("Add Order Record"):
+            with st.form("add_order_override_form"):
+                col_a, col_b = st.columns(2)
+                new_order_id = col_a.text_input("Order ID (required)")
+                new_platform = col_b.selectbox(
+                    "Platform",
+                    [""] + platform_choices + ["OTHER"],
+                    key="new_order_platform",
+                )
+                if new_platform == "OTHER":
+                    new_platform = st.text_input("Custom Platform", key="new_order_platform_custom")
+                new_provider = col_a.selectbox(
+                    "Provider",
+                    [""] + provider_choices + ["OTHER"],
+                    key="new_order_provider",
+                )
+                if new_provider == "OTHER":
+                    new_provider = col_b.text_input("Custom Provider", key="new_order_provider_custom")
+                new_order_datetime = col_a.text_input("Order Datetime (ISO)")
+                new_order_type = col_b.selectbox(
+                    "Order Type",
+                    [""] + OrderTypes.get_all(),
+                    key="new_order_type",
+                )
+                new_payment_type = col_a.selectbox(
+                    "Payment Type",
+                    [""] + PaymentTypes.get_all(),
+                    key="new_payment_type",
+                )
+                new_restaurant = col_b.text_input("Restaurant Name")
+                new_customer = col_a.text_input("Customer Name")
+                new_address = col_b.text_input("Address")
+                new_notes = st.text_area("Notes")
+                col_c, col_d = st.columns(2)
+                new_subtotal = col_c.text_input("Subtotal")
+                new_tax = col_d.text_input("Tax")
+                new_tax_withheld = col_c.text_input("Tax Withheld")
+                new_tip = col_d.text_input("Tip")
+                new_delivery_fee = col_c.text_input("Delivery Fee")
+                new_misc_fee = col_d.text_input("Misc Fee")
+                new_commission_fee = col_c.text_input("Commission Fee")
+                new_processing_fee = col_d.text_input("Processing Fee")
+                new_adjustments = col_c.text_input("Adjustments")
+                new_marketing_fee = col_d.text_input("Marketing Fee")
+                new_total = col_d.text_input("Total")
+                add_submitted = st.form_submit_button("Add Record")
+            if add_submitted:
+                if not new_order_id or not new_platform:
+                    st.warning("Order ID and Platform are required.")
+                else:
+                    conn.execute(
+                        """
+                        INSERT INTO order_overrides (
+                            order_id, platform, provider, restaurant_name, order_datetime, order_type,
+                            customer_name, company_name, phone, email, address, payment_type,
+                            subtotal, tax, tax_withheld, tip, delivery_fee, misc_fee, commission_fee,
+                            processing_fee, adjustments, marketing_fee, total, items, item_count,
+                            notes, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (order_id, platform)
+                        DO UPDATE SET
+                            provider=excluded.provider,
+                            restaurant_name=excluded.restaurant_name,
+                            order_datetime=excluded.order_datetime,
+                            order_type=excluded.order_type,
+                            customer_name=excluded.customer_name,
+                            company_name=excluded.company_name,
+                            phone=excluded.phone,
+                            email=excluded.email,
+                            address=excluded.address,
+                            payment_type=excluded.payment_type,
+                            subtotal=excluded.subtotal,
+                            tax=excluded.tax,
+                            tax_withheld=excluded.tax_withheld,
+                            tip=excluded.tip,
+                            delivery_fee=excluded.delivery_fee,
+                            misc_fee=excluded.misc_fee,
+                            commission_fee=excluded.commission_fee,
+                            processing_fee=excluded.processing_fee,
+                            adjustments=excluded.adjustments,
+                            marketing_fee=excluded.marketing_fee,
+                            total=excluded.total,
+                            items=excluded.items,
+                            item_count=excluded.item_count,
+                            notes=excluded.notes,
+                            updated_at=excluded.updated_at
+                        """,
+                        (
+                            new_order_id,
+                            new_platform,
+                            new_provider,
+                            new_restaurant or "",
+                            to_datetime(new_order_datetime),
+                            new_order_type or "",
+                            new_customer or "",
+                            "",
+                            "",
+                            "",
+                            new_address or "",
+                            new_payment_type or "",
+                            to_float(new_subtotal),
+                            to_float(new_tax),
+                            to_float(new_tax_withheld),
+                            to_float(new_tip),
+                            to_float(new_delivery_fee),
+                            to_float(new_misc_fee),
+                            to_float(new_commission_fee),
+                            to_float(new_processing_fee),
+                            to_float(new_adjustments),
+                            to_float(new_marketing_fee),
+                            to_float(new_total),
+                            "",
+                            "",
+                            new_notes or "",
+                            datetime.utcnow(),
+                        ),
+                    )
+                    st.success("Order record saved.")
         order_options = (
             filtered[["order_id", "platform"]]
             .dropna()
@@ -539,12 +695,6 @@ def main() -> None:
             else:
                 submitted = False
             if submitted and row is not None:
-                def to_float(value: str):
-                    try:
-                        return float(value) if value != "" else None
-                    except ValueError:
-                        return None
-
                 conn.execute(
                     """
                     INSERT INTO order_overrides (
@@ -615,6 +765,95 @@ def main() -> None:
                 st.success("Order override saved.")
 
         st.subheader("Monthly Notes / Overrides")
+        with st.expander("Add Monthly Record"):
+            with st.form("add_monthly_override_form"):
+                col_a, col_b = st.columns(2)
+                new_platform = col_a.selectbox(
+                    "Platform",
+                    [""] + platform_choices + ["OTHER"],
+                    key="new_monthly_platform",
+                )
+                if new_platform == "OTHER":
+                    new_platform = col_b.text_input("Custom Platform", key="new_monthly_platform_custom")
+                new_provider = col_a.selectbox(
+                    "Provider",
+                    [""] + provider_choices + ["OTHER"],
+                    key="new_monthly_provider",
+                )
+                if new_provider == "OTHER":
+                    new_provider = col_b.text_input("Custom Provider", key="new_monthly_provider_custom")
+                new_year = col_a.number_input("Year", min_value=2000, max_value=2100, step=1, value=2025)
+                new_month = col_b.number_input("Month", min_value=1, max_value=12, step=1, value=1)
+                notes = st.text_area("Notes", key="new_monthly_notes")
+                orders = st.text_input("Orders", key="new_monthly_orders")
+                cash_subtotal = st.text_input("Cash Subtotal", key="new_monthly_cash_subtotal")
+                credit_subtotal = st.text_input("Credit Subtotal", key="new_monthly_credit_subtotal")
+                subtotal = st.text_input("Subtotal", key="new_monthly_subtotal")
+                tax = st.text_input("Tax", key="new_monthly_tax")
+                tax_withheld = st.text_input("Tax Withheld", key="new_monthly_tax_withheld")
+                tip = st.text_input("Tip", key="new_monthly_tip")
+                delivery_fee = st.text_input("Delivery Fee", key="new_monthly_delivery_fee")
+                misc_fee = st.text_input("Misc Fee", key="new_monthly_misc_fee")
+                commission_fee = st.text_input("Commission Fee", key="new_monthly_commission_fee")
+                processing_fee = st.text_input("Processing Fee", key="new_monthly_processing_fee")
+                adjustments = st.text_input("Adjustments", key="new_monthly_adjustments")
+                marketing_fee = st.text_input("Marketing Fee", key="new_monthly_marketing_fee")
+                total = st.text_input("Total", key="new_monthly_total")
+                add_monthly_submitted = st.form_submit_button("Add Monthly Record")
+            if add_monthly_submitted:
+                if not new_platform or not new_provider:
+                    st.warning("Platform and Provider are required.")
+                else:
+                    conn.execute(
+                        """
+                        INSERT INTO monthly_overrides (
+                            platform, provider, year, month, orders, cash_subtotal, credit_subtotal,
+                            subtotal, tax, tax_withheld, tip, delivery_fee, misc_fee, commission_fee,
+                            processing_fee, adjustments, marketing_fee, total, notes, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ON CONFLICT (platform, provider, year, month)
+                        DO UPDATE SET
+                            orders=excluded.orders,
+                            cash_subtotal=excluded.cash_subtotal,
+                            credit_subtotal=excluded.credit_subtotal,
+                            subtotal=excluded.subtotal,
+                            tax=excluded.tax,
+                            tax_withheld=excluded.tax_withheld,
+                            tip=excluded.tip,
+                            delivery_fee=excluded.delivery_fee,
+                            misc_fee=excluded.misc_fee,
+                            commission_fee=excluded.commission_fee,
+                            processing_fee=excluded.processing_fee,
+                            adjustments=excluded.adjustments,
+                            marketing_fee=excluded.marketing_fee,
+                            total=excluded.total,
+                            notes=excluded.notes,
+                            updated_at=excluded.updated_at
+                        """,
+                        (
+                            new_platform,
+                            new_provider,
+                            int(new_year),
+                            int(new_month),
+                            to_float(orders),
+                            to_float(cash_subtotal),
+                            to_float(credit_subtotal),
+                            to_float(subtotal),
+                            to_float(tax),
+                            to_float(tax_withheld),
+                            to_float(tip),
+                            to_float(delivery_fee),
+                            to_float(misc_fee),
+                            to_float(commission_fee),
+                            to_float(processing_fee),
+                            to_float(adjustments),
+                            to_float(marketing_fee),
+                            to_float(total),
+                            notes,
+                            datetime.utcnow(),
+                        ),
+                    )
+                    st.success("Monthly record saved.")
         if not monthly.empty:
             monthly_choice = st.selectbox(
                 "Select Month",
