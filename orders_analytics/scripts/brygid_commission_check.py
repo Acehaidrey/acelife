@@ -99,6 +99,9 @@ def main() -> None:
     orders["commission_calc_no_min"] = compute_commission(
         orders[base_col], 0.025, clip_min=False, clip_max=True
     )
+    orders["commission_calc_2pct"] = compute_commission(
+        orders[base_col], 0.02, clip_min=False, clip_max=False
+    )
 
     billings["billing_date_dt"] = pd.to_datetime(billings.get("billing_date", ""), errors="coerce")
     billings = billings.dropna(subset=["billing_date_dt"])
@@ -140,6 +143,7 @@ def main() -> None:
                 "commission_sum_no_clip": float(subset["commission_calc_no_clip"].sum()),
                 "commission_sum_225_clip": float(subset["commission_calc_225_clip"].sum()),
                 "commission_sum_no_min": float(subset["commission_calc_no_min"].sum()),
+                "commission_sum_2pct": float(subset["commission_calc_2pct"].sum()),
             }
         )
 
@@ -170,6 +174,9 @@ def main() -> None:
     merged["service_fees_diff_no_min"] = (
         merged["commission_sum_no_min"] - merged["billed_service_fees"]
     )
+    merged["service_fees_diff_2pct"] = (
+        merged["commission_sum_2pct"] - merged["billed_service_fees"]
+    )
     merged["order_counts_match"] = merged["order_count_diff"] == 0
     merged["total_match"] = merged["total_sales_diff"].abs() <= 0.01
 
@@ -180,6 +187,7 @@ def main() -> None:
         "commission_sum_no_clip",
         "commission_sum_225_clip",
         "commission_sum_no_min",
+        "commission_sum_2pct",
         "billed_total_sales",
         "billed_service_fees",
         "total_sales_diff",
@@ -187,6 +195,7 @@ def main() -> None:
         "service_fees_diff_no_clip",
         "service_fees_diff_225_clip",
         "service_fees_diff_no_min",
+        "service_fees_diff_2pct",
     ]:
         merged[col] = pd.to_numeric(merged[col], errors="coerce").round(2)
 
