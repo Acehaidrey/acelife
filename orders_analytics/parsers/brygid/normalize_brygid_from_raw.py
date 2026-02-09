@@ -69,6 +69,16 @@ def format_money(value: float) -> str:
     return f"{value:.2f}"
 
 
+def parse_money(value: str) -> float:
+    text = str(value or "").strip()
+    if not text:
+        return 0.0
+    try:
+        return float(text.replace("$", "").replace(",", ""))
+    except ValueError:
+        return 0.0
+
+
 def dedupe_orders(df: pd.DataFrame) -> pd.DataFrame:
     if "order_id" not in df.columns:
         return df
@@ -116,6 +126,24 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         order_type = normalize_order_type(row.get("order_type", "")) or OrderTypes.PICKUP
         payment_type = normalize_payment_type(row.get("payment_type", "")) or PaymentTypes.CREDIT
         notes = row.get("notes", "")
+        errors = ""
+        subtotal = row.get("subtotal", "")
+        tax = row.get("tax", "")
+        tip = row.get("tip", "")
+        delivery_fee = row.get("delivery_fee", "")
+        total = row.get("total", "")
+
+        total_val = parse_money(total)
+        components = parse_money(subtotal) + parse_money(tax) + parse_money(tip) + parse_money(delivery_fee)
+        if total and abs(total_val - round(components, 2)) > 0.01:
+            # Brygid sometimes includes delivery_fee in subtotal; adjust when total is less.
+            if total_val < components and parse_money(delivery_fee) > 0.0:
+                adjusted_subtotal = parse_money(subtotal) - parse_money(delivery_fee)
+                if adjusted_subtotal >= 0:
+                    subtotal = format_money(adjusted_subtotal)
+                    errors = "total_components_mismatch_adjusted"
+                    notes = " | ".join(filter(None, [notes, "subtotal_adjusted_for_delivery_fee"]))
+
         normalized.append(
             build_normalized_row(
                 Platforms.BRYGID.upper(),
@@ -129,16 +157,16 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 email=row.get("email", ""),
                 address=row.get("address", ""),
                 payment_type=payment_type,
-                subtotal=row.get("subtotal", ""),
-                tax=row.get("tax", ""),
-                tip=row.get("tip", ""),
-                delivery_fee=row.get("delivery_fee", ""),
-                total=row.get("total", ""),
+                subtotal=subtotal,
+                tax=tax,
+                tip=tip,
+                delivery_fee=delivery_fee,
+                total=total,
                 commission_fee=row.get("commission_fee", ""),
                 items=row.get("items", ""),
                 item_count=row.get("item_count", ""),
                 notes=notes,
-                errors="",
+                errors=errors,
             )
         )
     return normalized
@@ -156,7 +184,7 @@ def apply_commissions(
         orders = orders[~orders["order_id"].astype(str).isin(cancellations)].copy()
     orders["subtotal_num"] = pd.to_numeric(orders.get("subtotal", ""), errors="coerce").fillna(0.0)
     orders["total_num"] = pd.to_numeric(orders.get("total", ""), errors="coerce").fillna(0.0)
-    orders["commission_fee"] = -compute_commission(orders["subtotal_num"])
+    orders["commission_fee"] = -compute_commission(orders["subtotal_num"]).round(2)
 
     billings = billings.copy()
     billings["billing_date_dt"] = pd.to_datetime(billings.get("billing_date", ""), errors="coerce")

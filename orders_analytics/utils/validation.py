@@ -313,6 +313,49 @@ def validate_cash_processing_fee(
     return rows, errors
 
 
+def _parse_money(value: str) -> float:
+    text = str(value or "").strip()
+    if not text:
+        return 0.0
+    try:
+        return float(text.replace("$", "").replace(",", ""))
+    except ValueError:
+        return 0.0
+
+
+def validate_total_components(
+    rows: List[Dict[str, str]],
+    source: str,
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    errors: List[Dict[str, str]] = []
+    for row in rows:
+        total_raw = str(row.get("total") or "").strip()
+        if not total_raw:
+            continue
+        total_val = _parse_money(total_raw)
+        components = (
+            _parse_money(row.get("subtotal", "")),
+            _parse_money(row.get("tax", "")),
+            _parse_money(row.get("tip", "")),
+            _parse_money(row.get("delivery_fee", "")),
+        )
+        expected = round(sum(components), 2)
+        if abs(total_val - expected) > 0.01:
+            flag = "total_components_mismatch"
+            _append_error(row, flag)
+            errors.append(
+                {
+                    "order_id": row.get("order_id", ""),
+                    "platform": row.get("platform", ""),
+                    "provider": row.get("provider", ""),
+                    "error_code": flag,
+                    "message": f"total={total_raw} expected={expected:.2f}",
+                    "source": source,
+                }
+            )
+    return rows, errors
+
+
 def _is_iso_datetime(value: str) -> bool:
     text = str(value or "").strip()
     if not text:

@@ -17,6 +17,7 @@ from orders_analytics.utils.validation import (
     validate_test_customer_names,
     validate_negative_fees,
     validate_cash_processing_fee,
+    validate_total_components,
     validate_order_datetime_iso,
     validate_canonical_columns,
     validate_payout_expected,
@@ -102,6 +103,7 @@ class BaseParser:
             validate_test_customer_names,
             validate_negative_fees,
             validate_cash_processing_fee,
+            validate_total_components,
             validate_order_datetime_iso,
             validate_payout_expected,
         ):
