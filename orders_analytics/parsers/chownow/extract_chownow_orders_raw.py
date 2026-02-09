@@ -105,6 +105,24 @@ def parse_order_datetime(date_text: str, time_text: str) -> str:
         return ""
 
 
+def parse_manual_datetime(placed_text: str, order_date: str) -> str:
+    value = str(placed_text or "").strip()
+    if value:
+        for fmt in ("%I:%M %p, %m/%d/%Y", "%I:%M %p, %m/%d/%y"):
+            try:
+                return dt.datetime.strptime(value, fmt).isoformat()
+            except ValueError:
+                continue
+    date_only = str(order_date or "").strip()
+    if date_only:
+        for fmt in ("%m/%d/%Y", "%m/%d/%y"):
+            try:
+                return dt.datetime.strptime(date_only, fmt).date().isoformat()
+            except ValueError:
+                continue
+    return ""
+
+
 def extract_text(msg) -> str:
     if msg.is_multipart():
         for part in msg.walk():
@@ -290,6 +308,64 @@ def load_customer_emails(paths: List[str]) -> Dict[str, str]:
     return mapping
 
 
+def parse_manual_missing_orders(path: str) -> List[Dict[str, str]]:
+    if not path or not os.path.exists(path):
+        return []
+    df = pd.read_csv(path, dtype=str).fillna("")
+    rows: List[Dict[str, str]] = []
+    for _, row in df.iterrows():
+        order_id = str(row.get("Order ID", "")).strip()
+        if not order_id:
+            continue
+        service = str(row.get("Service", "")).strip()
+        order_type = normalize_order_type(service)
+        notes: List[str] = ["source=manual_missing_orders", "manual_missing_order"]
+        if service and order_type and order_type != service.lower():
+            notes.append(f"order_type_raw={service}")
+        status = str(row.get("Status", "")).strip()
+        if status:
+            notes.append(f"status={status}")
+        support_local_fee = normalize_money(row.get("Support Local Fee", ""))
+        if support_local_fee:
+            notes.append(f"support_local_fee={support_local_fee}")
+
+        courier_tip = parse_decimal(row.get("Courier Tip", ""))
+        restaurant_tip = parse_decimal(row.get("Restaurant Tip", ""))
+        tip_val = courier_tip + restaurant_tip
+        tip = normalize_money(f"{tip_val:.2f}") if tip_val else ""
+
+        payment_raw = str(row.get("Payment Type", "")).strip().lower()
+        payment_type = "cash" if "cash" in payment_raw else ("credit" if payment_raw else "")
+
+        rows.append(
+            {
+                "order_id": order_id,
+                "provider": normalize_provider(row.get("Store", "")) if row.get("Store", "") else "",
+                "restaurant_name": row.get("Store", ""),
+                "order_datetime": parse_manual_datetime(row.get("Placed", ""), row.get("Order Date", "")),
+                "order_type": order_type,
+                "payment_type": payment_type,
+                "customer_name": row.get("Customer Name", ""),
+                "phone": row.get("Phone Number", ""),
+                "email": row.get("Email", ""),
+                "address": row.get("Address", ""),
+                "items": "",
+                "item_count": "",
+                "subtotal": normalize_money(row.get("Subtotal", "")),
+                "tax": normalize_money(row.get("Taxes", "")),
+                "tip": tip,
+                "delivery_fee": normalize_money(row.get("Delivery Fee", "")),
+                "promotions": "",
+                "customer_paid": "",
+                "total": normalize_money(row.get("Total", "")),
+                "notes": " | ".join(notes),
+                "source_file": os.path.basename(path),
+                "email_date": "",
+            }
+        )
+    return rows
+
+
 def parse_mbox(mbox_path: str, customer_email_map: Dict[str, str]) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     mbox = mailbox.mbox(mbox_path)
@@ -356,6 +432,7 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
 def run(mbox_path: str, out_path: str, customer_files: List[str]) -> int:
     customer_email_map = load_customer_emails(customer_files)
     rows = parse_mbox(mbox_path, customer_email_map)
+    rows.extend(parse_manual_missing_orders(raw_path("chownow", "chownow_manual_missing_orders.csv")))
     updated = upsert_raw(out_path, rows)
     print(f"Upserted {updated} ChowNow order row(s) into {out_path}")
     return updated
