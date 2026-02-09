@@ -48,6 +48,25 @@ def negate_money_series(series: pd.Series) -> pd.Series:
     return negated
 
 
+def parse_money_series(series: pd.Series) -> pd.Series:
+    numeric = pd.to_numeric(series.replace({"\$": "", ",": ""}, regex=True), errors="coerce")
+    return numeric
+
+
+def format_money(value) -> str:
+    if value is None:
+        return ""
+    try:
+        if pd.isna(value):
+            return ""
+    except TypeError:
+        pass
+    try:
+        return f"{float(value):.2f}"
+    except (TypeError, ValueError):
+        return str(value)
+
+
 
 
 class BeyondMenuOrdersParser(BaseParser):
@@ -95,6 +114,20 @@ class BeyondMenuOrdersParser(BaseParser):
         df = df.reset_index(drop=True)
         rows: List[Dict[str, str]] = []
         for idx, row in df.iterrows():
+            merchant_fee = parse_money_series(pd.Series([row.get("Merchant Fee", "")])).iloc[0]
+            commission_fee = parse_money_series(pd.Series([row.get("Commission Fee", "")])).iloc[0]
+            misc_fee = parse_money_series(pd.Series([row.get("Misc Fee", "")])).iloc[0]
+            payment_type = str(payment_series.iloc[idx] or PaymentTypes.CREDIT)
+            if payment_type == PaymentTypes.CASH:
+                commission_out = -(commission_fee + merchant_fee)
+                processing_out = 0
+            else:
+                commission_out = -commission_fee
+                processing_out = -merchant_fee
+            adjustments_out = ""
+            if "Adjustments" in df.columns:
+                adjustments_value = parse_money_series(pd.Series([row.get("Adjustments", "")])).iloc[0]
+                adjustments_out = format_money(adjustments_value)
             rows.append(
                 build_normalized_row(
                     Platforms.BEYONDMENU.upper(),
@@ -106,15 +139,16 @@ class BeyondMenuOrdersParser(BaseParser):
                     customer_name=str(row.get("Name", "")),
                     phone=str(row.get("Phone", "")),
                     address=str(row.get("Address", "")),
-                    payment_type=str(payment_series.iloc[idx] or PaymentTypes.CREDIT),
+                    payment_type=payment_type,
                     subtotal=str(row.get("Subtotal", "")),
                     tax=str(row.get("Tax", "")),
                     tip=str(row.get("Tip", "")),
                     delivery_fee=str(row.get("Delivery Fee", "")),
                     total=str(row.get("Total", "")),
-                    processing_fee=str(negate_money_series(pd.Series([row.get("Merchant Fee", "")])).iloc[0]),
-                    commission_fee=str(negate_money_series(pd.Series([row.get("Commission Fee", "")])).iloc[0]),
-                    misc_fee=str(negate_money_series(pd.Series([row.get("Misc Fee", "")])).iloc[0]),
+                    processing_fee=str(processing_out),
+                    commission_fee=format_money(commission_out),
+                    adjustments=adjustments_out,
+                    misc_fee=str(misc_fee),
                     notes=str(row.get("Notes", "")),
                 )
             )

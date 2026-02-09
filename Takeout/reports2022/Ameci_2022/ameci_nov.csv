@@ -1,0 +1,22 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Taxes_Withheld,Payout,Commission,Merchant_Services,Adjustments,Subtotal,Notes
+Nov 2022,Ameci,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Check against email.
+No BM file found - could mean no orders this month."
+Nov 2022,Ameci,Brygid,756.8,7989.8,826.65,326.0,569.61,0.0,7636.55,168.2,185.05,0.0,0.0,Check commission from brygid email report (dates shifted).
+Nov 2022,Ameci,Doordash,0.0,0.0,0.0,0.0,1701.63,0.0,-5379.93,4694.67,0.0,0.0,0.0,"Transaction types found: [] 
+Net Adjustments: $0.0 Payout Records Total: $0.0 Marketing Fees: $685.26."
+Nov 2022,Ameci,Eatstreet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No ES file found - could mean no orders this month.
+Nov 2022,Ameci,Ezcater,0.0,1818.6,132.72,95.0,114.44,0.0,1385.21,383.41,49.98,0.0,0.0,
+Nov 2022,Ameci,Grubhub,0.0,8116.59,599.97,255.22,535.96,0.0,7107.81,696.1,301.58,0.0,0.0,"Missing ids for reimbursement: {940920595730624, 235320866970954, 501720652945682, 515720716869978}
+$-11.1 in adjustment payments"
+Nov 2022,Ameci,House,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from check deposits - Hunsaker & Associates.
+Nov 2022,Ameci,Menufy,80.07,250.38,7.53,0.0,17.04,0.0,236.28,7.5,8.1,0.0,0.0,Cash taxes recorded: 5.65
+Nov 2022,Ameci,Menustar,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Merchant Services included in commission.
+Nov 2022,Ameci,Nextbrite,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Nov 2022,Ameci,Office Express,0.0,861.57,0.0,0.0,0.0,0.0,603.1,0.0,0.0,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Nov 2022,Ameci,Order Inn,0.0,799.6,0.0,0.0,0.0,0.0,390.25,409.35,0.0,0.0,0.0,Dont include in total calc as accounted for in speedline.
+Nov 2022,Ameci,Slice,0.0,5477.15,425.05,227.38,0.0,0.0,4484.84,436.54,219.06,0.0,0.0,"Withheld taxes remitted: $363.71
+Adjustments: $27.0."
+Nov 2022,Ameci,Speedline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,841.98,0.0,0.0,"Cashier tips include external payouts (double counting).
+Get from dads daily report. Note these double count for payout tips from other services."
+Nov 2022,Ameci,Ubereats,0.0,10332.59,0.0,0.0,0.0,0.0,7908.75,1776.2,0.0,0.0,0.0,"Contains Postmates Orders.
+Withheld Taxes: $751.23"

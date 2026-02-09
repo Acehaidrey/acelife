@@ -1,0 +1,91 @@
+00186396,,,,,,,
+MERCHANT STATEMENT,,,,,,,
+WORLDPAY INTEGRATED PAYMENTS,,,,,,,
+8500 GOVERNORS HILL DR MD 1GH2X2,,,,,,,
+"SYMMES TOWNSHIP, OH 45249",,,,,,,8788430207437
+FOR CUSTOMER SERVICE CALL 1-800-846-4472,,,,,,,
+,,,,,PROCESSING MONTH:,,OCT 2021
+,,,,,MERCHANT NBR:,,8788430207437
+,,,,,,,PAGE 1 of 2
+Attention: SAID HAIDREY,,,,,,,
+SAHA PIZZA INC,,,,,,,
+25431 TRABUCO RD,,,,DBA NAME: AMECIS PIZZA LAKE FOREST - ECOMM,,,
+"LAKE FOREST, CA 92630",,,,,,,
+DEPOSIT SUMMARY,,,,,,,
+Process,Number Sales,Net Sales,Adjustments,Chargebacks,Disc,3rd Party,Net Deposits
+01-Oct,3,277.00,0.00,0.00,0.00,0.00,277.00
+02-Oct,16,"1,509.82",0.00,0.00,0.00,0.00,"1,509.82"
+03-Oct,6,414.96,0.00,0.00,0.00,0.00,414.96
+04-Oct,2,109.11,0.00,0.00,0.00,0.00,109.11
+05-Oct,1,50.62,0.00,0.00,0.00,0.00,50.62
+06-Oct,2,50.97,0.00,0.00,0.00,0.00,50.97
+07-Oct,2,118.35,0.00,0.00,0.00,0.00,118.35
+08-Oct,3,83.82,0.00,0.00,0.00,0.00,83.82
+09-Oct,10,436.56,0.00,0.00,0.00,0.00,436.56
+10-Oct,4,201.02,0.00,0.00,0.00,0.00,201.02
+11-Oct,3,138.59,0.00,0.00,0.00,0.00,138.59
+12-Oct,5,195.17,0.00,0.00,0.00,0.00,195.17
+14-Oct,6,262.41,0.00,0.00,0.00,0.00,262.41
+15-Oct,7,298.51,0.00,0.00,0.00,0.00,298.51
+16-Oct,7,348.14,0.00,0.00,0.00,0.00,348.14
+17-Oct,5,290.49,0.00,0.00,0.00,0.00,290.49
+18-Oct,6,231.09,0.00,0.00,0.00,0.00,231.09
+19-Oct,1,33.39,0.00,0.00,0.00,0.00,33.39
+20-Oct,3,126.57,0.00,0.00,0.00,0.00,126.57
+21-Oct,5,143.31,0.00,0.00,0.00,0.00,143.31
+22-Oct,4,368.71,0.00,0.00,0.00,0.00,368.71
+23-Oct,12,433.33,0.00,0.00,0.00,0.00,433.33
+24-Oct,10,410.50,0.00,0.00,0.00,0.00,410.50
+25-Oct,7,319.86,0.00,0.00,0.00,0.00,319.86
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex",,,,,,,
+card transactions.,,,,,,,
+
+MERCHANT NBR: 8788430207437,,,,,,,MERCHANT STATEMENT,,
+DBA: AMECIS PIZZA LAKE FOREST - ECOMM,,,,,,,,,PAGE 2 of 2
+,,,,,,,,,"October 31, 2021"
+Process,Number Sales,Net Sales,Adjustments,Chargebacks,,Disc,3rd Party,,Net Deposits
+26-Oct,1,56.15,0.00,,0.00,0.00,,0.00,56.15
+27-Oct,6,233.67,0.00,,0.00,0.00,,0.00,233.67
+28-Oct,4,237.23,0.00,,0.00,0.00,,0.00,237.23
+29-Oct,3,56.06,0.00,,0.00,0.00,,0.00,56.06
+30-Oct,11,531.24,0.00,,0.00,0.00,,0.00,531.24
+31-Oct,6,245.05,0.00,,0.00,0.00,,0.00,245.05
+"Deposits 161
+Total
+PROCESSING ACTIVITY SUMMARY",,"8,211.70",0.00,,0.00,0.00,,0.00,"8,211.70"
+Card Type,"Settled
+Sales","Amount of
+Sales","Settled
+Credits","Amount of
+Credits","Amount
+of Net Sales","Average
+Ticket","Settled
+Per
+Item*","Disc
+Rate","Processing
+Fees"
+AMEXOPTBLUE,14,"1,036.16",0,0.00,"1,036.16",74.01,0.0500,0.7000,7.95
+MASTERCARD,20,818.71,0,0.00,818.71,40.94,0.0000,1.9000,15.56
+MCDEBIT,6,217.96,0,0.00,217.96,36.33,0.0000,1.7500,3.81
+MCDEBITCAP,13,580.69,0,0.00,580.69,44.67,0.0000,1.7500,10.16
+VISA,43,"2,786.22",0,0.00,"2,786.22",64.80,0.0000,1.9000,52.94
+VISADEBIT,7,313.06,0,0.00,313.06,44.72,0.0000,1.7500,5.48
+VISADEBITCAP,58,"2,458.90",0,0.00,"2,458.90",42.39,0.0000,1.7500,43.03
+"Total 161 8,211.70 0 0.00 8,211.70 51.00
+* For processor per item fee charged on transaction types other than settled transactions, see Other Fees section below.
+OTHER FEES",,,,,,,,,138.93
+Number,Amount,Description,,,,,Rate,,Total
+15,,"PROCESSOR PER ITEM FEE - AUTHORIZATIONS, AX",,,,,0.0500,,0.75
+1,,CHARGEBACK SERVICE FEE T1,,,,,10.0000,,10.00
+4,,DECLINED AUTHORIZATIONS,,,,,0.0500,,0.20
+1,,SAFERPAYMENTS BASIC,,,,,5.9500,,5.95
+1,,SIGNATURE MERCHANT LOCATION FEE,,,,,2.5000,,2.50
+,,,,,,Total Other Fees,,,19.40
+TOTAL FEES,,,,,,,,,
+Processing Fees,,,,,,,,,138.93
+Interchange Fees,,,,,,,,,0.00
+Other Fees,,,,,,,,,19.40
+Discount Collected,,,,,,,,,0.00
+Total Fees,,,,,,,,,158.33
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex",,,,,,,,,
+card transactions.,,,,,,,,,

@@ -1,0 +1,24 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Dec 2020,Ameci,Speedline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Tips only drivers tips - cashier not included.
+Get merchant services from accessmyiq (Vantiv)."
+Dec 2020,Ameci,Brygid,1454.63,8908.68,1018.82,383.0,675.71,8695.46,213.22,0.0,"Get merchant services from accessmyiq (Vantiv).
+Check commission from their email report.
+Remove Merch Serv Amount from Payout.
+Discrepancy in cash calc. Diff amt: 1503.9500000000025. Cash records: 1454.6299999999997
+Del Zip Codes: ['92610', '92618', '92630', '92691']"
+Dec 2020,Ameci,Menufy,34.07,66.53,7.95,0.0,6.45,63.06,3.0,1.97,
+Dec 2020,Ameci,Postmates,0.0,4081.28,0.0,0.0,293.53,3336.45,741.33,0.0,"Adjustments: 3.5, Reimbursements: 0.0. Fix in console.
+Missing Orders: [922]"
+Dec 2020,Ameci,Ezcater,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Dec 2020,Ameci,Menustar,84.62,330.55,37.84,16.94,27.14,303.97,26.58,0.0,Merchant Services included in commission.
+Dec 2020,Ameci,Ubereats,0.0,8676.51,0.0,0.0,616.36,7152.64,1518.21,0.0,
+Dec 2020,Ameci,Office Express,0.0,307.99,0.0,0.0,0.0,215.59,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Dec 2020,Ameci,Grubhub,104.56,10082.94,1172.85,597.21,648.12,8928.31,780.32,377.06,$2.75 in adjustment payments (Not Counted In)
+Dec 2020,Ameci,Doordash,0.0,29423.61,0.0,0.0,2429.12,22659.5,6656.47,0.0,"Transaction types found: ['ERROR_CHARGE', 'ADJUSTMENT', 'STORE_PAYMENT'] 
+Net Adjustments: $-107.64 Payout Records Total: $21648.5 Marketing Fees: $0.0"
+Dec 2020,Ameci,Eatstreet,0.0,450.85,72.18,51.0,0.0,338.56,57.35,20.87,Withheld taxes remitted: $34.07
+Dec 2020,Ameci,Order Inn,0.0,447.37,0.0,0.0,0.0,267.57,179.8,0.0,Dont include in total calc as accounted for in speedline.
+Dec 2020,Ameci,House,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from check deposits - Hunsbaker & Associates.
+Dec 2020,Ameci,Slice,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Get report from statement.
+Withheld taxes remitted: $0.00"
+Dec 2020,Ameci,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report by phone app or through an email from them.

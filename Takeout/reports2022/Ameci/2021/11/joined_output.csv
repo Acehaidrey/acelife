@@ -1,0 +1,21 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Nov 2021,Ameci,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Check against email.
+No BM file found - could mean no orders this month."
+Nov 2021,Ameci,Brygid,654.56,6089.47,582.4,202.0,443.15,5810.52,120.62,158.33,Check commission from brygid email report (dates shifted).
+Nov 2021,Ameci,Doordash,0.0,22762.41,39.08,0.0,1880.03,17657.87,5024.2,0.0,"Transaction types found: ['ERROR_CHARGE', 'ADJUSTMENT'] 
+Net Adjustments: $-119.42 Payout Records Total: $18784.99"
+Nov 2021,Ameci,Eatstreet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No ES file found - could mean no orders this month.
+Nov 2021,Ameci,Ezcater,0.0,1476.49,103.05,70.0,91.83,1125.31,313.42,37.76,
+Nov 2021,Ameci,Grubhub,88.28,5599.51,513.22,215.34,370.95,4962.03,433.12,208.25,"Missing ids for reimbursement: {590717166153480, 977317198360937, 574116950174179, 568217060264903}
+$3.89 in adjustment payments"
+Nov 2021,Ameci,House,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from check deposits - Hunsbaker & Associates.
+Nov 2021,Ameci,Menufy,20.21,106.01,8.75,0.0,6.78,99.75,4.5,3.26,
+Nov 2021,Ameci,Menustar,162.2,253.77,22.92,12.95,28.27,227.57,26.2,0.0,Merchant Services included in commission.
+Nov 2021,Ameci,Office Express,0.0,358.94,0.0,0.0,0.0,251.26,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Nov 2021,Ameci,Order Inn,0.0,578.55,0.0,0.0,0.0,351.95,226.6,0.0,Dont include in total calc as accounted for in speedline.
+Nov 2021,Ameci,Slice,0.0,5328.95,486.63,247.32,0.0,4483.93,308.25,213.34,"Withheld taxes remitted: $362.42
+Adjustments: $38.99."
+Nov 2021,Ameci,Speedline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,792.65,"Cashier tips include external payouts (double counting).
+Get from dads daily report. Note these double count for payout tips from other services."
+Nov 2021,Ameci,Ubereats,0.0,8658.87,0.0,0.0,0.0,6535.04,1482.52,0.0,"Contains Postmates Orders.
+Withheld Taxes: $623.08"

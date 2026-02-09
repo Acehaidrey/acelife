@@ -1,0 +1,121 @@
+,,,,,,,8788430207437
+MERCHANT STATEMENT,,,,,PROCESSING MONTH: FEB 2021,,
+WORLDPAY INTEGRATED PAYMENTS,,,,,MERCHANT NBR:,8788430207437,
+8500 GOVERNORS HILL DR MD 1GH2X2,,,,,,,PAGE 1 of 3
+"SYMMES TOWNSHIP, OH 45249",,,,,,,
+FOR CUSTOMER SERVICE CALL 1-800-846-4472,,,,,,,
+DBA NAME: AMECIS PIZZA LAKE FOREST - ECOMM,,,,,,,
+,,,,Attention: SAID HAIDREY,,,
+,,,,SAHA PIZZA INC,,,
+,,,,25431 TRABUCO RD,,,
+,,,,"LAKE FOREST, CA 92630",,,
+DEPOSIT SUMMARY,,,,,,,
+Process Date,Number Sales,Net Sales,Adjustments,Chargebacks,Disc,3rd Party Funded,Net Deposits
+01-Feb,2,97.80,0.00,0.00,0.00,0.00,97.80
+02-Feb,2,131.14,0.00,0.00,0.00,0.00,131.14
+03-Feb,1,26.68,0.00,0.00,0.00,0.00,26.68
+04-Feb,1,54.26,0.00,0.00,0.00,0.00,54.26
+05-Feb,5,175.80,0.00,0.00,0.00,0.00,175.80
+06-Feb,12,414.27,0.00,0.00,0.00,0.00,414.27
+07-Feb,10,505.30,0.00,0.00,0.00,0.00,505.30
+08-Feb,15,786.49,0.00,0.00,0.00,0.00,786.49
+09-Feb,6,223.32,0.00,0.00,0.00,0.00,223.32
+10-Feb,4,109.54,0.00,0.00,0.00,0.00,109.54
+11-Feb,6,264.27,0.00,0.00,0.00,0.00,264.27
+12-Feb,9,353.11,0.00,0.00,0.00,0.00,353.11
+13-Feb,9,451.71,0.00,0.00,0.00,0.00,451.71
+14-Feb,6,246.37,0.00,0.00,0.00,0.00,246.37
+15-Feb,4,198.69,0.00,0.00,0.00,0.00,198.69
+16-Feb,2,104.35,0.00,0.00,0.00,0.00,104.35
+17-Feb,8,284.55,0.00,0.00,0.00,0.00,284.55
+18-Feb,5,159.18,0.00,0.00,0.00,0.00,159.18
+19-Feb,4,118.25,0.00,0.00,0.00,0.00,118.25
+20-Feb,10,528.46,0.00,0.00,0.00,0.00,528.46
+21-Feb,8,453.02,0.00,0.00,0.00,0.00,453.02
+22-Feb,4,129.98,0.00,0.00,0.00,0.00,129.98
+23-Feb,2,72.23,0.00,0.00,0.00,0.00,72.23
+24-Feb,2,85.39,0.00,0.00,0.00,0.00,85.39
+25-Feb,3,139.13,0.00,0.00,0.00,0.00,139.13
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,
+transactions.,,,,,,,
+
+MERCHANT NBR: 8788430207437,,,,,,,MERCHANT STATEMENT,,
+DBA: AMECIS PIZZA LAKE FOREST - ECOMM,,,,,,,,,PAGE 2 of 3
+,,,,,,,,,"February 28, 2021"
+Process Date,Number Sales,Net Sales,Adjustments,Chargebacks,,Disc,3rd Party Funded,,Net Deposits
+"26-Feb
+27-Feb
+28-Feb","3
+12
+5","123.67
+464.25
+177.04","0.00
+0.00
+0.00",,"0.00
+0.00
+0.00","0.00
+0.00
+0.00",,"0.00
+0.00
+0.00","123.67
+464.25
+177.04"
+"Deposits Total 160
+PROCESSING ACTIVITY SUMMARY",,"6,878.25",0.00,,0.00,0.00,,0.00,"6,878.25"
+Card Type,"Settled
+Sales","Amount of
+Sales","Settled
+Credits","Amount of
+Credits","Amount of
+Net Sales","Average
+Ticket","Settled
+Per
+Item*","Disc
+Rate","Processing
+Fees"
+AMEXOPTBLUE,5,294.08,0,0.00,294.08,58.82,0.0500,0.7000,2.31
+DISCOVER,5,246.87,0,0.00,246.87,49.37,0.0000,1.9000,4.69
+MASTERCARD,19,771.34,0,0.00,771.34,40.60,0.0000,1.9000,14.65
+MCDEBIT,4,138.47,0,0.00,138.47,34.62,0.0000,1.7500,2.42
+MCDEBITCAP,12,553.84,0,0.00,553.84,46.15,0.0000,1.7500,9.70
+VISA,54,"2,315.90",0,0.00,"2,315.90",42.89,0.0000,1.9000,44.00
+VISADEBIT,8,329.92,0,0.00,329.92,41.24,0.0000,1.7500,5.77
+VISADEBITCAP,53,"2,227.83",0,0.00,"2,227.83",42.03,0.0000,1.7500,38.99
+"Total 160 6,878.25 0 0.00 6,878.25 42.99
+* For processor per item fee charged on transaction types other than settled transactions, see Other Fees section below.
+OTHER FEES",,,,,,,,,122.53
+Number,Amount,Description,,,,,Rate,,Total
+5,,"PROCESSOR PER ITEM FEE - AUTHORIZATIONS, AX",,,,,0.0500,,0.25
+1,,BREACHASSIST,,,,,5.9500,,5.95
+1,,CHARGEBACK SERVICE FEE T1,,,,,10.0000,,10.00
+5,,DECLINED AUTHORIZATIONS,,,,,0.0500,,0.25
+5,,DISCOVER NETWORK AUTHORIZATION FEE,,,,,0.0025,,0.01
+36,,MASTERCARD CVC2 TRANSACTION FEE,,,,,0.0025,,0.09
+,"1,463.65",MC DIGITAL ENABLEMENT FEE,,,,,0.0100,,0.15
+35,,MC FILE TRANSMISSION FEE - 6957,,,,,0.0022,,0.08
+36,,MC NABU FEE,,,,,0.0195,,0.70
+2,,MC NO REV OR CLEAR PREAUTH,,,,,0.0450,,0.09
+1,,SIGNATURE MERCHANT LOCATION FEE,,,,,2.5000,,2.50
+56,,VISA ACQUIRER PROCESSING FEE,,,,,0.0195,,1.09
+65,,VISA APF SIG DEBIT,,,,,0.0155,,1.01
+121,,VISA BASE II TRAN FEE,,,,,0.0020,,0.24
+2,,VISA DEBIT TRANSACTION INTEGRITY FEE,,,,,0.1000,,0.20
+4,,VISA MISUSE FEE,,,,,0.0900,,0.36
+,,,,,,,Total Other Fees,,22.97
+TOTAL FEES,,,,,,,,,
+Processing Fees,,,,,,,,,122.53
+Interchange Fees,,,,,,,,,0.00
+Other Fees,,,,,,,,,22.97
+Discount Collected,,,,,,,,,0.00
+Total Fees,,,,,,,,,145.50
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,,,
+transactions.,,,,,,,,,
+
+MERCHANT NBR: 8788430207437,MERCHANT STATEMENT
+DBA: AMECIS PIZZA LAKE FOREST - ECOMM,PAGE 3 of 3
+,"February 28, 2021"
+"For specific operational messaging and/or changes to your processing account and/or card services agreement, which may include",
+"modifications to your rate and fees, please access your merchant portal using the following link:",
+https://www.vantiv.com/merchant-resources/reporting-all,
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",
+transactions.,

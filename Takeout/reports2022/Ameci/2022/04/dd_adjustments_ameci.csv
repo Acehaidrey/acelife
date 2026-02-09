@@ -1,0 +1,34 @@
+Transaction ID,Merchant Delivery ID,Timestamp Local Date,Payout Date,Store Name,Store ID,Store Address,Business ID,Merchant Store ID,Error Charge,Adjustment,Transaction Type,Description
+420756998,635aad94-fdd0-431c-9d3e-fa87d315174b,2022-04-25,2022-04-29,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,14.27,0.0,ERROR_CHARGE,Issue: 1 Chicken Pesto Rigatoni missing
+419353880,d12664fc-6a31-4890-84fc-92cfd878c660,2022-04-23,2022-04-27,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,2.7,0.0,ERROR_CHARGE,Issue: 1 Mixed Antipasto Salad missing
+419527780,835960d3-ec94-43d0-ad95-995d02ffc2ab,2022-04-23,2022-04-27,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,5.04,0.0,ERROR_CHARGE,Issue: 1 Cannoli missing
+419166779,a49ad138-90a9-440c-97a3-486d9f79ee25,2022-04-23,2022-04-27,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,15.28,0.0,ERROR_CHARGE,Issue: 1 Cheese Pizza Large missing
+419380400,3e94ce09-3847-4e99-8776-016034ebc216,2022-04-23,2022-04-27,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.24,0.0,ERROR_CHARGE,Issue: 1 Chicken Caesar Salad missing
+418941329,50db0734-a0eb-454e-807b-12900ee5733f,2022-04-22,2022-04-26,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.11,0.0,ERROR_CHARGE,Issue: 1 Potato Cheese Munchers missing
+417255665,9fe3e394-190f-4339-9f90-5bd9893675a3,2022-04-19,2022-04-25,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,19.19,0.0,ERROR_CHARGE,"Issue: 1 Breaded Cheese Ravoli missing
+1 Cannoli missing
+1 Cannoli missing"
+416810650,61ff7754-927d-4755-a6b5-1d831c792e64,2022-04-18,2022-04-22,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,5.04,0.0,ERROR_CHARGE,Issue: 1 Cheesecake missing
+416202231,ba24394c-ab9a-40ac-ad5f-d819119bf125,2022-04-17,2022-04-21,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,5.04,0.0,ERROR_CHARGE,Issue: 1 Cheesecake missing
+414684397,2da3544e-61d6-4b6e-8457-494da3956d1b,2022-04-15,2022-04-19,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,8.4,0.0,ERROR_CHARGE,Issue: 1 Chicken Munchers missing
+414419112,18669eb7-19e8-4b14-8d19-98e13cec3c6f,2022-04-14,2022-04-18,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,3.12,0.0,ERROR_CHARGE,Issue: 1 Italian Spicy Sandwich missing
+412301708,d44325f8-f464-43ba-87c4-be4ff15383ed,2022-04-10,2022-04-14,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.24,0.0,ERROR_CHARGE,Issue: 1 Turkey Sandwich missing
+411492059,7636f161-d26c-4c65-b2a6-0aa6dd90fb34,2022-04-09,2022-04-13,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,13.43,0.0,ERROR_CHARGE,Issue: 1 Chicken Pesto Rigatoni missing
+410025668,5b9087e2-4f2c-428c-b2ca-504232a062a4,2022-04-07,2022-04-11,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,7.64,0.0,ERROR_CHARGE,"Issue: 1 Side of Meatballs (4 Pieces) missing
+1 Caesar Salad missing"
+409738494,12978c1c-c312-4afe-8723-276c2e3fb903,2022-04-06,2022-04-11,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.24,0.0,ERROR_CHARGE,"Issue: 1 Cheese Pizza (Personal 10"") missing"
+408132826,d7ce9b48-8aa5-4642-8d24-192fc172380e,2022-04-04,2022-04-08,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,2.84,0.0,ERROR_CHARGE,Issue: 1 Philly Cheesesteak Sub missing
+408331865,67780d88-25cf-4bb6-819c-fc778698e4a1,2022-04-04,2022-04-08,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,21.41,0.0,ERROR_CHARGE,"Issue: 1 Garlic Chicken Pizza incorrect
+1 2 Liter Soda Bottle incorrect"
+408137469,3afc3dc3-9554-47f0-b5e9-c9afa1227cdb,2022-04-04,2022-04-08,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,2.94,0.0,ERROR_CHARGE,Issue: 1 Pesto Chicken Pizza missing
+407856055,30888ca1-5ac5-4ad6-ba8f-e91229d7bb5a,2022-04-03,2022-04-07,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,8.4,0.0,ERROR_CHARGE,Issue: 1 Garlic Cheese Sticks missing
+407089509,d839124b-0f64-4bb0-877a-0b4a50fc2a8d,2022-04-02,2022-04-06,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,4.2,ADJUSTMENT,merchant_payment_adjustment
+407069769,43037443-33e4-4a2e-96dd-e35b04552dc2,2022-04-02,2022-04-06,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,2.21,ADJUSTMENT,merchant_payment_adjustment
+407077321,56fe3e16-958e-4272-b4e8-b5ae0f8d49c6,2022-04-02,2022-04-06,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,4.2,ADJUSTMENT,merchant_payment_adjustment
+407090077,3564f145-7bc1-4be5-a829-1a968508366e,2022-04-02,2022-04-06,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,13.44,ADJUSTMENT,merchant_payment_adjustment
+407070792,20856b19-ee27-4a49-8937-8160ea2a65a9,2022-04-02,2022-04-06,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,3.15,ADJUSTMENT,merchant_payment_adjustment
+407069306,f5d0cf5c-acda-4c58-a303-c4cc140cbd08,2022-04-02,2022-04-06,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,13.44,ADJUSTMENT,merchant_payment_adjustment
+407069524,6f20e416-fb3b-4926-b6e0-66b6e3f9da11,2022-04-02,2022-04-06,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,5.88,ADJUSTMENT,merchant_payment_adjustment
+406201578,5a5ba1c0-2510-4a1f-95a1-1e7db9005732,2022-04-01,2022-04-05,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,1.51,0.0,ERROR_CHARGE,Issue: 1 Can Soda missing
+405700324,56fe3e16-958e-4272-b4e8-b5ae0f8d49c6,2022-03-31,2022-04-04,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.2,0.0,ERROR_CHARGE,Issue: 1 Tiramisu missing
+405124741,d839124b-0f64-4bb0-877a-0b4a50fc2a8d,2022-03-30,2022-04-04,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.2,0.0,ERROR_CHARGE,Issue: 1 Tiramisu missing

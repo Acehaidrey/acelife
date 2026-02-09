@@ -1,0 +1,98 @@
+,,,,,,,8788430207437
+MERCHANT STATEMENT,,,,,PROCESSING MONTH: JUN 2021,,
+WORLDPAY INTEGRATED PAYMENTS,,,,,MERCHANT NBR:,8788430207437,
+8500 GOVERNORS HILL DR MD 1GH2X2,,,,,,,PAGE 1 of 2
+"SYMMES TOWNSHIP, OH 45249",,,,,,,
+FOR CUSTOMER SERVICE CALL 1-800-846-4472,,,,,,,
+DBA NAME: AMECIS PIZZA LAKE FOREST - ECOMM,,,,,,,
+,,,,Attention: SAID HAIDREY,,,
+,,,,SAHA PIZZA INC,,,
+,,,,25431 TRABUCO RD,,,
+,,,,"LAKE FOREST, CA 92630",,,
+DEPOSIT SUMMARY,,,,,,,
+Process Date,Number Sales,Net Sales,Adjustments,Chargebacks,Disc,3rd Party Funded,Net Deposits
+01-Jun,1,-43.68,0.00,0.00,0.00,0.00,-43.68
+01-Jun,1,82.08,0.00,0.00,0.00,0.00,82.08
+02-Jun,2,124.22,0.00,0.00,0.00,0.00,124.22
+03-Jun,2,99.83,0.00,0.00,0.00,0.00,99.83
+04-Jun,3,167.25,0.00,0.00,0.00,0.00,167.25
+05-Jun,3,113.43,0.00,0.00,0.00,0.00,113.43
+06-Jun,2,50.05,0.00,0.00,0.00,0.00,50.05
+07-Jun,1,30.84,0.00,0.00,0.00,0.00,30.84
+10-Jun,1,39.83,0.00,0.00,0.00,0.00,39.83
+11-Jun,1,11.84,0.00,0.00,0.00,0.00,11.84
+13-Jun,2,51.29,0.00,0.00,0.00,0.00,51.29
+16-Jun,1,37.31,0.00,0.00,0.00,0.00,37.31
+17-Jun,2,57.50,0.00,0.00,0.00,0.00,57.50
+18-Jun,3,127.28,0.00,0.00,0.00,0.00,127.28
+19-Jun,6,239.67,0.00,0.00,0.00,0.00,239.67
+20-Jun,1,47.38,0.00,0.00,0.00,0.00,47.38
+21-Jun,5,347.19,0.00,0.00,0.00,0.00,347.19
+22-Jun,4,201.50,0.00,0.00,0.00,0.00,201.50
+23-Jun,4,150.99,0.00,0.00,0.00,0.00,150.99
+24-Jun,2,72.53,0.00,0.00,0.00,0.00,72.53
+25-Jun,6,193.92,0.00,0.00,0.00,0.00,193.92
+26-Jun,11,568.13,0.00,0.00,0.00,0.00,568.13
+27-Jun,5,294.82,0.00,0.00,0.00,0.00,294.82
+28-Jun,3,131.27,0.00,0.00,0.00,0.00,131.27
+29-Jun,4,150.67,0.00,0.00,0.00,0.00,150.67
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,
+transactions.,,,,,,,
+
+MERCHANT NBR: 8788430207437,,,,,,,MERCHANT STATEMENT,,
+DBA: AMECIS PIZZA LAKE FOREST - ECOMM,,,,,,,,,PAGE 2 of 2
+,,,,,,,,,"June 30, 2021"
+Process Date,Number Sales,Net Sales,Adjustments,Chargebacks,,Disc,3rd Party Funded,,Net Deposits
+30-Jun,1,81.87,0.00,,0.00,0.00,,0.00,81.87
+"Deposits Total 77
+PROCESSING ACTIVITY SUMMARY",,"3,429.01",0.00,,0.00,0.00,,0.00,"3,429.01"
+Card Type,"Settled
+Sales","Amount of
+Sales","Settled
+Credits","Amount of
+Credits","Amount of
+Net Sales","Average
+Ticket","Settled
+Per
+Item*","Disc
+Rate","Processing
+Fees"
+AMEXOPTBLUE,7,413.51,0,0.00,413.51,59.07,0.0500,0.7000,3.24
+DISCOVER,2,111.85,0,0.00,111.85,55.93,0.0000,1.9000,2.12
+MASTERCARD,9,295.35,0,0.00,295.35,32.82,0.0000,1.9000,5.61
+MCDEBIT,2,72.52,0,0.00,72.52,36.26,0.0000,1.7500,1.27
+MCDEBITCAP,8,383.48,0,0.00,383.48,47.94,0.0000,1.7500,6.71
+VISA,21,958.96,0,0.00,958.96,45.66,0.0000,1.9000,18.22
+VISADEBIT,2,107.66,1,43.68,63.98,53.83,0.0000,1.7500,2.64
+VISADEBITCAP,25,"1,129.36",0,0.00,"1,129.36",45.17,0.0000,1.7500,19.76
+"Total 76 3,472.69 1 43.68 3,429.01 45.69
+* For processor per item fee charged on transaction types other than settled transactions, see Other Fees section below.
+OTHER FEES",,,,,,,,,59.57
+Number,Amount,Description,,,,,Rate,,Total
+8,,"PROCESSOR PER ITEM FEE - AUTHORIZATIONS, AX",,,,,0.0500,,0.40
+1,,BREACHASSIST,,,,,5.9500,,5.95
+1,,CHARGEBACK SERVICE FEE T1,,,,,10.0000,,10.00
+1,,DECLINED AUTHORIZATIONS,,,,,0.0500,,0.05
+2,,DISCOVER NETWORK AUTHORIZATION FEE,,,,,0.0025,,0.01
+22,,MASTERCARD CVC2 TRANSACTION FEE,,,,,0.0025,,0.06
+,751.35,MC DIGITAL ENABLEMENT FEE,,,,,0.0100,,0.08
+19,,MC FILE TRANSMISSION FEE - 6957,,,,,0.0022,,0.04
+22,,MC NABU FEE,,,,,0.0195,,0.43
+1,,MC NO REV OR CLEAR PREAUTH,,,,,0.0450,,0.05
+1,,SIGNATURE MERCHANT LOCATION FEE,,,,,2.5000,,2.50
+20,,VISA ACQUIRER PROCESSING FEE,,,,,0.0195,,0.39
+30,,VISA APF SIG DEBIT,,,,,0.0155,,0.47
+1,,VISA APF SIG DEBIT RETURNS,,,,,0.0155,,0.02
+50,,VISA BASE II TRAN FEE,,,,,0.0020,,0.10
+,,,,,,,Total Other Fees,,20.55
+TOTAL FEES,,,,,,,,,
+Processing Fees,,,,,,,,,59.57
+Interchange Fees,,,,,,,,,0.00
+Other Fees,,,,,,,,,20.55
+Discount Collected,,,,,,,,,0.00
+Total Fees,,,,,,,,,80.12
+Visa has introduced a new fee: VISA EXCESSIVE FALLBACK FEE at $0.10. This per transaction fee will be assessed for each,,,,,,,,,
+"fallback transaction occurring at merchant locations with a fallback rate of 10% or greater. If applicable, the fee will be first be",,,,,,,,,
+assessed on August invoices.,,,,,,,,,
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,,,
+transactions.,,,,,,,,,

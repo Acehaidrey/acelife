@@ -1,0 +1,117 @@
+,,,,,,,4800000500763
+MERCHANT STATEMENT,,,,,PROCESSING MONTH: JUN 2021,,
+WORLDPAY INTEGRATED PAYMENTS,,,,,MERCHANT NBR:,4800000500763,
+8500 GOVERNORS HILL DR MD 1GH2X2,,,,,,,PAGE 1 of 3
+"SYMMES TOWNSHIP, OH 45249",,,,,,,
+FOR CUSTOMER SERVICE CALL 1-800-846-4472,,,,,,,
+DBA NAME: AMECIS PIZZA LAKE FOREST,,,,,,,
+,,,,Attention: SAID HAIDREY,,,
+,,,,SAHA PIZZA INC,,,
+,,,,25431 TRABUCO RD,,,
+,,,,"LAKE FOREST, CA 92630",,,
+DEPOSIT SUMMARY,,,,,,,
+Process Date,Number Sales,Net Sales,Adjustments,Chargebacks,Disc,3rd Party Funded,Net Deposits
+01-Jun,27,890.36,0.00,0.00,0.00,0.00,890.36
+02-Jun,24,672.50,0.00,0.00,0.00,0.00,672.50
+03-Jun,32,"1,106.22",0.00,0.00,0.00,0.00,"1,106.22"
+04-Jun,41,"1,517.48",0.00,0.00,0.00,0.00,"1,517.48"
+04-Jun,0,0.00,-7.26,0.00,0.00,0.00,-7.26
+05-Jun,52,"2,205.66",0.00,0.00,0.00,0.00,"2,205.66"
+06-Jun,41,"1,266.86",0.00,0.00,0.00,0.00,"1,266.86"
+07-Jun,50,"1,869.20",0.00,0.00,0.00,0.00,"1,869.20"
+08-Jun,34,"1,064.36",0.00,0.00,0.00,0.00,"1,064.36"
+09-Jun,33,892.68,0.00,0.00,0.00,0.00,892.68
+10-Jun,34,969.92,0.00,0.00,0.00,0.00,969.92
+11-Jun,39,"1,372.53",0.00,0.00,0.00,0.00,"1,372.53"
+12-Jun,68,"2,352.40",0.00,0.00,0.00,0.00,"2,352.40"
+13-Jun,51,"1,843.85",0.00,0.00,0.00,0.00,"1,843.85"
+14-Jun,53,"1,733.46",0.00,0.00,0.00,0.00,"1,733.46"
+15-Jun,28,931.37,0.00,0.00,0.00,0.00,931.37
+16-Jun,32,"1,099.50",0.00,0.00,0.00,0.00,"1,099.50"
+17-Jun,47,"1,583.17",0.00,0.00,0.00,0.00,"1,583.17"
+18-Jun,30,933.53,0.00,0.00,0.00,0.00,933.53
+19-Jun,58,"1,980.45",0.00,0.00,0.00,0.00,"1,980.45"
+20-Jun,54,"1,952.30",0.00,0.00,0.00,0.00,"1,952.30"
+21-Jun,46,"1,767.92",0.00,0.00,0.00,0.00,"1,767.92"
+22-Jun,39,"1,223.37",0.00,0.00,0.00,0.00,"1,223.37"
+23-Jun,33,976.28,0.00,0.00,0.00,0.00,976.28
+24-Jun,29,887.56,0.00,0.00,0.00,0.00,887.56
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,
+transactions.,,,,,,,
+
+MERCHANT NBR: 4800000500763,,,,,,,,MERCHANT STATEMENT,,
+DBA: AMECIS PIZZA LAKE FOREST,,,,,,,,,,PAGE 2 of 3
+,,,,,,,,,,"June 30, 2021"
+Process Date,Number Sales,Net Sales,,Adjustments,Chargebacks,,Disc,3rd Party Funded,,Net Deposits
+25-Jun,41,"1,067.81",,0.00,,0.00,0.00,,0.00,"1,067.81"
+26-Jun,62,"2,231.77",,0.00,,0.00,0.00,,0.00,"2,231.77"
+27-Jun,45,"2,176.15",,0.00,,0.00,0.00,,0.00,"2,176.15"
+28-Jun,37,"1,135.31",,0.00,,0.00,0.00,,0.00,"1,135.31"
+29-Jun,36,"1,150.17",,0.00,,0.00,0.00,,0.00,"1,150.17"
+30-Jun,31,"1,072.39",,0.00,,0.00,0.00,,0.00,"1,072.39"
+"Deposits Total
+ADJUSTMENT DETAIL","1,227","41,926.53",,-7.26,,0.00,0.00,,0.00,"41,919.27"
+Date,Batch Amount,,Reason,,,,,,,Amount
+04-Jun,,-7.26,MERCH PROC REJECT 4347XXXX5256 NO PROPER A,,,,,,,-7.26
+PROCESSING ACTIVITY SUMMARY,,,,,,,Total Adjustments,,,-7.26
+Card Type,"Settled
+Sales",,"Amount of
+Sales","Settled
+Credits","Amount of
+Credits","Amount of
+Net Sales","Average
+Ticket","Settled
+Per
+Item*","Disc
+Rate","Processing
+Fees"
+AMEXOPTBLUE,46,,"1,843.53",0,0.00,"1,843.53",40.08,0.0500,0.7000,15.21
+DISCOVER,14,,363.66,0,0.00,363.66,25.98,0.0000,1.9000,6.92
+MASTERCARD,132,,"4,698.85",0,0.00,"4,698.85",35.60,0.0000,1.9000,89.28
+MCDEBIT,68,,"2,336.95",0,0.00,"2,336.95",34.37,0.0000,1.7500,40.90
+MCDEBITCAP,95,,"3,833.72",0,0.00,"3,833.72",40.35,0.0000,1.7500,67.08
+VISA,316,,"10,591.82",0,0.00,"10,591.82",33.52,0.0000,1.9000,201.24
+VISADEBIT,69,,"2,181.83",0,0.00,"2,181.83",31.62,0.0000,1.7500,38.18
+VISADEBITCAP,487,,"16,076.17",0,0.00,"16,076.17",33.01,0.0000,1.7500,281.33
+"Total 1,227 41,926.53 0 0.00 41,926.53 34.17
+* For processor per item fee charged on transaction types other than settled transactions, see Other Fees section below.
+OTHER FEES",,,,,,,,,,740.14
+Number,Amount,Description,,,,,,Rate,,Total
+49,,"PROCESSOR PER ITEM FEE - AUTHORIZATIONS, AX",,,,,,0.0600,,2.94
+14,,DISCOVER NETWORK AUTHORIZATION FEE,,,,,,0.0025,,0.04
+1,,INCOMING CHARGEBACKS - 6960,,,,,,25.0000,,25.00
+,41.89,MASTERCARD CROSS BORDER US - 6959,,,,,,0.6000,,0.25
+,41.89,MC ACQ POS PROGRAM SUPPORT,,,,,,0.8500,,0.36
+,"3,913.00",MC DIGITAL ENABLEMENT FEE,,,,,,0.0100,,0.39
+295,,MC FILE TRANSMISSION FEE - 6957,,,,,,0.0022,,0.65
+302,,MC NABU FEE,,,,,,0.0195,,5.89
+1,,OMNISHIELDASSURE,,,,,,9.9500,,9.95
+1,,SIGNATURE MERCHANT LOCATION FEE,,,,,,2.5000,,2.50
+315,,VISA ACQUIRER PROCESSING FEE,,,,,,0.0195,,6.14
+2,,VISA APF SIG CREDIT AUTH REV,,,,,,0.0195,,0.04
+572,,VISA APF SIG DEBIT,,,,,,0.0155,,8.87
+2,,VISA APF SIG DEBIT AUTH REV,,,,,,0.0155,,0.03
+1,,VISA APF SIGNATURE CREDIT INTER,,,,,,0.0395,,0.04
+892,,VISA BASE II TRAN FEE,,,,,,0.0020,,1.78
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,,,,
+transactions.,,,,,,,,,,
+
+MERCHANT NBR: 4800000500763,,,MERCHANT STATEMENT,
+DBA: AMECIS PIZZA LAKE FOREST,,,,PAGE 3 of 3
+,,,,"June 30, 2021"
+Number,Amount,Description,Rate,Total
+24,,VISA CREDIT TRANSACTION INTEGRITY FEE,0.1000,2.40
+55,,VISA DEBIT TRANSACTION INTEGRITY FEE,0.1000,5.50
+2,,VISA MISUSE FEE,0.0900,0.18
+,,,Total Other Fees,72.95
+TOTAL FEES,,,,
+Processing Fees,,,,740.14
+Interchange Fees,,,,0.00
+Other Fees,,,,72.95
+Discount Collected,,,,0.00
+Total Fees,,,,813.09
+Visa has introduced a new fee: VISA EXCESSIVE FALLBACK FEE at $0.10. This per transaction fee will be assessed for each,,,,
+"fallback transaction occurring at merchant locations with a fallback rate of 10% or greater. If applicable, the fee will be first be",,,,
+assessed on August invoices.,,,,
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,
+transactions.,,,,

@@ -1,0 +1,43 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Taxes_Withheld,Payout,Commission,Merchant_Services,Adjustments,Subtotal,Notes
+Feb 2022,Aroma,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Check against email.
+No BM file found - could mean no orders this month."
+Feb 2022,Aroma,Bitcoin Pizza,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No Bitcoin File Found. Possible No Orders.
+Feb 2022,Aroma,Cater2Me,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Taxes Remitted by them (not included in credit total either).
+Feb 2022,Aroma,Delivery.Com,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No file found. Verify $0 sales for this partner this month.
+Feb 2022,Aroma,Doordash,0.0,17943.12,39.46,0.0,1290.48,0.0,15353.7,2450.8,0.0,0.0,0.0,"Transaction types found: ['ERROR_CHARGE'] 
+Net Adjustments: $-65.22 Payout Records Total: $15310.02 Marketing Fees: $112.86."
+Feb 2022,Aroma,Eatstreet,0.0,0.0,0.0,0.0,0.0,0.0,-6.38,5.0,1.38,0.0,0.0,Withheld taxes remitted: $0.0
+Feb 2022,Aroma,Ezcater,0.0,1357.83,100.08,110.0,82.55,0.0,1040.44,282.8,34.59,0.0,0.0,
+Feb 2022,Aroma,Fooda,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No Fooda File Found. Possible No Orders.
+Feb 2022,Aroma,Foodee,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Taxes Remitted by them (not included in credit total either).
+Feb 2022,Aroma,Future Foods,0.0,15708.67,0.0,0.0,-452.22,0.0,10412.83,5502.5,0.0,0.0,0.0,"Transaction Types: {'Delivery', 'Adjustment'}
+Adjustment Orders: {'#874118010997342', '#0274a828', '#BE297', '#774917976366188', '#E6B38', '#BB497', '#C6A79', '#16692'}
+adjustments || -61.78
+reimbursement adjustments || 0.0
+VR STORE | ORDERS | TOTAL
+Philly Fresh Cheesesteaks | 46 | 974.41
+Fusilli Fusilli | 105 | 2871.45
+Mothership Pizza | 51 | 1445.85
+Brooklyn Calzones | 156 | 3603.2
+Ma's Meatballs | 72 | 1709.94
+F*CKING GOOD PIZZA | 58 | 1695.45
+Killer Wings | 42 | 1009.88
+The Hot Italian | 24 | 601.01
+Cupid's Wings | 7 | 179.0
+Cheeky's Cheesesteaks | 13 | 286.03
+Pasta Pirozzi | 8 | 221.23
+Just Wing It. | 19 | 474.63
+The United Pepperonis of Pizza | 17 | 636.59
+"
+Feb 2022,Aroma,Grubhub,70.55,6584.84,490.28,405.26,413.87,0.0,5329.22,858.19,223.85,0.0,0.0,"$128.0 in promo fees. $0.0 reimbursed.
+$-45.58 in adjustment payments"
+Feb 2022,Aroma,Mayaeats,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Feb 2022,Aroma,Menufy,0.0,150.36,17.78,8.97,8.56,0.0,141.18,4.5,4.68,0.0,0.0,Cash taxes recorded: 0.0
+Feb 2022,Aroma,Menustar,0.0,305.75,28.47,2.99,20.53,0.0,274.78,30.97,0.0,0.0,0.0,Merchant Services included in commission.
+Feb 2022,Aroma,Office Express,0.0,1862.76,0.0,0.0,0.0,0.0,1303.93,0.0,0.0,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Feb 2022,Aroma,Slice,0.0,7841.78,727.92,345.13,0.0,0.0,6756.17,391.5,313.94,0.0,0.0,"Withheld taxes remitted: $529.17
+Adjustments: $149.0."
+Feb 2022,Aroma,Toast,4045.48,31509.16,2319.72,300.0,2359.05,0.0,34678.6,0.0,876.04,0.0,0.0,"Get true del fee from service charges in backend.
+Statement MS (Dates Adjusted): $0.0. Calculated MS: $876.04."
+Feb 2022,Aroma,Ubereats,0.0,10462.35,0.0,0.0,0.0,0.0,7388.98,1610.63,0.0,0.0,0.0,"Contains Postmates Orders.
+Withheld Taxes: $650.57"

@@ -1,0 +1,34 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Taxes_Withheld,Payout,Commission,Merchant_Services,Adjustments,Subtotal,Notes
+Apr 2022,Aroma,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Check against email.
+No BM file found - could mean no orders this month."
+Apr 2022,Aroma,Bitcoin Pizza,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No Bitcoin File Found. Possible No Orders.
+Apr 2022,Aroma,Cater2Me,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Taxes Remitted by them (not included in credit total either).
+Apr 2022,Aroma,Delivery.Com,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No file found. Verify $0 sales for this partner this month.
+Apr 2022,Aroma,Doordash,0.0,23613.2,53.24,0.0,1698.38,0.0,20000.48,3177.14,0.0,0.0,0.0,"Transaction types found: ['ERROR_CHARGE', 'AD_FEE', 'ADJUSTMENT'] 
+Net Adjustments: $-22.57 Payout Records Total: $18449.05 Marketing Fees: $466.25. Ads Fees (incl. in marketing fees): $312.8."
+Apr 2022,Aroma,Eatstreet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No ES file found - could mean no orders this month.
+Apr 2022,Aroma,Ezcater,0.0,3714.21,258.63,170.0,236.31,0.0,2838.86,780.34,95.01,0.0,0.0,
+Apr 2022,Aroma,Fooda,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No Fooda File Found. Possible No Orders.
+Apr 2022,Aroma,Foodee,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Taxes Remitted by them (not included in credit total either).
+Apr 2022,Aroma,Future Foods,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Transaction Types: {'Grubhub', 'Uber Eats', 'DoorDash', 'Menufy'}
+Adjustment Orders: set()
+adjustments || 0.0
+reimbursement adjustments || 0.0
+VR STORE | ORDERS | TOTAL
+Aroma Pizza - Lake Forest | 505 | 16640.32
+Ameci's | 295 | 10475.61
+"
+Apr 2022,Aroma,Grubhub,0.0,3487.96,285.3,169.63,225.91,0.0,2884.56,450.99,126.07,0.0,0.0,"$16.0 in promo fees. $0.0 reimbursed.
+$-10.34 in adjustment payments"
+Apr 2022,Aroma,Mayaeats,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Apr 2022,Aroma,Menufy,100.27,227.05,28.11,5.98,13.55,0.0,215.96,9.0,6.59,0.0,0.0,Cash taxes recorded: 6.89
+Apr 2022,Aroma,Menustar,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Merchant Services included in commission.
+Apr 2022,Aroma,Office Express,0.0,1764.37,0.0,0.0,0.0,0.0,1235.06,0.0,0.0,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Apr 2022,Aroma,Slice,0.0,7789.2,676.77,297.34,0.0,0.0,6641.12,409.5,311.95,0.0,0.0,"Withheld taxes remitted: $521.63
+Adjustments: $95.0."
+Apr 2022,Aroma,Toast,4667.91,34006.96,2526.76,357.0,2514.07,0.0,37715.39,0.0,959.48,0.0,0.0,"Get true del fee from service charges in backend.
+Statement MS (Dates Adjusted): $0.0. Calculated MS: $959.48.
+Discrepancy in tips. Order Tips: $2536.1599999999994. Payment Tips: $2526.7599999999998.
+Discrepancy in credit. Order Total: $34077.76. Payment Total: $34006.96."
+Apr 2022,Aroma,Ubereats,0.0,8304.17,0.0,0.0,0.0,0.0,6043.39,1340.51,0.0,0.0,0.0,"Contains Postmates Orders.
+Withheld Taxes: $548.24"

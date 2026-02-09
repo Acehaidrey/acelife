@@ -1,0 +1,14 @@
+Invoice,,,,,,,
+,,,,,,,
+Date,Subtotal,Tax,Delivery Fee,Tip,Total,Payment Type,Order Type
+4/2/22 21:31,29.36,2.51,2.99,5.23,40.09,credit_card,delivery
+12/2/22 21:21,46.52,3.61,0,4.87,55,credit_card,pickup
+2/25/2022 18:36:34,17.83,1.38,0,0,19.21,credit_card,pickup
+2/25/2022 21:01:26,19.94,1.55,0,3.22,24.71,credit_card,pickup
+Total,113.65,9.05,2.99,13.32,139.01,,
+,,,,,,,
+All Orders,139.01,,(all orders including cash and credit card paid orders) ,,,,
+Pre-Paid Orders,139.01,,(orders where the customer paid with a credit card online) ,,,,
+MenuStar Fees,9.85,,(includes credit card processing fee) ,,,,
+Adjustments,0,,(credits/debts posted to your account) ,,,,
+Net Payout,129.16,,(you will receive a check for this amount in 3-4 days),,,,

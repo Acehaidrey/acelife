@@ -1,0 +1,34 @@
+Transaction ID,Merchant Delivery ID,Timestamp Local Date,Payout Date,Store Name,Store ID,Store Address,Business ID,Merchant Store ID,Error Charge,Adjustment,Transaction Type,Description
+364579692,4655f813-a4fe-4bc1-8d08-b9d2e86e22ea,2022-01-27,2022-01-31,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.2,0.0,ERROR_CHARGE,Issue: 1 Tiramisu missing
+363962060,ac570777-d6b7-40b7-9b1d-52758dfe81e3,2022-01-26,2022-01-31,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,6.93,0.0,ERROR_CHARGE,"Issue: 1 Lunch Fettuccine Alfredo missing
+1 Lunch Meatball Sandwich with Cheese missing
+1 Lunch Turkey Melt Sandwich missing"
+364571505,0ad938d4-d451-4a20-9eb2-e25b1b304a05,2022-01-27,2022-01-31,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,2.31,0.0,ERROR_CHARGE,Issue: 1 Baked Manicotti missing
+362713011,0199d375-7146-435e-81fa-7f15019b49ea,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,4.2,ADJUSTMENT,merchant_payment_adjustment
+362713191,9684c27e-d20d-4d68-af06-0cbe8d4ec451,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,2.52,ADJUSTMENT,merchant_payment_adjustment
+362714564,eeffc49a-6069-441e-a7dd-b61599b25556,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,9.24,ADJUSTMENT,merchant_payment_adjustment
+362714415,a470cc8f-553d-459a-8917-08bafaf36078,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,4.2,ADJUSTMENT,merchant_payment_adjustment
+362714260,d7ea80b5-1600-4eb0-81fe-fc751bed5186,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,4.2,ADJUSTMENT,merchant_payment_adjustment
+362713335,9dd344aa-3cd2-4782-86c2-2697f854f7b9,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,10.08,ADJUSTMENT,merchant_payment_adjustment
+362711611,905d8491-f255-4b4d-bdd4-01e07f76da64,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,4.2,ADJUSTMENT,merchant_payment_adjustment
+362713460,95643623-fcdd-4717-9b93-35bf14c520f7,2022-01-24,2022-01-28,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,0.0,9.24,ADJUSTMENT,merchant_payment_adjustment
+361562122,905d8491-f255-4b4d-bdd4-01e07f76da64,2022-01-22,2022-01-26,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.2,0.0,ERROR_CHARGE,Issue: 1 Tiramisu missing
+359677542,0199d375-7146-435e-81fa-7f15019b49ea,2022-01-19,2022-01-24,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.2,0.0,ERROR_CHARGE,Issue: 1 Tiramisu missing
+357841355,9dd344aa-3cd2-4782-86c2-2697f854f7b9,2022-01-16,2022-01-20,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,10.08,0.0,ERROR_CHARGE,Issue: 1 Linguini with Clams missing
+357870352,9684c27e-d20d-4d68-af06-0cbe8d4ec451,2022-01-16,2022-01-20,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,2.52,0.0,ERROR_CHARGE,"Issue: 1 Cheese Pizza (Personal 10"") missing"
+357764757,95643623-fcdd-4717-9b93-35bf14c520f7,2022-01-16,2022-01-20,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.24,0.0,ERROR_CHARGE,Issue: 1 Turkey Sub missing
+356946322,d7ea80b5-1600-4eb0-81fe-fc751bed5186,2022-01-15,2022-01-19,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.2,0.0,ERROR_CHARGE,"Issue: 1 Cheese Pizza (Giganti 20"") missing"
+354258917,a470cc8f-553d-459a-8917-08bafaf36078,2022-01-10,2022-01-14,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.2,0.0,ERROR_CHARGE,Issue: 1 Tiramisu missing
+354263460,eeffc49a-6069-441e-a7dd-b61599b25556,2022-01-10,2022-01-14,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.24,0.0,ERROR_CHARGE,Issue: 1 Greek Salad missing
+352939956,0975d34e-c0fd-4c8d-aee9-73527597b313,2022-01-08,2022-01-12,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.87,0.0,ERROR_CHARGE,"Issue: 1 Angel Hair Ala Checca missing
+1 Chicken Pesto Rigatoni missing
+1 House Specialty Ma Ma Mia! missing"
+352074185,c5c2aaaf-3702-4de5-af58-f4a7fc576b38,2022-01-07,2022-01-11,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,3.57,0.0,ERROR_CHARGE,Issue: 1 Loaf of Bread missing
+350425494,53296663-d1dd-46d3-99b0-994f841e2965,2022-01-04,2022-01-10,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.24,0.0,ERROR_CHARGE,Issue: 1 Classic Cold Cuts Sub missing
+348492635,a2ea294d-ff14-4f33-a56a-6a900879d0c1,2022-01-01,2022-01-05,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,4.62,0.0,ERROR_CHARGE,Issue: 1 Side of Sausage (2 Pieces) missing
+347681435,9a7b4342-a12c-4e6e-b4fe-cca2f32f367f,2021-12-31,2022-01-04,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,11.19,0.0,ERROR_CHARGE,"Issue: 1 Cheese Pizza (Jumbo 16"") missing
+1 Hawaiian Delight Pizza missing
+1 Margherita Pizza missing"
+346183352,fb0d81cd-fd50-4cb4-9f89-d7de612d338c,2021-12-29,2022-01-03,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,19.32,0.0,ERROR_CHARGE,"Issue: 1 Chicken Fettuccine Alfredo missing
+1 Rigatoni with Sausage & Peppers missing"
+346788643,d7c43c3e-2aea-41c1-b597-7ac1e5ef0bb7,2021-12-30,2022-01-03,Ameci Pizza & Pasta (Trabuco Rd),111737,"25431 Trabuco Rd, Lake Forest, CA 92630, USA",4736,NULL,9.03,0.0,ERROR_CHARGE,Issue: 1 Chicken Munchers (24 Pieces) missing

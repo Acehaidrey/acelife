@@ -1,0 +1,22 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Taxes_Withheld,Payout,Commission,Merchant_Services,Adjustments,Subtotal,Notes
+Feb 2022,Ameci,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Check against email.
+No BM file found - could mean no orders this month."
+Feb 2022,Ameci,Brygid,604.39,8002.23,770.98,263.0,563.61,0.0,7602.08,175.94,224.21,0.0,0.0,Check commission from brygid email report (dates shifted).
+Feb 2022,Ameci,Doordash,0.0,26491.58,29.47,0.0,2188.02,0.0,20469.43,5914.86,0.0,0.0,0.0,"Transaction types found: ['ERROR_CHARGE'] 
+Net Adjustments: $-136.76 Payout Records Total: $20946.93"
+Feb 2022,Ameci,Eatstreet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No ES file found - could mean no orders this month.
+Feb 2022,Ameci,Ezcater,0.0,776.0,69.57,30.0,46.72,0.0,594.65,161.93,19.42,0.0,0.0,
+Feb 2022,Ameci,Grubhub,28.68,6699.48,617.14,246.26,428.44,0.0,5817.24,527.52,239.14,0.0,0.0,"Missing ids for reimbursement: {558417962333385, 962618035365609, 781818075035274, 534118065320656, 720017986252947, 3417890668020, 359118070532888, 392817880759869}
+$-115.58 in adjustment payments"
+Feb 2022,Ameci,House,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from check deposits - Hunsaker & Associates.
+Feb 2022,Ameci,Menufy,58.96,0.0,0.0,0.0,0.0,0.0,0.0,1.5,0.0,0.0,0.0,Cash taxes recorded: 4.13
+Feb 2022,Ameci,Menustar,0.0,139.01,13.32,2.99,9.05,0.0,129.16,9.85,0.0,0.0,0.0,Merchant Services included in commission.
+Feb 2022,Ameci,Nextbrite,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Feb 2022,Ameci,Office Express,0.0,550.14,0.0,0.0,0.0,0.0,385.1,0.0,0.0,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Feb 2022,Ameci,Order Inn,0.0,991.02,0.0,0.0,0.0,0.0,560.35,430.67,0.0,0.0,0.0,Dont include in total calc as accounted for in speedline.
+Feb 2022,Ameci,Slice,0.0,5976.43,545.5,280.16,0.0,0.0,5006.28,355.5,239.27,0.0,0.0,"Withheld taxes remitted: $405.38
+Adjustments: $30.0."
+Feb 2022,Ameci,Speedline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,859.34,0.0,0.0,"Cashier tips include external payouts (double counting).
+Get from dads daily report. Note these double count for payout tips from other services."
+Feb 2022,Ameci,Ubereats,0.0,11571.7,0.0,0.0,0.0,0.0,8725.51,1985.95,0.0,0.0,0.0,"Contains Postmates Orders.
+Withheld Taxes: $842.98"

@@ -1,0 +1,102 @@
+00135758,,,,,,,
+MERCHANT STATEMENT,,,,,,,
+WORLDPAY INTEGRATED PAYMENTS,,,,,,,
+8500 GOVERNORS HILL DR MD 1GH2X2,,,,,,,
+"SYMMES TOWNSHIP, OH 45249",,,,,,,4800000500763
+FOR CUSTOMER SERVICE CALL 1-800-846-4472,,,,,,,
+,,,,,PROCESSING MONTH: SEP 2021,,
+,,,,,MERCHANT NBR:,,4800000500763
+,,,,,,,PAGE 1 of 2
+Attention: SAID HAIDREY,,,,,,,
+SAHA PIZZA INC,,,,,,,
+25431 TRABUCO RD,,,,,DBA NAME: AMECIS PIZZA LAKE FOREST,,
+"LAKE FOREST, CA 92630",,,,,,,
+DEPOSIT SUMMARY,,,,,,,
+Process,Number Sales,Net Sales,Adjustments,Chargebacks,Disc,3rd Party,Net Deposits
+01-Sep,34,"1,033.70",0.00,0.00,0.00,0.00,"1,033.70"
+02-Sep,38,"1,415.71",0.00,0.00,0.00,0.00,"1,415.71"
+03-Sep,37,"1,088.81",0.00,0.00,0.00,0.00,"1,088.81"
+04-Sep,54,"2,133.24",0.00,0.00,0.00,0.00,"2,133.24"
+05-Sep,47,"1,633.44",0.00,0.00,0.00,0.00,"1,633.44"
+06-Sep,55,"2,243.19",0.00,0.00,0.00,0.00,"2,243.19"
+07-Sep,44,"1,360.85",0.00,0.00,0.00,0.00,"1,360.85"
+08-Sep,19,605.43,0.00,0.00,0.00,0.00,605.43
+09-Sep,25,778.31,0.00,0.00,0.00,0.00,778.31
+10-Sep,44,"1,468.26",0.00,0.00,0.00,0.00,"1,468.26"
+11-Sep,69,"2,187.75",0.00,0.00,0.00,0.00,"2,187.75"
+12-Sep,51,"1,776.63",0.00,0.00,0.00,0.00,"1,776.63"
+13-Sep,51,"1,773.90",0.00,0.00,0.00,0.00,"1,773.90"
+14-Sep,30,863.04,0.00,0.00,0.00,0.00,863.04
+15-Sep,28,809.04,0.00,0.00,0.00,0.00,809.04
+16-Sep,38,"1,395.57",0.00,0.00,0.00,0.00,"1,395.57"
+17-Sep,35,"1,321.98",0.00,0.00,0.00,0.00,"1,321.98"
+18-Sep,73,"2,749.82",0.00,0.00,0.00,0.00,"2,749.82"
+19-Sep,43,"1,389.45",0.00,0.00,0.00,0.00,"1,389.45"
+20-Sep,43,"1,551.62",0.00,0.00,0.00,0.00,"1,551.62"
+21-Sep,29,749.53,0.00,0.00,0.00,0.00,749.53
+22-Sep,26,706.51,0.00,0.00,0.00,0.00,706.51
+23-Sep,45,"1,241.42",0.00,0.00,0.00,0.00,"1,241.42"
+24-Sep,47,"1,493.33",0.00,0.00,0.00,0.00,"1,493.33"
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex",,,,,,,
+card transactions.,,,,,,,
+
+MERCHANT NBR: 4800000500763,,,,,,,MERCHANT STATEMENT,,
+DBA: AMECIS PIZZA LAKE FOREST,,,,,,,,,PAGE 2 of 2
+,,,,,,,,"September 30, 2021",
+Process,Number Sales,Net Sales,Adjustments,Chargebacks,,Disc,3rd Party,,Net Deposits
+25-Sep,70,"2,413.50",0.00,,0.00,0.00,,0.00,"2,413.50"
+26-Sep,56,"1,945.63",0.00,,0.00,0.00,,0.00,"1,945.63"
+27-Sep,40,"1,946.28",0.00,,0.00,0.00,,0.00,"1,946.28"
+28-Sep,45,"1,399.21",0.00,,0.00,0.00,,0.00,"1,399.21"
+29-Sep,29,"1,221.03",0.00,,0.00,0.00,,0.00,"1,221.03"
+30-Sep,37,"1,054.48",0.00,,0.00,0.00,,0.00,"1,054.48"
+"Deposits 1,282 43,750.66
+Total
+PROCESSING ACTIVITY SUMMARY",,,0.00,,0.00,0.00,,0.00,"43,750.66"
+Card Type,"Settled
+Sales","Amount of
+Sales","Settled
+Credits","Amount of
+Credits","Amount
+of Net Sales","Average
+Ticket","Settled
+Per
+Item*","Disc
+Rate","Processing
+Fees"
+AMEXOPTBLUE,45,"1,469.41",0,0.00,"1,469.41",32.65,0.0500,0.7000,12.53
+DISCOVER,14,523.76,0,0.00,523.76,37.41,0.0000,1.9000,9.96
+DISCOVERDEBIT,2,38.65,0,0.00,38.65,19.33,0.0000,1.7500,0.68
+MASTERCARD,112,"4,923.03",0,0.00,"4,923.03",43.96,0.0000,1.9000,93.55
+MCDEBIT,72,"2,137.64",0,0.00,"2,137.64",29.69,0.0000,1.7500,37.42
+MCDEBITCAP,122,"3,653.99",0,0.00,"3,653.99",29.95,0.0000,1.7500,63.95
+VISA,331,"11,988.27",0,0.00,"11,988.27",36.22,0.0000,1.9000,227.78
+VISADEBIT,81,"3,031.89",0,0.00,"3,031.89",37.43,0.0000,1.7500,53.06
+VISADEBITCAP,503,"15,984.02",0,0.00,"15,984.02",31.78,0.0000,1.7500,279.71
+"Total 1,282 43,750.66 0 0.00 43,750.66 34.13
+* For processor per item fee charged on transaction types other than settled transactions, see Other Fees section below.
+OTHER FEES",,,,,,,,,778.64
+Number,Amount,Description,,,,,Rate,,Total
+"44
+1
+1",,"PROCESSOR PER ITEM FEE - AUTHORIZATIONS, AX
+SAFERPAYMENTS BASIC
+SIGNATURE MERCHANT LOCATION FEE",,,,,"0.0600
+9.9500
+2.5000",,"2.64
+9.95
+2.50"
+,,,,,,Total Other Fees,,,15.09
+TOTAL FEES,,,,,,,,,
+Processing Fees,,,,,,,,,778.64
+Interchange Fees,,,,,,,,,0.00
+Other Fees,,,,,,,,,15.09
+Discount Collected,,,,,,,,,0.00
+Total Fees,,,,,,,,,793.73
+"On or after October 5, 2021, your restaurant will appear in the top-ranked GetUpside app. GetUpside uses personalized",,,,,,,,,
+cash-back promotions to reach new customers and encourage your existing customers to spend more. Every promotion is,,,,,,,,,
+"within your margin to ensure every transaction is profitable, or you don't pay. More information can be found at",,,,,,,,,
+"getupside.com/worldpay. If you do not want additional profit, you can opt out by sending a request to",,,,,,,,,
+worldpay@getupside.com.,,,,,,,,,
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex",,,,,,,,,
+card transactions.,,,,,,,,,

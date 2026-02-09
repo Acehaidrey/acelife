@@ -1,0 +1,253 @@
+﻿Store Name,Store ID,Order ID,Dining Mode,Order Channel,Order Status,Order Date / Refund date,Order Accept Time,Food Sales (excluding tax),Tax on Food Sales,Food sales (including tax),Adjustments (excluding tax),Tax on Adjustments,Promo Spend on food,Tax on Promotion on Food,Promo Spend on Delivery,Tax on Promo Spend on Delivery,Bag Fee,Marketing Service Fee Adjustment,Total Sales after Adjustments (including tax),Uber Service Fee,Delivery Network Fee,Order Processing Fee,Dispatch Fee,Tax on Dispatch Fee,Gratuity,Misc Payment Description,Miscellaneous Payments,Marketplace Facilitator Tax,Backup Withholding Tax,Payout,Payout Date
+Ameci Pizza & Pasta - Lake Forest,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,10.76,0,0,10.76,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,5.2,0,0,5.2,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,23.42,0,0,23.42,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,13.99,0,0,13.99,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,13.99,0,0,13.99,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,15.07,0,0,15.07,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#76F50,Delivery - Partner Using Uber App,iOS,Completed,2020-10-31,19:02,59.72,4.63,64.35,0,0,0,0,0,0,0,0,64.35,-11.35,0,0,0,0,0,,0,0,0,53,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#43D7B,Delivery - Partner Using Uber App,iOS,Completed,2020-11-01,11:36,21.24,1.65,22.89,0,0,0,0,0,0,0,0,22.89,-4.04,0,0,0,0,0,,0,0,0,18.85,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#1202D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-01,12:57,25.47,1.97,27.44,0,0,0,0,0,0,0,0,27.44,-4.84,0,0,0,0,0,,0,0,0,22.6,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#231E1,Delivery - Partner Using Uber App,Android,Completed,2020-11-01,15:12,35.98,2.79,38.77,0,0,0,0,0,0,0,0,38.77,-6.84,0,0,0,0,0,,0,0,0,31.93,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#BAF56,Delivery - Partner Using Uber App,iOS,Completed,2020-11-01,16:35,51.46,3.99,55.45,0,0,0,0,0,0,0,0,55.45,-9.78,0,0,0,0,0,,0,0,0,45.67,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#C9240,Delivery - Partner Using Uber App,Android,Completed,2020-11-01,16:55,24.99,1.94,26.93,0,0,0,0,0,0,0,0,26.93,-4.75,0,0,0,0,0,,0,0,0,22.18,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#5A29D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-01,20:29,36.73,2.85,39.58,0,0,0,0,0,0,0,0,39.58,-6.98,0,0,0,0,0,,0,0,0,32.6,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#C7193,Delivery - Partner Using Uber App,Android,Completed,2020-11-01,22:18,17.24,1.34,18.58,0,0,0,0,0,0,0,0,18.58,-3.28,0,0,0,0,0,,0,0,0,15.3,2020-11-02
+Ameci Pizza & Pasta - Lake Forest,,#8FD42,Delivery - Partner Using Uber App,iOS,Completed,2020-11-02,19:26,36.72,2.85,39.57,0,0,0,0,0,0,0,0,39.57,-6.98,0,0,0,0,0,,0,0,0,32.59,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#807E4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-02,19:48,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#CB58F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-03,12:40,24.98,1.94,26.92,0,0,0,0,0,0,0,0,26.92,-4.75,0,0,0,0,0,,0,0,0,22.17,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#B0B7C,Delivery - Partner Using Uber App,Android,Completed,2020-11-03,12:49,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#E0EA3,Delivery - Partner Using Uber App,iOS,Completed,2020-11-03,13:37,20.99,1.63,22.62,0,0,0,0,0,0,0,0,22.62,-3.99,0,0,0,0,0,,0,0,0,18.63,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#FB0C7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-03,17:06,26.96,2.09,29.05,0,0,0,0,0,0,0,0,29.05,-5.12,0,0,0,0,0,,0,0,0,23.93,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#39649,Delivery - Partner Using Uber App,Android,Completed,2020-11-03,17:35,24.99,1.94,26.93,0,0,0,0,0,0,0,0,26.93,-4.75,0,0,0,0,0,,0,0,0,22.18,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#45EBB,Delivery - Partner Using Uber App,iOS,Completed,2020-11-03,18:19,47.93,3.71,51.64,0,0,0,0,0,0,0,0,51.64,-9.11,0,0,0,0,0,,0,0,0,42.53,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#C53E9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-03,18:57,16.98,1.32,18.3,0,0,0,0,0,0,0,0,18.3,-3.23,0,0,0,0,0,,0,0,0,15.07,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#35973,Delivery - Partner Using Uber App,iOS,Completed,2020-11-03,20:44,32.8,2.54,35.34,0,0,0,0,0,0,0,0,35.34,-6.23,0,0,0,0,0,,0,0,0,29.11,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#4595C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-03,20:59,28.22,2.19,30.41,0,0,0,0,0,0,0,0,30.41,-5.36,0,0,0,0,0,,0,0,0,25.05,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#E300F,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-05,14:09,38.71,3,41.71,0,0,0,0,0,0,0,0,41.71,-7.35,0,0,0,0,0,,0,0,0,34.36,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#D364A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,15:29,22.99,1.78,24.77,0,0,0,0,0,0,0,0,24.77,-4.37,0,0,0,0,0,,0,0,0,20.4,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#A64A1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,17:09,23.97,1.86,25.83,0,0,0,0,0,0,0,0,25.83,-4.55,0,0,0,0,0,,0,0,0,21.28,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#20E14,Delivery - Partner Using Uber App,Android,Completed,2020-11-05,17:27,24.99,1.94,26.93,0,0,0,0,0,0,0,0,26.93,-4.75,0,0,0,0,0,,0,0,0,22.18,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#FD359,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,17:49,40.83,3.16,43.99,0,0,0,0,0,0,0,0,43.99,-7.76,0,0,0,0,0,,0,0,0,36.23,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#55C1E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,18:07,24.47,1.9,26.37,0,0,0,0,0,0,0,0,26.37,-4.65,0,0,0,0,0,,0,0,0,21.72,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#8AEA3,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,19:01,30.98,2.4,33.38,0,0,0,0,0,0,0,0,33.38,-5.89,0,0,0,0,0,,0,0,0,27.49,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#E2736,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-05,20:20,37.96,2.94,40.9,0,0,0,0,0,0,0,0,40.9,-7.21,0,0,0,0,0,,0,0,0,33.69,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#41364,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,11:43,94.47,7.32,101.79,0,0,0,0,0,0,0,0,101.79,-17.95,0,0,0,0,0,,0,0,0,83.84,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#742FC,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,14:11,30.23,2.34,32.57,0,0,0,0,0,0,0,0,32.57,-5.74,0,0,0,0,0,,0,0,0,26.83,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#7FE75,Delivery - Partner Using Uber App,Android,Completed,2020-11-06,14:36,20.98,1.63,22.61,0,0,0,0,0,0,0,0,22.61,-3.99,0,0,0,0,0,,0,0,0,18.62,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#93AF5,Delivery - Partner Using Uber App,Android,Completed,2020-11-06,15:50,23.6,1.83,25.43,0,0,0,0,0,0,0,0,25.43,-4.48,0,0,0,0,0,,0,0,0,20.95,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#BFC5E,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-06,16:33,17.99,1.39,19.38,0,0,0,0,0,0,0,0,19.38,-3.42,0,0,0,0,0,,0,0,0,15.96,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#18BE4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,16:41,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-2.66,0,0,0,0,0,,0,0,0,12.41,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#58B57,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-06,18:04,34.73,2.69,37.42,0,0,0,0,0,0,0,0,37.42,-6.6,0,0,0,0,0,,0,0,0,30.82,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#A6A64,Delivery - Partner Using Uber App,Android,Completed,2020-11-06,18:52,21.57,1.67,23.24,0,0,0,0,0,0,0,0,23.24,-4.1,0,0,0,0,0,,0,0,0,19.14,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#0822D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,18:58,20.99,1.63,22.62,0,0,0,0,0,0,0,0,22.62,-3.99,0,0,0,0,0,,0,0,0,18.63,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#B9657,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,20:19,55.04,4.27,59.31,0,0,0,0,0,0,0,0,59.31,-10.46,0,0,0,0,0,,0,0,0,48.85,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#4E1C5,Delivery - Partner Using Uber App,iOS,Canceled,2020-11-06,22:45,18.97,1.47,20.44,0,0,0,0,0,0,0,0,20.44,-3.6,0,0,0,0,0,,0,0,0,16.84,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#1EBD8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,11:52,12.99,1.01,14,0,0,0,0,0,0,0,0,14,-2.47,0,0,0,0,0,,0,0,0,11.53,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#DD181,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,12:03,29.48,2.28,31.76,0,0,0,0,0,0,0,0,31.76,-5.6,0,0,0,0,0,,0,0,0,26.16,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#F9101,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,15:28,29.72,2.3,32.02,0,0,0,0,0,0,0,0,32.02,-5.65,0,0,0,0,0,,0,0,0,26.37,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#1F0FF,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-07,18:28,38.26,2.97,41.23,0,0,0,0,0,0,0,0,41.23,-7.27,0,0,0,0,0,,0,0,0,33.96,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#6D1D5,Delivery - Partner Using Uber App,Android,Completed,2020-11-07,18:56,40.95,3.17,44.12,0,0,0,0,0,0,0,0,44.12,-7.78,0,0,0,0,0,,0,0,0,36.34,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#2B7F3,Pickup,iOS,Completed,2020-11-07,19:47,82.14,6.37,88.51,0,0,0,0,0,0,0,0,88.51,0,0,0,0,0,0,,0,0,0,88.51,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#887B5,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,20:15,26.73,2.07,28.8,0,0,0,0,0,0,0,0,28.8,-5.08,0,0,0,0,0,,0,0,0,23.72,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#1CFBD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,20:18,36.95,2.86,39.81,0,0,0,0,0,0,0,0,39.81,-7.02,0,0,0,0,0,,0,0,0,32.79,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#980A8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,22:21,34.46,2.67,37.13,0,0,0,0,0,0,0,0,37.13,-6.55,0,0,0,0,0,,0,0,0,30.58,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#A9B38,Delivery - Partner Using Uber App,iOS,Completed,2020-11-08,12:06,30.22,2.34,32.56,0,0,0,0,0,0,0,0,32.56,-5.74,0,0,0,0,0,,0,0,0,26.82,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#1312A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-08,12:58,22.99,1.78,24.77,0,0,0,0,0,0,0,0,24.77,-4.37,0,0,0,0,0,,0,0,0,20.4,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#E875B,Delivery - Partner Using Uber App,Android,Completed,2020-11-08,18:11,26.74,2.07,28.81,0,0,0,0,0,0,0,0,28.81,-5.08,0,0,0,0,0,,0,0,0,23.73,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#9AA56,Delivery - Partner Using Uber App,iOS,Completed,2020-11-08,18:24,40.96,3.17,44.13,0,0,0,0,0,0,0,0,44.13,-7.78,0,0,0,0,0,,0,0,0,36.35,2020-11-09
+Ameci Pizza & Pasta - Lake Forest,,#A29D8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,12:35,39.73,3.08,42.81,0,0,0,0,0,0,0,0,42.81,-7.55,0,0,0,0,0,,0,0,0,35.26,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#9F857,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,15:47,29.48,2.28,31.76,0,0,0,0,0,0,0,0,31.76,-5.6,0,0,0,0,0,,0,0,0,26.16,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#49F98,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,18:00,27.34,2.12,29.46,0,0,0,0,0,0,0,0,29.46,-5.19,0,0,0,0,0,,0,0,0,24.27,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#9CDB9,Delivery - Partner Using Uber App,Android,Completed,2020-11-09,18:16,52.22,4.05,56.27,0,0,0,0,0,0,0,0,56.27,-9.92,0,0,0,0,0,,0,0,0,46.35,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#2BC7B,Delivery - Partner Using Uber App,Android,Completed,2020-11-09,18:38,50.67,3.93,54.6,0,0,0,0,0,0,0,0,54.6,-9.63,0,0,0,0,0,,0,0,0,44.97,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#EB85A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,18:39,17.99,1.39,19.38,0,0,0,0,0,0,0,0,19.38,-3.42,0,0,0,0,0,,0,0,0,15.96,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#62E24,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,18:41,17.97,1.39,19.36,0,0,0,0,0,0,0,0,19.36,-3.41,0,0,0,0,0,,0,0,0,15.95,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#3FAA4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,18:53,38.71,3,41.71,0,0,0,0,0,0,0,0,41.71,-7.35,0,0,0,0,0,,0,0,0,34.36,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#3FAA4,,Unknown,Refund,2020-11-09,18:53,-5.2,0,-5.2,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-5.2,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#4C422,Pickup,iOS,Completed,2020-11-09,19:29,9.99,0.77,10.76,0,0,0,0,0,0,0,0,10.76,0,0,0,0,0,0,,0,0,0,10.76,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#AB975,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,20:05,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#B466F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-10,12:17,23.97,1.86,25.83,0,0,0,0,0,0,0,0,25.83,-4.55,0,0,0,0,0,,0,0,0,21.28,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#B90FD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-10,16:37,53.45,4.14,57.59,0,0,0,0,0,0,0,0,57.59,-10.16,0,0,0,0,0,,0,0,0,47.43,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#0B5F8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-10,18:33,33.22,2.57,35.79,0,0,0,0,0,0,0,0,35.79,-6.31,0,0,0,0,0,,0,0,0,29.48,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#87E99,Delivery - Partner Using Uber App,iOS,Completed,2020-11-10,19:14,18.22,1.41,19.63,0,0,0,0,0,0,0,0,19.63,-3.46,0,0,0,0,0,,0,0,0,16.17,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#95DFB,Delivery - Partner Using Uber App,iOS,Completed,2020-11-10,20:02,21.73,1.68,23.41,0,0,0,0,0,0,0,0,23.41,-4.13,0,0,0,0,0,,0,0,0,19.28,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#95DFB,,Unknown,Refund,2020-11-10,20:02,-21.73,-1.69,-23.42,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-23.42,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#B0956,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-10,20:58,33.72,2.61,36.33,0,0,0,0,0,0,0,0,36.33,-6.41,0,0,0,0,0,,0,0,0,29.92,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#AF561,Delivery - Partner Using Uber App,Android,Completed,2020-11-10,22:07,21.98,1.7,23.68,0,0,0,0,0,0,0,0,23.68,-4.18,0,0,0,0,0,,0,0,0,19.5,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#A8BD3,Delivery - Partner Using Uber App,Android,Completed,2020-11-11,13:06,22.98,1.78,24.76,0,0,0,0,0,0,0,0,24.76,-4.37,0,0,0,0,0,,0,0,0,20.39,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#C6A50,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-11,15:02,21.98,1.7,23.68,0,0,0,0,0,0,0,0,23.68,-4.18,0,0,0,0,0,,0,0,0,19.5,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#AC360,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,17:51,23.97,1.86,25.83,0,0,0,0,0,0,0,0,25.83,-4.55,0,0,0,0,0,,0,0,0,21.28,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#AC0A9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,19:06,26.98,2.09,29.07,0,0,0,0,0,0,0,0,29.07,-5.13,0,0,0,0,0,,0,0,0,23.94,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#8A77F,Delivery - Partner Using Uber App,Android,Completed,2020-11-11,19:14,22.73,1.76,24.49,0,0,0,0,0,0,0,0,24.49,-4.32,0,0,0,0,0,,0,0,0,20.17,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#B2B0E,Delivery - Partner Using Uber App,Android,Completed,2020-11-11,20:50,16.48,1.28,17.76,0,0,0,0,0,0,0,0,17.76,-3.13,0,0,0,0,0,,0,0,0,14.63,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#B65B6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,20:58,29.73,2.3,32.03,0,0,0,0,0,0,0,0,32.03,-5.65,0,0,0,0,0,,0,0,0,26.38,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#A03FF,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,21:12,9.99,0.77,10.76,0,0,0,0,0,0,0,0,10.76,-1.9,0,0,0,0,0,,0,0,0,8.86,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#1FC21,Delivery - Partner Using Uber App,Android,Completed,2020-11-11,21:56,28.72,2.23,30.95,0,0,0,0,0,0,0,0,30.95,-5.46,0,0,0,0,0,,0,0,0,25.49,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#92FA9,Delivery - Partner Using Uber App,Android,Completed,2020-11-12,14:09,19.74,1.53,21.27,0,0,0,0,0,0,0,0,21.27,-3.75,0,0,0,0,0,,0,0,0,17.52,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#955F0,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,14:25,24.72,1.92,26.64,0,0,0,0,0,0,0,0,26.64,-4.7,0,0,0,0,0,,0,0,0,21.94,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#C039E,Delivery - Partner Using Uber App,Android,Completed,2020-11-12,17:33,26.74,2.07,28.81,0,0,0,0,0,0,0,0,28.81,-5.08,0,0,0,0,0,,0,0,0,23.73,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#AC827,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,18:41,27.48,2.13,29.61,0,0,0,0,0,0,0,0,29.61,-5.22,0,0,0,0,0,,0,0,0,24.39,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#F50E5,Delivery - Partner Using Uber App,Android,Completed,2020-11-12,18:46,29.97,2.32,32.29,0,0,0,0,0,0,0,0,32.29,-5.69,0,0,0,0,0,,0,0,0,26.6,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#41270,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,18:52,16.98,1.32,18.3,0,0,0,0,0,0,0,0,18.3,-3.23,0,0,0,0,0,,0,0,0,15.07,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#9F21A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,20:01,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#11AC9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,21:04,42.21,3.27,45.48,0,0,0,0,0,0,0,0,45.48,-8.02,0,0,0,0,0,,0,0,0,37.46,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#7F35E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,22:21,18.74,1.45,20.19,0,0,0,0,0,0,0,0,20.19,-3.56,0,0,0,0,0,,0,0,0,16.63,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#F77F2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,13:23,20.74,1.61,22.35,0,0,0,0,0,0,0,0,22.35,-3.94,0,0,0,0,0,,0,0,0,18.41,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#BB0AB,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,15:01,29.95,2.32,32.27,0,0,0,0,0,0,0,0,32.27,-5.69,0,0,0,0,0,,0,0,0,26.58,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#DB927,Delivery - Partner Using Uber App,Android,Completed,2020-11-13,16:36,45.72,3.54,49.26,0,0,0,0,0,0,0,0,49.26,-8.69,0,0,0,0,0,,0,0,0,40.57,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#6AD10,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,17:06,28.72,2.23,30.95,0,0,0,0,0,0,0,0,30.95,-5.46,0,0,0,0,0,,0,0,0,25.49,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#C9768,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,17:52,26.21,2.03,28.24,0,0,0,0,0,0,0,0,28.24,-4.98,0,0,0,0,0,,0,0,0,23.26,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#BFDE2,Delivery - Partner Using Uber App,Android,Completed,2020-11-13,18:21,20.99,1.63,22.62,0,0,0,0,0,0,0,0,22.62,-3.99,0,0,0,0,0,,0,0,0,18.63,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#DCCD8,Pickup,iOS,Completed,2020-11-13,18:35,31.95,2.48,34.43,0,0,0,0,0,0,0,0,34.43,0,0,0,0,0,0,,0,0,0,34.43,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#E4230,Delivery - Partner Using Uber App,Android,Completed,2020-11-13,19:15,24.47,1.9,26.37,0,0,0,0,0,0,0,0,26.37,-4.65,0,0,0,0,0,,0,0,0,21.72,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#7DD6C,Delivery - Partner Using Uber App,Android,Completed,2020-11-13,19:35,12.58,0.97,13.55,0,0,0,0,0,0,0,0,13.55,-2.39,0,0,0,0,0,,0,0,0,11.16,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#51F9A,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-13,19:51,21.24,1.65,22.89,0,0,0,0,0,0,0,0,22.89,-4.04,0,0,0,0,0,,0,0,0,18.85,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#F16E0,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,20:25,40.16,3.11,43.27,0,0,0,0,0,0,0,0,43.27,-7.63,0,0,0,0,0,,0,0,0,35.64,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#7109D,Delivery - Partner Using Uber App,Android,Completed,2020-11-13,21:32,32.71,2.54,35.25,0,0,0,0,0,0,0,0,35.25,-6.21,0,0,0,0,0,,0,0,0,29.04,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#0CED4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,22:01,15.47,1.2,16.67,0,0,0,0,0,0,0,0,16.67,-2.94,0,0,0,0,0,,0,0,0,13.73,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#FFBF6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,22:08,42.46,3.29,45.75,0,0,0,0,0,0,0,0,45.75,-8.07,0,0,0,0,0,,0,0,0,37.68,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#5A87A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,22:12,40.7,3.15,43.85,0,0,0,0,0,0,0,0,43.85,-7.73,0,0,0,0,0,,0,0,0,36.12,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#78061,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-14,11:56,53.97,4.18,58.15,0,0,0,0,0,0,0,0,58.15,-10.25,0,0,0,0,0,,0,0,0,47.9,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#98189,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,12:05,225.77,17.5,243.27,0,0,0,0,0,0,0,0,243.27,-42.9,0,0,0,0,0,,0,0,0,200.37,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#01217,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,13:42,47.96,3.72,51.68,0,0,0,0,0,0,0,0,51.68,-9.11,0,0,0,0,0,,0,0,0,42.57,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#815D1,Pickup,Android,Completed,2020-11-14,14:56,15.66,1.21,16.87,0,0,0,0,0,0,0,0,16.87,0,0,0,0,0,0,,0,0,0,16.87,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#8DBCB,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,17:16,34.73,2.69,37.42,0,0,0,0,0,0,0,0,37.42,-6.6,0,0,0,0,0,,0,0,0,30.82,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#71048,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,18:05,139.92,10.84,150.76,0,0,0,0,0,0,0,0,150.76,-26.58,0,0,0,0,0,,0,0,0,124.18,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#49850,Delivery - Partner Using Uber App,Android,Completed,2020-11-14,18:34,26.98,2.09,29.07,0,0,0,0,0,0,0,0,29.07,-5.13,0,0,0,0,0,,0,0,0,23.94,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#47692,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,18:45,34.96,2.71,37.67,0,0,0,0,0,0,0,0,37.67,-6.64,0,0,0,0,0,,0,0,0,31.03,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#848EA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,18:50,50.95,3.95,54.9,0,0,0,0,0,0,0,0,54.9,-9.68,0,0,0,0,0,,0,0,0,45.22,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#D9CB5,Delivery - Partner Using Uber App,Android,Completed,2020-11-14,19:02,28.24,2.19,30.43,0,0,0,0,0,0,0,0,30.43,-5.37,0,0,0,0,0,,0,0,0,25.06,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#F3258,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,19:55,21.97,1.7,23.67,0,0,0,0,0,0,0,0,23.67,-4.17,0,0,0,0,0,,0,0,0,19.5,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#F3258,,Unknown,Refund,2020-11-14,19:55,-12.98,-1.01,-13.99,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-13.99,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#36856,Pickup,iOS,Completed,2020-11-14,20:00,25.74,1.99,27.73,0,0,0,0,0,0,0,0,27.73,0,0,0,0,0,0,,0,0,0,27.73,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#B94C9,Delivery - Partner Using Uber App,Android,Completed,2020-11-14,20:31,38.73,3,41.73,0,0,0,0,0,0,0,0,41.73,-7.36,0,0,0,0,0,,0,0,0,34.37,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#286F8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,21:10,64.15,4.97,69.12,0,0,0,0,0,0,0,0,69.12,-12.19,0,0,0,0,0,,0,0,0,56.93,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#A673A,Delivery - Partner Using Uber App,Android,Completed,2020-11-15,17:21,26.74,2.07,28.81,0,0,0,0,0,0,0,0,28.81,-5.08,0,0,0,0,0,,0,0,0,23.73,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#C3297,Delivery - Partner Using Uber App,iOS,Completed,2020-11-15,17:45,32.95,2.55,35.5,0,0,0,0,0,0,0,0,35.5,-6.26,0,0,0,0,0,,0,0,0,29.24,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#B8D58,Delivery - Partner Using Uber App,iOS,Completed,2020-11-15,19:08,39.44,3.06,42.5,0,0,0,0,0,0,0,0,42.5,-7.49,0,0,0,0,0,,0,0,0,35.01,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#2B7C6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-15,19:53,15.74,1.22,16.96,0,0,0,0,0,0,0,0,16.96,-2.99,0,0,0,0,0,,0,0,0,13.97,2020-11-16
+Ameci Pizza & Pasta - Lake Forest,,#CA7C0,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-16,12:50,130.89,10.14,141.03,0,0,0,0,0,0,0,0,141.03,-24.87,0,0,0,0,0,,0,0,0,116.16,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#CA7C0,,Unknown,Refund,2020-11-16,12:50,-13.99,-1.08,-15.07,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-15.07,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#71A78,Pickup,iOS,Completed,2020-11-16,13:32,144.34,11.19,155.53,0,0,0,0,0,0,0,0,155.53,0,0,0,0,0,0,,0,0,0,155.53,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#88293,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,12:13,25.48,1.97,27.45,0,0,0,0,0,0,0,0,27.45,-4.84,0,0,0,0,0,,0,0,0,22.61,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#B2260,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,12:16,37.97,2.94,40.91,0,0,0,0,0,0,0,0,40.91,-7.21,0,0,0,0,0,,0,0,0,33.7,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#374E6,Pickup,iOS,Completed,2020-11-17,17:28,30.73,2.38,33.11,0,0,0,0,0,0,0,0,33.11,0,0,0,0,0,0,,0,0,0,33.11,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#439FE,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,20:38,26.96,2.09,29.05,0,0,0,0,0,0,0,0,29.05,-5.12,0,0,0,0,0,,0,0,0,23.93,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#BB26C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,21:48,14.48,1.12,15.6,0,0,0,0,0,0,0,0,15.6,-2.75,0,0,0,0,0,,0,0,0,12.85,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#C0B3A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,22:05,28.97,2.25,31.22,0,0,0,0,0,0,0,0,31.22,-5.5,0,0,0,0,0,,0,0,0,25.72,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#4BE9D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,11:44,21.98,1.7,23.68,0,0,0,0,0,0,0,0,23.68,-4.18,0,0,0,0,0,,0,0,0,19.5,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#22DD0,Delivery - Partner Using Uber App,Android,Completed,2020-11-18,12:51,16.49,1.28,17.77,0,0,0,0,0,0,0,0,17.77,-3.13,0,0,0,0,0,,0,0,0,14.64,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#15511,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-18,16:54,21.22,1.64,22.86,0,0,0,0,0,0,0,0,22.86,-4.03,0,0,0,0,0,,0,0,0,18.83,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#D6104,Delivery - Partner Using Uber App,Android,Completed,2020-11-18,17:22,33.97,2.63,36.6,0,0,0,0,0,0,0,0,36.6,-6.45,0,0,0,0,0,,0,0,0,30.15,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#A8BC2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,19:26,28.73,2.23,30.96,0,0,0,0,0,0,0,0,30.96,-5.46,0,0,0,0,0,,0,0,0,25.5,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#CAB2E,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-18,20:18,24.7,1.91,26.61,0,0,0,0,0,0,0,0,26.61,-4.69,0,0,0,0,0,,0,0,0,21.92,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#D4A85,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,20:48,9.99,0.77,10.76,0,0,0,0,0,0,0,0,10.76,-1.9,0,0,0,0,0,,0,0,0,8.86,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#7A468,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,16:50,24.99,1.94,26.93,0,0,0,0,0,0,0,0,26.93,-4.75,0,0,0,0,0,,0,0,0,22.18,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#13AA7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,18:22,19.21,1.49,20.7,0,0,0,0,0,0,0,0,20.7,-3.65,0,0,0,0,0,,0,0,0,17.05,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#3FD51,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,19:39,25.98,2.01,27.99,0,0,0,0,0,0,0,0,27.99,-4.94,0,0,0,0,0,,0,0,0,23.05,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#3AB72,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,19:44,14.92,1.16,16.08,0,0,0,0,0,0,0,0,16.08,-2.83,0,0,0,0,0,,0,0,0,13.25,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#533C4,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-20,12:45,173.84,13.47,187.31,0,0,0,0,0,0,0,0,187.31,-33.03,0,0,0,0,0,,0,0,0,154.28,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#126F6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,15:43,32.56,2.52,35.08,0,0,0,0,0,0,0,0,35.08,-6.19,0,0,0,0,0,,0,0,0,28.89,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#DFD43,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,16:20,14.74,1.14,15.88,0,0,0,0,0,0,0,0,15.88,-2.8,0,0,0,0,0,,0,0,0,13.08,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#CC48A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,17:56,21.24,1.65,22.89,0,0,0,0,0,0,0,0,22.89,-4.04,0,0,0,0,0,,0,0,0,18.85,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#2A47A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,20:22,37.73,2.92,40.65,0,0,0,0,0,0,0,0,40.65,-7.17,0,0,0,0,0,,0,0,0,33.48,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#03E69,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,22:08,23.97,1.86,25.83,0,0,0,0,0,0,0,0,25.83,-4.55,0,0,0,0,0,,0,0,0,21.28,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#03E69,,Unknown,Refund,2020-11-20,22:08,-12.98,-1.01,-13.99,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-13.99,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#3FAB4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,15:43,20.99,1.63,22.62,0,0,0,0,0,0,0,0,22.62,-3.99,0,0,0,0,0,,0,0,0,18.63,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#DAA7D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,16:50,56.96,4.41,61.37,0,0,0,0,0,0,0,0,61.37,-10.82,0,0,0,0,0,,0,0,0,50.55,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#502B2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,18:22,31.48,2.44,33.92,0,0,0,0,0,0,0,0,33.92,-5.98,0,0,0,0,0,,0,0,0,27.94,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#BB14B,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,19:08,24.73,1.92,26.65,0,0,0,0,0,0,0,0,26.65,-4.7,0,0,0,0,0,,0,0,0,21.95,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#46D6D,Delivery - Partner Using Uber App,Android,Completed,2020-11-21,19:29,25.73,1.99,27.72,0,0,0,0,0,0,0,0,27.72,-4.89,0,0,0,0,0,,0,0,0,22.83,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#E12EF,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,20:28,21.48,1.66,23.14,0,0,0,0,0,0,0,0,23.14,-4.08,0,0,0,0,0,,0,0,0,19.06,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#FA3AE,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,20:29,37.95,2.94,40.89,0,0,0,0,0,0,0,0,40.89,-7.21,0,0,0,0,0,,0,0,0,33.68,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#11050,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,21:15,37.42,2.9,40.32,0,0,0,0,0,0,0,0,40.32,-7.11,0,0,0,0,0,,0,0,0,33.21,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#814CC,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-22,13:19,32.67,2.53,35.2,0,0,0,0,0,0,0,0,35.2,-6.21,0,0,0,0,0,,0,0,0,28.99,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#DAE03,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,13:40,15.47,1.2,16.67,0,0,0,0,0,0,0,0,16.67,-2.94,0,0,0,0,0,,0,0,0,13.73,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#0CFEA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,15:23,24.45,1.89,26.34,0,0,0,0,0,0,0,0,26.34,-4.65,0,0,0,0,0,,0,0,0,21.69,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#E0679,Delivery - Partner Using Uber App,Android,Completed,2020-11-22,16:58,37.71,2.92,40.63,0,0,0,0,0,0,0,0,40.63,-7.16,0,0,0,0,0,,0,0,0,33.47,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#15FB8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,17:31,20.98,1.63,22.61,0,0,0,0,0,0,0,0,22.61,-3.99,0,0,0,0,0,,0,0,0,18.62,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#B80F1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,17:44,39.95,3.1,43.05,0,0,0,0,0,0,0,0,43.05,-7.59,0,0,0,0,0,,0,0,0,35.46,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#7193D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,18:02,27.46,2.13,29.59,0,0,0,0,0,0,0,0,29.59,-5.22,0,0,0,0,0,,0,0,0,24.37,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#C6B9D,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-22,18:08,20.72,1.61,22.33,0,0,0,0,0,0,0,0,22.33,-3.94,0,0,0,0,0,,0,0,0,18.39,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#DC1B2,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-22,18:26,25.73,1.99,27.72,0,0,0,0,0,0,0,0,27.72,-4.89,0,0,0,0,0,,0,0,0,22.83,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#D6B00,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,18:48,27.23,2.11,29.34,0,0,0,0,0,0,0,0,29.34,-5.17,0,0,0,0,0,,0,0,0,24.17,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#3DF3E,Delivery - Partner Using Uber App,Android,Completed,2020-11-22,19:24,54.92,4.26,59.18,0,0,0,0,0,0,0,0,59.18,-10.43,0,0,0,0,0,,0,0,0,48.75,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#CCDFE,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,20:07,51.95,4.03,55.98,0,0,0,0,0,0,0,0,55.98,-9.87,0,0,0,0,0,,0,0,0,46.11,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#83DAC,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,21:00,28.96,2.24,31.2,0,0,0,0,0,0,0,0,31.2,-5.5,0,0,0,0,0,,0,0,0,25.7,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#1EE2C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,21:15,14.98,1.16,16.14,0,0,0,0,0,0,0,0,16.14,-2.85,0,0,0,0,0,,0,0,0,13.29,2020-11-23
+Ameci Pizza & Pasta - Lake Forest,,#49453,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-23,12:12,93.39,7.24,100.63,0,0,0,0,0,0,0,0,100.63,-17.74,0,0,0,0,0,,0,0,0,82.89,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#7FC91,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-23,12:45,26.47,2.05,28.52,0,0,0,0,0,0,0,0,28.52,-5.03,0,0,0,0,0,,0,0,0,23.49,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#1B1DE,Delivery - Partner Using Uber App,Android,Completed,2020-11-23,15:58,21.49,1.67,23.16,0,0,0,0,0,0,0,0,23.16,-4.08,0,0,0,0,0,,0,0,0,19.08,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#580A6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,17:42,66.44,5.15,71.59,0,0,0,0,0,0,0,0,71.59,-12.62,0,0,0,0,0,,0,0,0,58.97,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#A477C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,18:19,32.92,2.55,35.47,0,0,0,0,0,0,0,0,35.47,-6.25,0,0,0,0,0,,0,0,0,29.22,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#FDFAA,Delivery - Partner Using Uber App,Android,Completed,2020-11-23,18:59,16.49,1.28,17.77,0,0,0,0,0,0,0,0,17.77,-3.13,0,0,0,0,0,,0,0,0,14.64,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#D6918,Delivery - Partner Using Uber App,Android,Completed,2020-11-23,21:13,22.98,1.78,24.76,0,0,0,0,0,0,0,0,24.76,-4.37,0,0,0,0,0,,0,0,0,20.39,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#E4CD1,Delivery - Partner Using Uber App,Android,Completed,2020-11-23,22:05,19.27,1.49,20.76,0,0,0,0,0,0,0,0,20.76,-3.66,0,0,0,0,0,,0,0,0,17.1,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#A36B7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,22:14,16.47,1.28,17.75,0,0,0,0,0,0,0,0,17.75,-3.13,0,0,0,0,0,,0,0,0,14.62,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#B957E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,11:47,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-2.66,0,0,0,0,0,,0,0,0,12.41,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#EA425,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-24,12:50,159.31,12.35,171.66,0,0,0,0,0,0,0,0,171.66,-30.27,0,0,0,0,0,,0,0,0,141.39,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#CDE67,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,13:07,67.71,5.25,72.96,0,0,0,0,0,0,0,0,72.96,-12.86,0,0,0,0,0,,0,0,0,60.1,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#31D0E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,14:12,32.72,2.54,35.26,0,0,0,0,0,0,0,0,35.26,-6.22,0,0,0,0,0,,0,0,0,29.04,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#1EC8F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,16:33,62.95,4.88,67.83,0,0,0,0,0,0,0,0,67.83,-11.96,0,0,0,0,0,,0,0,0,55.87,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#8992D,Delivery - Partner Using Uber App,Android,Completed,2020-11-24,17:09,20.98,1.63,22.61,0,0,0,0,0,0,0,0,22.61,-3.99,0,0,0,0,0,,0,0,0,18.62,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#DC33C,Delivery - Partner Using Uber App,Android,Completed,2020-11-24,19:00,14.98,1.16,16.14,0,0,0,0,0,0,0,0,16.14,-2.85,0,0,0,0,0,,0,0,0,13.29,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#0E3BC,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-24,19:01,28.98,2.25,31.23,0,0,0,0,0,0,0,0,31.23,-5.51,0,0,0,0,0,,0,0,0,25.72,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#E653C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,19:06,31.72,2.46,34.18,0,0,0,0,0,0,0,0,34.18,-6.03,0,0,0,0,0,,0,0,0,28.15,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#9F403,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,19:10,23.72,1.84,25.56,0,0,0,0,0,0,0,0,25.56,-4.51,0,0,0,0,0,,0,0,0,21.05,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#7E555,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,20:12,30.44,2.36,32.8,0,0,0,0,0,0,0,0,32.8,-5.78,0,0,0,0,0,,0,0,0,27.02,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#65EDD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,16:43,26.97,2.09,29.06,0,0,0,0,0,0,0,0,29.06,-5.12,0,0,0,0,0,,0,0,0,23.94,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#651BD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,16:50,24.45,1.89,26.34,0,0,0,0,0,0,0,0,26.34,-4.65,0,0,0,0,0,,0,0,0,21.69,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#4A2AA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,17:20,24.48,1.9,26.38,0,0,0,0,0,0,0,0,26.38,-4.65,0,0,0,0,0,,0,0,0,21.73,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#5BBD6,Delivery - Partner Using Uber App,Android,Completed,2020-11-25,18:22,19.22,1.49,20.71,0,0,0,0,0,0,0,0,20.71,-3.65,0,0,0,0,0,,0,0,0,17.06,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#1B464,Delivery - Partner Using Uber App,Android,Completed,2020-11-25,18:34,20.74,1.61,22.35,0,0,0,0,0,0,0,0,22.35,-3.94,0,0,0,0,0,,0,0,0,18.41,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#5C010,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,20:26,31.21,2.42,33.63,0,0,0,0,0,0,0,0,33.63,-5.93,0,0,0,0,0,,0,0,0,27.7,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#C49FA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,21:12,25.22,1.95,27.17,0,0,0,0,0,0,0,0,27.17,-4.79,0,0,0,0,0,,0,0,0,22.38,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#D6A70,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,22:04,34.22,2.65,36.87,0,0,0,0,0,0,0,0,36.87,-6.5,0,0,0,0,0,,0,0,0,30.37,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#92257,Delivery - Partner Using Uber App,Android,Completed,2020-11-27,12:30,47.47,3.68,51.15,0,0,0,0,0,0,0,0,51.15,-9.02,0,0,0,0,0,,0,0,0,42.13,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#3E7E6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,12:48,23.22,1.8,25.02,0,0,0,0,0,0,0,0,25.02,-4.41,0,0,0,0,0,,0,0,0,20.61,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#8917C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,13:21,23.73,1.84,25.57,0,0,0,0,0,0,0,0,25.57,-4.51,0,0,0,0,0,,0,0,0,21.06,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#D39B2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,13:37,30.24,2.34,32.58,0,0,0,0,0,0,0,0,32.58,-5.75,0,0,0,0,0,,0,0,0,26.83,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#1B38E,Pickup,Android,Completed,2020-11-27,13:50,15.66,1.21,16.87,0,0,0,0,0,0,0,0,16.87,0,0,0,0,0,0,,0,0,0,16.87,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#0DAB8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,17:09,30.24,2.34,32.58,0,0,0,0,0,0,0,0,32.58,-5.75,0,0,0,0,0,,0,0,0,26.83,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#D97E9,Delivery - Partner Using Uber App,iOS,Canceled,2020-11-27,18:13,15.48,1.2,16.68,0,0,0,0,0,0,0,0,16.68,-2.94,0,0,0,0,0,,0,0,0,13.74,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#2BA7B,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,18:46,30.72,2.38,33.1,0,0,0,0,0,0,0,0,33.1,-5.84,0,0,0,0,0,,0,0,0,27.26,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#47F30,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,19:09,15.48,1.2,16.68,0,0,0,0,0,0,0,0,16.68,-2.94,0,0,0,0,0,,0,0,0,13.74,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#DCF12,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,19:11,15.48,1.2,16.68,0,0,0,0,0,0,0,0,16.68,-2.94,0,0,0,0,0,,0,0,0,13.74,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#B66A0,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,19:27,25.96,2.01,27.97,0,0,0,0,0,0,0,0,27.97,-4.93,0,0,0,0,0,,0,0,0,23.04,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#6297F,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-27,19:31,23.98,1.86,25.84,0,0,0,0,0,0,0,0,25.84,-4.56,0,0,0,0,0,,0,0,0,21.28,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#ADFEF,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,21:45,46.74,3.62,50.36,0,0,0,0,0,0,0,0,50.36,-8.88,0,0,0,0,0,,0,0,0,41.48,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#1B5A2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,22:17,20.99,1.63,22.62,0,0,0,0,0,0,0,0,22.62,-3.99,0,0,0,0,0,,0,0,0,18.63,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#1A6D4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,12:14,15.48,1.2,16.68,0,0,0,0,0,0,0,0,16.68,-2.94,0,0,0,0,0,,0,0,0,13.74,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#BE32C,Delivery - Partner Using Uber App,Android,Completed,2020-11-28,12:36,42.73,3.31,46.04,0,0,0,0,0,0,0,0,46.04,-8.12,0,0,0,0,0,,0,0,0,37.92,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#ACC96,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,12:59,34.96,2.71,37.67,0,0,0,0,0,0,0,0,37.67,-6.64,0,0,0,0,0,,0,0,0,31.03,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#C2E10,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,13:31,26.95,2.09,29.04,0,0,0,0,0,0,0,0,29.04,-5.12,0,0,0,0,0,,0,0,0,23.92,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#43567,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-28,14:07,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#08DFB,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-28,16:34,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#5BBD2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,16:42,45.95,3.56,49.51,0,0,0,0,0,0,0,0,49.51,-8.73,0,0,0,0,0,,0,0,0,40.78,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#5357C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,16:52,41.98,3.25,45.23,0,0,0,0,0,0,0,0,45.23,-7.98,0,0,0,0,0,,0,0,0,37.25,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#FF8F9,Delivery - Partner Using Uber App,Android,Completed,2020-11-28,17:00,16.49,1.28,17.77,0,0,0,0,0,0,0,0,17.77,-3.13,0,0,0,0,0,,0,0,0,14.64,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#D92B3,Delivery - Partner Using Uber App,Android,Completed,2020-11-28,17:32,26.74,2.07,28.81,0,0,0,0,0,0,0,0,28.81,-5.08,0,0,0,0,0,,0,0,0,23.73,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#DAA7E,Delivery - Partner Using Uber App,Android,Completed,2020-11-28,18:49,19.22,1.49,20.71,0,0,0,0,0,0,0,0,20.71,-3.65,0,0,0,0,0,,0,0,0,17.06,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#0D3C2,Delivery - Partner Using Uber App,Android,Completed,2020-11-28,20:01,15.98,1.24,17.22,0,0,0,0,0,0,0,0,17.22,-3.04,0,0,0,0,0,,0,0,0,14.18,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#CB627,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,22:23,29.47,2.28,31.75,0,0,0,0,0,0,0,0,31.75,-5.6,0,0,0,0,0,,0,0,0,26.15,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#0CA72,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,16:57,35.98,2.79,38.77,0,0,0,0,0,0,0,0,38.77,-6.84,0,0,0,0,0,,0,0,0,31.93,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#3D107,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,18:02,53.95,4.18,58.13,0,0,0,0,0,0,0,0,58.13,-10.25,0,0,0,0,0,,0,0,0,47.88,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#55939,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,18:18,32.8,2.54,35.34,0,0,0,0,0,0,0,0,35.34,-6.23,0,0,0,0,0,,0,0,0,29.11,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#6B263,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,18:27,51.45,3.99,55.44,0,0,0,0,0,0,0,0,55.44,-9.78,0,0,0,0,0,,0,0,0,45.66,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#96A4B,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,19:02,65.7,5.09,70.79,0,0,0,0,0,0,0,0,70.79,-12.48,0,0,0,0,0,,0,0,0,58.31,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#4CA1D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,19:14,10.99,0.85,11.84,0,0,0,0,0,0,0,0,11.84,-2.09,0,0,0,0,0,,0,0,0,9.75,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#95527,Pickup,iOS,Completed,2020-11-29,19:30,15.48,1.2,16.68,0,0,0,0,0,0,0,0,16.68,0,0,0,0,0,0,,0,0,0,16.68,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#7F9A4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,20:46,19.73,1.53,21.26,0,0,0,0,0,0,0,0,21.26,-3.75,0,0,0,0,0,,0,0,0,17.51,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#0AC7D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,20:53,33.39,2.59,35.98,0,0,0,0,0,0,0,0,35.98,-6.34,0,0,0,0,0,,0,0,0,29.64,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#DF253,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,21:13,25.76,2,27.76,0,0,0,0,0,0,0,0,27.76,-4.89,0,0,0,0,0,,0,0,0,22.87,2020-11-30
+Ameci Pizza & Pasta - Lake Forest,,#AB494,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-30,11:54,23.97,1.86,25.83,0,0,0,0,0,0,0,0,25.83,-4.55,0,0,0,0,0,,0,0,0,21.28,
+Ameci Pizza & Pasta - Lake Forest,,#B8F6E,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-30,12:03,141.78,10.99,152.77,0,0,0,0,0,0,0,0,152.77,-26.94,0,0,0,0,0,,0,0,0,125.83,
+Ameci Pizza & Pasta - Lake Forest,,#C7E1F,Delivery - Partner Using Uber App,Android,Completed,2020-11-30,12:37,25.96,2.01,27.97,0,0,0,0,0,0,0,0,27.97,-4.93,0,0,0,0,0,,0,0,0,23.04,
+Ameci Pizza & Pasta - Lake Forest,,#2DB33,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,17:38,17.49,1.36,18.85,0,0,0,0,0,0,0,0,18.85,-3.32,0,0,0,0,0,,0,0,0,15.53,
+Ameci Pizza & Pasta - Lake Forest,,#EB7A5,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,17:38,18.97,1.47,20.44,0,0,0,0,0,0,0,0,20.44,-3.6,0,0,0,0,0,,0,0,0,16.84,
+Ameci Pizza & Pasta - Lake Forest,,#246BB,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,18:37,28.98,2.25,31.23,0,0,0,0,0,0,0,0,31.23,-5.51,0,0,0,0,0,,0,0,0,25.72,
+Ameci Pizza & Pasta - Lake Forest,,#12119,Delivery - Partner Using Uber App,Android,Completed,2020-11-30,18:48,24.47,1.9,26.37,0,0,0,0,0,0,0,0,26.37,-4.65,0,0,0,0,0,,0,0,0,21.72,
+Ameci Pizza & Pasta - Lake Forest,,#9FBBA,Delivery - Partner Using Uber App,Android,Completed,2020-11-30,19:51,10.99,0.85,11.84,0,0,0,0,0,0,0,0,11.84,-2.09,0,0,0,0,0,,0,0,0,9.75,
+Ameci Pizza & Pasta - Lake Forest,,#DDC65,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,21:49,24.99,1.94,26.93,0,0,0,0,0,0,0,0,26.93,-4.75,0,0,0,0,0,,0,0,0,22.18,
+Ameci Pizza & Pasta - Lake Forest,,#4D25C,Delivery - Partner Using Uber App,Android,Completed,2020-11-30,22:17,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,

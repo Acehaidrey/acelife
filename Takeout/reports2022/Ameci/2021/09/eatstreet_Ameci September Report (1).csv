@@ -1,0 +1,10 @@
+EatStreet Order,Order Status,Payment Type,Created Date,Subtotal Restaurant,Tip,Delivery Fee,Tax,Tax Restaurant
+29475882,Active,Credit Card,2021-09-04,16.48,3.94,3,1.57,0
+29494509,Active,Credit Card,2021-09-05,43.57,6.5,3,4.14,0
+29538268,Active,Credit Card,2021-09-09,16.48,3.94,3,1.57,0
+29634192,Active,Credit Card,2021-09-16,16.48,3.94,3,1.57,0
+29670696,Canceled,Credit Card,2021-09-18,79.2,17.43,5,7.53,0
+29680264,Active,Credit Card,2021-09-19,16.48,3.59,3,1.44,0
+29717342,Active,Credit Card,2021-09-22,16.48,3.59,3,1.44,0
+29789731,Active,Credit Card,2021-09-27,16.48,3.59,3,1.44,0
+29825860,Active,Credit Card,2021-09-30,16.48,3.59,3,1.44,0

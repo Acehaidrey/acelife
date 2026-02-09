@@ -1,0 +1,125 @@
+,,,,,,,8788430207437
+MERCHANT STATEMENT,,,,,PROCESSING MONTH: JAN 2021,,
+WORLDPAY INTEGRATED PAYMENTS,,,,,MERCHANT NBR:,8788430207437,
+8500 GOVERNORS HILL DR MD 1GH2X2,,,,,,,PAGE 1 of 3
+"SYMMES TOWNSHIP, OH 45249",,,,,,,
+FOR CUSTOMER SERVICE CALL 1-800-846-4472,,,,,,,
+DBA NAME: AMECIS PIZZA LAKE FOREST - ECOMM,,,,,,,
+,,,,Attention: SAID HAIDREY,,,
+,,,,SAHA PIZZA INC,,,
+,,,,25431 TRABUCO RD,,,
+,,,,"LAKE FOREST, CA 92630",,,
+DEPOSIT SUMMARY,,,,,,,
+Process Date,Number Sales,Net Sales,Adjustments,Chargebacks,Disc,3rd Party Funded,Net Deposits
+01-Jan,8,286.60,0.00,0.00,0.00,0.00,286.60
+02-Jan,9,309.33,0.00,0.00,0.00,0.00,309.33
+03-Jan,8,330.75,0.00,0.00,0.00,0.00,330.75
+04-Jan,6,416.56,0.00,0.00,0.00,0.00,416.56
+05-Jan,8,298.61,0.00,0.00,0.00,0.00,298.61
+06-Jan,5,219.49,0.00,0.00,0.00,0.00,219.49
+07-Jan,10,367.07,0.00,0.00,0.00,0.00,367.07
+08-Jan,8,383.15,0.00,0.00,0.00,0.00,383.15
+09-Jan,11,380.17,0.00,0.00,0.00,0.00,380.17
+10-Jan,10,540.37,0.00,0.00,0.00,0.00,540.37
+11-Jan,12,476.96,0.00,0.00,0.00,0.00,476.96
+12-Jan,2,88.76,0.00,0.00,0.00,0.00,88.76
+13-Jan,2,78.92,0.00,0.00,0.00,0.00,78.92
+14-Jan,3,118.21,0.00,0.00,0.00,0.00,118.21
+15-Jan,5,199.25,0.00,0.00,0.00,0.00,199.25
+16-Jan,12,433.17,0.00,0.00,0.00,0.00,433.17
+17-Jan,12,461.60,0.00,0.00,0.00,0.00,461.60
+18-Jan,7,350.66,0.00,0.00,0.00,0.00,350.66
+19-Jan,7,290.11,0.00,0.00,0.00,0.00,290.11
+20-Jan,1,35.15,0.00,0.00,0.00,0.00,35.15
+21-Jan,5,247.28,0.00,0.00,0.00,0.00,247.28
+22-Jan,6,212.53,0.00,0.00,0.00,0.00,212.53
+23-Jan,10,427.90,0.00,0.00,0.00,0.00,427.90
+24-Jan,12,550.35,0.00,0.00,0.00,0.00,550.35
+25-Jan,8,403.86,0.00,0.00,0.00,0.00,403.86
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,
+transactions.,,,,,,,
+
+MERCHANT NBR: 8788430207437,,,,,,,MERCHANT STATEMENT,,
+DBA: AMECIS PIZZA LAKE FOREST - ECOMM,,,,,,,,,PAGE 2 of 3
+,,,,,,,,,"January 31, 2021"
+Process Date,Number Sales,Net Sales,Adjustments,Chargebacks,,Disc,3rd Party Funded,,Net Deposits
+26-Jan,4,180.02,0.00,,0.00,0.00,,0.00,180.02
+27-Jan,7,269.84,0.00,,0.00,0.00,,0.00,269.84
+28-Jan,3,115.81,0.00,,0.00,0.00,,0.00,115.81
+29-Jan,4,115.74,0.00,,0.00,0.00,,0.00,115.74
+30-Jan,17,678.09,0.00,,0.00,0.00,,0.00,678.09
+31-Jan,12,570.91,0.00,,0.00,0.00,,0.00,570.91
+"Deposits Total 234
+PROCESSING ACTIVITY SUMMARY",,"9,837.22",0.00,,0.00,0.00,,0.00,"9,837.22"
+Card Type,"Settled
+Sales","Amount of
+Sales","Settled
+Credits","Amount of
+Credits","Amount of
+Net Sales","Average
+Ticket","Settled
+Per
+Item*","Disc
+Rate","Processing
+Fees"
+AMEXOPTBLUE,19,751.13,0,0.00,751.13,39.53,0.0500,0.7000,6.21
+DISCOVER,5,264.55,0,0.00,264.55,52.91,0.0000,1.9000,5.03
+MASTERCARD,28,"1,175.12",0,0.00,"1,175.12",41.97,0.0000,1.9000,22.32
+MCDEBIT,5,204.54,0,0.00,204.54,40.91,0.0000,1.7500,3.58
+MCDEBITCAP,14,691.82,0,0.00,691.82,49.42,0.0000,1.7500,12.11
+VISA,64,"2,668.23",0,0.00,"2,668.23",41.69,0.0000,1.9000,50.70
+VISADEBIT,7,298.69,0,0.00,298.69,42.67,0.0000,1.7500,5.22
+VISADEBITCAP,92,"3,783.14",0,0.00,"3,783.14",41.12,0.0000,1.7500,66.20
+"Total 234 9,837.22 0 0.00 9,837.22 42.04
+* For processor per item fee charged on transaction types other than settled transactions, see Other Fees section below.
+OTHER FEES",,,,,,,,,171.37
+Number,Amount,Description,,,,,Rate,,Total
+19,,"PROCESSOR PER ITEM FEE - AUTHORIZATIONS, AX",,,,,0.0500,,0.95
+1,,BREACHASSIST,,,,,5.9500,,5.95
+1,,CHARGEBACK SERVICE FEE T1,,,,,10.0000,,10.00
+5,,DECLINED AUTHORIZATIONS,,,,,0.0500,,0.25
+5,,DISCOVER NETWORK AUTHORIZATION FEE,,,,,0.0025,,0.01
+49,,MASTERCARD CVC2 TRANSACTION FEE,,,,,0.0025,,0.12
+,"2,071.48",MC DIGITAL ENABLEMENT FEE,,,,,0.0100,,0.21
+47,,MC FILE TRANSMISSION FEE - 6957,,,,,0.0022,,0.10
+49,,MC NABU FEE,,,,,0.0195,,0.96
+5,,MC NO REV OR CLEAR PREAUTH,,,,,0.0450,,0.23
+1,,SIGNATURE MERCHANT LOCATION FEE,,,,,2.5000,,2.50
+67,,VISA ACQUIRER PROCESSING FEE,,,,,0.0195,,1.31
+102,,VISA APF SIG DEBIT,,,,,0.0155,,1.58
+169,,VISA BASE II TRAN FEE,,,,,0.0020,,0.34
+1,,VISA CREDIT TRANSACTION INTEGRITY FEE,,,,,0.1000,,0.10
+1,,VISA DEBIT TRANSACTION INTEGRITY FEE,,,,,0.1000,,0.10
+2,,VISA MISUSE FEE,,,,,0.0900,,0.18
+,,,,,,,Total Other Fees,,24.89
+TOTAL FEES,,,,,,,,,
+Processing Fees,,,,,,,,,171.37
+Interchange Fees,,,,,,,,,0.00
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",,,,,,,,,
+transactions.,,,,,,,,,
+
+MERCHANT NBR: 8788430207437,MERCHANT STATEMENT
+DBA: AMECIS PIZZA LAKE FOREST - ECOMM,PAGE 3 of 3
+,"January 31, 2021"
+Other Fees,24.89
+Discount Collected,0.00
+Total Fees,196.26
+"For specific operational messaging and/or changes to your processing account and/or card services agreement, which may include",
+"modifications to your rate and fees, please access your merchant portal using the following link:",
+https://www.vantiv.com/merchant-resources/reporting-all,
+"Visa will introduce these new fees effective April 1, 2021: Visa Decline Resubmit Domestic at $.10, Visa Decline Resubmit Cross",
+"Border at $.15, Visa APF Sig Credit Auth Rev at $.0195, Visa APF Sig Debit Auth Rev at $.0155, Visa APF Sig Credit",
+"International Auth Rev at $.0395, Visa APF Sig Debit International at $.0355, Visa Account Verification Fee International at $.07,",
+"Visa Account Verification Fee Credit at $.035, and Visa Account Verification fee Debit at $.03.",
+"Effective April 1, 2021, you will be assessed a Network and Processor Access Fee which is composed of passing through a network",
+"access fee and assessing a processor fee of 0.07% on applicable Visa, Mastercard, American Express, and Discover transaction",
+volume.,
+We appreciate your business and look forward to serving your needs in the future. If you have any questions regarding your account,
+"or would like to learn more about processing options available to you, please contact your Relationship Manager or call the number",
+located at the top of your statement.,
+You may terminate the Agreement without penalty or early termination or early de-conversion fee by providing written notice to us,
+"within 90 days of an increase in our fees or introduction of a new fee. You do not have a right to terminate in connection with fee
+increases or new fees imposed by, attributable to, or derived from an Association or Other Network change, or caused by a change",
+in the Operating Regulations or Laws or made in accordance with a pre-determined fee schedule that is a part of your Agreement.,
+"American Express does not charge ""interchange."" For Amex, this amount is the percentage fee applicable to your Amex card",
+transactions.,

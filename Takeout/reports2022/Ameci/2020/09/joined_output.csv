@@ -1,0 +1,18 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Sep 2020,Ameci,Speedline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Sep 2020,Ameci,Brygid,643.34,7100.64,809.88,282.0,498.75,0.0,0.0,0.0,"Get merchant services from accessmyiq (Vantiv).
+Get commission from their email report."
+Sep 2020,Ameci,Menufy,0.0,154.83,19.26,0.0,9.43,145.54,4.5,4.79,
+Sep 2020,Ameci,Postmates,0.0,4155.45,0.0,0.0,298.83,3391.1,764.35,0.0,
+Sep 2020,Ameci,Ezcater,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Sep 2020,Ameci,Menustar,36.33,293.53,33.4,5.98,21.31,271.27,22.26,0.0,
+Sep 2020,Ameci,Ubereats,0.0,5350.62,0.0,0.0,382.32,3929.44,1420.09,0.0,
+Sep 2020,Ameci,Office Express,0.0,324.81,0.0,0.0,0.0,227.37,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Sep 2020,Ameci,Grubhub,128.28,9390.9,988.28,511.47,612.93,8357.79,684.47,352.39,"Missing ids for reimbursement: {282512694420173}
+$3.75 in adjustment payments"
+Sep 2020,Ameci,Doordash,0.0,25612.1,0.0,0.0,1842.16,19851.08,5845.4,0.0,"Transaction types found: ['ERROR_CHARGE', 'STORE_PAYMENT', 'ADJUSTMENT']  Net Adjustments: $84.38  Payout Records Total: $20583.63  Marketing Fees: $0.0"
+Sep 2020,Ameci,Eatstreet,0.0,236.78,36.7,31.0,0.0,178.2,29.59,10.99,Withheld taxes remitted: $18.0
+Sep 2020,Ameci,Order Inn,0.0,1184.65,0.0,0.0,0.0,725.28,459.37,0.0,
+Sep 2020,Ameci,House,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Sep 2020,Ameci,Slice,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from statement.
+Sep 2020,Ameci,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,

@@ -5,6 +5,7 @@ import os
 import re
 import html as html_lib
 from email.utils import parsedate_to_datetime
+from email.utils import parseaddr
 from typing import Dict, List, Optional
 
 import pandas as pd
@@ -83,11 +84,23 @@ def _extract_field(text: str, label: str) -> str:
 
 def _extract_amount(label: str, text: str) -> str:
     match = re.search(
-        rf"{re.escape(label)}\s*:?\s*(\$?[-\d,.]+)",
+        rf"{re.escape(label)}(?:\s*\([^)]*\))?\s*:?\s*(\$?[-\d,.]+)",
         text,
         flags=re.IGNORECASE,
     )
     return normalize_money(match.group(1)) if match else ""
+
+
+def _is_order_sender(from_header: str) -> bool:
+    name, addr = parseaddr(from_header or "")
+    addr = addr.lower().strip()
+    if not addr:
+        return False
+    if addr == "onlineorders@brygid.com":
+        return True
+    if addr == "no-reply@brygid.online":
+        return True
+    return False
 
 
 def parse_order(html: str) -> Dict[str, str]:
@@ -95,6 +108,8 @@ def parse_order(html: str) -> Dict[str, str]:
     if cutoff != -1:
         html = html[:cutoff]
     text = _html_to_text(html)
+    if "online order" not in text.lower():
+        return {}
     order_id = ""
     match = re.search(r"Order#\s*:?\s*(\d+)", text, flags=re.IGNORECASE)
     if match:
@@ -140,15 +155,35 @@ def parse_order(html: str) -> Dict[str, str]:
 
     items = []
     item_count = 0
-    item_lines = re.findall(r"\b(\d+)\s+([A-Za-z][^\n]+)", text)
-    for qty, name in item_lines:
-        item_name = name.strip()
-        if item_name:
-            items.append(item_name)
-            try:
-                item_count += int(qty)
-            except ValueError:
-                item_count += 1
+    lines = [line.strip() for line in text.split("\n") if line.strip()]
+    skip_labels = {
+        "subtotal",
+        "taxes",
+        "sales tax",
+        "total",
+        "order total",
+        "delivery charge",
+        "delivery fee",
+        "gratuity",
+        "sum",
+        "amount",
+        "balance owing",
+    }
+    for idx, line in enumerate(lines):
+        if not line.isdigit():
+            continue
+        qty = int(line)
+        if idx + 1 >= len(lines):
+            continue
+        name = lines[idx + 1].strip()
+        if not name:
+            continue
+        if name.lower() in skip_labels:
+            continue
+        if re.match(r"^\$?\d", name):
+            continue
+        items.append(name)
+        item_count += qty
 
     return {
         "order_id": order_id,
@@ -178,6 +213,8 @@ def parse_mbox(mbox_path: str) -> List[Dict[str, str]]:
         return rows
     mbox = mailbox.mbox(mbox_path)
     for msg in mbox:
+        if not _is_order_sender(msg.get("From", "")):
+            continue
         payload = _get_part_payload(msg)
         if not payload:
             continue

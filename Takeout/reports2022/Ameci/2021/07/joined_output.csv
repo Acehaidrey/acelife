@@ -1,0 +1,24 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Jul 2021,Ameci,Beyond Menu,0.0,50.76,5.0,3.0,4.27,48.58,0.0,2.18,"Check against email.
+Order Count: 1.0"
+Jul 2021,Ameci,Brygid,1215.6,7300.92,702.95,280.0,561.98,6973.96,179.15,147.81,"Check commission from brygid email report (dates shifted).
+Del Zip Codes: ['92610', '92618', '92630', '92691']"
+Jul 2021,Ameci,Doordash,0.0,27504.16,39.95,0.0,2271.55,21228.0,6175.32,0.0,"Transaction types found: ['ERROR_CHARGE'] 
+Net Adjustments: $-140.79 Payout Records Total: $18546.21"
+Jul 2021,Ameci,Eatstreet,0.0,0.0,0.0,0.0,0.0,-70.17,30.14,10.5,Withheld taxes remitted: $29.53
+Jul 2021,Ameci,Ezcater,0.0,2582.09,157.12,105.0,166.23,1961.21,554.2,66.68,
+Jul 2021,Ameci,Groupon,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Jul 2021,Ameci,Grubhub,0.0,6043.47,665.23,293.12,383.31,5396.8,414.7,221.15,"Missing ids for reimbursement: {794915835788508, 794915855787405, 735115732981542}
+$-10.82 in adjustment payments (Not Counted In)"
+Jul 2021,Ameci,House,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from check deposits - Hunsbaker & Associates.
+Jul 2021,Ameci,Menufy,71.03,99.28,3.5,0.0,11.56,93.19,6.0,3.09,
+Jul 2021,Ameci,Menustar,52.04,407.51,33.42,10.96,30.65,376.06,31.45,0.0,Merchant Services included in commission.
+Jul 2021,Ameci,Office Express,0.0,159.89,0.0,0.0,0.0,111.92,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Jul 2021,Ameci,Order Inn,0.0,936.48,0.0,0.0,0.0,608.89,327.59,0.0,Dont include in total calc as accounted for in speedline.
+Jul 2021,Ameci,Slice,0.0,0.0,0.0,0.0,0.0,5929.52,423.0,283.14,"Withheld taxes remitted: $484.34
+Inconsistency in payout calculated: -1142.49
+Adjustments: $47.99."
+Jul 2021,Ameci,Speedline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,784.2,"Tips only drivers tips - cashier not included.
+Get from dads daily report."
+Jul 2021,Ameci,Ubereats,0.0,8165.84,0.0,0.0,0.0,6110.34,1438.52,0.0,"Contains Postmates Orders.
+Withheld Taxes: $587.22"

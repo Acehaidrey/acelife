@@ -1,0 +1,23 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Oct 2020,Ameci,Speedline,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Tips only drivers tips - cashier not included.
+Get merchant services from accessmyiq (Vantiv)."
+Oct 2020,Ameci,Brygid,1031.22,8396.06,853.28,376.0,616.66,8201.12,194.94,0.0,"Get merchant services from accessmyiq (Vantiv).
+Check commission from their email report.
+Remove Commission Amount.
+Del Zip Codes: {'92610', '92630', '92691', '92618'}"
+Oct 2020,Ameci,Menufy,27.87,0.0,0.0,0.0,1.9,0.0,1.5,0.0,
+Oct 2020,Ameci,Postmates,0.0,4022.7,0.0,0.0,289.26,3336.38,742.82,0.0,
+Oct 2020,Ameci,Ezcater,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Oct 2020,Ameci,Menustar,66.09,245.0,23.58,7.97,20.69,224.71,20.29,0.0,Merchant Services included in commission.
+Oct 2020,Ameci,Ubereats,0.0,6404.62,0.0,0.0,456.71,4829.7,1576.99,0.0,
+Oct 2020,Ameci,Office Express,0.0,843.75,0.0,0.0,0.0,590.62,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Oct 2020,Ameci,Grubhub,120.04,8165.12,884.45,431.65,530.96,7325.77,530.2,309.63,"Missing ids for reimbursement: {307513035480637}
+$0.48 in adjustment payments (Not Counted In)"
+Oct 2020,Ameci,Doordash,0.0,23180.69,0.0,0.0,1667.32,17866.21,5311.25,0.0,"Transaction types found: ['STORE_PAYMENT', 'ERROR_CHARGE', 'ADJUSTMENT'] 
+Net Adjustments: $-3.23 Payout Records Total: $17519.24 Marketing Fees: $0.0"
+Oct 2020,Ameci,Eatstreet,0.0,301.45,48.45,38.0,0.0,226.9,37.63,14.16,Withheld taxes remitted: $22.76
+Oct 2020,Ameci,Order Inn,0.0,1212.26,0.0,0.0,0.0,749.0,463.26,0.0,Dont include in total calc as accounted for in speedline.
+Oct 2020,Ameci,House,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from check deposits - Hunsbaker & Associates.
+Oct 2020,Ameci,Slice,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Get report from statement.
+Withheld taxes remitted: $0.00"
+Oct 2020,Ameci,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report by phone app or through an email from them.

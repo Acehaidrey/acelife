@@ -72,13 +72,40 @@ Concerns / follow-ups:
   - `payout` = subtotal + commission_fee + processing_fee.
 
 ## Brygid
-- Sources: `Takeout/Mail/Orders-Brygid.mbox` (HTML emails)
-- Parser: `parsers/brygid/extract_brygid_orders_raw.py`
+- Sources:
+  - Email orders: `Takeout/Mail/Orders-Brygid.mbox` (HTML emails)
+  - Report CSVs: `Takeout/reports2022/Ameci/**/brygid*.csv` (non-billing)
+- Email parser: `parsers/brygid/extract_brygid_orders_raw.py`
+  - Only ingests messages from `onlineorders@brygid.com` or `no-reply@brygid.online` to avoid support threads.
   - Captures Order#, Placed On, customer name/phone/email, payment type (cash vs card), totals (subtotal/tax/tip/delivery/total).
+  - Tax parser handles `Sales Tax (7.75%)` labels.
+  - Item parsing uses qty lines (e.g., `1` followed by item name) to compute `item_count`.
   - Address uses `Street` + `City/State` lines when present.
   - Order type inferred from “Online Order (Delivery/Takeout)” header.
+- Report CSV aggregation: `orders_analytics/scripts/brygid_aggregate_report_csvs.py`
+  - Keeps only `STATUS=Completed`.
+  - Adds `source_file`, `added_at`, `delivery_fee` (zip rules; delivery only), and `import_notes=unseen_zip` (delivery only).
+  - Delivery fee rules (when CSVs don't include one): ZIP `92618`=$5, `92610`=$4, `92691`=$4, `92630`=$3, else $3 + `unseen_zip` note.
+- Report CSV normalization (for review): `orders_analytics/scripts/brygid_normalize_report_csvs.py`
+  - Maps report columns into raw schema; `order_type` → delivery/pickup, `payment_type` cash vs credit.
+  - Adds `order_datetime_parsed` (ISO) for CSV date strings like `MM/DD/YYYY HH:MM`.
+- Merge logic (source of truth is email): `orders_analytics/scripts/brygid_merge_email_csv_orders.py`
+  - Dedupes each source by `order_id` before merging.
+  - Coalesces missing fields from CSVs; `delivery_fee` prefers email if present.
+  - Produces merged `orders_analytics/data/raw/brygid/orders_raw.csv`.
 - Normalizer: `parsers/brygid/normalize_brygid_from_raw.py`
-  - Parses Placed On into ISO datetime.
+  - Parses email `Placed On` format and CSV `MM/DD/YYYY HH:MM` format.
+  - Excludes cancellations listed in `orders_analytics/data/raw/brygid/cancellations_raw.csv`.
+  - Allocates commission per billing period:
+    - If totals match, commissions are allocated by subtotal to match billed service fees.
+    - If totals do not match, a `PERIOD_YYYYMMDD_MANUAL` row is added when `|total_sales_diff| > 1.00` with:
+      - `total` = `-total_sales_diff` (to reconcile totals),
+      - `subtotal`/`tax` derived with 7.75% tax (`subtotal * 0.0775 = tax`, `subtotal + tax = total`),
+      - `payment_type=credit`, `order_type=pickup`, and `order_datetime` set to the billing date.
+    - Commissions are then allocated by order count across all period rows (including manual row, weighted by `max(1, |order_count_diff|)`), so `service_fees_diff_norm` should be 0 when including manual rows.
+- Cancellations file: `orders_analytics/data/raw/brygid/cancellations_raw.csv`
+  - Built from holiday closures (Thanksgiving/Christmas) and manual matches of period total differences.
+  - Typically populated by reviewing `commission_check.csv` and adding order_ids that exactly match `total_sales_diff` for periods where `order_count_diff > 0`.
 
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/BeyondMenu_Order_History.csv`
