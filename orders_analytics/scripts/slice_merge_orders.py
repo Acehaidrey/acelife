@@ -62,7 +62,11 @@ def store_from_filename(path: str) -> str:
     match = re.search(r"-\s*(.+)\.(xlsx|xls)$", base, re.IGNORECASE)
     if match:
         return match.group(1).strip()
-    return ""
+    match = re.search(r"All Orders\s+(.+)\.(xlsx|xls)$", base, re.IGNORECASE)
+    if match:
+        return match.group(1).strip()
+    stem = os.path.splitext(base)[0].strip()
+    return stem
 
 
 def parse_all_orders_excel(path: str) -> List[Dict[str, str]]:
