@@ -278,12 +278,12 @@ def main() -> None:
         f"NaT: {nat_count} | Platforms: {platform_counts}"
     )
 
-    platform_options = ["ALL"] + sorted(data["platform"].dropna().unique().tolist())
+    platform_options = sorted(data["platform"].dropna().unique().tolist())
     provider_options = ["ALL"] + sorted(data["provider"].dropna().unique().tolist())
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        platform = st.selectbox("Platform", platform_options)
+        platform = st.multiselect("Platform", platform_options, default=platform_options)
     with col2:
         provider = st.selectbox("Provider", provider_options)
     with col3:
@@ -307,6 +307,30 @@ def main() -> None:
     if default_end < default_start:
         default_end = default_start
 
+    date_preset = st.selectbox(
+        "Date Preset",
+        ["Custom", "Last Month", "This Month", "Year to Date", "Last 12 Months", "All Time"],
+        index=0,
+    )
+    if date_preset != "Custom":
+        if date_preset == "All Time":
+            default_start = datetime(2020, 1, 1).date()
+            default_end = max_picker
+        elif date_preset == "This Month":
+            default_start = datetime(max_picker.year, max_picker.month, 1).date()
+            default_end = max_picker
+        elif date_preset == "Last Month":
+            first_of_this_month = datetime(max_picker.year, max_picker.month, 1).date()
+            last_month_end = first_of_this_month - pd.Timedelta(days=1)
+            default_start = datetime(last_month_end.year, last_month_end.month, 1).date()
+            default_end = last_month_end
+        elif date_preset == "Year to Date":
+            default_start = datetime(max_picker.year, 1, 1).date()
+            default_end = max_picker
+        elif date_preset == "Last 12 Months":
+            default_end = max_picker
+            default_start = (pd.Timestamp(max_picker) - pd.DateOffset(months=12)).date()
+
     start_date, end_date = st.date_input(
         "Date Range",
         value=(default_start, default_end),
@@ -315,8 +339,8 @@ def main() -> None:
     )
 
     filtered = data.copy()
-    if platform != "ALL":
-        filtered = filtered[filtered["platform"] == platform]
+    if platform:
+        filtered = filtered[filtered["platform"].isin(platform)]
     if provider != "ALL":
         filtered = filtered[filtered["provider"] == provider]
     filtered = filtered[
@@ -452,8 +476,8 @@ def main() -> None:
         monthly = monthly.sort_values(["year", "month"], ascending=[False, False])
         overrides = conn.execute("SELECT * FROM monthly_overrides").df()
         if not overrides.empty:
-            if platform != "ALL":
-                overrides = overrides[overrides["platform"] == platform]
+            if platform:
+                overrides = overrides[overrides["platform"].isin(platform)]
             if provider != "ALL":
                 overrides = overrides[overrides["provider"] == provider]
             overrides["date_bucket"] = pd.to_datetime(
@@ -1088,12 +1112,13 @@ def main() -> None:
             for col in fee_cols:
                 if col not in ameci_monthly.columns:
                     ameci_monthly[col] = 0.0
-            ameci_monthly["royalty"] = (
+            ameci_monthly["calculated_sales_amount"] = (
                 ameci_monthly["subtotal"]
                 + ameci_monthly["adjustments"]
                 + ameci_monthly["misc_fee"]
                 + ameci_monthly["marketing_fee"]
-            ) * 0.04
+            )
+            ameci_monthly["royalty"] = ameci_monthly["calculated_sales_amount"] * 0.04
 
             total_cols = [
                 "orders",
@@ -1109,6 +1134,7 @@ def main() -> None:
                 "processing_fee",
                 "adjustments",
                 "marketing_fee",
+                "calculated_sales_amount",
                 "total",
                 "net_payout",
                 "royalty",
@@ -1120,7 +1146,7 @@ def main() -> None:
 
             ameci_column_config = {
                 col: st.column_config.NumberColumn(format="dollar")
-                for col in money_cols + ["royalty"]
+                for col in money_cols + ["calculated_sales_amount", "royalty"]
                 if col in ameci_monthly.columns
             }
             st.dataframe(ameci_monthly, column_config=ameci_column_config, width="stretch")
