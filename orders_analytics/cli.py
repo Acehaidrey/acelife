@@ -29,7 +29,7 @@ def run_parse(
     billings_mbox: Optional[str],
     extras: Dict[str, str],
 ) -> None:
-    if platform == "eatstreet":
+    if platform == Platforms.EATSTREET:
         from orders_analytics.parsers.eatstreet import (
             extract_eatstreet_billings_raw,
             extract_eatstreet_orders_raw,
@@ -54,31 +54,31 @@ def run_parse(
         normalize_eatstreet_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[eatstreet] extracted raw orders + billings and normalized.")
         return
-    elif platform == "beyondmenu":
+    elif platform == Platforms.BEYONDMENU:
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
             BeyondMenuOrdersParser,
         )
 
         runner = BeyondMenuOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "foodja":
+    elif platform == Platforms.FOODJA:
         from orders_analytics.parsers.foodja.parse_foodja_orders import FoodjaOrdersParser
 
         runner = FoodjaOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "fooda":
+    elif platform == Platforms.FOODA:
         from orders_analytics.parsers.fooda.parse_fooda_orders import FoodaOrdersParser
 
         runner = FoodaOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "ezcater":
+    elif platform == Platforms.EZCATER:
         from orders_analytics.parsers.ezcater.parse_ezcater_orders import EzCaterOrdersParser
 
         runner = EzCaterOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "deliverycom":
+    elif platform == Platforms.DELIVERYCOM:
         from orders_analytics.parsers.deliverycom.parse_deliverycom_orders import (
             DeliveryComOrdersParser,
         )
 
         runner = DeliveryComOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "cater2me":
+    elif platform == Platforms.CATER2ME:
         from orders_analytics.parsers.cater2me import (
             extract_cater2me_billings_raw,
             extract_cater2me_orders_raw,
@@ -102,7 +102,7 @@ def run_parse(
         normalize_cater2me_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[cater2me] extracted raw orders + billings and normalized.")
         return
-    elif platform == "menustar":
+    elif platform == Platforms.MENUSTAR:
         from orders_analytics.parsers.menustar import (
             extract_menustar_billings_raw,
             extract_menustar_orders_raw,
@@ -126,7 +126,7 @@ def run_parse(
         normalize_menustar_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[menustar] extracted raw orders + billings and normalized.")
         return
-    elif platform == "deliverycom":
+    elif platform == Platforms.DELIVERYCOM:
         from orders_analytics.parsers.deliverycom import (
             extract_deliverycom_billings_raw,
             extract_deliverycom_orders_raw,
@@ -150,7 +150,7 @@ def run_parse(
         normalize_deliverycom_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[deliverycom] extracted raw orders + billings and normalized.")
         return
-    elif platform == "foodee":
+    elif platform == Platforms.FOODEE:
         from orders_analytics.parsers.foodee import (
             extract_foodee_billings_raw,
             extract_foodee_orders_raw,
@@ -174,7 +174,7 @@ def run_parse(
         normalize_foodee_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[foodee] extracted raw orders + billings and normalized.")
         return
-    elif platform == "foodrunners":
+    elif platform == Platforms.FOODRUNNERS:
         from orders_analytics.parsers.foodrunners import (
             extract_foodrunners_billings_raw,
             extract_foodrunners_orders_raw,
@@ -198,7 +198,7 @@ def run_parse(
         normalize_foodrunners_from_raw.run(orders_raw, billings_raw, normalized_out)
         print("[foodrunners] extracted raw orders + billings and normalized.")
         return
-    elif platform == "officecaterer":
+    elif platform == Platforms.OFFICECATERER:
         from orders_analytics.parsers.officecaterer import (
             extract_officecaterer_billings_raw,
             extract_officecaterer_orders_raw,
@@ -228,7 +228,7 @@ def run_parse(
         )
         print("[officecaterer] extracted raw orders + billings and normalized.")
         return
-    elif platform == "brygid":
+    elif platform == Platforms.BRYGID:
         from orders_analytics.parsers.brygid import (
             extract_brygid_billings_raw,
             extract_brygid_orders_raw,
@@ -273,7 +273,7 @@ def run_extract(
     orders_raw: str,
     billings_raw: str,
 ) -> None:
-    if platform == "eatstreet":
+    if platform == Platforms.EATSTREET:
         from orders_analytics.parsers.eatstreet import (
             extract_eatstreet_billings_raw,
             extract_eatstreet_orders_raw,
@@ -282,7 +282,7 @@ def run_extract(
         extract_eatstreet_orders_raw.run(orders_mbox, orders_raw)
         extract_eatstreet_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "cater2me":
+    if platform == Platforms.CATER2ME:
         from orders_analytics.parsers.cater2me import (
             extract_cater2me_billings_raw,
             extract_cater2me_orders_raw,
@@ -291,7 +291,7 @@ def run_extract(
         extract_cater2me_orders_raw.run(orders_mbox, orders_raw)
         extract_cater2me_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "menustar":
+    if platform == Platforms.MENUSTAR:
         from orders_analytics.parsers.menustar import (
             extract_menustar_billings_raw,
             extract_menustar_orders_raw,
@@ -300,7 +300,7 @@ def run_extract(
         extract_menustar_orders_raw.run(orders_mbox, orders_raw)
         extract_menustar_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "deliverycom":
+    if platform == Platforms.DELIVERYCOM:
         from orders_analytics.parsers.deliverycom import (
             extract_deliverycom_billings_raw,
             extract_deliverycom_orders_raw,
@@ -309,7 +309,7 @@ def run_extract(
         extract_deliverycom_orders_raw.run(orders_mbox, orders_raw)
         extract_deliverycom_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "foodee":
+    if platform == Platforms.FOODEE:
         from orders_analytics.parsers.foodee import (
             extract_foodee_billings_raw,
             extract_foodee_orders_raw,
@@ -318,7 +318,7 @@ def run_extract(
         extract_foodee_orders_raw.run(orders_mbox, orders_raw)
         extract_foodee_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "foodrunners":
+    if platform == Platforms.FOODRUNNERS:
         from orders_analytics.parsers.foodrunners import (
             extract_foodrunners_billings_raw,
             extract_foodrunners_orders_raw,
@@ -327,7 +327,7 @@ def run_extract(
         extract_foodrunners_orders_raw.run(orders_mbox, orders_raw)
         extract_foodrunners_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "officecaterer":
+    if platform == Platforms.OFFICECATERER:
         from orders_analytics.parsers.officecaterer import (
             extract_officecaterer_billings_raw,
             extract_officecaterer_orders_raw,
@@ -336,7 +336,7 @@ def run_extract(
         extract_officecaterer_orders_raw.run(orders_mbox, orders_raw)
         extract_officecaterer_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "menufy":
+    if platform == Platforms.MENUFY:
         from orders_analytics.parsers.menufy import extract_menufy_orders_raw
 
         orders_root = "Takeout/Menufy/orders"
@@ -344,13 +344,13 @@ def run_extract(
         addresses_csv = "Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv"
         extract_menufy_orders_raw.run(orders_root, orders_raw, emails_csv, addresses_csv)
         return
-    if platform == "slice":
+    if platform == Platforms.SLICE:
         from orders_analytics.parsers.slice import extract_slice_orders_raw
 
         orders_root = "Takeout/Slice"
         extract_slice_orders_raw.run(orders_root, orders_raw)
         return
-    if platform == "chownow":
+    if platform == Platforms.CHOWNOW:
         from orders_analytics.parsers.chownow import (
             extract_chownow_orders_raw,
             extract_chownow_billings_raw,
@@ -365,7 +365,7 @@ def run_extract(
         extract_chownow_orders_raw.run(orders_mbox, orders_raw, customer_files)
         extract_chownow_billings_raw.run(billings_mbox, billings_raw)
         return
-    if platform == "brygid":
+    if platform == Platforms.BRYGID:
         from orders_analytics.parsers.brygid import (
             extract_brygid_billings_raw,
             extract_brygid_orders_raw,
@@ -394,7 +394,7 @@ def run_normalize(
     if reset_errors:
         extras = dict(extras)
         extras["reset_errors"] = True
-    if platform == "eatstreet":
+    if platform == Platforms.EATSTREET:
         from orders_analytics.parsers.eatstreet import normalize_eatstreet_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -412,7 +412,7 @@ def run_normalize(
         )
         print(f"[eatstreet] normalized -> {normalized_out}")
         return
-    if platform == "cater2me":
+    if platform == Platforms.CATER2ME:
         from orders_analytics.parsers.cater2me import normalize_cater2me_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -430,7 +430,7 @@ def run_normalize(
         )
         print(f"[cater2me] normalized -> {normalized_out}")
         return
-    if platform == "menustar":
+    if platform == Platforms.MENUSTAR:
         from orders_analytics.parsers.menustar import normalize_menustar_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -448,7 +448,7 @@ def run_normalize(
         )
         print(f"[menustar] normalized -> {normalized_out}")
         return
-    if platform == "deliverycom":
+    if platform == Platforms.DELIVERYCOM:
         from orders_analytics.parsers.deliverycom import normalize_deliverycom_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -466,7 +466,7 @@ def run_normalize(
         )
         print(f"[deliverycom] normalized -> {normalized_out}")
         return
-    if platform == "foodee":
+    if platform == Platforms.FOODEE:
         from orders_analytics.parsers.foodee import normalize_foodee_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -491,7 +491,7 @@ def run_normalize(
         )
         print(f"[foodee] normalized -> {normalized_out}")
         return
-    if platform == "foodrunners":
+    if platform == Platforms.FOODRUNNERS:
         from orders_analytics.parsers.foodrunners import normalize_foodrunners_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -509,7 +509,7 @@ def run_normalize(
         )
         print(f"[foodrunners] normalized -> {normalized_out}")
         return
-    if platform == "officecaterer":
+    if platform == Platforms.OFFICECATERER:
         from orders_analytics.parsers.officecaterer import normalize_officecaterer_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -530,7 +530,7 @@ def run_normalize(
         )
         print(f"[officecaterer] normalized -> {normalized_out}")
         return
-    if platform == "menufy":
+    if platform == Platforms.MENUFY:
         from orders_analytics.parsers.menufy import normalize_menufy_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -545,7 +545,7 @@ def run_normalize(
         )
         print(f"[menufy] normalized -> {normalized_out}")
         return
-    if platform == "slice":
+    if platform == Platforms.SLICE:
         from orders_analytics.parsers.slice import normalize_slice_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -566,7 +566,7 @@ def run_normalize(
         )
         print(f"[slice] normalized -> {normalized_out}")
         return
-    if platform == "chownow":
+    if platform == Platforms.CHOWNOW:
         from orders_analytics.parsers.chownow import normalize_chownow_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -591,7 +591,7 @@ def run_normalize(
         )
         print(f"[chownow] normalized -> {normalized_out}")
         return
-    if platform == "brygid":
+    if platform == Platforms.BRYGID:
         from orders_analytics.parsers.brygid import normalize_brygid_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
 
@@ -608,21 +608,21 @@ def run_normalize(
         )
         print(f"[brygid] normalized -> {normalized_out}")
         return
-    if platform == "beyondmenu":
+    if platform == Platforms.BEYONDMENU:
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
             BeyondMenuOrdersParser,
         )
 
         runner = BeyondMenuOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "foodja":
+    elif platform == Platforms.FOODJA:
         from orders_analytics.parsers.foodja.parse_foodja_orders import FoodjaOrdersParser
 
         runner = FoodjaOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "fooda":
+    elif platform == Platforms.FOODA:
         from orders_analytics.parsers.fooda.parse_fooda_orders import FoodaOrdersParser
 
         runner = FoodaOrdersParser(input_path=input_path, out_path=out_path, **extras)
-    elif platform == "ezcater":
+    elif platform == Platforms.EZCATER:
         from orders_analytics.parsers.ezcater.parse_ezcater_orders import EzCaterOrdersParser
 
         runner = EzCaterOrdersParser(input_path=input_path, out_path=out_path, **extras)
@@ -832,8 +832,8 @@ def main() -> None:
     )
     extract_cmd.add_argument(
         "--platform",
-        choices=[*Platforms.mbox_platforms(), "menufy", "slice"],
-        default="eatstreet",
+        choices=[*Platforms.mbox_platforms(), Platforms.MENUFY, Platforms.SLICE],
+        default=Platforms.EATSTREET,
         help="Platform to extract.",
     )
     extract_cmd.add_argument(
@@ -1024,68 +1024,70 @@ def main() -> None:
             os.remove(ERRORS_PATH)
             print(f"Deleted {ERRORS_PATH}")
         # Re-run validations by re-normalizing/parsing platforms.
-        run_parse("eatstreet", None, None, None, {})
-        run_parse("beyondmenu", None, None, None, {})
+        run_parse(Platforms.EATSTREET, None, None, None, {})
+        run_parse(Platforms.BEYONDMENU, None, None, None, {})
     elif args.command == "extract":
         from orders_analytics.utils.constants import raw_path
 
-        if args.platform == "eatstreet":
+        if args.platform == Platforms.EATSTREET:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Eatstreet.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Eatstreet.mbox")
             orders_raw = args.orders_raw or raw_path("eatstreet", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("eatstreet", "billings_raw.csv")
-        elif args.platform == "cater2me":
+        elif args.platform == Platforms.CATER2ME:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Cater2Me.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Cater2Me.mbox")
             orders_raw = args.orders_raw or raw_path("cater2me", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("cater2me", "billings_raw.csv")
-        elif args.platform == "menustar":
+        elif args.platform == Platforms.MENUSTAR:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Menustar.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Menustar.mbox")
             orders_raw = args.orders_raw or raw_path("menustar", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("menustar", "billings_raw.csv")
-        elif args.platform == "foodee":
+        elif args.platform == Platforms.FOODEE:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Foodee.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Foodee.mbox")
             orders_raw = args.orders_raw or raw_path("foodee", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("foodee", "billings_raw.csv")
-        elif args.platform == "foodrunners":
+        elif args.platform == Platforms.FOODRUNNERS:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-FoodRunners.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-FoodRunners.mbox")
             orders_raw = args.orders_raw or raw_path("foodrunners", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("foodrunners", "billings_raw.csv")
-        elif args.platform == "officecaterer":
+        elif args.platform == Platforms.OFFICECATERER:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-OfficeCaterer.mbox")
             billings_mbox = args.billings_mbox or takeout_path(
                 "Mail", "Billings-OfficeCaterer.mbox"
             )
             orders_raw = args.orders_raw or raw_path("officecaterer", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("officecaterer", "billings_raw.csv")
-        elif args.platform == "menufy":
+        elif args.platform == Platforms.MENUFY:
             orders_mbox = args.orders_mbox or ""
             billings_mbox = args.billings_mbox or ""
             orders_raw = args.orders_raw or raw_path("menufy", "orders_raw.csv")
             billings_raw = args.billings_raw or ""
-        elif args.platform == "slice":
+        elif args.platform == Platforms.SLICE:
             orders_mbox = args.orders_mbox or ""
             billings_mbox = args.billings_mbox or ""
             orders_raw = args.orders_raw or raw_path("slice", "orders_raw.csv")
             billings_raw = args.billings_raw or ""
-        elif args.platform == "chownow":
+        elif args.platform == Platforms.CHOWNOW:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-ChowNow.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-ChowNow.mbox")
             orders_raw = args.orders_raw or raw_path("chownow", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("chownow", "billings_raw.csv")
-        elif args.platform == "brygid":
+        elif args.platform == Platforms.BRYGID:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-Brygid.mbox")
             billings_mbox = args.billings_mbox or ""
             orders_raw = args.orders_raw or raw_path("brygid", "orders_raw.csv")
             billings_raw = args.billings_raw or ""
-        else:
+        elif args.platform == Platforms.DELIVERYCOM:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")
             orders_raw = args.orders_raw or raw_path("deliverycom", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("deliverycom", "billings_raw.csv")
+        else:
+            raise ValueError(f"Extract not supported for platform: {args.platform}")
         run_extract(args.platform, orders_mbox, billings_mbox, orders_raw, billings_raw)
     elif args.command == "normalize":
         from orders_analytics.utils.constants import ERRORS_PATH
