@@ -390,8 +390,8 @@ def main() -> None:
         filtered[col] = filtered[col].fillna(0.0)
 
     filtered = add_date_grain(filtered, grain)
-    tab_summary, tab_overrides, tab_orders, tab_delivery, tab_ameci = st.tabs(
-        ["Summary", "Overrides", "Orders", "Delivery Map", "Ameci Royalty"]
+    tab_summary, tab_overrides, tab_orders, tab_customer, tab_delivery, tab_ameci = st.tabs(
+        ["Summary", "Overrides", "Orders", "Customer Search", "Delivery Map", "Ameci Royalty"]
     )
 
     with tab_summary:
@@ -1063,6 +1063,57 @@ def main() -> None:
             if col in filtered.columns
         }
         st.dataframe(filtered, column_config=filtered_column_config, width="stretch", height=600)
+
+    with tab_customer:
+        st.subheader("Customer Search")
+        st.caption("Searches across all platforms/providers within the current date range.")
+        query = st.text_input("Search by customer name, phone, email, or address")
+        if query.strip():
+            search_base = data.copy()
+            search_base = search_base[
+                (search_base["order_datetime"] >= pd.to_datetime(start_date))
+                & (search_base["order_datetime"] <= pd.to_datetime(end_date) + pd.Timedelta(days=1))
+            ]
+            search_columns = [
+                col
+                for col in ["customer_name", "phone", "email", "address", "address_formatted"]
+                if col in search_base.columns
+            ]
+            if not search_columns:
+                st.info("No customer fields available to search.")
+            else:
+                query_text = query.strip()
+                query_digits = "".join(ch for ch in query_text if ch.isdigit())
+                mask = pd.Series(False, index=search_base.index)
+                for col in search_columns:
+                    if col == "phone":
+                        phone_series = search_base[col].astype(str)
+                        if query_digits:
+                            phone_digits = phone_series.str.replace(r"\D", "", regex=True)
+                            mask |= phone_digits.str.contains(query_digits, na=False)
+                        mask |= phone_series.str.contains(query_text, case=False, na=False)
+                    else:
+                        mask |= search_base[col].astype(str).str.contains(query_text, case=False, na=False)
+                results = search_base[mask].copy()
+                if "order_datetime" in results.columns:
+                    results = results.sort_values("order_datetime", ascending=False)
+                st.caption(f"Matches: {len(results)}")
+                max_rows = st.number_input(
+                    "Max rows to display", min_value=100, max_value=50000, value=5000, step=100
+                )
+                search_column_config = {
+                    col: st.column_config.NumberColumn(format="dollar")
+                    for col in money_cols
+                    if col in results.columns
+                }
+                st.dataframe(
+                    results.head(int(max_rows)),
+                    column_config=search_column_config,
+                    width="stretch",
+                    height=600,
+                )
+        else:
+            st.info("Enter a search term to see matching orders.")
 
     with tab_delivery:
         if "lat" in filtered.columns and "lng" in filtered.columns:

@@ -107,6 +107,18 @@ def normalize_payment_type(value: str) -> str:
     return text
 
 
+def normalize_phone(value: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    digits = re.sub(r"\D", "", text)
+    if not digits:
+        return ""
+    if len(digits) == 11 and digits.startswith("1"):
+        digits = digits[1:]
+    return digits
+
+
 def validate_enum_fields(
     rows: List[Dict[str, str]],
     source: str,

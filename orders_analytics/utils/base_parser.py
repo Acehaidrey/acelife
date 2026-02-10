@@ -10,6 +10,7 @@ from orders_analytics.utils.schema import canonicalize_rows, write_normalized_ro
 from orders_analytics.utils.validation import (
     normalize_order_type,
     normalize_payment_type,
+    normalize_phone,
     validate_enum_fields,
     validate_delivery_fee,
     validate_required_fields,
@@ -81,6 +82,8 @@ class BaseParser:
         for row in rows:
             row["order_type"] = normalize_order_type(str(row.get("order_type") or ""))
             row["payment_type"] = normalize_payment_type(str(row.get("payment_type") or ""))
+            if "phone" in row:
+                row["phone"] = normalize_phone(row.get("phone") or "")
             if "customer_name" in row:
                 row["customer_name"] = str(row.get("customer_name") or "").strip().title()
             for key, value in list(row.items()):
