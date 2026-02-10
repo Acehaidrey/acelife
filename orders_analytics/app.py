@@ -349,8 +349,8 @@ def main() -> None:
         filtered[col] = filtered[col].fillna(0.0)
 
     filtered = add_date_grain(filtered, grain)
-    tab_summary, tab_overrides, tab_orders, tab_delivery = st.tabs(
-        ["Summary", "Overrides", "Orders", "Delivery Map"]
+    tab_summary, tab_overrides, tab_orders, tab_delivery, tab_ameci = st.tabs(
+        ["Summary", "Overrides", "Orders", "Delivery Map", "Ameci Royalty"]
     )
 
     with tab_summary:
@@ -1077,6 +1077,53 @@ def main() -> None:
                     "lifetime_total": st.column_config.NumberColumn(format="dollar"),
                 }
                 st.dataframe(addr_counts, column_config=addr_column_config, width="stretch")
+
+    with tab_ameci:
+        st.subheader("Ameci Royalty (Monthly)")
+        ameci_monthly = monthly[monthly["provider"].astype(str).str.upper() == "AMECI"].copy()
+        if ameci_monthly.empty:
+            st.info("No AMECI records in current filters.")
+        else:
+            fee_cols = ["misc_fee", "marketing_fee", "adjustments"]
+            for col in fee_cols:
+                if col not in ameci_monthly.columns:
+                    ameci_monthly[col] = 0.0
+            ameci_monthly["royalty"] = (
+                ameci_monthly["subtotal"]
+                + ameci_monthly["adjustments"]
+                + ameci_monthly["misc_fee"]
+                + ameci_monthly["marketing_fee"]
+            ) * 0.04
+
+            total_cols = [
+                "orders",
+                "cash_subtotal",
+                "credit_subtotal",
+                "subtotal",
+                "tax",
+                "tax_withheld",
+                "tip",
+                "delivery_fee",
+                "misc_fee",
+                "commission_fee",
+                "processing_fee",
+                "adjustments",
+                "marketing_fee",
+                "total",
+                "net_payout",
+                "royalty",
+            ]
+            totals = {col: ameci_monthly[col].sum() for col in total_cols if col in ameci_monthly.columns}
+            totals.update({"platform": "", "provider": "Total", "year": "", "month": ""})
+            ameci_monthly = ameci_monthly.copy()
+            ameci_monthly = pd.concat([ameci_monthly, pd.DataFrame([totals])], ignore_index=True)
+
+            ameci_column_config = {
+                col: st.column_config.NumberColumn(format="dollar")
+                for col in money_cols + ["royalty"]
+                if col in ameci_monthly.columns
+            }
+            st.dataframe(ameci_monthly, column_config=ameci_column_config, width="stretch")
 
     conn.close()
 
