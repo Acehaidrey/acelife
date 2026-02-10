@@ -309,7 +309,16 @@ def main() -> None:
 
     date_preset = st.selectbox(
         "Date Preset",
-        ["Custom", "Last Month", "This Month", "Year to Date", "Last 12 Months", "All Time"],
+        [
+            "Custom",
+            "Last Month",
+            "This Month",
+            "Year to Date",
+            "Last 12 Months",
+            "Last Year",
+            "Last 2 Years",
+            "All Time",
+        ],
         index=0,
     )
     if date_preset != "Custom":
@@ -330,6 +339,14 @@ def main() -> None:
         elif date_preset == "Last 12 Months":
             default_end = max_picker
             default_start = (pd.Timestamp(max_picker) - pd.DateOffset(months=12)).date()
+        elif date_preset == "Last Year":
+            last_year = max_picker.year - 1
+            default_start = datetime(last_year, 1, 1).date()
+            default_end = datetime(last_year, 12, 31).date()
+        elif date_preset == "Last 2 Years":
+            start_year = max_picker.year - 2
+            default_start = datetime(start_year, 1, 1).date()
+            default_end = datetime(max_picker.year - 1, 12, 31).date()
 
     start_date, end_date = st.date_input(
         "Date Range",
