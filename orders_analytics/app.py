@@ -1083,17 +1083,9 @@ def main() -> None:
                 st.info("No customer fields available to search.")
             else:
                 query_text = query.strip()
-                query_digits = "".join(ch for ch in query_text if ch.isdigit())
                 mask = pd.Series(False, index=search_base.index)
                 for col in search_columns:
-                    if col == "phone":
-                        phone_series = search_base[col].astype(str)
-                        if query_digits:
-                            phone_digits = phone_series.str.replace(r"\D", "", regex=True)
-                            mask |= phone_digits.str.contains(query_digits, na=False)
-                        mask |= phone_series.str.contains(query_text, case=False, na=False)
-                    else:
-                        mask |= search_base[col].astype(str).str.contains(query_text, case=False, na=False)
+                    mask |= search_base[col].astype(str).str.contains(query_text, case=False, na=False)
                 results = search_base[mask].copy()
                 if "order_datetime" in results.columns:
                     results = results.sort_values("order_datetime", ascending=False)
