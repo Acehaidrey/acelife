@@ -195,13 +195,26 @@ Concerns / follow-ups:
   - `total_payout` is mapped to `payout`.
 
 ## Slice
-- Source: `Takeout/Slice/*.pdf` (Order Activity Report)
-- Parser: `parsers/slice/extract_slice_orders_raw.py`
+- Sources:
+  - Statements PDFs: `Takeout/Slice/*.pdf` (Order Activity Report)
+  - Offline/Online orders: `Takeout/Slice/Offline & Online Orders*.xlsx`
+  - Order history (customer info): `Takeout/Slice/VA Task Sheet - Slice Order History.csv`
+- PDF parser: `parsers/slice/extract_slice_orders_raw.py`
   - Reads the Orders table (page 2+).
   - Captures Date/Time, Order ID, payment type (Credit/Phone), order type (Pickup/Delivery), Subtotal, Customer Delivery Fee, Order Adjust., Tax, Tips, Order Total, Partnership Fee, Processing Fee.
+  - Outputs `orders_raw_from_statements.csv` + `adjustments_raw_from_statements.csv`.
+- Merge script: `orders_analytics/scripts/slice_merge_orders.py`
+  - Base = Offline/Online Excel orders.
+  - Fills missing fields from Order History and then from statement PDF raw.
+  - Order datetime preference: history (has time) → PDF → Excel (date-only).
+  - `order_type` inferred from delivery_fee (delivery if > 0 else pickup).
+  - Commission: `Flat Shop Fee` negated to `partnership_fee`.
+  - Discounts: `Shop Funded Discounts Amount` → `misc_fee` + `discount_for_order=...` note.
+  - `orders_raw.csv` is the merged output used for normalization.
 - Normalization: `parsers/slice/normalize_slice_from_raw.py`
+  - Only includes rows where payment_status is `paid` (credit) or `authorized` (cash); refunded rows are included with `adjustments = -total`.
   - `payout` = total + partnership_fee + processing_fee - tax_withheld (tax column).
-  - Order datetime is built from the date line + the time line beneath each row.
+  - Processing fees are only available from the PDFs; Excel files do not include them.
 
 ## ChowNow
 - Sources:
@@ -209,6 +222,7 @@ Concerns / follow-ups:
   - Billings: `Takeout/Mail/Billings-ChowNow.mbox` (xls attachments)
 - Orders parser: `parsers/chownow/extract_chownow_orders_raw.py`
   - Parses plain-text emails for order details, customer info, and totals.
+  - Manual missing orders are appended from `orders_analytics/data/raw/chownow/chownow_manual_missing_orders.csv`.
   - Order type is inferred from `Order Type` (Pickup/Delivery/Uber).
   - Support Local Fee (if present) is appended to `notes` and captured for totals math.
   - Promotions:
