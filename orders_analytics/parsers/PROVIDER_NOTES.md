@@ -110,14 +110,18 @@ Concerns / follow-ups:
   - Typically populated by reviewing `commission_check.csv` and adding order_ids that exactly match `total_sales_diff` for periods where `order_count_diff > 0`.
 
 ## BeyondMenu
-- Source: `orders_analytics/data/raw/beyondmenu/BeyondMenu_Order_History.csv`
+- Source: `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv` (downloaded from Google Sheets)
+- Annual billing summary: `orders_analytics/data/raw/beyondmenu/beyond_menu_annual_billing_summary.csv` (downloaded, not used yet)
 - Parser: `parsers/beyondmenu/parse_beyondmenu_orders.py` (CSV import)
   - Filters `Status=active` only; inactive orders are excluded.
   - Order datetime: `Req Time` + `year` using `MM/DD HH:MM am/pm` format.
   - Provider/restaurant: provider normalized from `Store`; Aroma/Ameci names standardized.
   - Address: title-cased with state abbreviation preserved.
-  - Fees: `Merchant Fee`, `Commission Fee`, and `Misc Fee` are negated.
+  - Fees: `Merchant Fee` and `Commission Fee` are negated.
+  - `Misc Fee` is kept as provided (may be negative).
+  - `Convenience Fee` is added to `misc_fee` and its absolute value is added to `adjustments` so customer totals align.
   - Payment type: from `Payment Type` (or `Payment`) normalized.
+  - Total-components validation uses `subtotal + tax + tip + delivery_fee + adjustments` (misc fees are handled via adjustments).
 
 ## EatStreet
 - Sources: `Takeout/Mail/Orders-Eatstreet.mbox`, `Takeout/Mail/Billings-Eatstreet.mbox`
