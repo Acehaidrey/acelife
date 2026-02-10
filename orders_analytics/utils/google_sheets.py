@@ -36,3 +36,14 @@ class GoogleSheetsDownloader:
         with open(out_path, "wb") as f:
             f.write(data)
         return out_path
+
+
+def download_sheet_entry(entry: dict) -> str:
+    downloader = GoogleSheetsDownloader(entry["sheet_id"])
+    fmt = entry.get("format", "csv")
+    out_path = entry["out"]
+    if fmt == "xlsx":
+        downloader.download_xlsx(entry["gid"], out_path)
+    else:
+        downloader.download_csv(entry["gid"], out_path)
+    return out_path

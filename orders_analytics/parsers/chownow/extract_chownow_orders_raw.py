@@ -10,6 +10,8 @@ from typing import Dict, List
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path, takeout_path
+from orders_analytics.utils.google_sheets import download_sheet_entry
+from orders_analytics.utils.google_sheets_registry import SHEETS
 from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.order_types import OrderTypes
 from orders_analytics.utils.providers import normalize_provider
@@ -432,7 +434,19 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
 def run(mbox_path: str, out_path: str, customer_files: List[str]) -> int:
     customer_email_map = load_customer_emails(customer_files)
     rows = parse_mbox(mbox_path, customer_email_map)
-    rows.extend(parse_manual_missing_orders(raw_path("chownow", "chownow_manual_missing_orders.csv")))
+    manual_sheet = SHEETS.get("chownow_manual_missing_orders")
+    manual_path = (
+        manual_sheet["out"]
+        if manual_sheet
+        else raw_path("chownow", "chownow_manual_missing_orders.csv")
+    )
+    if manual_sheet:
+        try:
+            download_sheet_entry(manual_sheet)
+        except Exception:
+            if not os.path.exists(manual_path):
+                raise
+    rows.extend(parse_manual_missing_orders(manual_path))
     updated = upsert_raw(out_path, rows)
     print(f"Upserted {updated} ChowNow order row(s) into {out_path}")
     return updated

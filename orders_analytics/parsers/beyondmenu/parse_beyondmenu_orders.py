@@ -20,6 +20,8 @@ from orders_analytics.utils.normalize import (
 from orders_analytics.utils.payment_types import PaymentTypes
 from orders_analytics.utils.platforms import Platforms
 from orders_analytics.utils.schema import build_normalized_row
+from orders_analytics.utils.google_sheets import download_sheet_entry
+from orders_analytics.utils.google_sheets_registry import SHEETS
 
 
 def normalize_restaurant(store: str) -> str:
@@ -74,12 +76,23 @@ class BeyondMenuOrdersParser(BaseParser):
     dedupe_key = "order_id"
 
     def default_input_path(self) -> str:
-        return raw_path("beyondmenu", "BeyondMenu_Order_History.csv")
+        sheet = SHEETS.get("beyond_menu_order_history")
+        if sheet:
+            return sheet["out"]
+        return raw_path("beyondmenu", "beyond_menu_order_history.csv")
 
     def default_out_path(self) -> str:
         return normalized_path("beyondmenu_orders_normalized.csv")
 
     def load_inputs(self, input_path: str):
+        sheet = SHEETS.get("beyond_menu_order_history")
+        if sheet:
+            input_path = sheet["out"]
+            try:
+                download_sheet_entry(sheet)
+            except Exception:
+                if not os.path.exists(input_path):
+                    raise
         return pd.read_csv(input_path)
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:

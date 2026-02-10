@@ -23,6 +23,8 @@ from orders_analytics.utils.order_types import OrderTypes
 from orders_analytics.utils.payment_types import PaymentTypes
 from orders_analytics.utils.platforms import Platforms
 from orders_analytics.utils.schema import build_normalized_row
+from orders_analytics.utils.google_sheets import download_sheet_entry
+from orders_analytics.utils.google_sheets_registry import SHEETS
 
 
 def normalize_date(value: str) -> str:
@@ -60,10 +62,18 @@ class EzCaterOrdersParser(BaseParser):
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
         df = inputs.copy()
-        supplemental_path = self.extra.get(
-            "supplement_csv",
-            raw_path("ezcater", "VA Task Sheet - EZcater Order History.csv"),
+        supplemental_sheet = SHEETS.get("ezcater_order_history")
+        supplemental_path = (
+            supplemental_sheet["out"]
+            if supplemental_sheet
+            else raw_path("ezcater", "ezcater_order_history.csv"),
         )
+        if supplemental_sheet:
+            try:
+                download_sheet_entry(supplemental_sheet)
+            except Exception:
+                if not os.path.exists(supplemental_path):
+                    raise
         supplement = {}
         if supplemental_path and os.path.exists(supplemental_path):
             sup_df = pd.read_csv(supplemental_path, dtype=str).fillna("")
