@@ -1,0 +1,77 @@
+Date,Location,Customer Name,Tax,Tip,Customer Carryout or Delivery Charge,Subtotal,Upcharges,Total,Customer Fees,Restaurant Fees,Delivery Service,Tax Withholdings,Tax Payout,Total Payout
+01/01/24 05:14PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),charles haydon,2.82,0.00,0.00,36.37,0.00,40.94,1.75,1.43,0,0.00,2.82,37.76
+01/07/24 12:08PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Kevin Fitzgerald,4.22,8.17,0.00,54.47,0.00,68.61,1.75,2.19,0,0.00,4.22,64.67
+01/16/24 11:00AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Erin  Leffler,4.61,8.92,2.99,59.47,0.00,77.74,1.75,2.44,0,0.00,4.61,73.55
+01/30/24 04:59PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Sherrie Suski,2.46,4.76,0.00,31.73,0.00,40.70,1.75,1.42,0,0.00,2.46,37.53
+01/30/24 05:30PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),william heiman,2.05,2.65,0.00,26.48,0.00,32.93,1.75,1.21,0,0.00,2.05,29.97
+01/30/24 08:02PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Brian Byers,3.35,0.00,0.00,43.19,0.00,48.29,1.75,1.63,0,0.00,3.35,44.91
+01/31/24 07:31PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Goldberg  Jason ,2.17,0.00,0.00,27.98,0.00,31.90,1.75,1.18,0,0.00,2.17,28.97
+02/04/24 05:30PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),frances heiman,2.82,3.64,0.00,36.37,0.00,44.58,1.75,1.53,0,0.00,2.82,41.30
+02/05/24 11:13AM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Eric Evans,3.72,4.80,2.99,47.95,0.00,61.21,1.75,1.99,0,0.00,3.72,57.47
+02/09/24 05:07PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Robert Clark,2.63,3.40,2.99,33.98,0.00,44.75,1.75,1.54,0,0.00,2.63,41.46
+02/09/24 06:01PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Jay Valencia,2.30,0.00,0.00,29.73,0.00,33.78,1.75,1.23,0,0.00,2.30,30.80
+02/12/24 03:59PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Patricia french,2.21,4.28,2.99,28.53,0.00,39.76,1.75,1.40,0,0.00,2.21,36.61
+02/17/24 07:30PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Cassie Renner,22.47,29.00,0.00,289.99,0.00,343.21,1.75,9.74,0,0.00,22.47,331.72
+02/18/24 05:18PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),frances heiman,2.24,2.90,0.00,28.96,0.00,35.85,1.75,1.29,0,0.00,2.24,32.81
+02/20/24 04:36PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Margaret Bonacquisti,2.17,7.00,2.99,27.99,0.00,41.90,1.75,1.46,0,0.00,2.17,38.69
+02/21/24 06:15PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Brandon Demark,1.08,2.10,0.00,13.99,0.00,18.92,1.75,0.83,0,0.00,1.08,16.34
+02/23/24 05:53PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Karen Mcguire,1.76,0.00,0.00,22.72,0.00,26.23,1.75,1.03,0,0.00,1.76,23.45
+02/23/24 07:11PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),kandra longo,2.40,6.19,2.99,30.97,0.00,44.30,1.75,1.52,0,0.00,2.40,41.03
+02/24/24 07:00PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),BRIAN SWEENEY,1.08,3.50,0.00,13.99,0.00,20.32,1.75,0.86,0,0.00,1.08,17.71
+02/25/24 01:48PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),April Souza,4.16,8.05,2.99,53.69,0.00,70.64,1.75,2.25,0,0.00,4.16,66.64
+02/26/24 03:16PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Elizabeth Proia,2.79,0.00,4.99,35.97,0.00,45.50,1.75,1.56,0,0.00,2.79,42.19
+03/05/24 06:57PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Brad Handfield,2.00,3.88,2.99,25.86,0.00,36.48,1.75,1.31,0,0.00,2.00,33.42
+03/08/24 03:00PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Lynn Bradshaw,1.47,2.85,2.99,18.98,0.00,28.04,1.75,1.08,0,0.00,1.47,25.21
+03/08/24 05:48PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Jeff Bridges,2.39,4.62,2.99,30.83,0.00,42.58,1.75,1.48,0,0.00,2.39,39.35
+03/11/24 07:43PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Robert J,2.54,0.00,0.00,32.83,0.00,37.12,1.75,1.33,0,0.00,2.54,34.04
+03/13/24 05:05PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Tim Brooks,2.51,6.47,2.99,32.37,0.00,46.09,1.75,1.57,0,0.00,2.51,42.77
+03/15/24 06:10PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),BRIAN SWEENEY,1.36,4.37,0.00,17.49,0.00,24.97,1.75,0.99,0,0.00,1.36,22.23
+03/16/24 02:15PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Mahri Lusby,6.88,17.74,3.99,88.71,0.00,119.07,1.75,3.58,0,0.00,6.88,113.74
+03/19/24 04:26PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Patty French,2.03,3.93,2.99,26.17,0.00,36.87,1.75,1.32,0,0.00,2.03,33.80
+03/24/24 04:38PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Teresa Mondello,2.19,2.83,0.00,28.27,0.00,35.04,1.75,1.27,0,0.00,2.19,32.02
+03/27/24 11:15AM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Kyla Dizon-Ubay,35.32,68.37,2.99,455.78,0.00,564.21,1.75,15.82,0,0.00,35.32,546.64
+03/30/24 12:25PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Alberto Martinez,3.18,0.00,0.00,40.97,0.00,45.90,1.75,1.57,0,0.00,3.18,42.58
+03/30/24 07:15PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Spenser Gray,1.01,0.00,0.00,12.99,0.00,15.75,1.75,0.74,0,0.00,1.01,13.26
+04/02/24 11:15AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Julieanna Robles,11.85,15.30,2.99,152.95,0.00,184.84,1.75,5.39,0,0.00,11.85,177.70
+04/05/24 05:38PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Patricia french,1.22,1.57,2.99,15.74,0.00,23.27,1.75,0.94,0,0.00,1.22,20.58
+04/06/24 02:30PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Zakk Gardner,2.48,3.79,0.00,31.98,0.00,40.00,1.75,1.40,0,0.00,2.48,36.85
+04/08/24 07:09PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),adria crowther,2.56,3.30,2.99,32.97,0.00,43.57,1.75,1.50,0,0.00,2.56,40.32
+04/08/24 07:15PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),adria crowther,1.94,2.50,2.99,24.98,0.00,34.16,1.75,1.24,0,0.00,1.94,31.17
+04/09/24 06:05PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),MARILYNE PATTON,7.53,19.42,2.99,97.11,0.00,128.80,1.75,3.85,0,0.00,7.53,123.20
+04/12/24 05:45PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Mike Spieler,3.25,0.00,0.00,41.97,0.00,46.97,1.75,1.60,0,0.00,3.25,43.62
+04/12/24 06:15PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Catherine Miller,3.93,7.60,3.99,50.67,0.00,67.94,1.75,2.17,0,0.00,3.93,64.02
+04/13/24 11:38AM,Aroma Pizza & Pasta (Lake Forest  CA 92630),LAINIE LEI VILLA,1.94,5.00,0.00,24.98,0.00,33.67,1.75,1.23,0,0.00,1.94,30.69
+04/13/24 11:41AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Patty French,1.28,2.47,2.99,16.49,0.00,24.98,1.75,0.99,0,0.00,1.28,22.24
+04/13/24 05:15PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Ali Sedehi,2.81,3.63,0.00,36.27,0.00,44.46,1.75,1.53,0,0.00,2.81,41.18
+04/14/24 08:07PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Brian Byers,2.21,4.27,2.99,28.47,0.00,39.69,1.75,1.40,0,0.00,2.21,36.54
+04/19/24 08:45PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Mary Best,1.94,5.00,2.99,25.01,0.00,36.69,1.75,1.31,0,0.00,1.94,33.63
+04/23/24 07:00PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Robert McBurney,3.38,6.55,2.99,43.65,0.00,58.32,1.75,1.91,0,0.00,3.38,54.66
+04/26/24 06:03PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Jeff Bridges,2.39,4.62,2.99,30.83,0.00,42.58,1.75,1.48,0,0.00,2.39,39.35
+04/30/24 05:44PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Guler Sherry,1.66,0.00,0.00,21.48,0.00,24.89,1.75,0.99,0,0.00,1.66,22.15
+05/01/24 07:16PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Brian Byers,2.85,3.68,0.00,36.82,0.00,45.10,1.75,1.55,0,0.00,2.85,41.80
+05/01/24 07:54PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Patricia french,1.29,2.49,2.99,16.59,0.00,25.11,1.75,1.00,0,0.00,1.29,22.36
+05/07/24 06:30PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Clark Yasaman,3.41,4.40,2.99,43.98,0.00,56.53,1.75,1.86,0,0.00,3.41,52.92
+05/08/24 05:52PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Marcos La Porte,1.32,2.55,3.99,16.99,0.00,26.60,1.75,1.04,0,0.00,1.32,23.81
+05/09/24 11:15AM,Aroma Pizza & Pasta (Lake Forest  CA 92630),BRIAN MARTIN,2.38,2.00,0.00,30.68,0.00,36.81,1.75,1.32,0,0.00,2.38,33.74
+05/10/24 11:45AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),JOANN INES,1.39,2.70,2.99,17.97,0.00,26.80,1.75,1.04,0,0.00,1.39,24.01
+05/10/24 06:05PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Lisa Tucker,2.67,8.62,0.00,34.47,0.00,47.51,1.75,1.61,0,0.00,2.67,44.15
+05/11/24 11:15AM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Mika Toyooka,10.54,13.60,2.99,135.95,0.00,164.83,1.75,4.84,0,0.00,10.54,158.24
+05/11/24 03:34PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Chris Thomas,3.33,4.30,0.00,42.97,0.00,52.35,1.75,1.74,0,0.00,3.33,48.86
+05/12/24 10:40AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Shawna Hayes,1.58,1.33,0.00,20.34,0.00,25.00,1.75,0.99,0,0.00,1.58,22.26
+05/14/24 11:45AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),joanne roque,12.40,10.00,2.99,159.99,0.00,187.13,1.75,5.45,0,0.00,12.40,179.93
+05/15/24 11:15AM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Tiffany Zablocki  ,8.87,15.00,2.99,114.45,0.00,143.06,1.75,4.24,0,0.00,8.87,137.07
+05/15/24 06:26PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Adria Crowther,3.72,7.19,2.99,47.96,0.00,63.61,1.75,2.05,0,0.00,3.72,59.81
+05/15/24 07:30PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Ali Kashanian,7.26,7.34,0.00,93.65,0.00,110.00,1.75,3.33,0,0.00,7.26,104.92
+05/24/24 11:30AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Lindsay Fitzpatrick,5.58,10.80,2.99,71.97,0.00,93.09,1.75,2.86,0,0.00,5.58,88.48
+05/24/24 12:26PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),surina  hardy,1.08,0.00,0.00,13.99,0.00,16.82,1.75,0.77,0,0.00,1.08,14.30
+05/24/24 01:15PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Brent Call,1.01,1.95,0.00,12.99,0.00,17.70,1.75,0.79,0,0.00,1.01,15.16
+05/27/24 05:33PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Robert Clark,3.80,1.50,0.00,48.97,0.00,56.02,1.75,1.85,0,0.00,3.80,52.42
+05/29/24 05:10PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Schneider  Susan,4.34,5.60,0.00,55.96,0.00,67.65,1.75,2.17,0,0.00,4.34,63.73
+05/30/24 08:34PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Brian Byers,2.98,3.85,2.99,38.47,0.00,50.04,1.75,1.68,0,0.00,2.98,46.61
+05/31/24 06:39PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),tamim saighani,1.76,3.41,2.99,22.72,0.00,32.63,1.75,1.20,0,0.00,1.76,29.68
+06/09/24 04:22PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),angelita dapper,1.27,4.10,2.99,16.39,0.00,26.50,1.75,1.03,0,0.00,1.27,23.72
+06/10/24 08:53PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Angela Buskerud,2.97,5.75,2.99,38.36,0.00,51.82,1.75,1.73,0,0.00,2.97,48.34
+06/15/24 05:09PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Christine Foley McMinn,2.98,3.85,0.00,38.47,0.00,47.05,1.75,1.60,0,0.00,2.98,43.70
+06/18/24 11:45AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),YEDID  ENRIQUEZ,2.86,3.70,0.00,36.95,0.00,45.26,1.75,1.55,0,0.00,2.86,41.96
+06/18/24 05:39PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Shehza Fahim,1.24,1.60,4.99,15.99,0.00,25.57,1.75,1.01,0,0.00,1.24,22.81
+,,,285.64,430.75,126.60,3685.36,0.00,4659.60,131.25,151.02,0,0.00,285.64,4377.33

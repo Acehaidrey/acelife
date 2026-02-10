@@ -1,0 +1,47 @@
+Date,Location,Customer Name,Tax,Tip,Customer Carryout or Delivery Charge,Subtotal,Upcharges,Total,Customer Fees,Restaurant Fees,Delivery Service,Tax Withholdings,Tax Payout,Total Payout
+01/06/20 11:45AM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Will Levinger,0.85,1.09,0.00,10.98,0.00,14.42,1.50,0.67,0,0.00,0.85,12.25
+02/16/20 02:45PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Lance Gebhart,1.31,0.00,0.00,16.96,0.00,19.77,1.50,0.80,0,0.00,1.31,17.47
+02/24/20 02:46PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Tatyana Collier,0.35,0.00,0.00,4.49,0.00,6.34,1.50,0.46,0,0.00,0.35,4.38
+03/04/20 09:16PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Mahlon White,2.15,4.15,4.99,27.72,0.00,40.51,1.50,1.32,0,0.00,2.15,37.69
+03/13/20 04:45PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Brigitte Holmdahl,2.63,0.00,0.00,33.97,0.00,38.10,1.50,1.26,0,0.00,2.63,35.34
+03/14/20 07:06PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Ken Sain,1.48,0.00,0.00,19.12,0.00,22.10,1.50,0.86,0,0.00,1.48,19.74
+03/15/20 05:50PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Karley Kring,1.14,2.21,0.00,14.74,0.00,19.59,1.50,0.79,0,0.00,1.14,17.30
+03/18/20 07:55PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Eran Schwartz,1.32,0.00,0.00,16.98,0.00,19.80,1.50,0.80,0,0.00,1.32,17.50
+03/20/20 06:56PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Cristina van Dalen,3.33,4.29,0.00,42.96,0.00,52.08,1.50,1.61,0,0.00,3.33,48.97
+03/22/20 12:11PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Lynne Maedel,1.57,0.00,0.00,20.24,0.00,23.31,1.50,0.89,0,0.00,1.57,20.92
+03/22/20 04:25PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Morgan Williams,2.48,0.00,0.00,31.98,0.00,35.96,1.50,1.20,0,0.00,2.48,33.26
+03/24/20 05:08PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Vivian Walsh,2.15,4.15,2.99,27.73,0.00,38.52,1.50,1.27,0,0.00,2.15,35.75
+03/24/20 06:19PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),molly levegood,1.21,3.12,0.00,15.62,0.00,21.45,1.50,0.84,0,0.00,1.21,19.11
+03/26/20 06:58PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Dave Parsio,3.83,0.00,0.00,49.46,0.00,54.79,1.50,1.67,0,0.00,3.83,51.62
+03/27/20 05:40PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Vanesa Nachman,2.79,5.39,2.99,35.98,0.00,48.65,1.50,1.52,0,0.00,2.79,45.63
+03/27/20 08:13PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Michael Hagins,2.44,0.00,0.00,31.48,0.00,35.42,1.50,1.19,0,0.00,2.44,32.73
+03/30/20 09:19PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),ashoke nigam,1.66,0.00,0.00,21.48,0.00,24.64,1.50,0.92,0,0.00,1.66,22.22
+04/01/20 06:50PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Elliot Math,3.66,0.00,0.00,47.21,0.00,52.37,1.50,1.61,0,0.00,3.66,49.26
+04/02/20 11:19AM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Emily Maekubo,1.84,2.37,0.00,23.72,0.00,29.43,1.50,1.04,0,0.00,1.84,26.89
+04/04/20 05:06PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Brigitte Holmdahl,1.55,0.00,0.00,19.98,0.00,23.03,1.50,0.88,0,0.00,1.55,20.65
+04/07/20 02:15PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Patricia Gonzalez,2.25,0.00,0.00,28.97,0.00,32.72,1.50,1.12,0,0.00,2.25,30.10
+04/08/20 02:50PM,Aroma Pizza & Pasta (Lake Forest  CA 92630),Andrew Gehfeld,2.05,10.00,0.00,26.49,0.00,40.04,1.50,1.31,0,0.00,2.05,37.23
+04/10/20 01:05PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Andrew Howard,2.54,3.00,0.00,32.72,0.00,39.76,1.50,1.30,0,0.00,2.54,36.96
+04/11/20 05:40PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Elliot Math,2.96,0.00,0.00,38.22,0.00,42.68,1.50,1.37,0,0.00,2.96,39.81
+04/12/20 05:08PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Osmany Garcia,3.40,0.00,0.00,43.93,0.00,48.83,1.50,1.53,0,0.00,3.40,45.80
+04/15/20 05:00PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Nicole Rosenson,2.01,5.19,0.00,25.97,0.00,34.67,1.50,1.17,0,0.00,2.01,32.00
+04/15/20 06:00PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Ricky Ebel,2.52,0.00,0.00,32.47,0.00,36.49,1.50,1.22,0,0.00,2.52,33.77
+04/16/20 06:12PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),erika e,2.24,0.00,0.00,28.91,0.00,32.65,1.50,1.12,0,0.00,2.24,30.03
+04/16/20 09:05PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Jarod Garland,1.64,3.16,0.00,21.12,0.00,27.42,1.50,0.99,0,0.00,1.64,24.93
+04/19/20 05:42PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Steven Hittelman,2.46,0.00,0.00,31.72,0.00,35.68,1.50,1.20,0,0.00,2.46,32.98
+04/20/20 04:54PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Anne Shanahan,1.39,0.00,0.00,17.99,0.00,20.88,1.50,0.83,0,0.00,1.39,18.55
+04/21/20 07:16PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Elliot Math,1.65,0.00,0.00,21.24,0.00,24.39,1.50,0.91,0,0.00,1.65,21.98
+04/25/20 08:09PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Elliot Math,2.32,0.00,0.00,29.97,0.00,33.79,1.50,1.15,0,0.00,2.32,31.14
+04/26/20 12:46PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Lisa me,0.77,0.00,0.00,9.99,0.00,12.26,1.50,0.61,0,0.00,0.77,10.15
+04/26/20 05:52PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Raghu Vohra,1.94,0.00,0.00,24.98,0.00,28.42,1.50,1.02,0,0.00,1.94,25.90
+04/26/20 06:25PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Loren Broach,1.39,0.00,0.00,17.99,0.00,20.88,1.50,0.83,0,0.00,1.39,18.55
+04/29/20 03:05PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Bernadette Strobel,1.83,0.00,0.00,23.56,0.00,26.89,1.50,0.98,0,0.00,1.83,24.41
+04/30/20 06:07PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Klaire K,1.63,0.00,0.00,20.98,0.00,24.11,1.50,0.91,0,0.00,1.63,21.70
+05/02/20 04:59PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Rose Casillas,2.01,0.00,0.00,25.96,0.00,29.47,1.50,1.04,0,0.00,2.01,26.93
+05/03/20 05:39PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Jeff Butler,1.08,0.00,0.00,13.99,0.00,16.57,1.50,0.72,0,0.00,1.08,14.35
+05/04/20 05:28PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Amelia Artificial,2.12,0.00,0.00,27.32,0.00,30.94,1.50,1.08,0,0.00,2.12,28.36
+05/05/20 06:12PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Kevin Canada,1.59,0.00,0.00,20.58,0.00,23.67,1.50,0.90,0,0.00,1.59,21.27
+05/07/20 01:09PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Kevin Canada,1.59,0.00,0.00,20.58,0.00,23.67,1.50,0.90,0,0.00,1.59,21.27
+06/14/20 01:56PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),Sandi Birdseye,2.17,0.00,0.00,27.97,0.00,31.64,1.50,1.10,0,0.00,2.17,29.04
+06/15/20 02:22PM,Ameci Pizza & Pasta (Lake Forest  CA 92630),anthony abeyta,1.90,4.91,0.00,24.56,0.00,32.87,1.50,1.13,0,0.00,1.90,30.24
+,,,89.19,53.03,10.97,1150.98,0.00,1371.67,67.50,48.04,0,0.00,89.19,1256.13

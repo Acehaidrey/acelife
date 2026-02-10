@@ -8,6 +8,8 @@ from typing import Dict, List
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path
+from orders_analytics.utils.google_sheets import GoogleSheetsDownloader
+from orders_analytics.utils.google_sheets_registry import SHEETS
 from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.providers import normalize_provider
 
@@ -63,10 +65,11 @@ def store_from_filename(path: str) -> str:
     return ""
 
 
-def parse_offline_online_excel(path: str) -> List[Dict[str, str]]:
+def parse_all_orders_excel(path: str) -> List[Dict[str, str]]:
     if not path or not os.path.exists(path):
         return []
     df = pd.read_excel(path, dtype=str).fillna("")
+    df.columns = [str(col).strip() for col in df.columns]
     store_name = store_from_filename(path)
     provider = normalize_provider(store_name) if store_name else ""
     rows: List[Dict[str, str]] = []
@@ -90,9 +93,12 @@ def parse_offline_online_excel(path: str) -> List[Dict[str, str]]:
         partnership_fee = parse_money(row.get("Flat Shop Fee", ""))
         if partnership_fee and not str(partnership_fee).startswith("-"):
             partnership_fee = f"-{partnership_fee}"
+        processing_fee = parse_money(row.get("CC Fee", ""))
+        if processing_fee and not str(processing_fee).startswith("-"):
+            processing_fee = f"-{processing_fee}"
         misc_fee = parse_money(row.get("Shop Funded Discounts Amount", ""))
 
-        notes = []
+        notes = ["source_excel"]
         if misc_fee and misc_fee != "0.00":
             notes.append(f"discount_for_order={misc_fee}")
 
@@ -116,7 +122,7 @@ def parse_offline_online_excel(path: str) -> List[Dict[str, str]]:
                 "tip": tip,
                 "total": "",
                 "partnership_fee": partnership_fee,
-                "processing_fee": "",
+                "processing_fee": processing_fee,
                 "misc_fee": misc_fee,
                 "notes": " | ".join(notes),
                 "statement_period_start": "",
@@ -134,6 +140,7 @@ def parse_order_history(path: str) -> List[Dict[str, str]]:
     if not path or not os.path.exists(path):
         return []
     df = pd.read_csv(path, dtype=str).fillna("")
+    df.columns = [str(col).strip() for col in df.columns]
     rows: List[Dict[str, str]] = []
     for _, row in df.iterrows():
         order_id = str(row.get("order_number", "")).strip()
@@ -183,7 +190,7 @@ def parse_order_history(path: str) -> List[Dict[str, str]]:
                 "partnership_fee": "",
                 "processing_fee": "",
                 "misc_fee": "",
-                "notes": "",
+                "notes": "source_history",
                 "statement_period_start": "",
                 "statement_period_end": "",
                 "account_id": "",
@@ -200,6 +207,10 @@ def load_pdf_raw(path: str) -> List[Dict[str, str]]:
         return []
     df = pd.read_csv(path, dtype=str).fillna("")
     rows = df.to_dict("records")
+    for row in rows:
+        notes = str(row.get("notes", "") or "").strip()
+        if "source_pdf" not in notes:
+            row["notes"] = " | ".join(filter(None, [notes, "source_pdf"]))
     return rows
 
 
@@ -208,7 +219,22 @@ def is_midnight(value: str) -> bool:
     return text.endswith("T00:00:00") or text.endswith(" 00:00:00")
 
 
-def coalesce_row(base: Dict[str, str], other: Dict[str, str]) -> Dict[str, str]:
+def coalesce_row(base: Dict[str, str], other: Dict[str, str], other_label: str) -> Dict[str, str]:
+    diff_fields = [
+        "subtotal",
+        "tax",
+        "tip",
+        "customer_delivery_fee",
+        "total",
+    ]
+    for field in diff_fields:
+        base_val = str(base.get(field, "") or "").strip()
+        other_val = str(other.get(field, "") or "").strip()
+        if base_val and other_val and base_val != other_val:
+            base_notes = str(base.get("notes", "") or "").strip()
+            note = f"mismatch_{field} {other_label}={other_val} base={base_val}"
+            if note not in base_notes:
+                base["notes"] = " | ".join(filter(None, [base_notes, note]))
     for col in RAW_COLUMNS:
         if col in ("notes", "added_at"):
             continue
@@ -260,7 +286,7 @@ def merge_orders(
         if not key:
             continue
         if key in merged:
-            merged[key] = coalesce_row(merged[key], row)
+            merged[key] = coalesce_row(merged[key], row, "history")
         else:
             merged[key] = row
     for row in pdf_rows:
@@ -268,7 +294,7 @@ def merge_orders(
         if not key:
             continue
         if key in merged:
-            merged[key] = coalesce_row(merged[key], row)
+            merged[key] = coalesce_row(merged[key], row, "pdf")
         else:
             merged[key] = row
 
@@ -294,15 +320,26 @@ def main() -> None:
         "--offline-online",
         nargs="*",
         default=[
-            "Takeout/Slice/Offline & Online Orders - Aroma Pizza & Pasta.xlsx",
-            "Takeout/Slice/Offline & Online Orders 2020-2026 - Ameci Pizza & Pasta.xlsx",
+            "Takeout/Slice/All Orders Aroma.xlsx",
+            "Takeout/Slice/All Orders Ameci.xlsx",
         ],
-        help="Offline/Online orders Excel files.",
+        help="Slice All Orders Excel files.",
     )
     parser.add_argument(
         "--order-history",
-        default="Takeout/Slice/VA Task Sheet - Slice Order History.csv",
+        default="Takeout/GoogleSheets/slice_order_history.csv",
         help="Order history CSV with customer info.",
+    )
+    parser.add_argument(
+        "--download-history",
+        action="store_true",
+        default=True,
+        help="Download order history from Google Sheets before parsing.",
+    )
+    parser.add_argument(
+        "--no-download-history",
+        action="store_true",
+        help="Skip downloading order history from Google Sheets.",
     )
     parser.add_argument(
         "--pdf-raw",
@@ -328,8 +365,15 @@ def main() -> None:
 
     excel_rows: List[Dict[str, str]] = []
     for path in args.offline_online:
-        excel_rows.extend(parse_offline_online_excel(path))
-    history_rows = parse_order_history(args.order_history)
+        excel_rows.extend(parse_all_orders_excel(path))
+    history_path = args.order_history
+    if args.download_history and not args.no_download_history:
+        entry = SHEETS.get("slice_order_history")
+        if not entry:
+            raise ValueError("slice_order_history not found in google sheets registry.")
+        downloader = GoogleSheetsDownloader(entry["sheet_id"])
+        downloader.download_csv(entry["gid"], history_path)
+    history_rows = parse_order_history(history_path)
     pdf_rows = load_pdf_raw(args.pdf_raw)
 
     write_csv(args.excel_out, excel_rows)

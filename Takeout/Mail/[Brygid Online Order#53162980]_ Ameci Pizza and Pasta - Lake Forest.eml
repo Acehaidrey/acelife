@@ -1,0 +1,135 @@
+Delivered-To: acehaidrey@gmail.com
+Received: by 2002:a05:7208:6103:b0:7f:6922:1d31 with SMTP id h3csp850980rba;
+        Sun, 10 Mar 2024 17:39:40 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IGG59pYsNj6lgjc6eGFn5FwoNQ8dIG5uwEpq+Vtys/Rtn9oPythM3UXT9P1cBBYTFxLXRx9
+X-Received: by 2002:a05:6a00:194d:b0:6e0:50cb:5f0a with SMTP id s13-20020a056a00194d00b006e050cb5f0amr8590175pfk.12.1710117580290;
+        Sun, 10 Mar 2024 17:39:40 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1710117580; cv=none;
+        d=google.com; s=arc-20160816;
+        b=bDAHp+uawPP1HX1InJ1k+PlpJ1Kc4ZtPIquptOQMO2QEncLeSJCiKG9/bjdklfmHwI
+         Kel6FFQB3kNgYZQvW1WGdSKO3T8zJASazo+IPcPbDvXawBVvW2ejVkSTNKyO3kWxgqY9
+         3Y6cbTZvFI9shYFMepLPVCcvWollxCJjsgrjVnW2CzvodrGaoHJU3m/VjPZVDW+fokGD
+         I3Tz2JOssBs/knhFGOFg2qAcwdDDX1R5X8D/Eiqv/ykIQ1kfSDZuFEdXEafWF5u3Fcfk
+         yu5xSjkN8Pu8VhXeMpJxvWJJbppsiuELeIfxe3lONLW+GcRXOHrNFal9KWvaghi5x8Y5
+         OGWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=feedback-id:user-agent:content-transfer-encoding:mime-version
+         :subject:message-id:to:from:date:dkim-signature:dkim-signature;
+        bh=cUn9n2EBv0rNWIPzSfd2kykd4FrFZ8qrBQh7cUbJAaE=;
+        fh=CD11t+EIP+rKJ5AL4OMtA2CwIyn56PQ5b68ueS89uL8=;
+        b=DlU0lD0fub6ClRE0TZRyo33cg0j7LbUTAHIX9yZhoaA7ZBSGacEc5IP79GzLWQomVW
+         +smgUvlMKah2m6iN8+8kf0bdZ7UiXCy2obeYZc3nzpBsk8YpOvKl5pv3gbAdkI/owD9i
+         QsxIAJNBVy4nHby14rGkHfqGRA/GH8QSd3v0QrUjxCj2DJ8By7NJWpnWJrxCqGwanMqf
+         wqNCtV+4Ake2kXq8UXgS3noZUu+dvV/zcrK78ME9GjnpmNnH2xVscFzNmdF5jeJkXiOz
+         JKbBpQH6kyy/y0VdB6W3Eviyjf4ehJbMka0KgV96dj2OAoiWSss3P2+nkp23rPh2iztV
+         VSeg==;
+        dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@brygid.online header.s=kcmjewhlzhdwgmazp6l5tetubdtork7p header.b=WOKtJJJP;
+       dkim=pass header.i=@amazonses.com header.s=hsbnp7p3ensaochzwyq5wwmceodymuwv header.b=FoJBg9m5;
+       spf=pass (google.com: domain of 0101018e2af36b4b-b8809039-723e-4a0a-9c57-a6c98814cac9-000000@mail.brygid.online designates 54.240.85.37 as permitted sender) smtp.mailfrom=0101018e2af36b4b-b8809039-723e-4a0a-9c57-a6c98814cac9-000000@mail.brygid.online;
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=brygid.online
+Return-Path: <0101018e2af36b4b-b8809039-723e-4a0a-9c57-a6c98814cac9-000000@mail.brygid.online>
+Received: from a85-37.smtp-out.us-west-2.amazonses.com (a85-37.smtp-out.us-west-2.amazonses.com. [54.240.85.37])
+        by mx.google.com with ESMTPS id w1-20020a63f501000000b005c5e24d4364si3809261pgh.428.2024.03.10.17.39.39
+        for <acehaidrey@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 10 Mar 2024 17:39:40 -0700 (PDT)
+Received-SPF: pass (google.com: domain of 0101018e2af36b4b-b8809039-723e-4a0a-9c57-a6c98814cac9-000000@mail.brygid.online designates 54.240.85.37 as permitted sender) client-ip=54.240.85.37;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@brygid.online header.s=kcmjewhlzhdwgmazp6l5tetubdtork7p header.b=WOKtJJJP;
+       dkim=pass header.i=@amazonses.com header.s=hsbnp7p3ensaochzwyq5wwmceodymuwv header.b=FoJBg9m5;
+       spf=pass (google.com: domain of 0101018e2af36b4b-b8809039-723e-4a0a-9c57-a6c98814cac9-000000@mail.brygid.online designates 54.240.85.37 as permitted sender) smtp.mailfrom=0101018e2af36b4b-b8809039-723e-4a0a-9c57-a6c98814cac9-000000@mail.brygid.online;
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=brygid.online
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=kcmjewhlzhdwgmazp6l5tetubdtork7p; d=brygid.online; t=1710117579;
+	h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding;
+	bh=lX3M46vqyKShUQLtbw2sKBKsI2OOXLQgv9R4xHWsJwU=;
+	b=WOKtJJJP0sha+50wZ0BLSDQsiGt5dhCe0/QgHBq/DHtf1zoOC1UqsY7uTJlDmuEa
+	Osr2f5CzG0+O1M05vHF/rLXwmzs0CABYUrIen/c4Oj0FF3qrbsp4TNAlQ5kmYkfg6eb
+	xZpliL1YnsTbVfiQeEGr+9hjVuL8Oj3bXyvTNOXk=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+	s=hsbnp7p3ensaochzwyq5wwmceodymuwv; d=amazonses.com; t=1710117579;
+	h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Feedback-ID;
+	bh=lX3M46vqyKShUQLtbw2sKBKsI2OOXLQgv9R4xHWsJwU=;
+	b=FoJBg9m5bPWuX9XsF3Gmn6V/4fF4B6S5hTTfSkZOmaYYQ8G0NcA1SI6L4Tacm77M
+	lQWbjaux5TrP7s6ZPAyJYMYpb+xDvm82yIGKSQg3HcPUJpavLJq2b9Dafy7VhZMKhsz
+	/Z/c2ac/CScz3t3ktBCvCmjPnyzz87mzhdgjzvHI=
+Date: Mon, 11 Mar 2024 00:39:39 +0000
+From: Ameci Pizza and Pasta - Lake Forest <no-reply@brygid.online>
+To: acehaidrey@gmail.com, orders@amecilakeforest.com
+Message-ID: <0101018e2af36b4b-b8809039-723e-4a0a-9c57-a6c98814cac9-000000@us-west-2.amazonses.com>
+Subject: [Brygid Online Order#53162980]: Ameci Pizza and Pasta - Lake Forest
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+User-Agent: Brygid-Mailer/1.0.1
+Feedback-ID: 1.us-west-2.9+ZByB71QCOQhXfYwj0U6Z8Jjq4MM2DOiZZWUo+B6T8=:AmazonSES
+X-SES-Outgoing: 2024.03.11-54.240.85.37
+
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr align='center' valign='top'><td colspan='4'><h1>Online Order (Takeout)</h1></td></tr>
+<tr align='center' valign='bottom'><td colspan='4'><b><font size='+1'>AMECI PIZZA AND PASTA - LAKE FOREST</font></b></td></tr>
+<tr><td colspan='2'><b>Order#53162980</b></td>
+<td align='right' colspan='2'><b>Placed On: Sun, Mar 10 2024 @ 5:39 PM</b></td>
+</tr>
+<tr><td colspan='4'><b>Customer Name: LARA, MARY</b></td></tr>
+<tr><td colspan='4'><font size='+1'><b>Phone: 626-483-2530</b></font></td></tr>
+<tr><td colspan='4'><b>Email: MMLARA36@GMAIL.COM</b></td></tr>
+<tr><td colspan='4'><hr></td></tr>
+<tr align='center'><td colspan='4'><b>PAYMENTS</b></td></tr>
+<tr><td colspan='4'>Visa: xxxxxxxxxxxxx170</td></tr>
+<tr><td colspan='4'>Auth# 073920</td></tr>
+<tr><td colspan='4'>Amount: $78.73</td></tr>
+<tr><td colspan='4'>&nbsp;</td></tr>
+<tr><td colspan='4'><b>Balance Owing:</b> $0.00</td></tr>
+<tr><td colspan='4'><table border='0' cellpadding='0' cellspacing='0' width='100%'>
+<tr align='center'><td colspan='5'><hr></td></tr>
+<tr><td width='5%'><b>Qty</b></td><td width='12%'></td><td width='5%' nowrap align='right'>&nbsp;</td><td width='63%' align='left'><b>Item</b>	</td><td width='15%' align='right'><b>Price</b>	</td></tr>
+<tr align='center'><td colspan='5'><hr></td></tr>
+<tr><td>1</td><td></td><td>&nbsp;</td><td>Eggplant Parmigiana with Pasta	<br>Size: Serving</td><td align='right'>$13.99	</td></tr>
+<tr>
+<td>&nbsp;</td><td>&nbsp;</td><td align='right' nowrap>&nbsp;</td><td align='left'>Spaghetti&nbsp;</td><td align='right'>&nbsp;	</td></tr>
+<tr>
+<td>&nbsp;</td><td>&nbsp;</td><td align='right' nowrap>&nbsp;</td><td align='left'>Extra 2pc Focaccia Bread&nbsp;</td><td align='right'>&nbsp;	</td></tr>
+<tr><td colspan='4' align='right'>Options:&nbsp;</td><td align='right'><i>$1.49</i></td></tr>
+<tr><td colspan='4' align='right'>Sum:&nbsp;</td><td align='right'><i>$15.48</i></td></tr>
+<tr align='center'><td colspan='5'><hr></td></tr>
+<tr><td>1</td><td></td><td>&nbsp;</td><td>Create Your Own Pizza	<br>Size: Medium 12"</td><td align='right'>$13.99	</td></tr>
+<tr>
+<td>&nbsp;</td><td>&nbsp;</td><td align='right' nowrap>&nbsp;</td><td align='left'>Crust: Regular&nbsp;</td><td align='right'>&nbsp;	</td></tr>
+<tr>
+<td>&nbsp;</td><td>&nbsp;</td><td align='right' nowrap>&nbsp;</td><td align='left'>Pizza Sauce&nbsp;</td><td align='right'>&nbsp;	</td></tr>
+<tr><td colspan='4' align='right'>Sum:&nbsp;</td><td align='right'><i>$13.99</i></td></tr>
+<tr align='center'><td colspan='5'><hr></td></tr>
+<tr><td>1</td><td></td><td>&nbsp;</td><td>Chicken Delight Pizza	<br>Size: Medium 12"</td><td align='right'>$16.99	</td></tr>
+<tr>
+<td>&nbsp;</td><td>&nbsp;</td><td align='right' nowrap>&nbsp;</td><td align='left'>Crust: Regular&nbsp;</td><td align='right'>&nbsp;	</td></tr>
+<tr><td colspan='4' align='right'>Sum:&nbsp;</td><td align='right'><i>$16.99</i></td></tr>
+<tr align='center'><td colspan='5'><hr></td></tr>
+<tr><td>1</td><td></td><td>&nbsp;</td><td>Deluxe Pizza	<br>Size: Large 14"</td><td align='right'>$20.99	</td></tr>
+<tr>
+<td>&nbsp;</td><td>&nbsp;</td><td align='right' nowrap>&nbsp;</td><td align='left'>Crust: Regular&nbsp;</td><td align='right'>&nbsp;	</td></tr>
+<tr><td colspan='4' align='right'>Sum:&nbsp;</td><td align='right'><i>$20.99</i></td></tr>
+<tr align='center'><td colspan='5'><hr></td></tr>
+<tr><td>&nbsp;</td><td colspan='3' align='right'>Subtotal:&nbsp;</td><td align='right'>$67.45</td></tr>
+<tr><td>&nbsp;</td><td colspan='3' align='right'>Taxes:&nbsp;</td><td align='right'>$5.23</td></tr>
+<tr><td>&nbsp;</td><td colspan='3' align='right'>Total:<b>&nbsp;</b></td><td align='right'>$72.68</td></tr>
+<tr><td>&nbsp;</td><td colspan='3' align='right'>Gratuity:<b>&nbsp;</b></td><td align='right'>$6.05</td></tr>
+<tr><td>&nbsp;</td><td colspan='3' align='right'><b>Order Total:</b>&nbsp;</td><td align='right'><b>$78.73</b></td></tr>
+</table></td></tr>
+<tr align='center'><td colspan='4'><b>AMECILAKEFOREST.COM (P: 949-830-6401, F: 949-830-2699)</b><br><b>Please call 866-4-BRYGID if you have any questions about this service.</b><br><font size='-1'><i><b>Powered by BRYGID (www.brygid.com)</b></i></font></td></tr>
+</table>
+<!--
+Form Code: Z-1
+IP: 172.56.181.96
+Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 17_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/122.0.6261.89 Mobile/15E148 Safari/604.1
+Recalled From Order: 
+Order Date: 03/10/2024 17:39
+Order For Date:
+-->
+</body></html>

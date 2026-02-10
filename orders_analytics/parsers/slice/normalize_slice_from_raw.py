@@ -127,6 +127,12 @@ def normalize_rows(
             total_value = normalize_money(
                 f"{(parse_decimal(row.get('subtotal', '')) + parse_decimal(row.get('tip', '')) + parse_decimal(row.get('customer_delivery_fee', '')) + parse_decimal(row.get('tax', ''))):.2f}"
             )
+        misc_fee_value = normalize_money(row.get("misc_fee", ""))
+        if misc_fee_value and misc_fee_value != "0.00":
+            total_value = normalize_money(
+                f"{(parse_decimal(total_value) + parse_decimal(misc_fee_value)):.2f}"
+            )
+            notes.append("total_includes_misc_fee")
 
         order_adjustments = parse_decimal(normalize_money(row.get("order_adjustments", "")))
         if order_adjustments != Decimal("0.00"):
@@ -140,19 +146,32 @@ def normalize_rows(
             if description:
                 notes.append(description)
         adjustments_total = order_adjustments + extra_adjustments
-        if payment_status == "refunded":
+        if payment_status == "refunded" and "source_history" not in " | ".join(notes):
             refund_adjustment = -parse_decimal(total_value)
             if refund_adjustment != Decimal("0.00"):
                 adjustments_total += refund_adjustment
                 notes.append(f"refund_total={normalize_money(f'{refund_adjustment:.2f}')}")
             notes.append("payment_status_refunded")
+        tax_raw = normalize_dash_zero(row.get("tax", ""))
+        tax = ""
+        tax_withheld = tax_raw
+        order_datetime = row.get("order_datetime", "")
+        if order_datetime:
+            try:
+                dt_value = datetime.fromisoformat(order_datetime.replace("Z", "+00:00"))
+                if dt_value.date() < datetime(2020, 6, 1).date():
+                    tax = tax_raw
+                    tax_withheld = ""
+            except ValueError:
+                pass
+
         normalized.append(
             build_normalized_row(
                 Platforms.SLICE.upper(),
                 order_id=order_id,
                 provider=row.get("provider", ""),
                 restaurant_name=row.get("restaurant_name", ""),
-                order_datetime=row.get("order_datetime", ""),
+                order_datetime=order_datetime,
                 order_type=normalize_order_type_for_slice(row.get("order_type", "")),
                 payment_type=payment_type,
                 customer_name=row.get("customer_name", ""),
@@ -160,14 +179,14 @@ def normalize_rows(
                 email=row.get("email", ""),
                 address=row.get("address", ""),
                 subtotal=normalize_dash_zero(row.get("subtotal", "")),
-                tax="",
-                tax_withheld=normalize_dash_zero(row.get("tax", "")),
+                tax=tax,
+                tax_withheld=tax_withheld,
                 tip=normalize_dash_zero(row.get("tip", "")),
                 delivery_fee=normalize_dash_zero(row.get("customer_delivery_fee", "")),
                 total=total_value,
                 processing_fee=normalize_dash_zero(row.get("processing_fee", "")),
                 commission_fee=normalize_money(row.get("partnership_fee", "")),
-                misc_fee=normalize_money(row.get("misc_fee", "")),
+                misc_fee=misc_fee_value,
                 adjustments=normalize_money(f"{adjustments_total:.2f}"),
                 payout="",
                 errors="",

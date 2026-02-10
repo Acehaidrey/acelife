@@ -197,18 +197,20 @@ Concerns / follow-ups:
 ## Slice
 - Sources:
   - Statements PDFs: `Takeout/Slice/*.pdf` (Order Activity Report)
-  - Offline/Online orders: `Takeout/Slice/Offline & Online Orders*.xlsx`
+  - All Orders exports: `Takeout/Slice/All Orders *.xlsx`
   - Order history (customer info): `Takeout/Slice/VA Task Sheet - Slice Order History.csv`
 - PDF parser: `parsers/slice/extract_slice_orders_raw.py`
   - Reads the Orders table (page 2+).
   - Captures Date/Time, Order ID, payment type (Credit/Phone), order type (Pickup/Delivery), Subtotal, Customer Delivery Fee, Order Adjust., Tax, Tips, Order Total, Partnership Fee, Processing Fee.
   - Outputs `orders_raw_from_statements.csv` + `adjustments_raw_from_statements.csv`.
 - Merge script: `orders_analytics/scripts/slice_merge_orders.py`
-  - Base = Offline/Online Excel orders.
+  - Base = All Orders Excel exports.
   - Fills missing fields from Order History and then from statement PDF raw.
   - Order datetime preference: history (has time) → PDF → Excel (date-only).
+  - Adds `mismatch_<field>` notes when history/PDF disagree with Excel on subtotal/tax/tip/delivery_fee/total.
   - `order_type` inferred from delivery_fee (delivery if > 0 else pickup).
   - Commission: `Flat Shop Fee` negated to `partnership_fee`.
+  - Merchant processing: `CC Fee` negated to `processing_fee`.
   - Discounts: `Shop Funded Discounts Amount` → `misc_fee` + `discount_for_order=...` note.
   - `orders_raw.csv` is the merged output used for normalization.
 - Normalization: `parsers/slice/normalize_slice_from_raw.py`
@@ -218,6 +220,9 @@ Concerns / follow-ups:
   - TODO: confirm/ingest all Slice discount fields and apply them to totals.
   - TODO: obtain merchant processing costs and invoice data to reconcile payouts.
   - TODO: verify total differences after discounts are applied.
+  - Tax handling: orders before 2020-06-01 use `tax` (we remit). Orders on/after 2020-06-01 use `tax_withheld`.
+  - `total` includes `misc_fee` (discounts) to avoid total mismatch checks; rows note `total_includes_misc_fee`.
+  - Known discrepancy: some orders have tax differences between All Orders exports and Order History (e.g., order_id 144995507 has tax 1.90 vs 1.75). We currently keep the All Orders tax and are awaiting Slice support clarification.
 
 ## ChowNow
 - Sources:
