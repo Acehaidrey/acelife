@@ -32,7 +32,13 @@ SHEETS = {
         "sheet_id": VA_TASK_SHEET,
         "gid": "1752158193",
         "format": "csv",
-        "out": "Takeout/GoogleSheets/beyond_menu_order_history.csv",
+        "out": "orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv",
+    },
+    "beyond_menu_annual_billing_summary": {
+        "sheet_id": VA_TASK_SHEET,
+        "gid": "1752158193",
+        "format": "csv",
+        "out": "orders_analytics/data/raw/beyondmenu/beyond_menu_annual_billing_summary.csv",
     },
     "monthly_finance_report_history": {
         "sheet_id": VA_TASK_SHEET,

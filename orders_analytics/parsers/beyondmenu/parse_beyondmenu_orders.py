@@ -74,6 +74,13 @@ def format_money(value) -> str:
 class BeyondMenuOrdersParser(BaseParser):
     platform = "BEYONDMENU"
     dedupe_key = "order_id"
+    total_components_fields = (
+        "subtotal",
+        "tax",
+        "tip",
+        "delivery_fee",
+        "adjustments",
+    )
 
     def default_input_path(self) -> str:
         sheet = SHEETS.get("beyond_menu_order_history")
@@ -92,6 +99,13 @@ class BeyondMenuOrdersParser(BaseParser):
                 download_sheet_entry(sheet)
             except Exception:
                 if not os.path.exists(input_path):
+                    raise
+        annual_sheet = SHEETS.get("beyond_menu_annual_billing_summary")
+        if annual_sheet:
+            try:
+                download_sheet_entry(annual_sheet)
+            except Exception:
+                if not os.path.exists(annual_sheet["out"]):
                     raise
         return pd.read_csv(input_path)
 
@@ -130,6 +144,13 @@ class BeyondMenuOrdersParser(BaseParser):
             merchant_fee = parse_money_series(pd.Series([row.get("Merchant Fee", "")])).iloc[0]
             commission_fee = parse_money_series(pd.Series([row.get("Commission Fee", "")])).iloc[0]
             misc_fee = parse_money_series(pd.Series([row.get("Misc Fee", "")])).iloc[0]
+            convenience_fee = parse_money_series(
+                pd.Series(
+                    [
+                        row.get("Convenience Fee", row.get("convenience_fee", "")),
+                    ]
+                )
+            ).iloc[0]
             payment_type = str(payment_series.iloc[idx] or PaymentTypes.CREDIT)
             if payment_type == PaymentTypes.CASH:
                 commission_out = -(commission_fee + merchant_fee)
@@ -137,10 +158,13 @@ class BeyondMenuOrdersParser(BaseParser):
             else:
                 commission_out = -commission_fee
                 processing_out = -merchant_fee
-            adjustments_out = ""
+            adjustments_value = 0.0
             if "Adjustments" in df.columns:
                 adjustments_value = parse_money_series(pd.Series([row.get("Adjustments", "")])).iloc[0]
-                adjustments_out = format_money(adjustments_value)
+            if convenience_fee:
+                adjustments_value += abs(convenience_fee)
+            adjustments_out = format_money(adjustments_value) if adjustments_value else ""
+            misc_fee_out = misc_fee + convenience_fee
             rows.append(
                 build_normalized_row(
                     Platforms.BEYONDMENU.upper(),
@@ -161,7 +185,7 @@ class BeyondMenuOrdersParser(BaseParser):
                     processing_fee=str(processing_out),
                     commission_fee=format_money(commission_out),
                     adjustments=adjustments_out,
-                    misc_fee=str(misc_fee),
+                    misc_fee=format_money(misc_fee_out),
                     notes=str(row.get("Notes", "")),
                 )
             )

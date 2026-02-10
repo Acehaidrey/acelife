@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime
 import re
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 
 from orders_analytics.utils.order_types import OrderTypes
 from orders_analytics.utils.schema import CANONICAL_COLUMNS
@@ -339,20 +339,18 @@ def _parse_money(value: str) -> float:
 def validate_total_components(
     rows: List[Dict[str, str]],
     source: str,
+    components: Optional[List[str]] = None,
 ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
     errors: List[Dict[str, str]] = []
+    component_fields = components or ["subtotal", "tax", "tip", "delivery_fee"]
     for row in rows:
         total_raw = str(row.get("total") or "").strip()
         if not total_raw:
             continue
         total_val = _parse_money(total_raw)
-        components = (
-            _parse_money(row.get("subtotal", "")),
-            _parse_money(row.get("tax", "")),
-            _parse_money(row.get("tip", "")),
-            _parse_money(row.get("delivery_fee", "")),
+        expected = round(
+            sum(_parse_money(row.get(field, "")) for field in component_fields), 2
         )
-        expected = round(sum(components), 2)
         if abs(total_val - expected) > 0.01:
             flag = "total_components_mismatch"
             _append_error(row, flag)

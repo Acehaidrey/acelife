@@ -41,6 +41,13 @@ class BaseParser:
     platform: str = ""
     provider: str = ""
     dedupe_key: str = "order_id"
+    total_components_fields: Tuple[str, ...] = (
+        "subtotal",
+        "tax",
+        "tip",
+        "delivery_fee",
+        "misc_fee",
+    )
 
     def __init__(
         self,
@@ -97,7 +104,7 @@ class BaseParser:
                     row[key] = ""
             if not str(row.get("expected_payout") or "").strip():
                 row["expected_payout"] = self.compute_expected_payout(row)
-        for validator in (
+        validators = [
             validate_canonical_columns,
             validate_required_fields,
             validate_enum_fields,
@@ -106,13 +113,20 @@ class BaseParser:
             validate_test_customer_names,
             validate_negative_fees,
             validate_cash_processing_fee,
-            validate_total_components,
             validate_order_datetime_iso,
             validate_payout_expected,
-        ):
+        ]
+        for validator in validators:
             rows, errors = validator(rows, source=self.resolve_paths()[1])
             if errors:
                 self.stats.errors.extend(errors)
+        rows, errors = validate_total_components(
+            rows,
+            source=self.resolve_paths()[1],
+            components=list(self.total_components_fields),
+        )
+        if errors:
+            self.stats.errors.extend(errors)
         try:
             from orders_analytics.utils.geocodio import apply_cache_to_rows
 
