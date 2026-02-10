@@ -117,6 +117,11 @@ def parse_order_datetime(date_str: str, time_str: str) -> str:
     except ValueError:
         return ""
 
+def normalize_money_or_blank(value: str) -> str:
+    if str(value or "").strip() == "-":
+        return ""
+    return normalize_money(value)
+
 def parse_adjustment_line(line: str) -> Dict[str, str]:
     parts = line.split()
     if len(parts) < 4:
@@ -557,14 +562,14 @@ def parse_pdf(
                 "order_datetime": order_datetime,
                 "order_type": order_type.lower(),
                 "payment_type": "credit" if payment_type.lower() == "credit" else "cash",
-                "subtotal": normalize_money(subtotal),
-                "customer_delivery_fee": normalize_money(cust_delivery_fee),
-                "order_adjustments": normalize_money(order_adjust),
-                "tax": normalize_money(tax),
-                "tip": normalize_money(tip),
-                "total": normalize_money(total),
-                "partnership_fee": normalize_money(pship_fee),
-                "processing_fee": normalize_money(proc_fee),
+                "subtotal": normalize_money_or_blank(subtotal),
+                "customer_delivery_fee": normalize_money_or_blank(cust_delivery_fee),
+                "order_adjustments": normalize_money_or_blank(order_adjust),
+                "tax": normalize_money_or_blank(tax),
+                "tip": normalize_money_or_blank(tip),
+                "total": normalize_money_or_blank(total),
+                "partnership_fee": normalize_money_or_blank(pship_fee),
+                "processing_fee": normalize_money_or_blank(proc_fee),
                 "statement_period_start": period["statement_period_start"],
                 "statement_period_end": period["statement_period_end"],
                 "account_id": account_id,

@@ -213,8 +213,11 @@ Concerns / follow-ups:
   - `orders_raw.csv` is the merged output used for normalization.
 - Normalization: `parsers/slice/normalize_slice_from_raw.py`
   - Only includes rows where payment_status is `paid` (credit) or `authorized` (cash); refunded rows are included with `adjustments = -total`.
-  - `payout` = total + partnership_fee + processing_fee - tax_withheld (tax column).
+  - `payout` is currently blank (provider payout not available yet).
   - Processing fees are only available from the PDFs; Excel files do not include them.
+  - TODO: confirm/ingest all Slice discount fields and apply them to totals.
+  - TODO: obtain merchant processing costs and invoice data to reconcile payouts.
+  - TODO: verify total differences after discounts are applied.
 
 ## ChowNow
 - Sources:

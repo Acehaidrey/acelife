@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+import re
 from typing import Dict, List, Tuple
 
 from orders_analytics.utils.order_types import OrderTypes
@@ -156,7 +157,7 @@ def validate_test_customer_names(
         name = str(row.get("customer_name") or "").strip()
         if not name:
             continue
-        if "test" in name.lower():
+        if re.search(r"\btest\b", name, re.IGNORECASE):
             flag = "test_customer_name"
             _append_error(row, flag)
             errors.append(

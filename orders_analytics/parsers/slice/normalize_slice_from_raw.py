@@ -146,12 +146,6 @@ def normalize_rows(
                 adjustments_total += refund_adjustment
                 notes.append(f"refund_total={normalize_money(f'{refund_adjustment:.2f}')}")
             notes.append("payment_status_refunded")
-        payout_total = (
-            parse_decimal(total_value)
-            + parse_decimal(normalize_dash_zero(row.get("processing_fee", "")))
-            + parse_decimal(normalize_money(row.get("partnership_fee", "")))
-            - parse_decimal(normalize_dash_zero(row.get("tax", "")))
-        )
         normalized.append(
             build_normalized_row(
                 Platforms.SLICE.upper(),
@@ -175,7 +169,7 @@ def normalize_rows(
                 commission_fee=normalize_money(row.get("partnership_fee", "")),
                 misc_fee=normalize_money(row.get("misc_fee", "")),
                 adjustments=normalize_money(f"{adjustments_total:.2f}"),
-                payout=normalize_money(f"{payout_total:.2f}"),
+                payout="",
                 errors="",
                 notes=" | ".join([note for note in notes if note]),
             )
@@ -209,7 +203,7 @@ def normalize_rows(
                 marketing_fee="0.00",
                 misc_fee="0.00",
                 adjustments=adjustments_value,
-                payout=adjustments_value,
+                payout="",
                 errors="adjustment_only",
                 notes=" | ".join([note for note in notes if note]),
             )
@@ -241,7 +235,7 @@ def normalize_rows(
                 marketing_fee="0.00",
                 misc_fee="0.00",
                 adjustments=adjustments_value,
-                payout=adjustments_value,
+                payout="",
                 errors="adjustment_only",
                 notes=" | ".join([note for note in notes if note]),
             )

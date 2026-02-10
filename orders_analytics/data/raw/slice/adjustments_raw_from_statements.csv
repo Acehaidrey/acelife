@@ -1,0 +1,3 @@
+order_id,adjustment_datetime,adjustment_amount,adjustment_description,statement_period_start,statement_period_end,account_id,source_file,email_date,added_at
+135429177,2025-08-01T18:13:00,7.70,Credit Slice Code Promo,"Fri Aug 1, 2025","Sun Aug 31, 2025",3057,oar-full-3057-2025-08-01-2025-08-31 (1).pdf,,2026-02-10T10:29:56.004823
+,2025-08-07T01:15:00,-24.00,Hardware Subscription Tablet for Fee August 2025,"Fri Aug 1, 2025","Sun Aug 31, 2025",3057,oar-full-3057-2025-08-01-2025-08-31 (1).pdf,,2026-02-10T10:29:56.004823
