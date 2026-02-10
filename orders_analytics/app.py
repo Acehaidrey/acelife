@@ -1066,11 +1066,17 @@ def main() -> None:
                         orders=("order_id", "count"),
                         platforms=("platform", lambda s: " | ".join(sorted(set(s.dropna().astype(str))))),
                         providers=("provider", lambda s: " | ".join(sorted(set(s.dropna().astype(str))))),
+                        first_ordered=("order_datetime", "min"),
+                        last_ordered=("order_datetime", "max"),
+                        lifetime_total=("total", "sum"),
                     )
                     .reset_index()
                     .sort_values("orders", ascending=False)
                 )
-                st.dataframe(addr_counts, width="stretch")
+                addr_column_config = {
+                    "lifetime_total": st.column_config.NumberColumn(format="dollar"),
+                }
+                st.dataframe(addr_counts, column_config=addr_column_config, width="stretch")
 
     conn.close()
 
