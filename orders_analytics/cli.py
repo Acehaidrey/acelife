@@ -661,6 +661,7 @@ def run_geocode(
     api_key: Optional[str],
     cache_only: bool,
     counts_out: Optional[str],
+    misses_out: Optional[str],
 ) -> None:
     import pandas as pd
     import os
@@ -722,21 +723,42 @@ def run_geocode(
                             merged = f"{merged} | {platform}"
                 row["platform"] = merged
     updated = 0
+    rows_with_address = 0
+    cache_hits = 0
+    cache_misses = 0
+    cache_missing_formatted = 0
+    already_formatted = 0
+    misses: List[Dict[str, str]] = []
     for idx, row in df.iterrows():
         address = str(row.get("address") or "").strip()
         if not address:
             continue
+        rows_with_address += 1
         key = normalize_key(address)
         cached = cache.get(key)
         if not cached:
+            cache_misses += 1
+            misses.append(
+                {
+                    "order_id": str(row.get("order_id") or ""),
+                    "platform": str(row.get("platform") or ""),
+                    "provider": str(row.get("provider") or ""),
+                    "address_input": address,
+                    "address_key": key,
+                }
+            )
             continue
+        cache_hits += 1
         formatted = str(cached.get("formatted_address") or "").strip()
         if formatted:
             df.at[idx, "address_formatted"] = formatted
             df.at[idx, "lat"] = str(cached.get("lat") or "")
             df.at[idx, "lng"] = str(cached.get("lng") or "")
             updated += 1
+            if str(row.get("address_formatted") or "").strip():
+                already_formatted += 1
         else:
+            cache_missing_formatted += 1
             existing = str(row.get("errors") or "").strip()
             flag = "geocode_no_formatted_address"
             if flag not in existing:
@@ -745,6 +767,14 @@ def run_geocode(
     output = out_path or input_path
     df.to_csv(output, index=False)
     print(f"Geocoded {updated} row(s) -> {output}")
+    print(
+        "Geocode stats:",
+        f"rows_with_address={rows_with_address}",
+        f"cache_hits={cache_hits}",
+        f"cache_misses={cache_misses}",
+        f"cache_missing_formatted={cache_missing_formatted}",
+        f"already_formatted={already_formatted}",
+    )
     if usage_counts:
         write_cache(cache_path, cache)
     if counts_out:
@@ -758,6 +788,14 @@ def run_geocode(
         counts = counts[counts["address_key"].astype(str).str.strip() != ""]
         counts = counts.sort_values("count", ascending=False)
         counts.to_csv(counts_out, index=False)
+    if misses:
+        misses_df = pd.DataFrame(misses)
+        if misses_out:
+            misses_df.to_csv(misses_out, index=False)
+            print(f"Wrote geocode cache misses -> {misses_out}")
+        else:
+            print("Geocode cache misses:")
+            print(misses_df.to_string(index=False))
         print(f"Wrote address counts -> {counts_out}")
 
 
@@ -930,6 +968,24 @@ def main() -> None:
         default=None,
         help="Write address counts CSV to this path.",
     )
+    geocode_cmd.add_argument(
+        "--misses-out",
+        default=None,
+        help="Write geocode cache misses CSV to this path.",
+    )
+
+    sheets_cmd = subparsers.add_parser(
+        "sheets", help="Download registered Google Sheets."
+    )
+    sheets_cmd.add_argument(
+        "--name",
+        help="Registry name for a sheet (e.g. chownow_manual_missing_orders).",
+    )
+    sheets_cmd.add_argument(
+        "--all",
+        action="store_true",
+        help="Download all registered sheets.",
+    )
 
     errors_cmd = subparsers.add_parser(
         "errors", help="Rebuild errors.csv by re-running validations."
@@ -1069,7 +1125,32 @@ def main() -> None:
                 args.api_key,
                 args.cache_only,
                 args.counts_out,
+                args.misses_out,
             )
+    elif args.command == "sheets":
+        from orders_analytics.utils.google_sheets import GoogleSheetsDownloader
+        from orders_analytics.utils.google_sheets_registry import SHEETS
+
+        def download(entry: dict) -> None:
+            downloader = GoogleSheetsDownloader(entry["sheet_id"])
+            fmt = entry.get("format", "csv")
+            out_path = entry["out"]
+            if fmt == "xlsx":
+                downloader.download_xlsx(entry["gid"], out_path)
+            else:
+                downloader.download_csv(entry["gid"], out_path)
+            print(f"Downloaded -> {out_path}")
+
+        if args.all:
+            for entry in SHEETS.values():
+                download(entry)
+        else:
+            if not args.name:
+                raise ValueError("--name is required unless --all is set.")
+            entry = SHEETS.get(args.name)
+            if not entry:
+                raise ValueError(f"Unknown sheet name: {args.name}")
+            download(entry)
 
 
 if __name__ == "__main__":

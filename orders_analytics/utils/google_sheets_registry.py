@@ -1,0 +1,40 @@
+from __future__ import annotations
+
+SHEETS = {
+    "chownow_manual_missing_orders": {
+        "sheet_id": "1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro",
+        "gid": "2049893089",
+        "format": "csv",
+        "out": "Takeout/GoogleSheets/chownow_manual_missing_orders.csv",
+    },
+    "ezcater_order_history": {
+        "sheet_id": "1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro",
+        "gid": "391969615",
+        "format": "csv",
+        "out": "Takeout/GoogleSheets/ezcater_order_history.csv",
+    },
+    "grubhub_order_history": {
+        "sheet_id": "1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro",
+        "gid": "104633095",
+        "format": "csv",
+        "out": "Takeout/GoogleSheets/grubhub_order_history.csv",
+    },
+    "slice_order_history": {
+        "sheet_id": "1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro",
+        "gid": "1537424369",
+        "format": "csv",
+        "out": "Takeout/GoogleSheets/slice_order_history.csv",
+    },
+    "beyond_menu_order_history": {
+        "sheet_id": "1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro",
+        "gid": "1752158193",
+        "format": "csv",
+        "out": "Takeout/GoogleSheets/beyond_menu_order_history.csv",
+    },
+    "monthly_finance_report_history": {
+        "sheet_id": "1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro",
+        "gid": "1693982203",
+        "format": "csv",
+        "out": "Takeout/GoogleSheets/monthly_finance_report_history.csv",
+    },
+}
