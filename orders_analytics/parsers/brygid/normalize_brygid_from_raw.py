@@ -141,8 +141,10 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 adjusted_subtotal = parse_money(subtotal) - parse_money(delivery_fee)
                 if adjusted_subtotal >= 0:
                     subtotal = format_money(adjusted_subtotal)
-                    errors = "total_components_mismatch_adjusted"
+                    components = parse_money(subtotal) + parse_money(tax) + parse_money(tip) + parse_money(delivery_fee)
                     notes = " | ".join(filter(None, [notes, "subtotal_adjusted_for_delivery_fee"]))
+                    if abs(total_val - round(components, 2)) > 0.01:
+                        errors = "total_components_mismatch"
 
         normalized.append(
             build_normalized_row(

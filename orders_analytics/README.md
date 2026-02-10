@@ -48,6 +48,23 @@ All order-level parsers should emit these columns in this order:
 `order_id, platform, provider, order_datetime, order_type, payment_type, subtotal, tax, tax_withheld, tip, delivery_fee, total, commission_fee, processing_fee, adjustments, marketing_fee, misc_fee, payout, expected_payout, customer_name, company_name, phone, email, address, address_formatted, lat, lng, restaurant_name, items, item_count, notes, errors`
 `expected_payout` is computed in BaseParser from normalized money fields.
 
+### Column Definitions (Money Fields)
+| Column | Definition |
+| --- | --- |
+| `subtotal` | Food total only. Excludes tax, tax_withheld, tip, delivery_fee, service fees, and adjustments. |
+| `tax` | Sales tax we collect and remit ourselves. |
+| `tax_withheld` | Sales tax withheld/remitted by the provider on our behalf. |
+| `tip` | Gratuity paid to our staff. |
+| `delivery_fee` | Delivery fee paid to us for fulfilling delivery. |
+| `total` | Customer total owed to us: `subtotal + tax + tip + delivery_fee`. Excludes `tax_withheld`. |
+| `processing_fee` | Merchant processing cost. |
+| `commission_fee` | Platform commission cost. |
+| `adjustments` | Positive or negative adjustments (refunds, disputes, miscellaneous credits/charges). |
+| `marketing_fee` | Marketing/promotional program fees. |
+| `misc_fee` | Fees that do not fit a specific category. |
+| `expected_payout` | `total` minus all fees and adjustments (excluding `tax_withheld`). |
+| `payout` | Provider-reported payout for the order. |
+
 ## Parser Conventions
 - BeyondMenu parser drops rows where `Status != active` (inactive orders are excluded).
 - BaseParser drops rows with null/blank `order_id`, then dedupes by `order_id`.

@@ -349,8 +349,8 @@ def main() -> None:
         filtered[col] = filtered[col].fillna(0.0)
 
     filtered = add_date_grain(filtered, grain)
-    tab_summary, tab_overrides, tab_delivery = st.tabs(
-        ["Summary", "Overrides", "Delivery Map"]
+    tab_summary, tab_overrides, tab_orders, tab_delivery = st.tabs(
+        ["Summary", "Overrides", "Orders", "Delivery Map"]
     )
 
     with tab_summary:
@@ -512,6 +512,31 @@ def main() -> None:
             - positive_only(monthly["marketing_fee"])
             - positive_only(monthly["misc_fee"])
         )
+        yearly_numeric_cols = [
+            "orders",
+            "cash_subtotal",
+            "credit_subtotal",
+            "subtotal",
+            "tax",
+            "tax_withheld",
+            "tip",
+            "delivery_fee",
+            "misc_fee",
+            "commission_fee",
+            "processing_fee",
+            "adjustments",
+            "marketing_fee",
+            "total",
+            "net_payout",
+        ]
+        yearly = (
+            monthly.groupby(["platform", "provider", "year"], dropna=False)[
+                [col for col in yearly_numeric_cols if col in monthly.columns]
+            ]
+            .sum()
+            .reset_index()
+            .sort_values(["year"], ascending=[False])
+        )
         def render_monthly_rollup() -> None:
             st.subheader("Monthly Rollup")
             monthly_column_config = {
@@ -522,6 +547,13 @@ def main() -> None:
             st.dataframe(monthly, column_config=monthly_column_config, width="stretch")
 
         render_monthly_rollup()
+        st.subheader("Yearly Rollup")
+        yearly_column_config = {
+            col: st.column_config.NumberColumn(format="dollar")
+            for col in money_cols
+            if col in yearly.columns
+        }
+        st.dataframe(yearly, column_config=yearly_column_config, width="stretch")
 
     with tab_overrides:
         st.subheader("Order Overrides")
@@ -954,12 +986,42 @@ def main() -> None:
         render_monthly_rollup()
 
         st.subheader("Filtered Orders")
+        def highlight_errors(row):
+            has_error = str(row.get("errors", "") or "").strip() != ""
+            color = "background-color: #f8d7da" if has_error else ""
+            return [color] * len(row)
+
         filtered_column_config = {
             col: st.column_config.NumberColumn(format="dollar")
             for col in money_cols
             if col in filtered.columns
         }
-        st.dataframe(filtered, column_config=filtered_column_config, width="stretch")
+        errors_only = filtered[filtered["errors"].astype(str).str.strip() != ""]
+        max_style_cells = 260_000
+        if errors_only.shape[0] * max(errors_only.shape[1], 1) <= max_style_cells:
+            st.dataframe(
+                errors_only.style.apply(highlight_errors, axis=1),
+                column_config=filtered_column_config,
+                width="stretch",
+                height=300,
+            )
+        else:
+            st.caption("Errors table is large; showing without highlight.")
+            st.dataframe(
+                errors_only,
+                column_config=filtered_column_config,
+                width="stretch",
+                height=300,
+            )
+
+    with tab_orders:
+        st.subheader("Filtered Orders")
+        filtered_column_config = {
+            col: st.column_config.NumberColumn(format="dollar")
+            for col in money_cols
+            if col in filtered.columns
+        }
+        st.dataframe(filtered, column_config=filtered_column_config, width="stretch", height=600)
 
     with tab_delivery:
         if "lat" in filtered.columns and "lng" in filtered.columns:
@@ -997,13 +1059,16 @@ def main() -> None:
                     )
                 )
 
-                st.subheader("Top 25 Delivery Addresses")
+                st.subheader("Delivery Address Counts")
                 addr_counts = (
                     unique_geo.groupby(["address_display", "lat", "lng"], dropna=False)
-                    .size()
-                    .reset_index(name="orders")
+                    .agg(
+                        orders=("order_id", "count"),
+                        platforms=("platform", lambda s: " | ".join(sorted(set(s.dropna().astype(str))))),
+                        providers=("provider", lambda s: " | ".join(sorted(set(s.dropna().astype(str))))),
+                    )
+                    .reset_index()
                     .sort_values("orders", ascending=False)
-                    .head(25)
                 )
                 st.dataframe(addr_counts, width="stretch")
 
