@@ -136,6 +136,18 @@ def ingest_normalized(conn: duckdb.DuckDBPyConnection) -> int:
     frames = []
     for path in files:
         df = pd.read_csv(path)
+        if "phone" in df.columns:
+            def _normalize_phone(value):
+                if pd.isna(value):
+                    return ""
+                text = str(value).strip()
+                if not text or text.lower() == "nan":
+                    return ""
+                if text.endswith(".0") and text.replace(".", "", 1).isdigit():
+                    text = text[:-2]
+                return text
+
+            df["phone"] = df["phone"].apply(_normalize_phone)
         df["source_file"] = os.path.basename(path)
         frames.append(df)
     data = pd.concat(frames, ignore_index=True)
@@ -1117,11 +1129,39 @@ def main() -> None:
             geo["lng"] = pd.to_numeric(geo["lng"], errors="coerce")
             geo = geo.dropna(subset=["lat", "lng"])
             if not geo.empty:
+                ref_addresses = [
+                    {"label": "AMECI", "address": "25431 Trabuco Road, Lake Forest, CA 92630"},
+                    {"label": "AROMA", "address": "20491 Alton Parkway, Lake Forest, CA 92630"},
+                ]
+                ref_points = []
+                cache_path = "orders_analytics/data/raw/geocode_cache.csv"
+                if os.path.exists(cache_path):
+                    from orders_analytics.utils.geocodio import normalize_key
+
+                    cache_df = pd.read_csv(cache_path, dtype=str).fillna("")
+                    cache_map = {
+                        str(row.get("key", "")).strip(): row
+                        for _, row in cache_df.iterrows()
+                        if str(row.get("key", "")).strip()
+                    }
+                    for ref in ref_addresses:
+                        key = normalize_key(ref["address"])
+                        cached = cache_map.get(key)
+                        if cached is None:
+                            continue
+                        try:
+                            lat = float(cached.get("lat", ""))
+                            lng = float(cached.get("lng", ""))
+                        except ValueError:
+                            continue
+                        ref_points.append({"label": ref["label"], "lat": lat, "lng": lng})
+
                 geo["address_display"] = geo["address_formatted"].where(
                     geo["address_formatted"].astype(str).str.strip() != "", geo["address"]
                 )
                 unique_geo = geo.drop_duplicates(subset=["platform", "provider", "order_id"])
                 st.subheader("Delivery Heatmap")
+                layers = []
                 heat_layer = pdk.Layer(
                     "HeatmapLayer",
                     data=unique_geo,
@@ -1130,6 +1170,31 @@ def main() -> None:
                     intensity=1.0,
                     threshold=0.2,
                 )
+                layers.append(heat_layer)
+                if ref_points:
+                    layers.append(
+                        pdk.Layer(
+                            "ScatterplotLayer",
+                            data=ref_points,
+                            get_position="[lng, lat]",
+                            get_radius=120,
+                            get_fill_color=[0, 0, 0],
+                            get_line_color=[0, 0, 0],
+                            line_width_min_pixels=1,
+                            pickable=True,
+                        )
+                    )
+                    layers.append(
+                        pdk.Layer(
+                            "TextLayer",
+                            data=ref_points,
+                            get_position="[lng, lat]",
+                            get_text="label",
+                            get_color=[0, 0, 0],
+                            get_size=16,
+                            get_alignment_baseline="'bottom'",
+                        )
+                    )
                 st.pydeck_chart(
                     pdk.Deck(
                         map_style="light",
@@ -1139,7 +1204,8 @@ def main() -> None:
                             zoom=10,
                             pitch=0,
                         ),
-                        layers=[heat_layer],
+                        layers=layers,
+                        tooltip={"text": "{label}"} if ref_points else None,
                     )
                 )
 
