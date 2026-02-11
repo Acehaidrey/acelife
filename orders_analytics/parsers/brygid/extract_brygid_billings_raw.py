@@ -12,6 +12,7 @@ import pdfplumber
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path, takeout_path
+from orders_analytics.utils.wave import filter_transactions, load_wave_transactions
 from orders_analytics.utils.normalize import normalize_money
 
 RAW_COLUMNS = [
@@ -345,6 +346,20 @@ def run(mbox_path: str, out_path: str) -> int:
         ).drop(columns=["_sort_key"])
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     df.to_csv(out_path, index=False)
+    mp_path = raw_path("brygid", "brygid_merchant_processing_statements.csv")
+    if not os.path.exists(mp_path):
+        try:
+            transactions = load_wave_transactions("ameci")
+            filtered = filter_transactions(
+                transactions,
+                description_contains=["vantiv", "30207437"],
+                account_group="expense",
+            )
+            os.makedirs(os.path.dirname(mp_path), exist_ok=True)
+            filtered.to_csv(mp_path, index=False)
+            print(f"Wrote {len(filtered)} rows -> {mp_path}")
+        except Exception:
+            pass
     return len(rows)
 
 

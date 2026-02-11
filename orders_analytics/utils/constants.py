@@ -3,6 +3,9 @@ NORMALIZED_DIR = "orders_analytics/data/normalized"
 RAW_DIR = "orders_analytics/data/raw"
 ERRORS_PATH = "orders_analytics/data/errors/errors.csv"
 TAKEOUT_DIR = "Takeout"
+WAVE_DIR = "Takeout"
+WAVE_AMECI_DIR = "Takeout/wave_ameci"
+WAVE_AROMA_DIR = "Takeout/wave_aroma"
 
 
 def raw_path(*parts: str) -> str:
@@ -15,6 +18,14 @@ def normalized_path(filename: str) -> str:
 
 def takeout_path(*parts: str) -> str:
     return "/".join([TAKEOUT_DIR, *parts])
+
+
+def wave_ameci_path(*parts: str) -> str:
+    return "/".join([WAVE_AMECI_DIR, *parts])
+
+
+def wave_aroma_path(*parts: str) -> str:
+    return "/".join([WAVE_AROMA_DIR, *parts])
 
 DATE_GRAINS = ["day", "month", "year"]
 

@@ -14,7 +14,7 @@ SHEETS = {
         "sheet_id": VA_TASK_SHEET,
         "gid": "391969615",
         "format": "csv",
-        "out": "Takeout/GoogleSheets/ezcater_order_history.csv",
+        "out": "orders_analytics/data/raw/ezcater/ezcater_order_history.csv",
     },
     "grubhub_order_history": {
         "sheet_id": VA_TASK_SHEET,
