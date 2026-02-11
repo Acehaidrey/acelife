@@ -188,6 +188,8 @@ def parse_adjustments(text: str) -> Dict[str, Dict[str, float]]:
             description = " ".join(tokens[3:first_money_idx])
         if order_id and "delivery" in description.lower() and total_val > 0:
             delivery_fees[order_id] = delivery_fees.get(order_id, 0.0) + total_val
+            label = description or "Delivery Fee"
+            notes.setdefault(order_id, []).append(f"{label}: {total_val:.2f}")
         elif order_id:
             totals[order_id] = totals.get(order_id, 0.0) + total_val
             if description:
