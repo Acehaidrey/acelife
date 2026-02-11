@@ -17,6 +17,8 @@ class Platforms:
     SLICE = "slice"
     CHOWNOW = "chownow"
     BRYGID = "brygid"
+
+    # list of inactive platforms that no longer partner with
     INACTIVE = {
         CATER2ME,
         DELIVERYCOM,

@@ -1,5 +1,47 @@
 # Orders Analytics Plan
 
+## Current State / Handoff Notes (2026-02-11)
+- BeyondMenu is complete end-to-end and should not be changed unless requested.
+- BeyondMenu sources now download from Google Sheets into raw:
+  - `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv`
+  - `orders_analytics/data/raw/beyondmenu/beyond_menu_annual_billing_summary.csv`
+- BeyondMenu normalization rules (parsers/beyondmenu/parse_beyondmenu_orders.py):
+  - Filters `Status=active`.
+  - Convenience fee: added to `misc_fee` and also added as a negative value in `adjustments`.
+  - Notes include `convenience_fee=<amount>` for rows with convenience fees.
+  - Annual billing additional charges + credits are distributed across active orders per provider/year (proportional to subtotal with cent balancing) and applied to `misc_fee`.
+  - Aroma special handling:
+    - 2023: apply 2024 credits (`-89.25`) to offset 2023 additional charges (`89.25`), net 0 in 2023.
+    - 2024: apply only remaining additional charges (`119.35 - 89.25 = 30.10`) across active orders, excluding order `101559574` when possible.
+    - If `101559574` is the only active 2024 order, it receives the remaining additional charges to reconcile.
+- BeyondMenu annual comparison script:
+  - `orders_analytics/scripts/beyondmenu_annual_compare.py`
+  - Output: `orders_analytics/data/raw/beyondmenu/beyondmenu_annual_billing_check.csv`
+  - Compares counts, totals, commission (commission+fax+phone), processing (merchant fee), and totals net of convenience fee.
+- ChowNow manual missing orders now download to raw:
+  - `orders_analytics/data/raw/chownow/chownow_manual_missing_orders.csv`
+  - Extract step uses the Google Sheets downloader and appends these orders.
+  - Manual missing orders notes are now just `manual_missing_order` (no redundant `source=...`).
+- ChowNow orders vs billings comparison script:
+  - `orders_analytics/parsers/chownow/compare_chownow_orders_billings.py`
+  - Output CSVs:
+    - `orders_analytics/data/raw/chownow/orders_missing_billings.csv`
+    - `orders_analytics/data/raw/chownow/billings_missing_orders.csv`
+  - Comparison excludes cancellations from `orders_analytics/data/raw/chownow/cancellations_raw.csv`.
+- Brygid:
+  - `total_components_mismatch_adjusted` is no longer an error; only note `subtotal_adjusted_for_delivery_fee` when delivery fee is moved out of subtotal.
+  - TODO: obtain Vantiv processing fee totals (still pending).
+- BaseParser now normalizes phone numbers (strip non-digits, drop leading 1 for 11-digit numbers).
+- CLI now skips inactive platforms by default when `--platform all`. Use `--include-inactive` to include:
+  - `cater2me`, `deliverycom`, `fooda`, `foodee`, `brygid`.
+- Streamlit app updates:
+  - Customer search tab (partial match on name/phone/email/address).
+  - Delivery map includes AMECI/AROMA reference pins (black dots) using `geocode_cache.csv`.
+  - Phone display normalized in app ingest to avoid `.0` floats.
+- Google Sheets registry:
+  - `orders_analytics/utils/google_sheets_registry.py` is the source of truth for sheet ids + output paths.
+  - Added `download_sheet_entry` helper in `orders_analytics/utils/google_sheets.py`.
+
 ## Goals
 - Normalize order/invoice exports from multiple providers into a single model.
 - Store normalized data in DuckDB for fast analytics and reporting.
