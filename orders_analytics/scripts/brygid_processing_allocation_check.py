@@ -30,15 +30,25 @@ def main() -> None:
     for month, stmt_total in sorted(stmt_totals.items()):
         alloc_total = alloc_totals.get(month, 0.0)
         diff = round((alloc_total + abs(stmt_total)), 2)
-        rows.append((month, stmt_total, alloc_total, diff))
+        rows.append(
+            {
+                "month": month,
+                "statement_total": stmt_total,
+                "allocated_total": alloc_total,
+                "diff": diff,
+            }
+        )
 
-    mismatches = [row for row in rows if abs(row[3]) > 0.01]
+    out_path = raw_path("brygid", "brygid_processing_allocation_check.csv")
+    pd.DataFrame(rows).to_csv(out_path, index=False)
+    mismatches = [row for row in rows if abs(row["diff"]) > 0.01]
     print(f"months checked: {len(rows)}")
     print(f"mismatches: {len(mismatches)}")
+    print(f"Wrote check -> {out_path}")
     if mismatches:
         print("first mismatches:")
         for row in mismatches[:12]:
-            print(row)
+            print((row["month"], row["statement_total"], row["allocated_total"], row["diff"]))
 
 
 if __name__ == "__main__":
