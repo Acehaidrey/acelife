@@ -103,6 +103,16 @@ class EzCaterOrdersParser(BaseParser):
                     "email": clean_text(sup_row.get("Email", "")),
                     "address": clean_text(sup_row.get("Address", "")),
                 }
+        notes_overrides = {}
+        overrides_path = raw_path("ezcater", "ezcater_notes_overrides.csv")
+        if os.path.exists(overrides_path):
+            overrides_df = pd.read_csv(overrides_path, dtype=str).fillna("")
+            for _, override in overrides_df.iterrows():
+                oid = clean_text(override.get("order_id", ""))
+                note = clean_text(override.get("notes", ""))
+                if oid and note:
+                    notes_overrides[oid] = note
+
         rows: List[Dict[str, str]] = []
         for _, row in df.iterrows():
             order_id = clean_text(row.get("Order Number", ""))
@@ -126,8 +136,9 @@ class EzCaterOrdersParser(BaseParser):
                 notes.append(f"source={source}")
             if promo:
                 notes.append(f"promo_code={promo}")
-            if order_id == "7WJ-179":
-                notes.append("payout_override_unexplained=+39.00")
+            override_note = notes_overrides.get(order_id)
+            if override_note:
+                notes.append(override_note)
 
             marketing_fee = ""
             ppp = normalize_money(row.get("Preferred Partner Program", ""))
