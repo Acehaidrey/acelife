@@ -79,6 +79,54 @@ def parse_money(value: str) -> float:
         return 0.0
 
 
+def allocate_processing_fees(orders: pd.DataFrame) -> pd.DataFrame:
+    statements_path = raw_path("brygid", "brygid_merchant_processing_statements.csv")
+    if not os.path.exists(statements_path):
+        return orders
+    df = pd.read_csv(statements_path, dtype=str).fillna("")
+    if df.empty or "Transaction Date" not in df.columns:
+        return orders
+
+    df = df[df.get("Transaction ID", "").astype(str) != "1949452684062893206"].copy()
+    df["tx_date"] = pd.to_datetime(df.get("Transaction Date", ""), errors="coerce")
+    df = df.dropna(subset=["tx_date"])
+    if df.empty:
+        return orders
+
+    df["amount_num"] = pd.to_numeric(df.get("Amount (One column)", ""), errors="coerce").fillna(0.0)
+    df = df[df["amount_num"] != 0]
+    if df.empty:
+        return orders
+
+    df["alloc_month"] = (df["tx_date"] - pd.DateOffset(months=1)).dt.to_period("M")
+    month_totals = df.groupby("alloc_month")["amount_num"].sum().to_dict()
+
+    orders = orders.copy()
+    orders["payment_type_norm"] = orders.get("payment_type", "").astype(str).str.lower()
+    orders["order_dt"] = orders["order_datetime"].apply(parse_order_dt)
+    orders["total_num"] = pd.to_numeric(orders.get("total", ""), errors="coerce").fillna(0.0)
+    orders["processing_fee"] = ""
+
+    for month, total in month_totals.items():
+        if total == 0:
+            continue
+        month_start = month.to_timestamp()
+        month_end = (month + 1).to_timestamp() - pd.Timedelta(seconds=1)
+        mask = (
+            (orders["order_dt"] >= month_start)
+            & (orders["order_dt"] <= month_end)
+            & (orders["payment_type_norm"] == "credit")
+        )
+        subset = orders.loc[mask]
+        if subset.empty:
+            continue
+        # Apply negative processing fees; use absolute amount for allocation weights.
+        alloc_total = -abs(float(total))
+        allocated = allocate_proportional(alloc_total, subset["total_num"].tolist())
+        orders.loc[subset.index, "processing_fee"] = [format_money(value) for value in allocated]
+    return orders
+
+
 def dedupe_orders(df: pd.DataFrame) -> pd.DataFrame:
     if "order_id" not in df.columns:
         return df
@@ -132,6 +180,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         tip = row.get("tip", "")
         delivery_fee = row.get("delivery_fee", "")
         total = row.get("total", "")
+        processing_fee = row.get("processing_fee", "")
 
         total_val = parse_money(total)
         components = parse_money(subtotal) + parse_money(tax) + parse_money(tip) + parse_money(delivery_fee)
@@ -164,6 +213,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 tip=tip,
                 delivery_fee=delivery_fee,
                 total=total,
+                processing_fee=processing_fee,
                 commission_fee=row.get("commission_fee", ""),
                 items=row.get("items", ""),
                 item_count=row.get("item_count", ""),
@@ -271,6 +321,7 @@ def apply_commissions(
                 manual_row["commission_fee"] = format_money(-allocated[-1])
                 manual_rows.append(manual_row)
 
+    orders = allocate_processing_fees(orders)
     return orders, manual_rows
 
 

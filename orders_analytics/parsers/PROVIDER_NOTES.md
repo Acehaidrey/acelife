@@ -97,7 +97,11 @@ Concerns / follow-ups:
   - Parses email `Placed On` format and CSV `MM/DD/YYYY HH:MM` format.
   - Excludes cancellations listed in `orders_analytics/data/raw/brygid/cancellations_raw.csv`.
   - If `total < subtotal + tax + tip + delivery_fee`, subtracts `delivery_fee` from `subtotal` and records `notes=subtotal_adjusted_for_delivery_fee`.
-  - TODO: obtain Vantiv partner processing fee totals and incorporate into normalization.
+  - Merchant processing allocation:
+    - Reads `orders_analytics/data/raw/brygid/brygid_merchant_processing_statements.csv` (filtered from Wave).
+    - Excludes transaction id `1949452684062893206`.
+    - Transaction dates apply to the previous month; fees are allocated across credit orders by `total`
+      and rounded to cents to match the statement total.
   - Allocates commission per billing period:
     - If totals match, commissions are allocated by subtotal to match billed service fees.
     - If totals do not match, a `PERIOD_YYYYMMDD_MANUAL` row is added when `|total_sales_diff| > 1.00` with:
