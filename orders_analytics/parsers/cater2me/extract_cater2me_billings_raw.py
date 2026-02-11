@@ -18,6 +18,7 @@ RAW_COLUMNS = [
     "order_id",
     "order_date",
     "order_time",
+    "order_datetime",
     "headcount",
     "pre_tax",
     "tip",
@@ -110,11 +111,29 @@ def parse_order_lines(text: str) -> List[Dict[str, str]]:
             if ":" in token:
                 time_token = token
                 break
+        order_datetime = ""
+        for fmt in (
+            "%a %m/%d %Y %H:%M",
+            "%a %m/%d %Y %I:%M%p",
+            "%a %m/%d %Y %I:%M %p",
+            "%m/%d/%Y %H:%M",
+            "%m/%d/%Y %I:%M%p",
+            "%m/%d/%Y %I:%M %p",
+            "%a %m/%d %Y",
+            "%m/%d/%Y",
+        ):
+            try:
+                parsed = dt.datetime.strptime(f"{date_token} {year} {time_token}".strip(), fmt)
+                order_datetime = parsed.replace(tzinfo=dt.timezone.utc).isoformat()
+                break
+            except ValueError:
+                continue
         rows.append(
             {
                 "order_id": order_id,
                 "order_date": f"{date_token} {year}".strip(),
                 "order_time": time_token,
+                "order_datetime": order_datetime,
                 "headcount": headcount,
                 "pre_tax": pre_tax,
                 "tip": tip,
@@ -255,8 +274,11 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
     final_rows = list(existing_map.values())
     for row in final_rows:
         row.setdefault("added_at", now)
+    final_df = pd.DataFrame(final_rows).reindex(columns=RAW_COLUMNS)
+    if "order_datetime" in final_df.columns:
+        final_df = final_df.sort_values(by="order_datetime", ascending=False, na_position="last")
     os.makedirs(os.path.dirname(existing_path), exist_ok=True)
-    pd.DataFrame(final_rows).reindex(columns=RAW_COLUMNS).to_csv(existing_path, index=False)
+    final_df.to_csv(existing_path, index=False)
     return updated
 
 

@@ -1,0 +1,19 @@
+left:
+  path: orders_analytics/data/raw/cater2me/orders_raw.csv
+  name: orders
+  keys:
+    order_id: order_id
+right:
+  path: orders_analytics/data/raw/cater2me/billings_raw.csv
+  name: billings
+  keys:
+    order_id: order_id
+excludes:
+  left:
+    - column: status
+      contains: "cancel"
+fields:
+  - name: order_date
+    left: order_date
+    right: order_date
+output: orders_analytics/data/raw/cater2me/cater2me_orders_vs_billings_diff.csv
