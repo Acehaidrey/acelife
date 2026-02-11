@@ -24,6 +24,39 @@ from orders_analytics.utils.google_sheets import download_sheet_entry
 from orders_analytics.utils.google_sheets_registry import SHEETS
 
 
+def parse_float(value) -> float:
+    try:
+        if pd.isna(value):
+            return 0.0
+    except TypeError:
+        pass
+    text = str(value or "").strip()
+    if not text:
+        return 0.0
+    try:
+        return float(text)
+    except ValueError:
+        return 0.0
+
+
+def allocate_amount(amount: float, weights: List[float]) -> List[float]:
+    if not weights:
+        return []
+    total_weight = sum(weights)
+    if total_weight <= 0:
+        base = round(amount / len(weights), 2)
+        alloc = [base] * len(weights)
+    else:
+        alloc = [round(amount * (w / total_weight), 2) for w in weights]
+    remainder = round(amount - sum(alloc), 2)
+    cents = int(round(remainder * 100))
+    step = 0.01 if cents > 0 else -0.01
+    for idx in range(abs(cents)):
+        alloc_idx = idx % len(alloc)
+        alloc[alloc_idx] = round(alloc[alloc_idx] + step, 2)
+    return alloc
+
+
 def normalize_restaurant(store: str) -> str:
     name = (store or "").lower()
     if "aroma" in name:
@@ -107,10 +140,15 @@ class BeyondMenuOrdersParser(BaseParser):
             except Exception:
                 if not os.path.exists(annual_sheet["out"]):
                     raise
-        return pd.read_csv(input_path)
+        annual_path = annual_sheet["out"] if annual_sheet else ""
+        return {
+            "orders": pd.read_csv(input_path),
+            "annual": pd.read_csv(annual_path) if annual_path and os.path.exists(annual_path) else pd.DataFrame(),
+        }
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
-        df = inputs
+        df = inputs["orders"]
+        annual_df = inputs.get("annual", pd.DataFrame()).copy()
         df = df.copy()
         # Only keep active orders; inactive are filtered out by design.
         df["Status"] = df["Status"].astype(str).str.strip().str.lower()
@@ -140,6 +178,10 @@ class BeyondMenuOrdersParser(BaseParser):
 
         df = df.reset_index(drop=True)
         rows: List[Dict[str, str]] = []
+        row_years: List[int] = []
+        row_providers: List[str] = []
+        row_order_ids: List[str] = []
+        row_subtotals: List[float] = []
         for idx, row in df.iterrows():
             merchant_fee = parse_money_series(pd.Series([row.get("Merchant Fee", "")])).iloc[0]
             commission_fee = parse_money_series(pd.Series([row.get("Commission Fee", "")])).iloc[0]
@@ -165,11 +207,18 @@ class BeyondMenuOrdersParser(BaseParser):
                 adjustments_value += abs(convenience_fee)
             adjustments_out = format_money(adjustments_value) if adjustments_value else ""
             misc_fee_out = misc_fee + convenience_fee
+            provider = str(row.get("provider", ""))
+            order_id = str(row.get("Order #", ""))
+            year_val = int(parse_float(row.get("year", 0)))
+            row_years.append(year_val)
+            row_providers.append(provider)
+            row_order_ids.append(order_id)
+            row_subtotals.append(parse_float(row.get("Subtotal", 0)))
             rows.append(
                 build_normalized_row(
                     Platforms.BEYONDMENU.upper(),
-                    order_id=str(row.get("Order #", "")),
-                    provider=str(row.get("provider", "")),
+                    order_id=order_id,
+                    provider=provider,
                     restaurant_name=str(row.get("restaurant", "")),
                     order_datetime=str(row.get("order_datetime", "")),
                     order_type=str(row.get("order_type", "")),
@@ -189,6 +238,73 @@ class BeyondMenuOrdersParser(BaseParser):
                     notes=str(row.get("Notes", "")),
                 )
             )
+
+        if not annual_df.empty:
+            annual = annual_df.copy()
+            annual["provider"] = annual.get("Provider", "").apply(normalize_provider)
+            annual["year"] = pd.to_numeric(annual.get("Year", ""), errors="coerce").fillna(0).astype(int)
+            annual["additional_charges"] = parse_money_series(
+                annual.get("Additional Charges", pd.Series(["0"] * len(annual)))
+            )
+            annual["credits"] = parse_money_series(
+                annual.get("Credits", pd.Series(["0"] * len(annual)))
+            )
+            annual_map = {
+                (str(row.get("provider", "")), int(row.get("year", 0))): {
+                    "additional": float(row.get("additional_charges", 0.0)),
+                    "credits": float(row.get("credits", 0.0)),
+                }
+                for _, row in annual.iterrows()
+            }
+
+            def net_adjustment(provider: str, year: int) -> float:
+                data = annual_map.get((provider, year), {"additional": 0.0, "credits": 0.0})
+                return -float(data.get("additional", 0.0) + data.get("credits", 0.0))
+
+            aroma_2024 = annual_map.get(("AROMA", 2024), {"additional": 0.0, "credits": 0.0})
+            aroma_2023 = annual_map.get(("AROMA", 2023), {"additional": 0.0, "credits": 0.0})
+            aroma_2023_override = -float(aroma_2023.get("additional", 0.0) + aroma_2024.get("credits", 0.0))
+            aroma_2024_override = -float(aroma_2024.get("additional", 0.0))  # credits handled in 2023 override
+
+            allocations: Dict[int, float] = {}
+            notes_additions: Dict[int, str] = {}
+            for (provider, year), _vals in annual_map.items():
+                target_amount = net_adjustment(provider, year)
+                special_note = "additional_charges_distribution"
+                if provider == "AROMA" and year == 2023:
+                    target_amount = aroma_2023_override
+                if provider == "AROMA" and year == 2024:
+                    target_amount = aroma_2024_override
+                    special_note = "partial_additional_charges_distribution"
+
+                if abs(target_amount) < 0.005:
+                    continue
+
+                idxs = [
+                    idx
+                    for idx, (p, y) in enumerate(zip(row_providers, row_years))
+                    if p == provider and y == year
+                ]
+                if provider == "AROMA" and year == 2024:
+                    idxs = [idx for idx in idxs if row_order_ids[idx] != "101559574"]
+
+                if not idxs:
+                    continue
+                weights = [row_subtotals[idx] for idx in idxs]
+                alloc = allocate_amount(target_amount, weights)
+                for idx, amt in zip(idxs, alloc):
+                    allocations[idx] = allocations.get(idx, 0.0) + amt
+                    notes_additions[idx] = special_note
+
+            for idx, amt in allocations.items():
+                current = parse_float(rows[idx].get("adjustments", ""))
+                new_val = current + amt
+                rows[idx]["adjustments"] = format_money(new_val) if abs(new_val) >= 0.005 else ""
+                note = notes_additions.get(idx, "")
+                if note:
+                    existing_notes = str(rows[idx].get("notes", "") or "").strip()
+                    if note not in existing_notes:
+                        rows[idx]["notes"] = (existing_notes + " | " + note).strip(" | ")
         return rows
 
 

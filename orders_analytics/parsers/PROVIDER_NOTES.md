@@ -122,6 +122,16 @@ Concerns / follow-ups:
   - `Convenience Fee` is added to `misc_fee` and its absolute value is added to `adjustments` so customer totals align.
   - Payment type: from `Payment Type` (or `Payment`) normalized.
   - Total-components validation uses `subtotal + tax + tip + delivery_fee + adjustments` (misc fees are handled via adjustments).
+  - Annual billing adjustments (Additional Charges + Credits):
+    - Net annual adjustment per provider/year = `-(additional_charges + credits)` from the annual billing summary.
+    - Net adjustment is distributed across **active** orders in that provider/year, proportional to subtotal with cent‑balancing.
+    - Notes added:
+      - `additional_charges_distribution` for standard allocations.
+      - `partial_additional_charges_distribution` for Aroma 2024 (see below).
+    - Special handling for Aroma:
+      - 2023: apply the 2024 credits (`-89.25`) to offset the 2023 additional charges (`89.25`), so net is 0 in 2023.
+      - 2024: apply only the remaining additional charges (`119.35 - 89.25 = 30.10`) across active orders **excluding** order `101559574`.
+      - Order `101559574` (2024) already carries the chargeback amount in misc fee and should not receive further allocation.
 
 ## EatStreet
 - Sources: `Takeout/Mail/Orders-Eatstreet.mbox`, `Takeout/Mail/Billings-Eatstreet.mbox`
