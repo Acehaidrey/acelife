@@ -25,6 +25,7 @@ RAW_COLUMNS = [
     "service_fee",
     "processing_fee",
     "order_total",
+    "order_total_after_adjustments",
     "adjustments_total",
     "adjustments_delivery_fee",
     "adjustments_notes",
@@ -140,6 +141,7 @@ def parse_order_lines(text: str) -> List[Dict[str, str]]:
                 "service_fee": service_fee,
                 "processing_fee": processing_fee,
                 "order_total": order_total,
+                "order_total_after_adjustments": "",
                 "adjustments_total": "",
                 "restaurant_name": rest,
                 "statement_period_start": period_start,
@@ -213,6 +215,21 @@ def parse_pdf(payload: bytes) -> List[Dict[str, str]]:
             row["adjustments_delivery_fee"] = str(adjustments["adjustments_delivery_fee"][order_id])
         if order_id in adjustments["adjustments_notes"]:
             row["adjustments_notes"] = "; ".join(adjustments["adjustments_notes"][order_id])
+        try:
+            base_total = float(row.get("order_total") or 0)
+        except ValueError:
+            base_total = 0.0
+        adj_total = 0.0
+        try:
+            adj_total += float(row.get("adjustments_total") or 0)
+        except ValueError:
+            pass
+        try:
+            adj_total += float(row.get("adjustments_delivery_fee") or 0)
+        except ValueError:
+            pass
+        final_total = base_total + adj_total if base_total or adj_total else ""
+        row["order_total_after_adjustments"] = f"{final_total:.2f}" if final_total != "" else ""
     return rows
 
 

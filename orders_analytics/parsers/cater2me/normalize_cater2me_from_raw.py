@@ -101,6 +101,7 @@ def normalize_rows(rows: List[Dict[str, str]], cancelled: set[str]) -> List[Dict
             total = f"{total_val:.2f}" if total_val else ""
         except ValueError:
             total = ""
+        payout = row.get("order_total_after_adjustments", "") or row.get("order_total", "")
         customer_name = str(row.get("customer_name", "") or "").strip()
         if customer_name.lower() == "nan":
             customer_name = ""
@@ -153,7 +154,7 @@ def normalize_rows(rows: List[Dict[str, str]], cancelled: set[str]) -> List[Dict
                 commission_fee=row.get("service_fee", ""),
                 items=items,
                 adjustments=row.get("adjustments_total", ""),
-                payout=row.get("order_total", ""),
+                payout=payout,
                 errors="",
                 notes=notes,
             )
