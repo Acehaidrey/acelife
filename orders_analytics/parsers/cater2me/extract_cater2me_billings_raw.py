@@ -26,6 +26,7 @@ RAW_COLUMNS = [
     "processing_fee",
     "order_total",
     "order_total_after_adjustments",
+    "adjustments_included_in_total",
     "adjustments_total",
     "adjustments_delivery_fee",
     "adjustments_notes",
@@ -228,7 +229,20 @@ def parse_pdf(payload: bytes) -> List[Dict[str, str]]:
             adj_total += float(row.get("adjustments_delivery_fee") or 0)
         except ValueError:
             pass
-        final_total = base_total + adj_total if base_total or adj_total else ""
+        try:
+            calc_total = float(row.get("pre_tax") or 0)
+            calc_total += float(row.get("tip") or 0)
+            calc_total += float(row.get("service_fee") or 0)
+            calc_total += float(row.get("processing_fee") or 0)
+            calc_total += float(row.get("adjustments_total") or 0)
+            calc_total += float(row.get("adjustments_delivery_fee") or 0)
+        except ValueError:
+            calc_total = None
+        adjustments_included = False
+        if calc_total is not None and base_total:
+            adjustments_included = abs(calc_total - base_total) <= 0.01
+        row["adjustments_included_in_total"] = "true" if adjustments_included else "false"
+        final_total = base_total + adj_total if (base_total or adj_total) and not adjustments_included else base_total
         row["order_total_after_adjustments"] = f"{final_total:.2f}" if final_total != "" else ""
     return rows
 
