@@ -201,6 +201,7 @@ Concerns / follow-ups:
 - Source: `data/raw/ezcater/ezcater_all_orders_from_2020_2020-01-01_2026-01-01_2026-01-29 - Order Data.csv`
 - Parser: `parsers/ezcater/parse_ezcater_orders.py`
   - `payout` is mapped from `Caterer Total Due`.
+  - Notes overrides can be supplied via `data/raw/ezcater/ezcater_notes_overrides.csv` (by `order_id`).
 
 ## Cater2Me
 - Sources: `Takeout/Mail/Orders-Cater2Me.mbox`, `Takeout/Mail/Billings-Cater2Me.mbox`
