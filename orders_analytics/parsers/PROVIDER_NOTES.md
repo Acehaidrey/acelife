@@ -102,7 +102,10 @@ Concerns / follow-ups:
     - Excludes transaction id `1949452684062893206`.
     - Transaction dates apply to the previous month; fees are allocated across credit orders by `total`
       and rounded to cents to match the statement total.
+    - Allocation check output: `orders_analytics/data/raw/brygid/brygid_processing_allocation_check.csv`.
   - Allocates commission per billing period:
+    - Brygid billing periods run **15th → 14th** (previous month to current month).
+    - Processing statements are **calendar month** based; therefore they are offset differently.
     - If totals match, commissions are allocated by subtotal to match billed service fees.
     - If totals do not match, a `PERIOD_YYYYMMDD_MANUAL` row is added when `|total_sales_diff| > 1.00` with:
       - `total` = `-total_sales_diff` (to reconcile totals),
