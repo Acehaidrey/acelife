@@ -281,6 +281,15 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
 
     existing_map = {str(row.get("order_id", "")).strip(): row for row in existing_rows}
     updated = 0
+    def parse_email_date(value: str) -> dt.datetime | None:
+        text = str(value or "").strip()
+        if not text:
+            return None
+        try:
+            return dt.datetime.fromisoformat(text)
+        except ValueError:
+            return None
+
     for row in new_rows:
         order_id = str(row.get("order_id", "")).strip()
         if not order_id:
@@ -290,6 +299,17 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
             row["added_at"] = now
             existing_map[order_id] = row
             updated += 1
+            continue
+        current_date = parse_email_date(current.get("email_date", ""))
+        new_date = parse_email_date(row.get("email_date", ""))
+        if new_date and (not current_date or new_date > current_date):
+            row["added_at"] = now
+            existing_map[order_id] = row
+            updated += 1
+            continue
+        if current_date and new_date and new_date < current_date:
+            continue
+        if current_date and not new_date:
             continue
         changed = False
         for col in RAW_COLUMNS:
