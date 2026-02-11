@@ -207,6 +207,8 @@ Concerns / follow-ups:
 - Normalization: `parsers/cater2me/normalize_cater2me_from_raw.py`
   - `total` = pre_tax + tip + adjustments_delivery_fee (computed).
   - `payout` is mapped from billings `order_total`.
+  - `tax_withheld` is inferred as 7.75% of `pre_tax` when tax is not provided.
+  - `delivery_fee` is mapped from billings `adjustments_delivery_fee`.
 
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
