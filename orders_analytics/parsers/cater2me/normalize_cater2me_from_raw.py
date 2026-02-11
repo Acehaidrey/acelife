@@ -121,8 +121,6 @@ def normalize_rows(rows: List[Dict[str, str]], cancelled: set[str]) -> List[Dict
             items = ""
 
         notes = row.get("adjustments_notes", "") or ""
-        if delivery_fee:
-            notes = f"{notes} | adjustments_delivery_fee={delivery_fee}".strip(" |")
         if not customer_name and not company_name and not address and not items:
             notes = f"{notes} | missing_order_record".strip(" |")
         normalized.append(
