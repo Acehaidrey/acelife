@@ -171,7 +171,7 @@ def parse_adjustments(text: str) -> Dict[str, Dict[str, float]]:
             continue
         tokens = line.split()
         money = [t for t in tokens if re.match(r"^-?\$?\d[\d,]*\.\d{2}$", t)]
-        if len(money) < 3:
+        if len(money) < 1:
             continue
         total = normalize_money(money[-1])
         try:
