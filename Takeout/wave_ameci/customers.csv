@@ -1,0 +1,5 @@
+customer_name,email,contact_first_name,contact_last_name,customer_currency,account_number,phone,fax,mobile,toll_free,website,country,province/state,address_line_1,address_line_2,city,postal_code/zip_code,shipping_address,ship-to_contact,ship-to_country,ship-to_province/state,ship-to_address_line_1,ship-to_address_line_2,ship-to_city,ship-to_postal_code/zip_code,ship-to_phone,delivery_instructions
+R.D. OLSON CONSTRUCTION,kmutch@rdolson.com,Kristy,Mutch,USD,,,,,,,,,,,,,False,,,,,,,,,
+Sondra Robbins,,Sondra,Robbins,USD,,,,,,,,,,,,,False,,,,,,,,,
+Tae Technology,cjohnson@tae.com,Cameran,Johnson,USD,,,,,,,,,,,,,False,,,,,,,,,
+Stonegate PTA,sabrina.adewumi@outlook.com,Sabrina,Adewumi,,,3474359897,,,,,,,,,,,False,,,,,,,,,

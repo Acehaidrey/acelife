@@ -66,7 +66,7 @@ class EzCaterOrdersParser(BaseParser):
         supplemental_path = (
             supplemental_sheet["out"]
             if supplemental_sheet
-            else raw_path("ezcater", "ezcater_order_history.csv"),
+            else raw_path("ezcater", "ezcater_order_history.csv")
         )
         if supplemental_sheet:
             try:
