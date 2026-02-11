@@ -209,6 +209,7 @@ Concerns / follow-ups:
   - `payout` is mapped from billings `order_total`.
   - `tax_withheld` is inferred as 7.75% of `pre_tax` when tax is not provided.
   - `delivery_fee` is mapped from billings `adjustments_delivery_fee`.
+  - Delivery fees are not always explicit; Cater2Me may bake delivery costs into higher item prices.
 
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
