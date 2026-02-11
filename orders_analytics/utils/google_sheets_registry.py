@@ -36,7 +36,7 @@ SHEETS = {
     },
     "beyond_menu_annual_billing_summary": {
         "sheet_id": VA_TASK_SHEET,
-        "gid": "1752158193",
+        "gid": "89032459",
         "format": "csv",
         "out": "orders_analytics/data/raw/beyondmenu/beyond_menu_annual_billing_summary.csv",
     },
