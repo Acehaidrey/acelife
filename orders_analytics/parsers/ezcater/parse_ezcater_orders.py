@@ -44,6 +44,21 @@ def format_address(row: pd.Series) -> str:
     return join_address_parts([street, city_state, zip_code], sep=", ")
 
 
+def sum_money_fields(*values: str) -> str:
+    total = Decimal("0.00")
+    for value in values:
+        cleaned = normalize_money(value or "")
+        if not cleaned:
+            continue
+        try:
+            total += Decimal(cleaned)
+        except InvalidOperation:
+            continue
+    if total == Decimal("0.00"):
+        return ""
+    return str(total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+
 class EzCaterOrdersParser(BaseParser):
     platform = "EZCATER"
     dedupe_key = "order_id"
@@ -142,6 +157,11 @@ class EzCaterOrdersParser(BaseParser):
 
             details = supplement.get(order_id, {})
             address = details.get("address", "") or format_address(row)
+            subtotal = normalize_money(row.get("Food Total", ""))
+            tax = normalize_money(row.get("Sales Tax", ""))
+            tip = normalize_money(row.get("Tip", ""))
+            delivery_fee = normalize_money(row.get("Delivery Fee", ""))
+            total = sum_money_fields(subtotal, tax, tip, delivery_fee)
 
             rows.append(
                 build_normalized_row(
@@ -159,12 +179,12 @@ class EzCaterOrdersParser(BaseParser):
                     email=details.get("email", ""),
                     address=address,
                     payment_type=PaymentTypes.CREDIT,
-                    subtotal=normalize_money(row.get("Food Total", "")),
-                    tax=normalize_money(row.get("Sales Tax", "")),
+                    subtotal=subtotal,
+                    tax=tax,
                     tax_withheld=normalize_money(row.get("Sales Tax Remitted by ezCater", "")),
-                    tip=normalize_money(row.get("Tip", "")),
-                    delivery_fee=normalize_money(row.get("Delivery Fee", "")),
-                    total=normalize_money(row.get("Food Total", "")),
+                    tip=tip,
+                    delivery_fee=delivery_fee,
+                    total=total,
                     payout=normalize_money(row.get("Caterer Total Due", "")),
                     processing_fee=normalize_money(row.get("Payment Transaction Fee", "")),
                     commission_fee=normalize_money(row.get("Commission", "")),
