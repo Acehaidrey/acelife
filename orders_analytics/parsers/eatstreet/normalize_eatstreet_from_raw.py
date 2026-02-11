@@ -176,13 +176,13 @@ def normalize_rows(
             if year and year.isdigit() and int(year) >= 2020:
                 if payment_type == "cash":
                     row_tax = str(inferred_tax)
-                    notes.append("tax_inferred_7_75pct_total")
+                    notes.append("tax_inferred")
                 else:
                     tax_withheld = str(inferred_tax)
-                    notes.append("tax_withheld_inferred_7_75pct_total")
+                    notes.append("tax_withheld_inferred")
             else:
                 row_tax = str(inferred_tax)
-                notes.append("tax_inferred_7_75pct_total")
+                notes.append("tax_inferred")
 
         if not commission_fee and subtotal is not None:
             commission_fee = str((subtotal * Decimal("0.15")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
@@ -211,8 +211,6 @@ def normalize_rows(
             except InvalidOperation:
                 pass
 
-        if notes:
-            notes.append("verify_with_platform")
         if payment_type == "cash" and (processing_fee == "" or processing_fee is None):
             processing_fee = "0.00"
         normalized.append(
