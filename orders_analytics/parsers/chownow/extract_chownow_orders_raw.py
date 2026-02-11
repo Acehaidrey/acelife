@@ -321,7 +321,7 @@ def parse_manual_missing_orders(path: str) -> List[Dict[str, str]]:
             continue
         service = str(row.get("Service", "")).strip()
         order_type = normalize_order_type(service)
-        notes: List[str] = ["source=manual_missing_orders", "manual_missing_order"]
+        notes: List[str] = ["manual_missing_order"]
         if service and order_type and order_type != service.lower():
             notes.append(f"order_type_raw={service}")
         status = str(row.get("Status", "")).strip()

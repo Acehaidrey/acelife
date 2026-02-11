@@ -8,7 +8,7 @@ SHEETS = {
         "sheet_id": VA_TASK_SHEET,
         "gid": "2049893089",
         "format": "csv",
-        "out": "Takeout/GoogleSheets/chownow_manual_missing_orders.csv",
+        "out": "orders_analytics/data/raw/chownow/chownow_manual_missing_orders.csv",
     },
     "ezcater_order_history": {
         "sheet_id": VA_TASK_SHEET,

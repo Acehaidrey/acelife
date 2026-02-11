@@ -96,7 +96,7 @@ Concerns / follow-ups:
 - Normalizer: `parsers/brygid/normalize_brygid_from_raw.py`
   - Parses email `Placed On` format and CSV `MM/DD/YYYY HH:MM` format.
   - Excludes cancellations listed in `orders_analytics/data/raw/brygid/cancellations_raw.csv`.
-  - If `total < subtotal + tax + tip + delivery_fee`, subtracts `delivery_fee` from `subtotal` and records `errors=total_components_mismatch_adjusted` plus `notes=subtotal_adjusted_for_delivery_fee`.
+  - If `total < subtotal + tax + tip + delivery_fee`, subtracts `delivery_fee` from `subtotal` and records `notes=subtotal_adjusted_for_delivery_fee`.
   - TODO: obtain Vantiv partner processing fee totals and incorporate into normalization.
   - Allocates commission per billing period:
     - If totals match, commissions are allocated by subtotal to match billed service fees.
