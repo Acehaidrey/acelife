@@ -120,6 +120,8 @@ All order-level parsers should emit these columns in this order:
 - Optional: pass extra parser args: `--extra key=value` (repeatable)
 - Optional: update EatStreet normalized fees from billings (writes missing-fee list to raw):
   - `python3 orders_analytics/cli.py fees` (legacy)
+- Compare two CSVs (orders vs billings, etc.):
+  - `python3 -m orders_analytics.scripts.compare_csvs --config orders_analytics/config/compare/eatstreet_orders_vs_billings.yaml`
 - Ingest normalized CSVs into DuckDB:
   - `python3 orders_analytics/cli.py ingest`
 - Start the dashboard:
