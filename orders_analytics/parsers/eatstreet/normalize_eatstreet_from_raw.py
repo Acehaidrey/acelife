@@ -246,12 +246,6 @@ def normalize_rows(
 class EatstreetNormalizer(BaseParser):
     platform = "EATSTREET"
     provider = ""
-    total_components_fields = (
-        "subtotal",
-        "tip",
-        "delivery_fee",
-        "misc_fee",
-    )
 
     def default_input_path(self) -> str:
         return raw_path("eatstreet", "orders_raw.csv")

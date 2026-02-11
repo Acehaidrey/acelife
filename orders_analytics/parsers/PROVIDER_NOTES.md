@@ -153,7 +153,7 @@ Concerns / follow-ups:
   - If tax is missing and year >= 2020, `tax_withheld` is estimated at 7.75% of (subtotal + tip + delivery_fee).
   - If fees are missing, estimates: commission = 15% of subtotal; processing = 4.3% of subtotal.
   - Payment type is overridden to cash when billings `payment_method` = cash.
-  - Total-components validation excludes tax/tax_withheld (EatStreet totals appear to exclude tax).
+  - Total-components validation includes tax/tax_withheld; cash orders can show inconsistencies where tax appears in total for some periods.
   - Billings-only rows (no order record) are normalized using billings fields:
     - `order_datetime` from billings `order_date` + `order_time`.
     - `order_type` from billings (`Delivery` → delivery, `Takeout` → pickup).
