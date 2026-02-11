@@ -811,6 +811,11 @@ def main() -> None:
         help="Platform to parse.",
     )
     parse_cmd.add_argument(
+        "--include-inactive",
+        action="store_true",
+        help="Include inactive platforms when running --platform all.",
+    )
+    parse_cmd.add_argument(
         "--input",
         help="Override input path (orders mbox for EatStreet, CSV for BeyondMenu).",
     )
@@ -865,6 +870,11 @@ def main() -> None:
         choices=[*Platforms.all_platforms(), "all"],
         default="all",
         help="Platform to normalize.",
+    )
+    normalize_cmd.add_argument(
+        "--include-inactive",
+        action="store_true",
+        help="Include inactive platforms when running --platform all.",
     )
     normalize_cmd.add_argument("--input", help="Override input path for CSV-based parsers.")
     normalize_cmd.add_argument("--out", help="Override output path.")
@@ -1001,7 +1011,11 @@ def main() -> None:
     if args.command == "parse":
         platforms: List[str]
         if args.platform == "all":
-            platforms = Platforms.all_platforms()
+            platforms = (
+                Platforms.all_platforms()
+                if args.include_inactive
+                else Platforms.active_platforms()
+            )
         else:
             platforms = [args.platform]
         base_extras = parse_extras(args.extra)
@@ -1097,7 +1111,11 @@ def main() -> None:
             print(f"Deleted {ERRORS_PATH}")
         platforms: List[str]
         if args.platform == "all":
-            platforms = Platforms.all_platforms()
+            platforms = (
+                Platforms.all_platforms()
+                if args.include_inactive
+                else Platforms.active_platforms()
+            )
         else:
             platforms = [args.platform]
         base_extras = parse_extras(args.extra)

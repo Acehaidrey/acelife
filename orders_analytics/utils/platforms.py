@@ -17,6 +17,13 @@ class Platforms:
     SLICE = "slice"
     CHOWNOW = "chownow"
     BRYGID = "brygid"
+    INACTIVE = {
+        CATER2ME,
+        DELIVERYCOM,
+        FOODA,
+        FOODEE,
+        BRYGID,
+    }
 
     @classmethod
     def all_platforms(cls) -> list[str]:
@@ -37,6 +44,14 @@ class Platforms:
             cls.CHOWNOW,
             cls.BRYGID,
         ]
+
+    @classmethod
+    def active_platforms(cls) -> list[str]:
+        return [p for p in cls.all_platforms() if p not in cls.INACTIVE]
+
+    @classmethod
+    def inactive_platforms(cls) -> list[str]:
+        return sorted(cls.INACTIVE)
 
     @classmethod
     def csv_platforms(cls) -> list[str]:
