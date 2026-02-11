@@ -1,0 +1,38 @@
+left:
+  path: orders_analytics/data/raw/eatstreet/orders_raw.csv
+  name: orders
+  keys:
+    provider: provider
+    order_id: order_id
+right:
+  path: orders_analytics/data/raw/eatstreet/billings_raw.csv
+  name: billings
+  keys:
+    provider: provider
+    order_id: order_id
+excludes:
+  left:
+    - column: order_datetime_raw
+      starts_with: "2019"
+    - column: customer_name
+      contains: "test order"
+  right:
+    - column: email_date
+      starts_with: "2019"
+exclude_keys:
+  - path: orders_analytics/data/raw/eatstreet/eatstreet_cancellations.csv
+    keys:
+      provider: provider
+      order_id: order_id
+fields:
+  - name: total
+    left: total
+    right: total
+    transform: money
+    tolerance: 0.01
+  - name: tip
+    left: tip
+    right: tip
+    transform: money
+    tolerance: 0.01
+output: orders_analytics/data/raw/eatstreet/eatstreet_orders_vs_billings_diff.csv
