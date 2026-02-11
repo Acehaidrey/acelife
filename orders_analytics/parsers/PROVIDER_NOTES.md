@@ -143,6 +143,8 @@ Concerns / follow-ups:
   - Fixes cases where “Order ready for pickup at:” appeared before the restaurant line.
 - Billings parser: `parsers/eatstreet/extract_eatstreet_billings_raw.py`
   - Extracts provider (AMECI/AROMA) from email subject/body when present.
+  - Captures `order_date`, `order_time`, and `order_type` from the statement table rows.
+  - `payment_method` is set to `CARD`/`CASH` when present in row tokens.
 - Cancellations:
   - `orders_analytics/data/raw/eatstreet/eatstreet_cancellations.csv` is matched by provider + order_id.
   - Cancelled orders are excluded from normalization and missing-fees reporting.

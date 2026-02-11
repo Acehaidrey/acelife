@@ -116,6 +116,8 @@ def _passes_excludes(row: Dict[str, Any], excludes: List[Dict[str, Any]]) -> boo
             needle = str(rule["contains"])
             if needle and needle.lower() in value.lower():
                 return False
+        if "ends_with" in rule and value.endswith(str(rule["ends_with"])):
+            return False
     return True
 
 

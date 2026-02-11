@@ -16,6 +16,9 @@ from orders_analytics.utils.normalize import normalize_money
 RAW_COLUMNS = [
     "order_id",
     "provider",
+    "order_date",
+    "order_time",
+    "order_type",
     "payment_method",
     "tip",
     "total",
@@ -46,7 +49,7 @@ def extract_html(msg) -> str:
     return "\n".join(parts)
 
 
-def parse_fee_rows(html_text: str) -> List[Dict[str, str]]:
+def parse_fee_rows(html_text: str, order_date: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     text = html.unescape(html_text)
     for row_html in re.findall(
@@ -58,6 +61,16 @@ def parse_fee_rows(html_text: str) -> List[Dict[str, str]]:
         spans = [html.unescape(s).strip() for s in spans]
         spans = [s for s in spans if s != ""]
         is_cash = any("cash" in s.lower() for s in spans)
+        is_card = any("card" in s.lower() or "credit" in s.lower() for s in spans)
+        order_time = ""
+        order_type = ""
+        for token in spans:
+            if re.match(r"^\d{1,2}:\d{2}\s*[AP]M$", token, re.IGNORECASE):
+                order_time = token
+            if "delivery" in token.lower():
+                order_type = "Delivery"
+            if "takeout" in token.lower() or "pickup" in token.lower():
+                order_type = "Takeout"
         order_id_idx = None
         for idx, token in enumerate(spans):
             if token.isdigit():
@@ -77,7 +90,10 @@ def parse_fee_rows(html_text: str) -> List[Dict[str, str]]:
         rows.append(
             {
                 "order_id": order_id,
-                "payment_method": "cash" if is_cash else "",
+                "order_date": order_date,
+                "order_time": order_time,
+                "order_type": order_type,
+                "payment_method": "CASH" if is_cash else ("CARD" if is_card else ""),
                 "tip": tip,
                 "total": total,
                 "processing_fee": proc,
@@ -111,7 +127,17 @@ def parse_billings_mbox(mbox_path: str) -> List[Dict[str, str]]:
         if not html_text:
             continue
         provider = detect_provider(html_text, msg.get("Subject", "") or "")
-        parsed_rows = parse_fee_rows(html_text)
+        date_matches = list(re.finditer(r"\b\d{1,2}/\d{1,2}/\d{4}\b", html_text))
+        if not date_matches:
+            parsed_rows = parse_fee_rows(html_text, "")
+        else:
+            parsed_rows = []
+            for idx, match in enumerate(date_matches):
+                start = match.start()
+                end = date_matches[idx + 1].start() if idx + 1 < len(date_matches) else len(html_text)
+                segment = html_text[start:end]
+                order_date = match.group(0)
+                parsed_rows.extend(parse_fee_rows(segment, order_date))
         for row in parsed_rows:
             row["provider"] = provider
             row["source_file"] = os.path.basename(mbox_path)
