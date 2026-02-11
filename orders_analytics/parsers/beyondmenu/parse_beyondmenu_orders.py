@@ -102,6 +102,13 @@ def format_money(value) -> str:
         return str(value)
 
 
+def normalize_notes(value) -> str:
+    text = str(value or "").strip()
+    if not text or text.lower() == "nan":
+        return ""
+    return text
+
+
 
 
 class BeyondMenuOrdersParser(BaseParser):
@@ -182,6 +189,7 @@ class BeyondMenuOrdersParser(BaseParser):
         row_providers: List[str] = []
         row_order_ids: List[str] = []
         row_subtotals: List[float] = []
+        row_convenience_fees: List[float] = []
         for idx, row in df.iterrows():
             merchant_fee = parse_money_series(pd.Series([row.get("Merchant Fee", "")])).iloc[0]
             commission_fee = parse_money_series(pd.Series([row.get("Commission Fee", "")])).iloc[0]
@@ -195,7 +203,7 @@ class BeyondMenuOrdersParser(BaseParser):
             ).iloc[0]
             payment_type = str(payment_series.iloc[idx] or PaymentTypes.CREDIT)
             if payment_type == PaymentTypes.CASH:
-                commission_out = -(commission_fee + merchant_fee)
+                commission_out = -commission_fee
                 processing_out = 0
             else:
                 commission_out = -commission_fee
@@ -204,7 +212,7 @@ class BeyondMenuOrdersParser(BaseParser):
             if "Adjustments" in df.columns:
                 adjustments_value = parse_money_series(pd.Series([row.get("Adjustments", "")])).iloc[0]
             if convenience_fee:
-                adjustments_value += abs(convenience_fee)
+                adjustments_value += -convenience_fee
             adjustments_out = format_money(adjustments_value) if adjustments_value else ""
             misc_fee_out = misc_fee + convenience_fee
             provider = str(row.get("provider", ""))
@@ -214,6 +222,7 @@ class BeyondMenuOrdersParser(BaseParser):
             row_providers.append(provider)
             row_order_ids.append(order_id)
             row_subtotals.append(parse_float(row.get("Subtotal", 0)))
+            row_convenience_fees.append(convenience_fee)
             rows.append(
                 build_normalized_row(
                     Platforms.BEYONDMENU.upper(),
@@ -235,7 +244,7 @@ class BeyondMenuOrdersParser(BaseParser):
                     commission_fee=format_money(commission_out),
                     adjustments=adjustments_out,
                     misc_fee=format_money(misc_fee_out),
-                    notes=str(row.get("Notes", "")),
+                    notes=normalize_notes(row.get("Notes", "")),
                 )
             )
 
@@ -286,7 +295,9 @@ class BeyondMenuOrdersParser(BaseParser):
                     if p == provider and y == year
                 ]
                 if provider == "AROMA" and year == 2024:
-                    idxs = [idx for idx in idxs if row_order_ids[idx] != "101559574"]
+                    filtered = [idx for idx in idxs if row_order_ids[idx] != "101559574"]
+                    if filtered:
+                        idxs = filtered
 
                 if not idxs:
                     continue
@@ -297,12 +308,18 @@ class BeyondMenuOrdersParser(BaseParser):
                     notes_additions[idx] = special_note
 
             for idx, amt in allocations.items():
-                current = parse_float(rows[idx].get("adjustments", ""))
+                current = parse_float(rows[idx].get("misc_fee", ""))
                 new_val = current + amt
-                rows[idx]["adjustments"] = format_money(new_val) if abs(new_val) >= 0.005 else ""
+                rows[idx]["misc_fee"] = format_money(new_val) if abs(new_val) >= 0.005 else ""
                 note = notes_additions.get(idx, "")
                 if note:
-                    existing_notes = str(rows[idx].get("notes", "") or "").strip()
+                    existing_notes = normalize_notes(rows[idx].get("notes", ""))
+                    if note not in existing_notes:
+                        rows[idx]["notes"] = (existing_notes + " | " + note).strip(" | ")
+            for idx, fee in enumerate(row_convenience_fees):
+                if abs(parse_float(fee)) >= 0.005:
+                    existing_notes = normalize_notes(rows[idx].get("notes", ""))
+                    note = f"convenience_fee={format_money(fee)}"
                     if note not in existing_notes:
                         rows[idx]["notes"] = (existing_notes + " | " + note).strip(" | ")
         return rows
@@ -315,7 +332,7 @@ def main() -> None:
     parser.add_argument(
         "--csv",
         default=None,
-        help="Path to BeyondMenu_Order_History.csv",
+        help="Path to beyondmenu_order_history.csv",
     )
     parser.add_argument(
         "--out",

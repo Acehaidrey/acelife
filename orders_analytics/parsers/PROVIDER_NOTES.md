@@ -119,12 +119,13 @@ Concerns / follow-ups:
   - Address: title-cased with state abbreviation preserved.
   - Fees: `Merchant Fee` and `Commission Fee` are negated.
   - `Misc Fee` is kept as provided (may be negative).
-  - `Convenience Fee` is added to `misc_fee` and its absolute value is added to `adjustments` so customer totals align.
+  - `Convenience Fee` is added to `misc_fee`, and also added as a **negative** amount in `adjustments` so totals net out.
+  - Notes include `convenience_fee=<amount>` for rows with a convenience fee.
   - Payment type: from `Payment Type` (or `Payment`) normalized.
   - Total-components validation uses `subtotal + tax + tip + delivery_fee + adjustments` (misc fees are handled via adjustments).
   - Annual billing adjustments (Additional Charges + Credits):
     - Net annual adjustment per provider/year = `-(additional_charges + credits)` from the annual billing summary.
-    - Net adjustment is distributed across **active** orders in that provider/year, proportional to subtotal with cent‑balancing.
+    - Net adjustment is distributed across **active** orders in that provider/year, proportional to subtotal with cent‑balancing, and applied to `misc_fee`.
     - Notes added:
       - `additional_charges_distribution` for standard allocations.
       - `partial_additional_charges_distribution` for Aroma 2024 (see below).
@@ -132,6 +133,7 @@ Concerns / follow-ups:
       - 2023: apply the 2024 credits (`-89.25`) to offset the 2023 additional charges (`89.25`), so net is 0 in 2023.
       - 2024: apply only the remaining additional charges (`119.35 - 89.25 = 30.10`) across active orders **excluding** order `101559574`.
       - Order `101559574` (2024) already carries the chargeback amount in misc fee and should not receive further allocation.
+      - If `101559574` is the only active 2024 order, it will receive the remaining additional charges so the annual totals reconcile.
 
 ## EatStreet
 - Sources: `Takeout/Mail/Orders-Eatstreet.mbox`, `Takeout/Mail/Billings-Eatstreet.mbox`
