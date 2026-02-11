@@ -321,7 +321,6 @@ def apply_commissions(
                 manual_row["commission_fee"] = format_money(-allocated[-1])
                 manual_rows.append(manual_row)
 
-    orders = allocate_processing_fees(orders)
     return orders, manual_rows
 
 
@@ -343,7 +342,9 @@ class BrygidNormalizer(BaseParser):
         orders, manual_rows = apply_commissions(inputs, billings)
         rows = orders.to_dict("records")
         rows.extend(manual_rows)
-        return normalize_rows(rows)
+        rows_df = pd.DataFrame(rows).fillna("")
+        rows_df = allocate_processing_fees(rows_df)
+        return normalize_rows(rows_df.to_dict("records"))
 
 
 def run(orders_raw_path: str, out_path: str, reset_errors: bool = False) -> int:
