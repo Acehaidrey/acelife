@@ -126,6 +126,8 @@ class EzCaterOrdersParser(BaseParser):
                 notes.append(f"source={source}")
             if promo:
                 notes.append(f"promo_code={promo}")
+            if order_id == "7WJ-179":
+                notes.append("payout_override_unexplained=+39.00")
 
             marketing_fee = ""
             ppp = normalize_money(row.get("Preferred Partner Program", ""))
