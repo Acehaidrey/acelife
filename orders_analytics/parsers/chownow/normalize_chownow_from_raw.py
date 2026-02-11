@@ -120,6 +120,8 @@ def normalize_rows(
 
         transaction_fee = normalize_money(row.get("Transaction Fee", ""))
         commission_fee = sum_money(row.get("Finder's Fee", ""), row.get("External Partner Fee", ""))
+        if commission_fee == "":
+            commission_fee = "0.00"
         misc_fee = normalize_money(row.get("Faxes Sent", ""))
         bucks = normalize_money(row.get("Bucks", ""))
         refund_amount = normalize_money(row.get("Refund Amount", ""))
@@ -144,9 +146,18 @@ def normalize_rows(
                     break
 
         adjustments_total = refund_total if refund_total != Decimal("0.00") else parse_decimal(refund_amount)
-        if support_fee != Decimal("0.00"):
-            adjustments_total += -support_fee
+        if delivery_fee_component and delivery_fee_component != "0.00":
+            adjustments_total += parse_decimal(delivery_fee_component)
+        if flex_tip and flex_tip != "0.00":
+            adjustments_total += parse_decimal(flex_tip)
         adjustments_value = normalize_money(f"{adjustments_total:.2f}") if adjustments_total != Decimal("0.00") else ""
+
+        misc_total = parse_decimal(misc_fee)
+        if flex_delivery_fee and flex_delivery_fee != "0.00":
+            misc_total += parse_decimal(flex_delivery_fee)
+        if flex_tip_fee and flex_tip_fee != "0.00":
+            misc_total += parse_decimal(flex_tip_fee)
+        misc_fee = normalize_money(f"{misc_total:.2f}") if misc_total != Decimal("0.00") else ""
 
         promo_value = Decimal("0.00")
         promotions = normalize_money(order.get("promotions", ""))
@@ -157,8 +168,6 @@ def normalize_rows(
         marketing_fee = normalize_money(f"{promo_value:.2f}") if promo_value != Decimal("0.00") else ""
 
         total = normalize_money(row.get("Gross", ""))
-        if support_fee != Decimal("0.00") and total:
-            total = normalize_money(f"{(parse_decimal(total) + support_fee):.2f}")
 
         order_type_raw = str(order.get("order_type", "")).strip()
         order_type = normalize_order_type(order_type_raw)
@@ -200,6 +209,11 @@ def normalize_rows(
                 order_total = normalize_money(
                     f"{(parse_decimal(order_customer_paid) - parse_decimal(order_promotions)):.2f}"
                 )
+            except Exception:
+                pass
+        if order_total and support_fee != Decimal("0.00"):
+            try:
+                order_total = normalize_money(f"{(parse_decimal(order_total) - support_fee):.2f}")
             except Exception:
                 pass
         mismatch("total", total, order_total)
@@ -272,25 +286,13 @@ def normalize_rows(
 class ChowNowNormalizer(BaseParser):
     platform = "CHOWNOW"
     provider = ""
-
-    def compute_expected_payout(self, row: Dict[str, str]) -> str:
-        expected = super().compute_expected_payout(row)
-        if not expected:
-            return expected
-        notes = str(row.get("notes") or "")
-        support_fee = ""
-        if "support_local_fee=" in notes:
-            for part in notes.split("|"):
-                part = part.strip()
-                if part.startswith("support_local_fee="):
-                    support_fee = part.split("=", 1)[1]
-                    break
-        if not support_fee:
-            return expected
-        try:
-            return f"{(Decimal(expected) + parse_decimal(support_fee)):.2f}"
-        except InvalidOperation:
-            return expected
+    total_components_fields = (
+        "subtotal",
+        "tax",
+        "tip",
+        "delivery_fee",
+        "adjustments",
+    )
 
     def default_input_path(self) -> str:
         return raw_path("chownow", "billings_raw.csv")

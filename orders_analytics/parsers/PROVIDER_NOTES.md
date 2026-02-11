@@ -274,9 +274,11 @@ Concerns / follow-ups:
   - `payout` is taken from Disbursement Amount, including any Full Refund disbursement rows rolled into
     the original order_id payout.
   - Support Local Fee handling:
-    - If support_local_fee exists in orders_raw notes, `total` = billing Gross + support_local_fee.
-    - `adjustments` includes a negative support_local_fee to offset payout.
-    - `expected_payout` adds support_local_fee on top of the base payout math (ChowNow-only override).
+    - support_local_fee is captured in orders_raw notes but is not included in billings Gross.
+    - Normalized `total` uses billing Gross (no support_local_fee added).
+    - support_local_fee is not added to adjustments/misc_fee/expected_payout.
+    - When comparing orders_raw totals to billing, we subtract support_local_fee from orders_raw
+      before computing total mismatch errors.
   - Promotions / Bucks:
     - `Bucks` in billings are treated as positive and mapped to `marketing_fee` as negative.
     - If Bucks is present, it overrides promotions from orders; otherwise promotions are used.
