@@ -85,6 +85,8 @@ def normalize_order_type(value: str) -> str:
         return ""
     if text == OrderTypes.PHONE_CALL:
         return OrderTypes.PHONE_CALL
+    if text.startswith("takeout"):
+        return OrderTypes.PICKUP
     if text.startswith("pick"):
         return OrderTypes.PICKUP
     if text.startswith("deliv"):
