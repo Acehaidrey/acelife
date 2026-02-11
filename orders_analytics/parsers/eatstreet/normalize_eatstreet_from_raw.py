@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
+from datetime import datetime, timezone
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Dict, List
 
@@ -57,6 +58,54 @@ def merge_raw(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dict
     return merged.to_dict("records")
 
 
+def build_billings_only_rows(
+    orders_raw: pd.DataFrame,
+    billings_raw: pd.DataFrame,
+) -> List[Dict[str, str]]:
+    if billings_raw.empty:
+        return []
+    order_ids = set(str(order_id) for order_id in orders_raw.get("order_id", []).astype(str))
+    rows: List[Dict[str, str]] = []
+    for row in billings_raw.to_dict("records"):
+        order_id = str(row.get("order_id", "")).strip()
+        if not order_id or order_id in order_ids:
+            continue
+        rows.append(
+            {
+                "order_id": order_id,
+                "provider": row.get("provider", ""),
+                "order_date": row.get("order_date", ""),
+                "order_time": row.get("order_time", ""),
+                "order_type": row.get("order_type", ""),
+                "payment_method": row.get("payment_method", ""),
+                "tip": row.get("tip", ""),
+                "total": row.get("total", ""),
+                "processing_fee": row.get("processing_fee", ""),
+                "commission_fee": row.get("commission_fee", ""),
+                "notes": "missing_order_record",
+            }
+        )
+    return rows
+
+
+def parse_order_datetime(order_date: str, order_time: str) -> str:
+    order_date = str(order_date or "").strip()
+    order_time = str(order_time or "").strip()
+    if not order_date:
+        return ""
+    if order_time:
+        try:
+            dt = datetime.strptime(f"{order_date} {order_time}", "%m/%d/%Y %I:%M %p")
+            return dt.replace(tzinfo=timezone.utc).isoformat()
+        except ValueError:
+            return ""
+    try:
+        dt = datetime.strptime(order_date, "%m/%d/%Y")
+        return dt.replace(tzinfo=timezone.utc).isoformat()
+    except ValueError:
+        return ""
+
+
 def normalize_rows(
     rows: List[Dict[str, str]],
     cancelled: set[tuple[str, str]],
@@ -73,6 +122,10 @@ def normalize_rows(
         payment_type = row.get("payment_type", "")
         if str(row.get("payment_method", "") or "").lower() == "cash":
             payment_type = "cash"
+        elif not payment_type:
+            payment_type = "credit"
+            if not str(row.get("payment_method", "") or "").strip():
+                row["notes"] = "payment_type_missing" if not row.get("notes") else f"{row.get('notes')} | payment_type_missing"
         processing_fee = row.get("processing_fee", "")
         commission_fee = row.get("commission_fee", "")
         if str(processing_fee).strip().lower() == "nan":
@@ -80,6 +133,9 @@ def normalize_rows(
         if str(commission_fee).strip().lower() == "nan":
             commission_fee = ""
         notes = []
+        base_notes = str(row.get("notes") or "").strip()
+        if base_notes:
+            notes.append(base_notes)
         subtotal_raw = str(row.get("subtotal", "") or "").replace("$", "").replace(",", "").strip()
         subtotal = None
         if subtotal_raw:
@@ -88,15 +144,45 @@ def normalize_rows(
             except InvalidOperation:
                 subtotal = None
         order_dt = row.get("order_datetime_iso", "") or row.get("order_datetime_raw", "")
+        if not order_dt:
+            order_dt = parse_order_datetime(row.get("order_date", ""), row.get("order_time", ""))
         year = order_dt[:4]
 
         row_tax = row.get("tax", "")
         tax_withheld = ""
-        if not str(row_tax or "").strip():
-            if year and year.isdigit() and int(year) >= 2020 and subtotal is not None:
-                tax_withheld = str(
-                    (subtotal * Decimal("0.0775")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-                )
+        delivery_fee = row.get("delivery_fee", "")
+        if not str(delivery_fee or "").strip():
+            order_type = str(row.get("order_type") or "").lower()
+            if "delivery" in order_type:
+                delivery_fee = "3.00"
+            else:
+                delivery_fee = "0.00"
+        if subtotal is None and str(row.get("total") or "").strip():
+            try:
+                subtotal = Decimal(str(row.get("total")).replace("$", "").replace(",", ""))
+                subtotal -= Decimal(str(row.get("tip") or "0").replace("$", "").replace(",", ""))
+                subtotal -= Decimal(str(delivery_fee or "0").replace("$", "").replace(",", ""))
+                subtotal = subtotal.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            except InvalidOperation:
+                subtotal = None
+        if not str(row_tax or "").strip() and subtotal is not None:
+            total_base = subtotal
+            try:
+                total_base += Decimal(str(row.get("tip") or "0").replace("$", "").replace(",", ""))
+                total_base += Decimal(str(delivery_fee or "0").replace("$", "").replace(",", ""))
+            except InvalidOperation:
+                total_base = subtotal
+            inferred_tax = (total_base * Decimal("0.0775")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            if year and year.isdigit() and int(year) >= 2020:
+                if payment_type == "cash":
+                    row_tax = str(inferred_tax)
+                    notes.append("tax_inferred_7_75pct_total")
+                else:
+                    tax_withheld = str(inferred_tax)
+                    notes.append("tax_withheld_inferred_7_75pct_total")
+            else:
+                row_tax = str(inferred_tax)
+                notes.append("tax_inferred_7_75pct_total")
 
         if not commission_fee and subtotal is not None:
             commission_fee = str((subtotal * Decimal("0.15")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
@@ -141,11 +227,11 @@ def normalize_rows(
                 email=row.get("email", ""),
                 address=row.get("address", ""),
                 payment_type=payment_type,
-                subtotal=row.get("subtotal", ""),
+                subtotal=str(subtotal) if subtotal is not None else row.get("subtotal", ""),
                 tax=row_tax,
                 tax_withheld=tax_withheld,
                 tip=row.get("tip", ""),
-                delivery_fee=row.get("delivery_fee", ""),
+                delivery_fee=delivery_fee,
                 total=row.get("total", ""),
                 item_count=row.get("item_count", ""),
                 processing_fee=processing_fee,
@@ -184,6 +270,7 @@ class EatstreetNormalizer(BaseParser):
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
         rows = merge_raw(inputs["orders_raw"], inputs["billings_raw"])
+        rows.extend(build_billings_only_rows(inputs["orders_raw"], inputs["billings_raw"]))
         return normalize_rows(rows, inputs["cancellations_raw"])
 
     def post_process(self, rows: List[Dict[str, str]]) -> List[Dict[str, str]]:

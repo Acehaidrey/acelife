@@ -150,9 +150,17 @@ Concerns / follow-ups:
   - Cancelled orders are excluded from normalization and missing-fees reporting.
 - Normalizer: `parsers/eatstreet/normalize_eatstreet_from_raw.py` (BaseParser)
   - Commission/processing fees are always negative (if present).
-  - If tax is missing and year >= 2020, `tax_withheld` is estimated at 7.75% of subtotal.
+  - If tax is missing and year >= 2020, `tax_withheld` is estimated at 7.75% of (subtotal + tip + delivery_fee).
   - If fees are missing, estimates: commission = 15% of subtotal; processing = 4.3% of subtotal.
   - Payment type is overridden to cash when billings `payment_method` = cash.
+  - Billings-only rows (no order record) are normalized using billings fields:
+    - `order_datetime` from billings `order_date` + `order_time`.
+    - `order_type` from billings (`Delivery` → delivery, `Takeout` → pickup).
+    - `delivery_fee` assumed $3 for delivery, $0 for pickup.
+    - `subtotal` inferred as `total - tip - delivery_fee`.
+    - `tax_withheld` inferred at 7.75% of (subtotal + tip + delivery_fee) for credit orders (2020+).
+    - Cash orders use `tax` instead of `tax_withheld`; for 2019 all orders use `tax`.
+    - Missing payment method defaults to credit with `notes=payment_type_missing`.
 
 ## MenuStar
 - Sources: `Takeout/Mail/Orders-Menustar.mbox`, `Takeout/Mail/Billings-Menustar.mbox`
