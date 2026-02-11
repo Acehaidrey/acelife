@@ -276,7 +276,7 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
         row.setdefault("added_at", now)
     final_df = pd.DataFrame(final_rows).reindex(columns=RAW_COLUMNS)
     if "order_datetime" in final_df.columns:
-        final_df = final_df.sort_values(by="order_datetime", ascending=False, na_position="last")
+        final_df = final_df.sort_values(by="order_datetime", ascending=True, na_position="last")
     os.makedirs(os.path.dirname(existing_path), exist_ok=True)
     final_df.to_csv(existing_path, index=False)
     return updated
