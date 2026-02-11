@@ -77,12 +77,6 @@ def normalize_order_datetime(req_time: str, year: str) -> str:
     )
 
 
-def negate_money_series(series: pd.Series) -> pd.Series:
-    numeric = pd.to_numeric(series.replace({"\$": "", ",": ""}, regex=True), errors="coerce")
-    negated = numeric * -1
-    return negated
-
-
 def parse_money_series(series: pd.Series) -> pd.Series:
     numeric = pd.to_numeric(series.replace({"\$": "", ",": ""}, regex=True), errors="coerce")
     return numeric
@@ -100,8 +94,6 @@ def format_money(value) -> str:
         return f"{float(value):.2f}"
     except (TypeError, ValueError):
         return str(value)
-
-
 def normalize_notes(value) -> str:
     text = str(value or "").strip()
     if not text or text.lower() == "nan":
