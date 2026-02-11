@@ -15,6 +15,7 @@ from orders_analytics.utils.normalize import normalize_money
 
 RAW_COLUMNS = [
     "order_id",
+    "provider",
     "payment_method",
     "tip",
     "total",
@@ -87,6 +88,15 @@ def parse_fee_rows(html_text: str) -> List[Dict[str, str]]:
     return rows
 
 
+def detect_provider(text: str, subject: str) -> str:
+    haystack = f"{subject} {text}".lower()
+    if "ameci" in haystack:
+        return "AMECI"
+    if "aroma" in haystack:
+        return "AROMA"
+    return ""
+
+
 def parse_billings_mbox(mbox_path: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     mbox = mailbox.mbox(mbox_path)
@@ -100,8 +110,10 @@ def parse_billings_mbox(mbox_path: str) -> List[Dict[str, str]]:
         html_text = extract_html(msg)
         if not html_text:
             continue
+        provider = detect_provider(html_text, msg.get("Subject", "") or "")
         parsed_rows = parse_fee_rows(html_text)
         for row in parsed_rows:
+            row["provider"] = provider
             row["source_file"] = os.path.basename(mbox_path)
             row["email_date"] = email_date
         rows.extend(parsed_rows)

@@ -141,6 +141,11 @@ Concerns / follow-ups:
 - Orders parser: `parsers/eatstreet/extract_eatstreet_orders_raw.py`
   - Header extraction scans `<td>` blocks and selects the one where the first span is `PICKUP/DELIVERY` and the next span is the restaurant name.
   - Fixes cases where “Order ready for pickup at:” appeared before the restaurant line.
+- Billings parser: `parsers/eatstreet/extract_eatstreet_billings_raw.py`
+  - Extracts provider (AMECI/AROMA) from email subject/body when present.
+- Cancellations:
+  - `orders_analytics/data/raw/eatstreet/eatstreet_cancellations.csv` is matched by provider + order_id.
+  - Cancelled orders are excluded from normalization and missing-fees reporting.
 - Normalizer: `parsers/eatstreet/normalize_eatstreet_from_raw.py` (BaseParser)
   - Commission/processing fees are always negative (if present).
   - If tax is missing and year >= 2020, `tax_withheld` is estimated at 7.75% of subtotal.

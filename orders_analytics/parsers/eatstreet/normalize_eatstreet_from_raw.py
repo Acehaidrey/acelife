@@ -20,6 +20,20 @@ def load_raw(path: str) -> pd.DataFrame:
     return pd.read_csv(path, dtype=str).fillna("")
 
 
+def load_cancellations(path: str) -> set[tuple[str, str]]:
+    if not path or not os.path.exists(path):
+        return set()
+    df = pd.read_csv(path, dtype=str).fillna("")
+    return {
+        (
+            str(row.get("provider", "")).strip().upper(),
+            str(row.get("order_id", "")).strip(),
+        )
+        for row in df.to_dict("records")
+        if row.get("order_id")
+    }
+
+
 def merge_raw(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dict[str, str]]:
     if orders_raw.empty:
         return []
@@ -43,9 +57,16 @@ def merge_raw(orders_raw: pd.DataFrame, billings_raw: pd.DataFrame) -> List[Dict
     return merged.to_dict("records")
 
 
-def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def normalize_rows(
+    rows: List[Dict[str, str]],
+    cancelled: set[tuple[str, str]],
+) -> List[Dict[str, str]]:
     normalized = []
     for row in rows:
+        provider = str(row.get("provider", "")).strip().upper()
+        order_id = str(row.get("order_id", "")).strip()
+        if (provider, order_id) in cancelled:
+            continue
         customer_name = str(row.get("customer_name") or "")
         if customer_name and "test" in customer_name.lower():
             continue
@@ -54,6 +75,10 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
             payment_type = "cash"
         processing_fee = row.get("processing_fee", "")
         commission_fee = row.get("commission_fee", "")
+        if str(processing_fee).strip().lower() == "nan":
+            processing_fee = ""
+        if str(commission_fee).strip().lower() == "nan":
+            commission_fee = ""
         notes = []
         subtotal_raw = str(row.get("subtotal", "") or "").replace("$", "").replace(",", "").strip()
         subtotal = None
@@ -148,14 +173,18 @@ class EatstreetNormalizer(BaseParser):
         billings_path = self.extra.get("billings_raw") or raw_path(
             "eatstreet", "billings_raw.csv"
         )
+        cancellations_path = self.extra.get("cancellations_raw") or raw_path(
+            "eatstreet", "eatstreet_cancellations.csv"
+        )
         return {
             "orders_raw": load_raw(input_path),
             "billings_raw": load_raw(billings_path),
+            "cancellations_raw": load_cancellations(cancellations_path),
         }
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
         rows = merge_raw(inputs["orders_raw"], inputs["billings_raw"])
-        return normalize_rows(rows)
+        return normalize_rows(rows, inputs["cancellations_raw"])
 
     def post_process(self, rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
         rows = super().post_process(rows)

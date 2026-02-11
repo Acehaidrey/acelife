@@ -9,7 +9,7 @@ import shutil
 from typing import Dict, List, Tuple
 
 import pandas as pd
-from orders_analytics.utils.constants import takeout_path
+from orders_analytics.utils.constants import raw_path, takeout_path
 
 
 def extract_html(msg) -> str:
@@ -85,6 +85,18 @@ def run(
     missing_out: str,
     backup_dir: str,
 ) -> int:
+    cancellations_path = raw_path("eatstreet", "eatstreet_cancellations.csv")
+    cancelled: set[tuple[str, str]] = set()
+    if os.path.exists(cancellations_path):
+        cancellations_df = pd.read_csv(cancellations_path, dtype=str).fillna("")
+        cancelled = {
+            (
+                str(row.get("provider", "")).strip().upper(),
+                str(row.get("order_id", "")).strip(),
+            )
+            for row in cancellations_df.to_dict("records")
+            if row.get("order_id")
+        }
     fees = parse_billings_mbox(mbox)
     if not fees:
         print("No fee rows found in billings.")
@@ -141,6 +153,14 @@ def run(
     missing_rows = merged.loc[missing_mask, ["order_id", "order_datetime", "provider"]].copy()
     missing_rows["order_id"] = missing_rows["order_id"].astype(str)
     missing_rows = missing_rows[missing_rows["order_id"].notna() & (missing_rows["order_id"].str.strip() != "")]
+    if cancelled:
+        missing_rows = missing_rows[
+            ~missing_rows.apply(
+                lambda row: (str(row.get("provider", "")).strip().upper(), str(row.get("order_id", "")).strip())
+                in cancelled,
+                axis=1,
+            )
+        ]
     missing_rows = missing_rows.drop_duplicates(subset=["order_id"]).sort_values("order_id")
     if not missing_rows.empty:
         os.makedirs(os.path.dirname(missing_out), exist_ok=True)
