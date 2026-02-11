@@ -210,6 +210,11 @@ Concerns / follow-ups:
   - `tax_withheld` is inferred as 7.75% of `pre_tax` when tax is not provided.
   - `delivery_fee` is mapped from billings `adjustments_delivery_fee`.
   - Delivery fees are not always explicit; Cater2Me may bake delivery costs into higher item prices (so delivery_fee can be blank).
+- Known caveats / expectations:
+  - `orders_analytics/data/raw/cater2me/cater2me_cancellations.csv` excludes canceled/voided orders from comparison + normalization.
+  - Billings can include adjustments already in `order_total` for some periods; `billings_raw.csv` includes
+    `adjustments_included_in_total` to indicate this, and `order_total_after_adjustments` is used for payout.
+  - Comparisons may still show a small number of expected missing order_ids (e.g., billings-only records).
 
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
