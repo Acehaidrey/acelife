@@ -137,6 +137,7 @@ Concerns / follow-ups:
 
 ## EatStreet
 - Sources: `Takeout/Mail/Orders-Eatstreet.mbox`, `Takeout/Mail/Billings-Eatstreet.mbox`
+- Note: 2019 billing files are missing; 2019 records are incomplete.
 - Orders parser: `parsers/eatstreet/extract_eatstreet_orders_raw.py`
   - Header extraction scans `<td>` blocks and selects the one where the first span is `PICKUP/DELIVERY` and the next span is the restaurant name.
   - Fixes cases where “Order ready for pickup at:” appeared before the restaurant line.
