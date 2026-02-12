@@ -30,7 +30,12 @@
   - Comparison excludes cancellations from `orders_analytics/data/raw/chownow/cancellations_raw.csv`.
 - Brygid:
   - `total_components_mismatch_adjusted` is no longer an error; only note `subtotal_adjusted_for_delivery_fee` when delivery fee is moved out of subtotal.
-  - TODO: obtain Vantiv processing fee totals (still pending).
+  - Vantiv/Wave merchant processing statements are now integrated:
+    - `orders_analytics/data/raw/brygid/brygid_merchant_processing_statements.csv` is generated from Wave transactions if missing (filters `vantiv` + `30207437`, expense).
+    - Brygid normalization allocates processing fees across credit orders by previous calendar month, proportional to `total`, with cent balancing.
+    - Excludes Wave transaction id `1949452684062893206` (non-processing charge).
+    - Allocation sanity check CSV: `orders_analytics/data/raw/brygid/brygid_processing_allocation_check.csv`.
+  - TODO: obtain Vantiv processing fee totals from the partner (still pending).
 - BaseParser now normalizes phone numbers (strip non-digits, drop leading 1 for 11-digit numbers).
 - CLI now skips inactive platforms by default when `--platform all`. Use `--include-inactive` to include:
   - `cater2me`, `deliverycom`, `fooda`, `foodee`, `brygid`.
@@ -41,6 +46,20 @@
 - Google Sheets registry:
   - `orders_analytics/utils/google_sheets_registry.py` is the source of truth for sheet ids + output paths.
   - Added `download_sheet_entry` helper in `orders_analytics/utils/google_sheets.py`.
+- CSV comparison tool:
+  - `orders_analytics/utils/compare.py` + `orders_analytics/scripts/compare_csvs.py` supports column mapping, filters, transforms, tolerance, and excludes.
+  - Example configs: `orders_analytics/config/compare/eatstreet_orders_vs_billings.yaml`, `orders_analytics/config/compare/cater2me_orders_vs_billings.yaml`.
+- Cater2Me updates:
+  - Added cancellations file: `orders_analytics/data/raw/cater2me/cater2me_cancellations.csv` and exclusions in compare.
+  - Billings raw now includes `order_datetime`, `order_total_after_adjustments`, and `adjustments_included_in_total`.
+  - Adjustment-only lines (single-amount adjustments) are now parsed and included.
+- EatStreet updates:
+  - Added cancellations file: `orders_analytics/data/raw/eatstreet/eatstreet_cancellations.csv`.
+  - Billings raw parsing now captures order date/time, provider, order_type, and payment method.
+  - Normalization can include billings-only orders (infers subtotal/tax/tax_withheld for missing orders).
+- ezCater updates:
+  - `orders_analytics/data/raw/ezcater/ezcater_notes_overrides.csv` supports per-order notes.
+  - Total calculation now uses food + tax + tip + delivery; `total_components_mismatch` should be 0.
 
 ## Goals
 - Normalize order/invoice exports from multiple providers into a single model.

@@ -56,13 +56,13 @@ All order-level parsers should emit these columns in this order:
 | `tax_withheld` | Sales tax withheld/remitted by the provider on our behalf. |
 | `tip` | Gratuity paid to our staff. |
 | `delivery_fee` | Delivery fee paid to us for fulfilling delivery. |
-| `total` | Customer total (what the customer paid). Typically `subtotal + tax + tip + delivery_fee`, and may include `tax_withheld` and/or adjustments (e.g., discounts) depending on provider. |
+| `total` | Customer total (what the customer paid). Typically `subtotal + tax + tax_withheld + tip + delivery_fee`, and may include adjustments (e.g., discounts or refunds) depending on provider. |
 | `processing_fee` | Merchant processing cost. |
 | `commission_fee` | Platform commission cost. |
 | `adjustments` | Positive or negative adjustments (refunds, disputes, miscellaneous credits/charges). |
 | `marketing_fee` | Marketing/promotional program fees. |
 | `misc_fee` | Fees that do not fit a specific category. |
-| `expected_payout` | Amount we expect to receive from the provider: `total` minus all fees and adjustments, excluding `tax_withheld` (since it is remitted to the government). For cash orders this can be `0` or negative if only fees apply. |
+| `expected_payout` | Amount we expect to receive from the provider. Computed as `total` minus all fees and adjustments, excluding `tax_withheld` (remitted to the government). For cash orders this can be `0` or negative if only fees apply. |
 | `payout` | Provider-reported payout for the order. |
 
 ## Parser Conventions

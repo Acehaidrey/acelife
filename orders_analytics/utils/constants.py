@@ -3,9 +3,8 @@ NORMALIZED_DIR = "orders_analytics/data/normalized"
 RAW_DIR = "orders_analytics/data/raw"
 ERRORS_PATH = "orders_analytics/data/errors/errors.csv"
 TAKEOUT_DIR = "Takeout"
-WAVE_DIR = "Takeout"
-WAVE_AMECI_DIR = "Takeout/wave_ameci"
-WAVE_AROMA_DIR = "Takeout/wave_aroma"
+WAVE_AMECI_DIR = f"{TAKEOUT_DIR}/wave_ameci"
+WAVE_AROMA_DIR = f"{TAKEOUT_DIR}/wave_aroma"
 
 
 def raw_path(*parts: str) -> str:
