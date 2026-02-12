@@ -112,9 +112,21 @@ Concerns / follow-ups:
       - `subtotal`/`tax` derived with 7.75% tax (`subtotal * 0.0775 = tax`, `subtotal + tax = total`),
       - `payment_type=credit`, `order_type=pickup`, and `order_datetime` set to the billing date.
     - Commissions are then allocated by order count across all period rows (including manual row, weighted by `max(1, |order_count_diff|)`), so `service_fees_diff_norm` should be 0 when including manual rows.
-- Cancellations file: `orders_analytics/data/raw/brygid/cancellations_raw.csv`
+  - Cancellations file: `orders_analytics/data/raw/brygid/cancellations_raw.csv`
   - Built from holiday closures (Thanksgiving/Christmas) and manual matches of period total differences.
   - Typically populated by reviewing `commission_check.csv` and adding order_ids that exactly match `total_sales_diff` for periods where `order_count_diff > 0`.
+
+## Order Inn
+- Source: `Takeout/wave_ameci/accounting.csv` (Wave transactions).
+- Extractor: `parsers/orderinn/extract_orderinn_raw.py`
+  - Filters `Account Group=expense`.
+  - Matches `order.*inn` (case-insensitive) in `Transaction Description` or `Transaction Line Description`.
+  - Output: `orders_analytics/data/raw/orderinn/commissions_raw.csv`.
+- Normalizer: `parsers/orderinn/normalize_orderinn_from_raw.py`
+  - Provider is always `AMECI`.
+  - Uses `Transaction Date` as `order_datetime`.
+  - Uses `Amount (One column)` (fallback to debit/credit) as `commission_fee`.
+  - Other money fields are blank; only commissions are represented for this provider.
 
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv` (downloaded from Google Sheets)

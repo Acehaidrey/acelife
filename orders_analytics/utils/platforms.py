@@ -17,6 +17,7 @@ class Platforms:
     SLICE = "slice"
     CHOWNOW = "chownow"
     BRYGID = "brygid"
+    ORDERINN = "orderinn"
 
     # list of inactive platforms that no longer partner with
     INACTIVE = {
@@ -25,6 +26,7 @@ class Platforms:
         FOODA,
         FOODEE,
         BRYGID,
+        ORDERINN,
     }
 
     @classmethod
@@ -45,6 +47,7 @@ class Platforms:
             cls.SLICE,
             cls.CHOWNOW,
             cls.BRYGID,
+            cls.ORDERINN,
         ]
 
     @classmethod
