@@ -41,6 +41,7 @@ class BaseParser:
     platform: str = ""
     provider: str = ""
     dedupe_key: str = "order_id"
+    tax_validation_skip_negative_payout: bool = False
     total_components_fields: Tuple[str, ...] = (
         "subtotal",
         "tax",
@@ -117,7 +118,14 @@ class BaseParser:
             validate_payout_expected,
         ]
         for validator in validators:
-            rows, errors = validator(rows, source=self.resolve_paths()[1])
+            if validator is validate_tax_fields:
+                rows, errors = validator(
+                    rows,
+                    source=self.resolve_paths()[1],
+                    skip_on_negative_payout=self.tax_validation_skip_negative_payout,
+                )
+            else:
+                rows, errors = validator(rows, source=self.resolve_paths()[1])
             if errors:
                 self.stats.errors.extend(errors)
         rows, errors = validate_total_components(

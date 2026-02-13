@@ -18,6 +18,7 @@ class Platforms:
     CHOWNOW = "chownow"
     BRYGID = "brygid"
     ORDERINN = "orderinn"
+    UBEREATS = "ubereats"
 
     # list of inactive platforms that no longer partner with
     INACTIVE = {
@@ -48,6 +49,7 @@ class Platforms:
             cls.CHOWNOW,
             cls.BRYGID,
             cls.ORDERINN,
+            cls.UBEREATS,
         ]
 
     @classmethod
@@ -67,6 +69,7 @@ class Platforms:
             cls.EZCATER,
             cls.MENUFY,
             cls.SLICE,
+            cls.UBEREATS,
         ]
 
     @classmethod

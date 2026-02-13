@@ -128,6 +128,33 @@ Concerns / follow-ups:
   - Uses `Amount (One column)` (fallback to debit/credit) as `commission_fee`.
   - Other money fields are blank; only commissions are represented for this provider.
 
+## Uber Eats
+- Source: `Takeout/uber-bc08b66d-0603-49ef-8186-07a637505732-united_states.csv`
+- Parser: `parsers/ubereats/parse_ubereats_orders.py`
+  - Skips first descriptive header row (`header=1`).
+  - Writes rows without `Order ID` and `Workflow ID` to `orders_analytics/data/raw/ubereats/no_order_ids.csv`.
+  - Provider inferred from `Store Name` (`AMECI`, `AROMA`, `WINGSHOP`, `TRATTORIA`).
+  - `order_datetime` from `Order Date` + `Order Accept Time` (00:00 AM if accept time missing).
+  - `order_type` defaults to pickup; if dining mode contains `Delivery - Partner Using Uber App` -> delivery.
+  - `payment_type` always credit.
+  - Totals mapping:
+    - `subtotal` = Sales (excl. tax)
+    - `tax` = Tax on Sales + Tax on Order Error Adjustments + Tax on Price Adjustments + Tax On Offers on items +
+      Tax On Delivery Offer Redemptions + Tax on Marketplace Fee + Tax on Delivery Network Fee + Tax On Delivery Fee + Markup Tax
+    - `total` = Total Sales after Adjustments (incl tax)
+    - `adjustments` = Order Error Adjustments + Price adjustments (excl. tax) + Other payments
+    - `marketing_fee` = Offers on items (incl. tax) + Delivery Offer Redemptions (incl. tax) + Offer Redemption Fee + Marketing Adjustment + Markup Amount
+    - `misc_fee` = Bag Fee + Delivery Network Fee
+    - `commission_fee` = Marketplace Fee
+    - `processing_fee` = Order Processing Fee
+    - `delivery_fee` = Delivery Fee
+    - `tip` = Tips
+    - `tax_withheld` = Marketplace Facilitator Tax Adjustment + Marketplace Facilitator Tax + Backup Withholding Tax
+    - `payout` = Total payout
+  - Notes include dining mode, order channel, order status, marketplace fee %, order error adjustments (incl tax),
+    capital payments, other payments description, and payout date.
+  - Refund rows for a shared Order ID/Workflow ID are aggregated into the base order by summing money fields.
+
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv` (downloaded from Google Sheets)
 - Annual billing summary: `orders_analytics/data/raw/beyondmenu/beyond_menu_annual_billing_summary.csv` (downloaded, not used yet)

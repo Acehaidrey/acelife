@@ -6,10 +6,12 @@ from datetime import datetime
 class Providers:
     AROMA = "AROMA"
     AMECI = "AMECI"
+    WINGSHOP = "WINGSHOP"
+    TRATTORIA = "TRATTORIA"
 
     @classmethod
     def all_providers(cls) -> list[str]:
-        return [cls.AROMA, cls.AMECI]
+        return [cls.AROMA, cls.AMECI, cls.WINGSHOP, cls.TRATTORIA]
 
 
 def normalize_provider(name: str) -> str:
@@ -18,6 +20,10 @@ def normalize_provider(name: str) -> str:
         return Providers.AROMA
     if "ameci" in text:
         return Providers.AMECI
+    if "wing" in text and "stop" in text:
+        return Providers.WINGSHOP
+    if "trattoria" in text:
+        return Providers.TRATTORIA
     return ""
 
 

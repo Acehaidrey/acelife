@@ -72,6 +72,12 @@ def run_parse(
         from orders_analytics.parsers.ezcater.parse_ezcater_orders import EzCaterOrdersParser
 
         runner = EzCaterOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.UBEREATS:
+        from orders_analytics.parsers.ubereats.parse_ubereats_orders import (
+            UberEatsOrdersParser,
+        )
+
+        runner = UberEatsOrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == Platforms.DELIVERYCOM:
         from orders_analytics.parsers.deliverycom.parse_deliverycom_orders import (
             DeliveryComOrdersParser,
@@ -664,6 +670,12 @@ def run_normalize(
         from orders_analytics.parsers.ezcater.parse_ezcater_orders import EzCaterOrdersParser
 
         runner = EzCaterOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.UBEREATS:
+        from orders_analytics.parsers.ubereats.parse_ubereats_orders import (
+            UberEatsOrdersParser,
+        )
+
+        runner = UberEatsOrdersParser(input_path=input_path, out_path=out_path, **extras)
     else:
         raise ValueError(f"Unknown platform: {platform}")
 

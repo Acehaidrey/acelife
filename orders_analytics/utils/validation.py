@@ -190,6 +190,7 @@ def validate_test_customer_names(
 def validate_tax_fields(
     rows: List[Dict[str, str]],
     source: str,
+    skip_on_negative_payout: bool = False,
 ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
     errors: List[Dict[str, str]] = []
     for row in rows:
@@ -198,6 +199,14 @@ def validate_tax_fields(
         tax_real = _is_real(tax_raw)
         tw_real = _is_real(tw_raw)
         order_type = str(row.get("order_type") or "").strip().lower()
+        if skip_on_negative_payout:
+            payout_raw = str(row.get("payout") or "").strip()
+            if _is_real(payout_raw):
+                try:
+                    if float(payout_raw) < 0:
+                        continue
+                except ValueError:
+                    pass
         if order_type == OrderTypes.PHONE_CALL and not tax_real and not tw_real:
             continue
         if tax_real == tw_real:

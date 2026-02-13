@@ -12,7 +12,7 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
-from orders_analytics.utils.constants import DEFAULT_DB_PATH, NORMALIZED_DIR
+from orders_analytics.utils.constants import DEFAULT_DB_PATH, NORMALIZED_DIR, ERRORS_PATH
 
 
 ORDER_COLUMNS = [
@@ -239,6 +239,26 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     return merged
 
 
+def load_errors() -> pd.DataFrame:
+    if not os.path.exists(ERRORS_PATH):
+        return pd.DataFrame()
+    df = pd.read_csv(ERRORS_PATH)
+    if "resolved" not in df.columns:
+        df["resolved"] = ""
+    if "resolved_time" not in df.columns:
+        df["resolved_time"] = ""
+    return df
+
+
+def resolve_error_row(row_id: int) -> None:
+    df = load_errors()
+    if df.empty or row_id not in df.index:
+        return
+    df.loc[row_id, "resolved"] = "true"
+    df.loc[row_id, "resolved_time"] = datetime.utcnow().isoformat()
+    df.to_csv(ERRORS_PATH, index=False)
+
+
 def add_date_grain(data: pd.DataFrame, grain: str) -> pd.DataFrame:
     if grain == "day":
         data["date_bucket"] = data["order_datetime"].dt.date
@@ -402,8 +422,8 @@ def main() -> None:
         filtered[col] = filtered[col].fillna(0.0)
 
     filtered = add_date_grain(filtered, grain)
-    tab_summary, tab_overrides, tab_orders, tab_customer, tab_delivery, tab_ameci = st.tabs(
-        ["Summary", "Overrides", "Orders", "Customer Search", "Delivery Map", "Ameci Royalty"]
+    tab_summary, tab_overrides, tab_errors, tab_orders, tab_customer, tab_delivery, tab_ameci = st.tabs(
+        ["Summary", "Overrides", "Errors", "Orders", "Customer Search", "Delivery Map", "Ameci Royalty"]
     )
 
     with tab_summary:
@@ -417,6 +437,8 @@ def main() -> None:
                 tip=("tip", "sum"),
                 delivery_fee=("delivery_fee", "sum"),
                 total=("total", "sum"),
+                expected_payout=("expected_payout", "sum"),
+                payout=("payout", "sum"),
             )
             .reset_index()
             .sort_values("date_bucket")
@@ -437,7 +459,6 @@ def main() -> None:
             "processing_fee",
             "adjustments",
             "marketing_fee",
-            "net_payout",
         ]
         summary_column_config = {
             col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in summary.columns
@@ -481,6 +502,8 @@ def main() -> None:
                 tip=("tip", "sum"),
                 delivery_fee=("delivery_fee", "sum"),
                 total=("total", "sum"),
+                expected_payout=("expected_payout", "sum"),
+                payout=("payout", "sum"),
             )
             .reset_index()
         )
@@ -503,6 +526,9 @@ def main() -> None:
             else:
                 monthly[col] = 0.0
         monthly = monthly.sort_values(["year", "month"], ascending=[False, False])
+        for col in ["year", "month"]:
+            if col in monthly.columns:
+                monthly[col] = pd.to_numeric(monthly[col], errors="coerce").astype("Int64")
         overrides = conn.execute("SELECT * FROM monthly_overrides").df()
         if not overrides.empty:
             if platform:
@@ -532,12 +558,9 @@ def main() -> None:
                 "tax_withheld",
                 "tip",
                 "delivery_fee",
-                "misc_fee",
-                "commission_fee",
-                "processing_fee",
-                "adjustments",
-                "marketing_fee",
                 "total",
+                "expected_payout",
+                "payout",
             ]:
                 if col in monthly.columns:
                     monthly[col] = monthly[col].fillna(0.0)
@@ -551,20 +574,10 @@ def main() -> None:
                 columns=[c for c in monthly.columns if c.endswith("_override")]
             )
             monthly = monthly.sort_values(["year", "month"], ascending=[False, False])
-        def positive_only(series):
-            return series.where(series > 0, 0)
+            for col in ["year", "month"]:
+                if col in monthly.columns:
+                    monthly[col] = pd.to_numeric(monthly[col], errors="coerce").astype("Int64")
 
-        monthly["net_payout"] = (
-            monthly["credit_subtotal"]
-            + monthly["tax"]
-            + monthly["tip"]
-            + monthly["delivery_fee"]
-            + monthly["adjustments"]
-            - positive_only(monthly["commission_fee"])
-            - positive_only(monthly["processing_fee"])
-            - positive_only(monthly["marketing_fee"])
-            - positive_only(monthly["misc_fee"])
-        )
         yearly_numeric_cols = [
             "orders",
             "cash_subtotal",
@@ -580,7 +593,8 @@ def main() -> None:
             "adjustments",
             "marketing_fee",
             "total",
-            "net_payout",
+            "expected_payout",
+            "payout",
         ]
         yearly = (
             monthly.groupby(["platform", "provider", "year"], dropna=False)[
@@ -590,6 +604,9 @@ def main() -> None:
             .reset_index()
             .sort_values(["year"], ascending=[False])
         )
+        if "year" in yearly.columns:
+            yearly["year"] = pd.to_numeric(yearly["year"], errors="coerce").astype("Int64")
+
         def render_monthly_rollup() -> None:
             st.subheader("Monthly Rollup")
             monthly_column_config = {
@@ -597,7 +614,54 @@ def main() -> None:
                 for col in money_cols
                 if col in monthly.columns
             }
-            st.dataframe(monthly, column_config=monthly_column_config, width="stretch")
+            ordered_monthly = [
+                col for col in [
+                    "platform",
+                    "provider",
+                    "year",
+                    "month",
+                    "orders",
+                    "cash_subtotal",
+                    "credit_subtotal",
+                    "subtotal",
+                    "tax",
+                    "tax_withheld",
+                    "tip",
+                    "delivery_fee",
+                    "total",
+                    "adjustments",
+                    "marketing_fee",
+                    "misc_fee",
+                    "processing_fee",
+                    "commission_fee",
+                    "expected_payout",
+                    "payout",
+                    "notes",
+                ] if col in monthly.columns
+            ] + [col for col in monthly.columns if col not in {
+                "platform",
+                "provider",
+                "year",
+                "month",
+                "orders",
+                "cash_subtotal",
+                "credit_subtotal",
+                "subtotal",
+                "tax",
+                "tax_withheld",
+                "tip",
+                "delivery_fee",
+                "total",
+                "adjustments",
+                "marketing_fee",
+                "misc_fee",
+                "processing_fee",
+                "commission_fee",
+                "expected_payout",
+                "payout",
+                "notes",
+            }]
+            st.dataframe(monthly[ordered_monthly], column_config=monthly_column_config, width="stretch")
 
         render_monthly_rollup()
         st.subheader("Yearly Rollup")
@@ -606,8 +670,50 @@ def main() -> None:
             for col in money_cols
             if col in yearly.columns
         }
-        st.dataframe(yearly, column_config=yearly_column_config, width="stretch")
-
+        ordered_yearly = [
+            col for col in [
+                "platform",
+                "provider",
+                "year",
+                "orders",
+                "cash_subtotal",
+                "credit_subtotal",
+                "subtotal",
+                "tax",
+                "tax_withheld",
+                "tip",
+                "delivery_fee",
+                "total",
+                "adjustments",
+                "marketing_fee",
+                "misc_fee",
+                "processing_fee",
+                "commission_fee",
+                "expected_payout",
+                "payout",
+            ] if col in yearly.columns
+        ] + [col for col in yearly.columns if col not in {
+            "platform",
+            "provider",
+            "year",
+            "orders",
+            "cash_subtotal",
+            "credit_subtotal",
+            "subtotal",
+            "tax",
+            "tax_withheld",
+            "tip",
+            "delivery_fee",
+            "total",
+            "adjustments",
+            "marketing_fee",
+            "misc_fee",
+            "processing_fee",
+            "commission_fee",
+            "expected_payout",
+            "payout",
+        }]
+        st.dataframe(yearly[ordered_yearly], column_config=yearly_column_config, width="stretch")
     with tab_overrides:
         st.subheader("Order Overrides")
         from orders_analytics.utils.order_types import OrderTypes
@@ -1067,6 +1173,33 @@ def main() -> None:
                 height=300,
             )
 
+
+    with tab_errors:
+        st.subheader("Errors")
+        errors_df = load_errors()
+        for col in ["year", "month"]:
+            if col in errors_df.columns:
+                errors_df[col] = pd.to_numeric(errors_df[col].replace("", pd.NA), errors="coerce").astype("Int64")
+        hide_resolved = st.checkbox("Hide resolved", value=True)
+        if hide_resolved and "resolved" in errors_df.columns:
+            errors_df = errors_df[errors_df["resolved"].astype(str).str.lower() != "true"]
+        st.caption(f"Errors: {len(errors_df)}")
+
+        if errors_df.empty:
+            st.info("No errors to display.")
+        else:
+            max_rows = st.number_input(
+                "Max errors to display", min_value=50, max_value=5000, value=500, step=50
+            )
+            errors_df = errors_df.reset_index().rename(columns={"index": "row_id"})
+            st.dataframe(errors_df.head(int(max_rows)), width="stretch")
+            for _, row in errors_df.head(int(max_rows)).iterrows():
+                with st.expander(f"{row.get('order_id','')} | {row.get('platform','')} | {row.get('provider','')} | {row.get('error_code','')}"):
+                    st.write(str(row.get("message", "")))
+                    if st.button("Resolve", key=f"resolve_{row['row_id']}"):
+                        resolve_error_row(int(row["row_id"]))
+                        st.rerun()
+
     with tab_orders:
         st.subheader("Filtered Orders")
         filtered_column_config = {
@@ -1262,8 +1395,7 @@ def main() -> None:
                 "marketing_fee",
                 "calculated_sales_amount",
                 "total",
-                "net_payout",
-                "royalty",
+                    "royalty",
             ]
             totals = {col: ameci_monthly[col].sum() for col in total_cols if col in ameci_monthly.columns}
             totals.update({"platform": "", "provider": "Total", "year": "", "month": ""})
