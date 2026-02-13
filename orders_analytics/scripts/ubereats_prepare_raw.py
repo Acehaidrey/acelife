@@ -12,6 +12,7 @@ import pandas as pd
 from orders_analytics.utils.constants import raw_path, takeout_path
 from orders_analytics.utils.providers import normalize_provider
 
+BACKFILL_PATH = takeout_path("uber_reports2022_missing_from_base.csv")
 
 NULL_LIKE = {"", "0", "0.0", "0.00", "0.000"}
 
@@ -180,6 +181,17 @@ def _build_duplicate_workflow(df: pd.DataFrame, workflow_col: str) -> pd.DataFra
 
 def run(source_path: str) -> None:
     df = _read_source(source_path)
+    backfill_df = pd.DataFrame()
+    if BACKFILL_PATH and Path(BACKFILL_PATH).exists():
+        backfill_df = _read_source(BACKFILL_PATH)
+        if "Order Date" in backfill_df.columns:
+            backfill_df["Order Date"] = pd.to_datetime(backfill_df["Order Date"], errors="coerce")
+            feb_mask = (backfill_df["Order Date"] >= "2021-02-01") & (backfill_df["Order Date"] < "2021-03-01")
+            if "Order ID" in backfill_df.columns and "Workflow ID" in backfill_df.columns:
+                backfill_feb = backfill_df[feb_mask].drop_duplicates(subset=["Order ID", "Workflow ID"])
+                backfill_other = backfill_df[~feb_mask]
+                backfill_df = pd.concat([backfill_other, backfill_feb], ignore_index=True)
+
     orig_cols = list(df.columns)
     colmap = {c.lower().strip(): c for c in orig_cols}
     os_raw = Path(raw_path("ubereats"))
@@ -188,7 +200,11 @@ def run(source_path: str) -> None:
     order_id_col = colmap.get("order id")
     workflow_col = colmap.get("workflow id")
 
-    no_ids = df[(df[order_id_col].str.strip() == "") & (df[workflow_col].str.strip() == "")].copy()
+    base_for_missing = df
+    if not backfill_df.empty:
+        base_for_missing = pd.concat([df, backfill_df], ignore_index=True)
+
+    no_ids = base_for_missing[(base_for_missing[order_id_col].str.strip() == "") & (base_for_missing[workflow_col].str.strip() == "")].copy()
     no_ids_out = os_raw / "no_order_ids.csv"
     if not no_ids.empty:
         _trim_columns(no_ids).to_csv(no_ids_out, index=False)
@@ -203,7 +219,7 @@ def run(source_path: str) -> None:
     else:
         no_ids_monthly_out.write_text("", encoding="utf-8")
 
-    with_ids = df[df[workflow_col].str.strip() != ""].copy()
+    with_ids = base_for_missing[base_for_missing[workflow_col].str.strip() != ""].copy()
     workflow_counts = with_ids[workflow_col].value_counts(dropna=False)
     dup_workflows = workflow_counts[workflow_counts > 1].index
     dup_df = with_ids[with_ids[workflow_col].isin(dup_workflows)].copy()
