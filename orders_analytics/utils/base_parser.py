@@ -146,9 +146,12 @@ class BaseParser:
             if not value:
                 return (1, "")
             try:
-                return (0, datetime.fromisoformat(value.replace("Z", "+00:00")))
+                dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
+                if dt.tzinfo is not None:
+                    dt = dt.replace(tzinfo=None)
+                return (0, dt)
             except ValueError:
-                return (0, value)
+                return (1, value)
 
         rows = sorted(rows, key=sort_key)
         return rows

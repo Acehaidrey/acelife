@@ -30,7 +30,10 @@ def _add_offers_excl(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def _read_source(path: str) -> pd.DataFrame:
-    return pd.read_csv(path, dtype=str, header=1, encoding="utf-8-sig").fillna("")
+    df = pd.read_csv(path, dtype=str, header=1, encoding="utf-8-sig").fillna("")
+    if "Order ID" not in df.columns:
+        df = pd.read_csv(path, dtype=str, header=0, encoding="utf-8-sig").fillna("")
+    return df
 
 
 def _is_null_like(series: pd.Series) -> pd.Series:
@@ -52,9 +55,8 @@ def _numeric_columns(df: pd.DataFrame, exclude: set[str]) -> List[str]:
         if col in exclude:
             continue
         series = df[col]
-        if series.dtype != object:
-            series = series.astype(str)
-        nums = pd.to_numeric(series.str.replace(",", "", regex=False), errors="coerce")
+        series_str = series.astype(str)
+        nums = pd.to_numeric(series_str.str.replace(",", "", regex=False), errors="coerce")
         if nums.notna().any():
             numeric_cols.append(col)
             df[col] = nums
@@ -69,9 +71,8 @@ def _join_distinct(series: pd.Series) -> str:
 def _round_numeric(df: pd.DataFrame) -> pd.DataFrame:
     for col in df.columns:
         series = df[col]
-        if series.dtype != object:
-            series = series.astype(str)
-        nums = pd.to_numeric(series.str.replace(",", "", regex=False), errors="coerce")
+        series_str = series.astype(str)
+        nums = pd.to_numeric(series_str.str.replace(",", "", regex=False), errors="coerce")
         if nums.notna().any():
             df[col] = nums.round(2).apply(lambda v: "" if pd.isna(v) else f"{v:.2f}")
     return df
@@ -203,6 +204,7 @@ def run(source_path: str) -> None:
     base_for_missing = df
     if not backfill_df.empty:
         base_for_missing = pd.concat([df, backfill_df], ignore_index=True)
+    extra_cols = [c for c in base_for_missing.columns if c not in orig_cols]
 
     no_ids = base_for_missing[(base_for_missing[order_id_col].str.strip() == "") & (base_for_missing[workflow_col].str.strip() == "")].copy()
     no_ids_out = os_raw / "no_order_ids.csv"
@@ -219,10 +221,11 @@ def run(source_path: str) -> None:
     else:
         no_ids_monthly_out.write_text("", encoding="utf-8")
 
-    with_ids = base_for_missing[base_for_missing[workflow_col].str.strip() != ""].copy()
-    workflow_counts = with_ids[workflow_col].value_counts(dropna=False)
+    workflow_present_base = base_for_missing[workflow_col].str.strip() != ""
+    with_ids = base_for_missing[(workflow_present_base) | (base_for_missing[order_id_col].str.strip() != "")].copy()
+    workflow_counts = base_for_missing[workflow_present_base][workflow_col].value_counts(dropna=False)
     dup_workflows = workflow_counts[workflow_counts > 1].index
-    dup_df = with_ids[with_ids[workflow_col].isin(dup_workflows)].copy()
+    dup_df = base_for_missing[workflow_present_base & base_for_missing[workflow_col].isin(dup_workflows)].copy()
 
     dup_out = os_raw / "duplicate_workflow_records.csv"
     if not dup_df.empty:
@@ -237,14 +240,15 @@ def run(source_path: str) -> None:
     else:
         merged_dup_out.write_text("", encoding="utf-8")
 
-    regular = with_ids[~with_ids[workflow_col].isin(dup_workflows)].copy()
+    workflow_present = with_ids[workflow_col].str.strip() != ""
+    regular = with_ids[~(workflow_present & with_ids[workflow_col].isin(dup_workflows))].copy()
 
     # align columns to original set + merged_row_count
     if not merged_dup.empty:
-        merged_dup = merged_dup.reindex(columns=orig_cols + ["merged_row_count"], fill_value="")
+        merged_dup = merged_dup.reindex(columns=orig_cols + extra_cols + ["merged_row_count"], fill_value="")
     if not no_ids_monthly.empty:
-        no_ids_monthly = no_ids_monthly.reindex(columns=orig_cols + ["merged_row_count"], fill_value="")
-    regular = regular.reindex(columns=orig_cols + ["merged_row_count"], fill_value="")
+        no_ids_monthly = no_ids_monthly.reindex(columns=orig_cols + extra_cols + ["merged_row_count"], fill_value="")
+    regular = regular.reindex(columns=orig_cols + extra_cols + ["merged_row_count"], fill_value="")
 
     stitched = pd.concat([regular, merged_dup, no_ids_monthly], ignore_index=True, sort=False)
     stitched = _add_offers_excl(stitched)
@@ -255,7 +259,7 @@ def run(source_path: str) -> None:
         idx = cols.index("Offers on items (incl. tax)") + 1
         cols.insert(idx, "Offers on items (excl. tax)")
         stitched = stitched[cols]
-    stitched = _reorder_all_null_columns(stitched, orig_cols + ["merged_row_count"])
+    stitched = _reorder_all_null_columns(stitched, orig_cols + extra_cols + ["merged_row_count"])
     stitched_out = os_raw / "ubereats_stitched_raw.csv"
     stitched.to_csv(stitched_out, index=False)
 

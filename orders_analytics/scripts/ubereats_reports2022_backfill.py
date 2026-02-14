@@ -128,11 +128,13 @@ def main() -> None:
         missing = missing.drop(columns=["__key__"])
 
     if POSTMATES_PATH.exists():
-        postmates = pd.read_csv(POSTMATES_PATH)
+        postmates = pd.read_csv(POSTMATES_PATH, dtype=str)
         if not postmates.empty:
             for col in base_cols:
                 if col not in postmates.columns:
                     postmates[col] = pd.NA
+            if "Order ID" in postmates.columns:
+                postmates["Order ID"] = postmates["Order ID"].astype(str).str.replace(r"\.0$", "", regex=True)
             postmates = postmates[base_cols + [c for c in postmates.columns if c not in base_cols]]
             missing = pd.concat([missing, postmates], ignore_index=True)
 

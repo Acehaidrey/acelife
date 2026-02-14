@@ -2,6 +2,7 @@
 import os
 import sys
 from datetime import datetime
+from pathlib import Path
 
 import duckdb
 import pandas as pd
@@ -259,6 +260,127 @@ def resolve_error_row(row_id: int) -> None:
     df.to_csv(ERRORS_PATH, index=False)
 
 
+def load_markdown_file(path: str) -> str:
+    file_path = Path(path)
+    if not file_path.exists():
+        return ""
+    return file_path.read_text(encoding="utf-8")
+
+
+def _format_mtime(path: Path) -> str:
+    if not path.exists():
+        return ""
+    return datetime.fromtimestamp(path.stat().st_mtime).isoformat(sep=" ", timespec="seconds")
+
+
+def build_sync_status() -> pd.DataFrame:
+    from orders_analytics.utils.platforms import Platforms
+
+    raw_root = Path("orders_analytics/data/raw")
+    normalized_root = Path("orders_analytics/data/normalized")
+    geocode_cache = Path("orders_analytics/data/raw/geocode_cache.csv")
+
+    rows = []
+    for platform in Platforms.all_platforms():
+        raw_dir = raw_root / platform
+        raw_last = ""
+        if raw_dir.exists():
+            raw_files = [p for p in raw_dir.rglob("*") if p.is_file()]
+            if raw_files:
+                raw_last = _format_mtime(max(raw_files, key=lambda p: p.stat().st_mtime))
+        normalized_path = normalized_root / f"{platform}_orders_normalized.csv"
+        normalized_last = _format_mtime(normalized_path)
+        status = "ok"
+        if not normalized_path.exists():
+            status = "missing_normalized"
+        elif raw_last and normalized_last and raw_last > normalized_last:
+            status = "stale_normalized"
+        rows.append({
+            "platform": platform,
+            "raw_last_modified": raw_last,
+            "normalized_last_modified": normalized_last,
+            "geocode_cache_modified": _format_mtime(geocode_cache),
+            "status": status,
+        })
+    return pd.DataFrame(rows)
+
+
+def load_wave_payouts(provider: str) -> pd.DataFrame:
+    path = Path(f"orders_analytics/data/raw/{provider}/wave_payouts_ameci.csv")
+    if not path.exists():
+        return pd.DataFrame()
+    df = pd.read_csv(path)
+    df.columns = [c.strip().lower() for c in df.columns]
+    # date column
+    date_col = None
+    for col in df.columns:
+        if col in ("transaction date", "date"):
+            date_col = col
+            break
+    if date_col is None:
+        return pd.DataFrame()
+    df["transaction_date"] = pd.to_datetime(df[date_col], errors="coerce")
+    # amount column
+    amount_col = None
+    if "amount (one column)" in df.columns:
+        amount_col = "amount (one column)"
+        df["amount"] = pd.to_numeric(df[amount_col], errors="coerce")
+    else:
+        credit = pd.to_numeric(df.get("credit amount (two column approach)"), errors="coerce")
+        debit = pd.to_numeric(df.get("debit amount (two column approach)"), errors="coerce")
+        df["amount"] = credit.fillna(0) - debit.fillna(0)
+    return df
+
+
+def build_global_status() -> pd.DataFrame:
+    rows = []
+    geocode_cache = Path("orders_analytics/data/raw/geocode_cache.csv")
+    errors_path = Path(ERRORS_PATH)
+    normalized_root = Path("orders_analytics/data/normalized")
+    raw_root = Path("orders_analytics/data/raw")
+
+    rows.append({"artifact": "geocode_cache", "last_modified": _format_mtime(geocode_cache)})
+    rows.append({"artifact": "errors", "last_modified": _format_mtime(errors_path)})
+    if normalized_root.exists():
+        norm_files = [p for p in normalized_root.glob("*.csv") if p.is_file()]
+        rows.append({"artifact": "normalized_latest", "last_modified": _format_mtime(max(norm_files, key=lambda p: p.stat().st_mtime)) if norm_files else ""})
+    else:
+        rows.append({"artifact": "normalized_latest", "last_modified": ""})
+    if raw_root.exists():
+        raw_files = [p for p in raw_root.rglob("*") if p.is_file()]
+        rows.append({"artifact": "raw_latest", "last_modified": _format_mtime(max(raw_files, key=lambda p: p.stat().st_mtime)) if raw_files else ""})
+    else:
+        rows.append({"artifact": "raw_latest", "last_modified": ""})
+    return pd.DataFrame(rows)
+
+
+def load_wave_payouts(provider: str) -> pd.DataFrame:
+    path = Path(f"orders_analytics/data/raw/{provider}/wave_payouts_ameci.csv")
+    if not path.exists():
+        return pd.DataFrame()
+    df = pd.read_csv(path)
+    df.columns = [c.strip().lower() for c in df.columns]
+    # date column
+    date_col = None
+    for col in df.columns:
+        if col in ("transaction date", "date"):
+            date_col = col
+            break
+    if date_col is None:
+        return pd.DataFrame()
+    df["transaction_date"] = pd.to_datetime(df[date_col], errors="coerce")
+    # amount column
+    amount_col = None
+    if "amount (one column)" in df.columns:
+        amount_col = "amount (one column)"
+        df["amount"] = pd.to_numeric(df[amount_col], errors="coerce")
+    else:
+        credit = pd.to_numeric(df.get("credit amount (two column approach)"), errors="coerce")
+        debit = pd.to_numeric(df.get("debit amount (two column approach)"), errors="coerce")
+        df["amount"] = credit.fillna(0) - debit.fillna(0)
+    return df
+
+
 def add_date_grain(data: pd.DataFrame, grain: str) -> pd.DataFrame:
     if grain == "day":
         data["date_bucket"] = data["order_datetime"].dt.date
@@ -422,9 +544,32 @@ def main() -> None:
         filtered[col] = filtered[col].fillna(0.0)
 
     filtered = add_date_grain(filtered, grain)
-    tab_summary, tab_overrides, tab_errors, tab_orders, tab_customer, tab_delivery, tab_ameci = st.tabs(
-        ["Summary", "Overrides", "Errors", "Orders", "Customer Search", "Delivery Map", "Ameci Royalty"]
+    tab_summary, tab_recon, tab_overview, tab_notes, tab_status, tab_overrides, tab_errors, tab_orders, tab_customer, tab_delivery, tab_ameci = st.tabs(
+        ["Summary", "Payout Reconciliation", "Overview", "Provider Notes", "Status", "Overrides", "Errors", "Orders", "Customer Search", "Delivery Map", "Ameci Royalty"]
     )
+
+    with tab_overview:
+        st.subheader("Project Overview")
+        readme = load_markdown_file("orders_analytics/README.md")
+        if readme:
+            st.markdown(readme)
+        else:
+            st.info("README not found.")
+
+    with tab_notes:
+        st.subheader("Provider Notes")
+        notes = load_markdown_file("orders_analytics/parsers/PROVIDER_NOTES.md")
+        if notes:
+            st.markdown(notes)
+        else:
+            st.info("Provider notes not found.")
+
+    with tab_status:
+        st.subheader("Sync Status")
+        st.caption("Raw vs normalized timestamps, plus geocode cache freshness.")
+        st.dataframe(build_sync_status(), width="stretch")
+        st.subheader("Artifacts")
+        st.dataframe(build_global_status(), width="stretch")
 
     with tab_summary:
         summary = (
@@ -714,6 +859,66 @@ def main() -> None:
             "payout",
         }]
         st.dataframe(yearly[ordered_yearly], column_config=yearly_column_config, width="stretch")
+    with tab_recon:
+        st.subheader("Payout Reconciliation")
+        base_recon = filtered.copy()
+        missing_dates = base_recon["order_datetime"].isna().sum()
+        if missing_dates:
+            st.caption(f"Rows missing order_datetime: {missing_dates}")
+        base_recon = base_recon[base_recon["order_datetime"].notna()]
+        if base_recon.empty:
+            st.info("No records in current filters.")
+        else:
+            platform_values = sorted(base_recon["platform"].dropna().astype(str).str.lower().unique().tolist())
+            if len(platform_values) != 1:
+                st.info("Select a single platform in the filters to view payout reconciliation.")
+            else:
+                selected_platform = platform_values[0]
+                st.caption(f"Platform: {selected_platform}")
+                base_recon["order_month"] = base_recon["order_datetime"].dt.to_period("M").dt.to_timestamp()
+                base_recon["expected_payout"] = pd.to_numeric(base_recon["expected_payout"], errors="coerce").fillna(0.0)
+                base_recon["payout"] = pd.to_numeric(base_recon["payout"], errors="coerce").fillna(0.0)
+                expected_monthly = (
+                    base_recon.groupby("order_month")
+                    .agg(expected_payout_sum=("expected_payout", "sum"), payout_sum=("payout", "sum"), orders=("order_id", "count"))
+                    .reset_index()
+                )
+                wave = load_wave_payouts(selected_platform)
+                if wave.empty:
+                    st.warning(f"No Wave payout records found for {selected_platform} (wave_payouts_ameci.csv).")
+                    combined = expected_monthly.copy()
+                    combined["wave_payout_sum"] = 0.0
+                else:
+                    wave = wave.dropna(subset=["transaction_date"]).assign(
+                        payout_month=lambda d: d["transaction_date"].dt.to_period("M").dt.to_timestamp()
+                    )
+                    wave_monthly = (
+                        wave.groupby("payout_month")
+                        .agg(wave_payout_sum=("amount", "sum"))
+                        .reset_index()
+                    )
+                    combined = expected_monthly.merge(
+                        wave_monthly,
+                        left_on="order_month",
+                        right_on="payout_month",
+                        how="outer",
+                    )
+                    if "order_month" in combined.columns and "payout_month" in combined.columns:
+                        combined["order_month"] = combined["order_month"].combine_first(combined["payout_month"])
+                    combined = combined.drop(columns=[c for c in ["payout_month"] if c in combined.columns])
+                combined["expected_payout_sum"] = combined.get("expected_payout_sum", 0.0).fillna(0.0)
+                combined["payout_sum"] = combined.get("payout_sum", 0.0).fillna(0.0)
+                combined["wave_payout_sum"] = combined.get("wave_payout_sum", 0.0).fillna(0.0)
+                combined["delta_wave_vs_expected"] = combined["wave_payout_sum"] - combined["expected_payout_sum"]
+                combined = combined.sort_values("order_month")
+
+                st.dataframe(combined, width="stretch")
+
+                st.subheader("Wave Payout Transactions")
+                if wave.empty:
+                    st.info("No payout transactions to show.")
+                else:
+                    st.dataframe(wave.sort_values("transaction_date", ascending=False), width="stretch", height=400)
     with tab_overrides:
         st.subheader("Order Overrides")
         from orders_analytics.utils.order_types import OrderTypes
@@ -1363,6 +1568,7 @@ def main() -> None:
 
     with tab_ameci:
         st.subheader("Ameci Royalty (Monthly)")
+        st.caption("Royalty providers only: Toast, UberEats, Grubhub, Slice, DoorDash")
         ameci_monthly = monthly[monthly["provider"].astype(str).str.upper() == "AMECI"].copy()
         if ameci_monthly.empty:
             st.info("No AMECI records in current filters.")
@@ -1378,6 +1584,12 @@ def main() -> None:
                 + ameci_monthly["marketing_fee"]
             )
             ameci_monthly["royalty"] = ameci_monthly["calculated_sales_amount"] * 0.04
+
+            royalty_platforms = {"toast", "ubereats", "grubhub", "slice", "doordash"}
+            ameci_royalty_only = ameci_monthly[ameci_monthly["platform"].astype(str).str.lower().isin(royalty_platforms)].copy()
+            if not ameci_royalty_only.empty:
+                st.subheader("Royalty Providers Only")
+                st.dataframe(ameci_royalty_only, width="stretch")
 
             total_cols = [
                 "orders",
@@ -1397,6 +1609,7 @@ def main() -> None:
                 "total",
                     "royalty",
             ]
+            st.subheader("All Providers")
             totals = {col: ameci_monthly[col].sum() for col in total_cols if col in ameci_monthly.columns}
             totals.update({"platform": "", "provider": "Total", "year": "", "month": ""})
             ameci_monthly = ameci_monthly.copy()

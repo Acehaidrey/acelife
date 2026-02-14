@@ -392,6 +392,15 @@ class UberEatsOrdersParser(BaseParser):
                 else:
                     final_order_id = order_id_value
 
+            customer_col = _col(mapping, "customer_name")
+            items_col = _col(mapping, "items")
+            customer_name = ""
+            items_value = ""
+            if customer_col in group.columns:
+                customer_name = _merge_notes([str(v).strip() for v in group[customer_col].tolist() if str(v).strip()])
+            if items_col in group.columns:
+                items_value = _merge_notes([str(v).strip() for v in group[items_col].tolist() if str(v).strip()])
+
             row_data = build_normalized_row(
                 Platforms.UBEREATS.upper(),
                 order_id=final_order_id,
@@ -412,6 +421,8 @@ class UberEatsOrdersParser(BaseParser):
                 marketing_fee=marketing_fee,
                 misc_fee=misc_fee,
                 payout=payout,
+                customer_name=customer_name,
+                items=items_value,
                 notes=_merge_notes(notes),
             )
             rows.append(row_data)

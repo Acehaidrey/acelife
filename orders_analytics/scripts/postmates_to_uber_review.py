@@ -43,6 +43,25 @@ def within_cutoff(path: Path) -> bool:
     return True
 
 
+def _parse_postmates_date(series: pd.Series) -> pd.Series:
+    s = series.astype(str).str.strip()
+    # remove timezone/parenthetical suffix
+    s = s.str.replace(r" GMT.*", "", regex=True)
+    dt = pd.to_datetime(s, errors="coerce", format="%a %b %d %Y %H:%M:%S")
+    return dt
+
+
+def _clean_money(series: pd.Series) -> pd.Series:
+    s = series.astype(str).str.replace(",", "", regex=False)
+    s = s.str.replace("$", "", regex=False).str.strip()
+    # convert (4.69) -> -4.69
+    neg = s.str.startswith("(") & s.str.endswith(")")
+    s = s.str.strip("()")
+    nums = pd.to_numeric(s, errors="coerce")
+    nums[neg] = -nums[neg]
+    return nums
+
+
 def main() -> None:
     if not UBER_BASE.exists():
         raise SystemExit(f"Missing base Uber file: {UBER_BASE}")
@@ -58,32 +77,37 @@ def main() -> None:
         df = df.copy()
         # Parse Date into Order Date and Order Accept Time
         if "Date" in df.columns:
-            dt = pd.to_datetime(df["Date"], errors="coerce")
-            df["Order Date"] = dt.dt.date.astype(str)
+            dt = _parse_postmates_date(df["Date"])
+            df["Order Date"] = dt.dt.strftime("%Y-%m-%d")
             df["Order Accept Time"] = dt.dt.strftime("%I:%M %p")
         # Map Postmates fields into Uber columns
         mapped = pd.DataFrame({col: ["" for _ in range(len(df))] for col in uber_cols})
         mapped["Store Name"] = df.get("Place Nickname", "")
-        mapped["Order ID"] = df.get("Order", "")
+        base_order_id = df.get("Order", "").astype(str).str.replace(r"\.0$", "", regex=True)
+        base_order_id = base_order_id.replace({"nan": "", "None": ""})
+        order_date = df.get("Order Date", "").astype(str)
+        mapped["Order ID"] = base_order_id + "_" + order_date.str.replace("-", "_", regex=False)
         mapped["Dining Mode"] = df.get("Order Type", "")
         mapped["Order Status"] = df.get("Order State", "")
         mapped["Order Date"] = df.get("Order Date", "")
         mapped["Order Accept Time"] = df.get("Order Accept Time", "")
-        mapped["Sales (excl. tax)"] = df.get("Subtotal", "")
-        mapped["Tax on Sales"] = df.get("Tax", "")
-        mapped["Sales (incl. tax)"] = df.get("Total", "")
-        mapped["Total Sales after Adjustments (incl tax)"] = df.get("Total", "")
-        mapped["Order Error Adjustments"] = df.get("Adjustments", "")
-        mapped["Offers on items (incl. tax)"] = df.get("Promotion Cost", "")
-        mapped["Delivery Network Fee"] = df.get("Fees", "")
-        mapped["Delivery Fee"] = df.get("API Delivery Fee", "")
-        mapped["Tips"] = df.get("Tip", "")
-        mapped["Marketplace Fee"] = df.get("Commission", "")
+        mapped["Sales (excl. tax)"] = _clean_money(df.get("Subtotal", ""))
+        mapped["Tax on Sales"] = _clean_money(df.get("Tax", ""))
+        mapped["Sales (incl. tax)"] = _clean_money(df.get("Total", ""))
+        mapped["Total Sales after Adjustments (incl tax)"] = _clean_money(df.get("Total", ""))
+        mapped["Order Error Adjustments"] = _clean_money(df.get("Adjustments", ""))
+        mapped["Offers on items (incl. tax)"] = _clean_money(df.get("Promotion Cost", ""))
+        mapped["Delivery Network Fee"] = _clean_money(df.get("Fees", ""))
+        mapped["Delivery Fee"] = _clean_money(df.get("API Delivery Fee", ""))
+        mapped["Tips"] = _clean_money(df.get("Tip", ""))
+        mapped["Marketplace Fee"] = _clean_money(df.get("Commission", ""))
         mapped["Other payments description"] = df.get("Issues", "")
-        mapped["Other payments"] = df.get("Reimbursement", "")
-        mapped["Total payout "] = df.get("Payout", "")
-        mapped["Payout Date"] = df.get("Date", "")
+        mapped["Other payments"] = _clean_money(df.get("Reimbursement", ""))
+        mapped["Total payout "] = _clean_money(df.get("Payout", ""))
+        mapped["Payout Date"] = ""
         mapped["Order Channel"] = "Postmates"
+        mapped["customer_name"] = df.get("Customer Name", "")
+        mapped["items"] = df.get("items", "")
         mapped["source_file"] = str(path)
 
         frames.append(mapped)
