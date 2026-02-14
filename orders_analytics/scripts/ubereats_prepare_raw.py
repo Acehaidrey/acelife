@@ -33,6 +33,34 @@ def _read_source(path: str) -> pd.DataFrame:
     df = pd.read_csv(path, dtype=str, header=1, encoding="utf-8-sig").fillna("")
     if "Order ID" not in df.columns:
         df = pd.read_csv(path, dtype=str, header=0, encoding="utf-8-sig").fillna("")
+    column_map = {
+        "Order Date / Refund date": "Order Date",
+        "Order Date/Refund Date": "Order Date",
+        "Food Sales (excluding tax)": "Sales (excl. tax)",
+        "Tax on Food Sales": "Tax on Sales",
+        "Food sales (including tax)": "Sales (incl. tax)",
+        "Total Sales after Adjustments (including tax)": "Total Sales after Adjustments (incl tax)",
+        "Total Sales after Adjustments (incl. tax)": "Total Sales after Adjustments (incl tax)",
+        "Total Sales After Adjustments (incl tax)": "Total Sales after Adjustments (incl tax)",
+        "Total Sales After Adjustments (incl. tax)": "Total Sales after Adjustments (incl tax)",
+        "Adjustments (excluding tax)": "Price adjustments (excl. tax)",
+        "Tax on Adjustments": "Tax on Price Adjustments",
+        "Promo Spend on food": "Offers on items (incl. tax)",
+        "Tax on Promotion on Food": "Tax On Offers on items",
+        "Promo Spend on Delivery": "Delivery Offer Redemptions (incl. tax)",
+        "Tax on Promo Spend on Delivery": "Tax On Delivery Offer Redemptions",
+        "Marketing Service Fee Adjustment": "Marketing Adjustment",
+        "Uber Service Fee": "Marketplace Fee",
+        "Gratuity": "Tips",
+        "Miscellaneous Payments": "Other payments",
+        "Misc Payment Description": "Other payments description",
+        "Payout": "Total payout ",
+        "Dispatch Fee": "Delivery Network Fee",
+        "Tax on Dispatch Fee": "Tax on Delivery Network Fee",
+        "Marketplace Facilitator Tax Adjustment": "Marketplace Facilitator Tax Adjustment\n",
+    }
+    df = df.rename(columns={k: v for k, v in column_map.items() if k in df.columns})
+    df = df.loc[:, ~df.columns.duplicated()]
     return df
 
 

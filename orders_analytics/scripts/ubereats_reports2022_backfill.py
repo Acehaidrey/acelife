@@ -32,15 +32,30 @@ def read_uber_csv(path: Path) -> pd.DataFrame:
         "Order Date / Refund date": "Order Date",
         "Order Date/Refund Date": "Order Date",
         "Food Sales (excluding tax)": "Sales (excl. tax)",
+        "Tax on Food Sales": "Tax on Sales",
         "Food sales (including tax)": "Sales (incl. tax)",
         "Total Sales after Adjustments (including tax)": "Total Sales after Adjustments (incl tax)",
         "Total Sales after Adjustments (incl. tax)": "Total Sales after Adjustments (incl tax)",
         "Total Sales After Adjustments (incl tax)": "Total Sales after Adjustments (incl tax)",
         "Total Sales After Adjustments (incl. tax)": "Total Sales after Adjustments (incl tax)",
+        "Adjustments (excluding tax)": "Price adjustments (excl. tax)",
+        "Tax on Adjustments": "Tax on Price Adjustments",
+        "Promo Spend on food": "Offers on items (incl. tax)",
+        "Tax on Promotion on Food": "Tax On Offers on items",
+        "Promo Spend on Delivery": "Delivery Offer Redemptions (incl. tax)",
+        "Tax on Promo Spend on Delivery": "Tax On Delivery Offer Redemptions",
+        "Marketing Service Fee Adjustment": "Marketing Adjustment",
+        "Uber Service Fee": "Marketplace Fee",
+        "Gratuity": "Tips",
+        "Miscellaneous Payments": "Other payments",
+        "Misc Payment Description": "Other payments description",
+        "Payout": "Total payout ",
+        "Dispatch Fee": "Delivery Network Fee",
+        "Tax on Dispatch Fee": "Tax on Delivery Network Fee",
         "Marketplace Facilitator Tax Adjustment": "Marketplace Facilitator Tax Adjustment\n",
-        "Payout": "Total payout "
     }
     df = df.rename(columns={k: v for k, v in column_map.items() if k in df.columns})
+    df = df.loc[:, ~df.columns.duplicated()]
     return df
 
 
