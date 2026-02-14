@@ -86,7 +86,7 @@ def main() -> None:
         base_order_id = df.get("Order", "").astype(str).str.replace(r"\.0$", "", regex=True)
         base_order_id = base_order_id.replace({"nan": "", "None": ""})
         order_date = df.get("Order Date", "").astype(str)
-        mapped["Order ID"] = base_order_id + "_" + order_date.str.replace("-", "_", regex=False)
+        mapped["Order ID"] = base_order_id + "|" + order_date.str.replace("-", "_", regex=False)
         mapped["Dining Mode"] = df.get("Order Type", "")
         mapped["Order Status"] = df.get("Order State", "")
         mapped["Order Date"] = df.get("Order Date", "")
