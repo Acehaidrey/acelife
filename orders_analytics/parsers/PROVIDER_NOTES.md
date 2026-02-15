@@ -154,6 +154,25 @@ Concerns / follow-ups:
   - Notes include dining mode, order channel, order status, marketplace fee %, order error adjustments (incl tax),
     capital payments, other payments description, and payout date.
   - Refund rows for a shared Order ID/Workflow ID are aggregated into the base order by summing money fields.
+  - Backfill + stitching:
+    - Base export starts at 2021-02-11; reports2022 backfill only includes rows **before** 2021-02-11 to avoid overlap.
+    - Backfill scans both `Takeout/reports2022/Ameci/...` and `Takeout/reports2022/Aroma/...` including folders like
+      `2021_01` and `2021_02` (underscore naming).
+    - `Takeout/uber_reports2022_missing_from_base.csv` includes:
+      - Rows missing in the base export (by Order ID + Workflow ID + Store + Date + Time).
+      - Postmates rows (`Takeout/postmates_missing_as_uber.csv`) mapped to Uber columns.
+      - Rows with empty `Order ID` (ad spend/credits/refunds) so they flow into `no_order_ids.csv`.
+    - Postmates order IDs are normalized to `OrderID|YYYY_MM_DD` to avoid collisions.
+  - Empty Order ID handling (ads/credits/refunds):
+    - Raw rows with empty `Order ID` and `Workflow ID` are written to `orders_analytics/data/raw/ubereats/no_order_ids.csv`.
+    - `Order Date` for these rows is filled using `Payout Date` when missing.
+    - If both `Order Date` and `Payout Date` are missing, `Order Date` is inferred from the source file path
+      (year/month in `.../YYYY/MM/...` or `.../YYYY_MM/...`) and set to the **last day of that month**.
+    - Monthly aggregation file `orders_analytics/data/raw/ubereats/no_order_ids_other_payments_monthly.csv` groups
+      by Store + month + other payments description and generates `UBER_OTHER_<hash>` order IDs.
+  - Legacy column mapping:
+    - Older reports use columns like `Tax on Food Sales`, `Uber Service Fee`, `Gratuity`, `Misc Payment Description`,
+      and `Payout`. These are normalized to the modern Uber export column names during backfill/stitching.
 
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv` (downloaded from Google Sheets)
