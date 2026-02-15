@@ -56,12 +56,15 @@ def merge_billings(orders: List[Dict[str, str]], billings: List[Dict[str, str]])
             row["commission_fee"] = billing.get("commission_fee")
         if billing.get("processing_fee"):
             row["processing_fee"] = billing.get("processing_fee")
+        notes_parts = []
         if billing.get("payout"):
-            note = f"statement_payout={billing.get('payout')}"
-            row["notes"] = " | ".join([row.get("notes", ""), note]).strip(" |")
+            notes_parts.append(f"statement_payout={billing.get('payout')}")
         if billing.get("statement_id"):
-            note = f"statement_id={billing.get('statement_id')}"
-            row["notes"] = " | ".join([row.get("notes", ""), note]).strip(" |")
+            notes_parts.append(f"statement_id={billing.get('statement_id')}")
+        if notes_parts:
+            row["notes"] = " | ".join(notes_parts)
+        else:
+            row["notes"] = ""
         if mismatches:
             row["errors"] = " | ".join([row.get("errors", ""), *mismatches]).strip(" |")
     return orders
@@ -70,6 +73,16 @@ def merge_billings(orders: List[Dict[str, str]], billings: List[Dict[str, str]])
 def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     normalized = []
     for row in rows:
+        # Strip customer notes; keep only statement_* notes if present.
+        notes = row.get("notes", "")
+        if notes:
+            kept = []
+            for part in notes.split(" | "):
+                if part.startswith("statement_"):
+                    kept.append(part)
+            row["notes"] = " | ".join(kept)
+        else:
+            row["notes"] = ""
         tax = row.get("tax", "")
         commission_fee = row.get("commission_fee", "")
         processing_fee = row.get("processing_fee", "")
