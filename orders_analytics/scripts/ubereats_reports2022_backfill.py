@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 from typing import Iterable, List, Tuple
 
@@ -79,6 +80,54 @@ def build_keys(df: pd.DataFrame) -> List[str]:
     return (parts[0] + "|" + parts[1] + "|" + parts[2] + "|" + parts[3] + "|" + parts[4]).tolist()
 
 
+
+
+def _extract_year_month(path: Path) -> tuple[int | None, int | None]:
+    year = None
+    month = None
+    # Handle folder names like 2021_02 or 2021-02
+    for part in path.parts:
+        m = re.match(r"^(\d{4})[_-](\d{2})$", part)
+        if m:
+            year = int(m.group(1))
+            month = int(m.group(2))
+        if part.isdigit() and len(part) == 4:
+            year = int(part)
+        if part.isdigit() and len(part) == 2:
+            try:
+                mo = int(part)
+            except ValueError:
+                continue
+            if 1 <= mo <= 12:
+                month = mo
+    return year, month
+
+
+
+
+def _infer_order_date_from_source(source: str) -> str:
+    if not source:
+        return ""
+    parts = str(source).split('/')
+    year = None
+    month = None
+    for part in parts:
+        m = re.match(r"^(\d{4})[_-](\d{2})$", part)
+        if m:
+            year = int(m.group(1))
+            month = int(m.group(2))
+        if part.isdigit() and len(part) == 4:
+            year = int(part)
+        if part.isdigit() and len(part) == 2:
+            mo = int(part)
+            if 1 <= mo <= 12:
+                month = mo
+    if year and month:
+        last_day = __import__("calendar").monthrange(year, month)[1]
+        return f"{year:04d}-{month:02d}-{last_day:02d}"
+    return ""
+
+
 def iter_report_files() -> Iterable[Path]:
     roots = [REPORTS_ROOT / "Ameci", REPORTS_ROOT / "Aroma"]
     for root in roots:
@@ -99,30 +148,33 @@ def main() -> None:
     base_keys = set(build_keys(base_df))
 
     frames = []
+    empty_order_frames = []
     for path in sorted(iter_report_files()):
-        parts = path.parts
-        year = None
-        month = None
-        for part in parts:
-            if part.isdigit() and len(part) == 4:
-                year = int(part)
-            if part.isdigit() and len(part) == 2:
-                try:
-                    m = int(part)
-                except ValueError:
-                    continue
-                if 1 <= m <= 12:
-                    month = m
+        year, month = _extract_year_month(path)
         if year is None or year < 2020 or year > 2021:
             continue
         if year == 2021 and (month is None or month > 2):
             continue
 
         df = read_uber_csv(path)
+        if "Order Date" in df.columns:
+            order_dates = pd.to_datetime(df["Order Date"], errors="coerce")
+            cutoff = pd.Timestamp("2021-02-11")
+            if "Order ID" in df.columns:
+                empty_rows = df[(df["Order ID"].fillna("").astype(str).str.strip() == "") & (order_dates.isna())]
+                if not empty_rows.empty:
+                    empty_rows = empty_rows.copy()
+                    empty_rows["source_file"] = str(path)
+                    empty_order_frames.append(empty_rows)
+            df = df[(order_dates < cutoff) | (order_dates.isna())]
         if df.empty:
             continue
         df = df.copy()
         df["source_file"] = str(path)
+        if "Order ID" in df.columns:
+            empty_rows = df[df["Order ID"].fillna("").astype(str).str.strip() == ""]
+            if not empty_rows.empty:
+                empty_order_frames.append(empty_rows)
         # Reindex to base columns (plus source_file)
         for col in base_cols:
             if col not in df.columns:
@@ -142,6 +194,14 @@ def main() -> None:
     if not missing.empty and "__key__" in missing.columns:
         missing = missing.drop(columns=["__key__"])
 
+    if empty_order_frames:
+        empty_rows = pd.concat(empty_order_frames, ignore_index=True)
+        for col in base_cols:
+            if col not in empty_rows.columns:
+                empty_rows[col] = pd.NA
+        empty_rows = empty_rows[base_cols + ["source_file"]]
+        missing = pd.concat([missing, empty_rows], ignore_index=True)
+
     if POSTMATES_PATH.exists():
         postmates = pd.read_csv(POSTMATES_PATH, dtype=str)
         if not postmates.empty:
@@ -152,6 +212,21 @@ def main() -> None:
                 postmates["Order ID"] = postmates["Order ID"].astype(str).str.replace(r"\.0$", "", regex=True)
             postmates = postmates[base_cols + [c for c in postmates.columns if c not in base_cols]]
             missing = pd.concat([missing, postmates], ignore_index=True)
+
+    # Fill Order Date for empty Order ID rows when missing.
+    if "Order Date" in missing.columns:
+        order_raw = missing["Order Date"].fillna("").astype(str).str.strip()
+        payout_raw = missing["Payout Date"].fillna("").astype(str).str.strip() if "Payout Date" in missing.columns else ""
+        # prefer payout date when order date missing
+        if isinstance(payout_raw, str):
+            payout_raw = order_raw
+        filled = order_raw.where(order_raw != "", payout_raw)
+        if "source_file" in missing.columns:
+            still_missing = filled.fillna("").astype(str).str.strip() == ""
+            if still_missing.any():
+                inferred = [ _infer_order_date_from_source(v) for v in missing.loc[still_missing, "source_file"] ]
+                filled.loc[still_missing] = inferred
+        missing["Order Date"] = filled
 
     if missing.empty:
         print("No missing rows found.")

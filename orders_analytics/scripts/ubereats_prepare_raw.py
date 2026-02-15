@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import calendar
 import hashlib
+import re
 from pathlib import Path
 from typing import List
 
@@ -120,6 +121,27 @@ def _reorder_all_null_columns(df: pd.DataFrame, original_order: List[str]) -> pd
     return df[keep_cols + empty_cols]
 
 
+
+
+def _extract_year_month_from_path(value: str) -> tuple[int | None, int | None]:
+    if not value:
+        return None, None
+    parts = str(value).split('/')
+    year = None
+    month = None
+    for part in parts:
+        if re.match(r"^\d{4}[_-]\d{2}$", part):
+            year = int(part[:4])
+            month = int(part[5:7])
+        elif part.isdigit() and len(part) == 4:
+            year = int(part)
+        elif part.isdigit() and len(part) == 2:
+            m = int(part)
+            if 1 <= m <= 12:
+                month = m
+    return year, month
+
+
 def _last_day_date(month_value: str) -> str:
     text = str(month_value or "").strip()
     if not text or text.lower() == "nan":
@@ -144,6 +166,14 @@ def _build_no_ids_monthly(df: pd.DataFrame, colmap: dict[str, str]) -> pd.DataFr
     order_date_col = colmap.get("order date")
     other_desc_col = colmap.get("other payments description")
     order_status_col = colmap.get("order status")
+
+    # If Order Date is missing for no-order-id rows, fall back to Payout Date.
+    payout_date_col = colmap.get("payout date")
+    if order_date_col and payout_date_col and payout_date_col in df.columns:
+        order_dates_raw = df[order_date_col].fillna("").astype(str).str.strip()
+        payout_dates_raw = df[payout_date_col].fillna("").astype(str).str.strip()
+        df = df.copy()
+        df[order_date_col] = order_dates_raw.where(order_dates_raw != "", payout_dates_raw)
 
     order_dates = pd.to_datetime(df[order_date_col], errors="coerce")
     df = df.copy()
@@ -215,7 +245,9 @@ def run(source_path: str) -> None:
         backfill_df = _read_source(BACKFILL_PATH)
         if "Order Date" in backfill_df.columns:
             backfill_df["Order Date"] = pd.to_datetime(backfill_df["Order Date"], errors="coerce")
-            feb_mask = (backfill_df["Order Date"] >= "2021-02-01") & (backfill_df["Order Date"] < "2021-03-01")
+            cutoff = pd.Timestamp("2021-02-11")
+            backfill_df = backfill_df[(backfill_df["Order Date"] < cutoff) | (backfill_df["Order Date"].isna())]
+            feb_mask = (backfill_df["Order Date"] >= "2021-02-01") & (backfill_df["Order Date"] < cutoff)
             if "Order ID" in backfill_df.columns and "Workflow ID" in backfill_df.columns:
                 backfill_feb = backfill_df[feb_mask].drop_duplicates(subset=["Order ID", "Workflow ID"])
                 backfill_other = backfill_df[~feb_mask]
@@ -235,6 +267,28 @@ def run(source_path: str) -> None:
     extra_cols = [c for c in base_for_missing.columns if c not in orig_cols]
 
     no_ids = base_for_missing[(base_for_missing[order_id_col].str.strip() == "") & (base_for_missing[workflow_col].str.strip() == "")].copy()
+    # Fill missing Order Date with Payout Date for no-order-id rows
+    order_date_col = colmap.get("order date")
+    payout_date_col = colmap.get("payout date")
+    if order_date_col and payout_date_col and order_date_col in no_ids.columns and payout_date_col in no_ids.columns:
+        order_dates_raw = no_ids[order_date_col].fillna("").astype(str).str.strip()
+        payout_dates_raw = no_ids[payout_date_col].fillna("").astype(str).str.strip()
+        no_ids[order_date_col] = order_dates_raw.where(order_dates_raw != "", payout_dates_raw)
+
+    # If still missing, infer month/year from source_file and set to last day of month.
+    if order_date_col and order_date_col in no_ids.columns and 'source_file' in no_ids.columns:
+        order_dates_raw = no_ids[order_date_col].fillna("").astype(str).str.strip()
+        missing_mask = order_dates_raw == ""
+        if missing_mask.any():
+            inferred = []
+            for val in no_ids.loc[missing_mask, 'source_file']:
+                year, month = _extract_year_month_from_path(val)
+                if year and month:
+                    last_day = calendar.monthrange(year, month)[1]
+                    inferred.append(f"{year:04d}-{month:02d}-{last_day:02d}")
+                else:
+                    inferred.append("")
+            no_ids.loc[missing_mask, order_date_col] = inferred
     no_ids_out = os_raw / "no_order_ids.csv"
     if not no_ids.empty:
         _trim_columns(no_ids).to_csv(no_ids_out, index=False)
