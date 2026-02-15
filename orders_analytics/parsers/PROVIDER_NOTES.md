@@ -59,6 +59,9 @@ Concerns / follow-ups:
   - Allocates statement commission (25%) and merchant fee (2%) across all orders by subtotal, with round-robin cents to match the statement totals exactly.
   - Applies statement payout (`Balance pay`) and settlement ID to each order row.
 - Normalization merges billings and overrides `subtotal/tax` when available; mismatches recorded in `errors`.
+  - Adds billings metadata to notes: `statement_payout=<amount>` and `statement_id=<id>`.
+  - If billings are missing for an order, fees/tax are estimated from subtotal and the note
+    `billings missing; fees/tax estimated from subtotal` is added to `notes` (not `errors`).
  - All orders are pickup.
  - `total` = subtotal + tax (+ tip/delivery_fee if present).
  - `payout` = total + commission_fee + processing_fee.

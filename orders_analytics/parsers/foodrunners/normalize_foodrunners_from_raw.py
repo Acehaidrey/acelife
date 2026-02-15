@@ -57,7 +57,10 @@ def merge_billings(orders: List[Dict[str, str]], billings: List[Dict[str, str]])
         if billing.get("processing_fee"):
             row["processing_fee"] = billing.get("processing_fee")
         if billing.get("payout"):
-            note = f"payout={billing.get('payout')}"
+            note = f"statement_payout={billing.get('payout')}"
+            row["notes"] = " | ".join([row.get("notes", ""), note]).strip(" |")
+        if billing.get("statement_id"):
+            note = f"statement_id={billing.get('statement_id')}"
             row["notes"] = " | ".join([row.get("notes", ""), note]).strip(" |")
         if mismatches:
             row["errors"] = " | ".join([row.get("errors", ""), *mismatches]).strip(" |")
@@ -80,7 +83,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 commission_fee = normalize_money(f"{-(subtotal * 0.25):.2f}")
                 processing_fee = normalize_money(f"{-(subtotal * 0.02):.2f}")
                 note = "billings missing; fees/tax estimated from subtotal"
-                row["errors"] = " | ".join([row.get("errors", ""), note]).strip(" |")
+                row["notes"] = " | ".join([row.get("notes", ""), note]).strip(" |")
         subtotal = row.get("subtotal", "")
         tip = row.get("tip", "")
         delivery_fee = row.get("delivery_fee", "")
@@ -126,7 +129,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 items=row.get("items", ""),
                 payout=payout,
                 errors=row.get("errors", ""),
-                notes="",
+                notes=row.get("notes", ""),
             )
         )
     return normalized
