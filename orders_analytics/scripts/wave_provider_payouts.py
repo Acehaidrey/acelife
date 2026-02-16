@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract provider payout transactions from Wave accounting (Ameci only)."""
+"""Extract provider payout transactions from Wave accounting files."""
 from __future__ import annotations
 
 import re
@@ -8,7 +8,10 @@ from typing import Dict, List
 
 import pandas as pd
 
-WAVE_AMECI_PATH = Path("Takeout/wave_ameci/accounting.csv")
+WAVE_ACCOUNTS = {
+    "ameci": Path("Takeout/wave_ameci/accounting.csv"),
+    "aroma": Path("Takeout/wave_aroma/accounting.csv"),
+}
 OUTPUT_ROOT = Path("orders_analytics/data/raw")
 
 PROVIDER_KEYWORDS: Dict[str, List[str]] = {
@@ -30,46 +33,56 @@ PROVIDER_KEYWORDS: Dict[str, List[str]] = {
     "foodja": ["foodja"],
     "foodrunners": ["foodrunners", "food runners"],
     "orderinn": ["order inn", "orderinn"],
+    "officecaterer": ["office caterer", "officecaterer"],
 }
 
 
-def main() -> None:
-    if not WAVE_AMECI_PATH.exists():
-        raise SystemExit(f"Missing {WAVE_AMECI_PATH}")
-
-    df = pd.read_csv(WAVE_AMECI_PATH)
+def load_account(path: Path) -> pd.DataFrame:
+    df = pd.read_csv(path)
     df.columns = [c.strip().lower() for c in df.columns]
+    return df
 
-    search_cols = [
-        c
-        for c in df.columns
-        if any(key in c for key in ["description", "memo", "vendor", "customer", "account name", "other accounts"])
-    ]
-    if not search_cols:
-        raise SystemExit("No searchable description columns found in accounting.csv")
 
-    search = pd.Series(["" for _ in range(len(df))])
-    for c in search_cols:
-        search = search + " " + df[c].astype(str)
-    search = search.str.lower()
-
-    if "account group" in df.columns:
-        income_mask = df["account group"].astype(str).str.lower() == "income"
-    else:
-        income_mask = pd.Series([True] * len(df))
-
-    for provider, keywords in PROVIDER_KEYWORDS.items():
-        pattern = "|".join(re.escape(k) for k in keywords)
-        mask = search.str.contains(pattern, regex=True)
-        filtered = df[mask & income_mask].copy()
-        if filtered.empty:
+def main() -> None:
+    search_keys = ["description", "memo", "vendor", "customer", "account name", "other accounts"]
+    for account_name, account_path in WAVE_ACCOUNTS.items():
+        if not account_path.exists():
             continue
-        filtered["source_accounting_file"] = str(WAVE_AMECI_PATH)
-        out_dir = OUTPUT_ROOT / provider
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / "wave_payouts_ameci.csv"
-        filtered.to_csv(out_path, index=False)
-        print(f"{provider}: wrote {len(filtered)} rows -> {out_path}")
+        df = load_account(account_path)
+        search_cols = [c for c in df.columns if any(key in c for key in search_keys)]
+        if not search_cols:
+            print(f"No searchable columns found in {account_path}")
+            continue
+
+        search = pd.Series(["" for _ in range(len(df))])
+        for c in search_cols:
+            search = search + " " + df[c].astype(str)
+        search = search.str.lower()
+
+        if "account group" in df.columns:
+            income_mask = df["account group"].astype(str).str.lower() == "income"
+        else:
+            income_mask = pd.Series([True] * len(df))
+
+        for provider, keywords in PROVIDER_KEYWORDS.items():
+            pattern = "|".join(re.escape(k) for k in keywords)
+            mask = search.str.contains(pattern, regex=True)
+            filtered = df[mask & income_mask].copy()
+            if provider == "officecaterer":
+                if "account name" in df.columns:
+                    acct_mask = df["account name"].astype(str).str.strip().str.lower() == "office caterer sales"
+                    filtered = df[mask & income_mask & acct_mask].copy()
+                else:
+                    filtered = filtered.iloc[0:0]
+            if filtered.empty:
+                continue
+            filtered["source_accounting_file"] = str(account_path)
+            filtered["wave_account"] = account_name
+            out_dir = OUTPUT_ROOT / provider
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"wave_payouts_{account_name}.csv"
+            filtered.to_csv(out_path, index=False)
+            print(f"{provider} ({account_name}): wrote {len(filtered)} rows -> {out_path}")
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ class Platforms:
     BRYGID = "brygid"
     ORDERINN = "orderinn"
     UBEREATS = "ubereats"
+    GRUBHUB = "grubhub"
 
     # list of inactive platforms that no longer partner with
     INACTIVE = {
@@ -50,6 +51,7 @@ class Platforms:
             cls.BRYGID,
             cls.ORDERINN,
             cls.UBEREATS,
+            cls.GRUBHUB,
         ]
 
     @classmethod
@@ -70,6 +72,7 @@ class Platforms:
             cls.MENUFY,
             cls.SLICE,
             cls.UBEREATS,
+            cls.GRUBHUB,
         ]
 
     @classmethod

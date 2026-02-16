@@ -569,6 +569,8 @@ def main() -> None:
             "processing_fee",
             "adjustments",
             "marketing_fee",
+            "expected_payout",
+            "payout",
         ]
         summary_column_config = {
             col: st.column_config.NumberColumn(format="dollar") for col in money_cols if col in summary.columns

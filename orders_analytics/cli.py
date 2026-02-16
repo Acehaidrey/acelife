@@ -78,6 +78,10 @@ def run_parse(
         )
 
         runner = UberEatsOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.GRUBHUB:
+        from orders_analytics.parsers.grubhub.parse_grubhub_orders import GrubhubOrdersParser
+
+        runner = GrubhubOrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == Platforms.DELIVERYCOM:
         from orders_analytics.parsers.deliverycom.parse_deliverycom_orders import (
             DeliveryComOrdersParser,
@@ -371,6 +375,14 @@ def run_extract(
         orders_root = "Takeout/Slice"
         extract_slice_orders_raw.run(orders_root, orders_raw)
         return
+    if platform == Platforms.GRUBHUB:
+        from orders_analytics.parsers.grubhub import extract_grubhub_orders_raw
+        from orders_analytics.utils.constants import raw_path, takeout_path
+
+        orders_raw_path = orders_raw or raw_path("grubhub", "orders_raw.csv")
+        extract_grubhub_orders_raw.run(takeout_path("gh_jan25_jun25.csv"), orders_raw_path)
+        return
+
     if platform == Platforms.CHOWNOW:
         from orders_analytics.parsers.chownow import (
             extract_chownow_orders_raw,
@@ -676,6 +688,10 @@ def run_normalize(
         )
 
         runner = UberEatsOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.GRUBHUB:
+        from orders_analytics.parsers.grubhub.parse_grubhub_orders import GrubhubOrdersParser
+
+        runner = GrubhubOrdersParser(input_path=input_path, out_path=out_path, **extras)
     else:
         raise ValueError(f"Unknown platform: {platform}")
 
