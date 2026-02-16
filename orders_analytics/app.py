@@ -877,13 +877,28 @@ def main() -> None:
                 combined["delta_wave_vs_expected"] = combined["wave_payout_sum"] - combined["expected_payout_sum"]
                 combined = combined.sort_values("order_month")
 
-                st.dataframe(combined, width="stretch")
+                recon_column_config = {
+                    col: st.column_config.NumberColumn(format="dollar")
+                    for col in ["expected_payout_sum", "payout_sum", "wave_payout_sum", "delta_wave_vs_expected"]
+                    if col in combined.columns
+                }
+                st.dataframe(combined, column_config=recon_column_config, width="stretch")
 
                 st.subheader("Wave Payout Transactions")
                 if wave.empty:
                     st.info("No payout transactions to show.")
                 else:
-                    st.dataframe(wave.sort_values("transaction_date", ascending=False), width="stretch", height=400)
+                    wave_column_config = {
+                        col: st.column_config.NumberColumn(format="dollar")
+                        for col in ["amount"]
+                        if col in wave.columns
+                    }
+                    st.dataframe(
+                        wave.sort_values("transaction_date", ascending=False),
+                        column_config=wave_column_config,
+                        width="stretch",
+                        height=400,
+                    )
     with tab_overrides:
         st.subheader("Order Overrides")
         from orders_analytics.utils.order_types import OrderTypes
