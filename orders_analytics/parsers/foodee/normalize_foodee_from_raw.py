@@ -46,20 +46,17 @@ def merge_billings(orders: List[Dict[str, str]], billings: List[Dict[str, str]])
         order_total = row.get("total", "")
         bill_total = billing.get("amount_paid") or billing.get("invoice_total")
         adjustment = row.get("adjustments", "")
-        adjusted_total = bill_total
-        if bill_total and adjustment:
+        payout_total = bill_total
+        base_total = order_total or bill_total
+        if bill_total and not order_total:
+            row["total"] = bill_total
+        elif order_total:
+            row["total"] = order_total
+        if payout_total:
+            row["payout"] = payout_total
+        if base_total:
             try:
-                adjusted_total = str(
-                    (Decimal(str(bill_total)) + Decimal(str(adjustment))).quantize(
-                        Decimal("0.01"), rounding=ROUND_HALF_UP
-                    )
-                )
-            except (InvalidOperation, ZeroDivisionError):
-                adjusted_total = bill_total
-        if adjusted_total:
-            row["total"] = adjusted_total
-            try:
-                total_val = Decimal(str(adjusted_total))
+                total_val = Decimal(str(base_total))
                 subtotal_val = (total_val / Decimal("0.85")).quantize(
                     Decimal("0.01"), rounding=ROUND_HALF_UP
                 )
@@ -74,13 +71,10 @@ def merge_billings(orders: List[Dict[str, str]], billings: List[Dict[str, str]])
                 row["commission_fee"] = str(-commission_val)
             except (InvalidOperation, ZeroDivisionError):
                 pass
-        if order_total and adjusted_total and not adjustment:
-            if normalize_money(order_total) != normalize_money(adjusted_total):
-                mismatches.append(
-                    f"total mismatch (orders={order_total}, billings={adjusted_total})"
-                )
-        if mismatches:
-            row["errors"] = " | ".join([row.get("errors", ""), *mismatches]).strip(" |")
+        if order_total and bill_total:
+            if normalize_money(order_total) != normalize_money(bill_total):
+                note = f"total mismatch (orders={order_total}, billings={bill_total}) handled in adjustments"
+                row["notes"] = " | ".join([row.get("notes", ""), note]).strip(" | ")
         if billing.get("payment_date"):
             note = f"payment_date={billing.get('payment_date')}"
             row["notes"] = " | ".join([row.get("notes", ""), note]).strip(" |")
@@ -127,7 +121,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 commission_fee=row.get("commission_fee", ""),
                 items=row.get("items", ""),
                 adjustments=row.get("adjustments", ""),
-                payout=row.get("total", ""),
+                payout=row.get("payout", ""),
                 errors=row.get("errors", ""),
                 notes=row.get("notes", ""),
             )

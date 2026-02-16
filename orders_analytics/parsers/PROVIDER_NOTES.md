@@ -39,12 +39,16 @@ Concerns / follow-ups:
 - Billings parser: `parsers/foodee/extract_foodee_billings_raw.py` (PDF remittance advice)
   - Pulls `invoice_date`, `payment_date`, `invoice_total`, `amount_paid`, `still_owing` by reference order ID.
   - Adds provider/restaurant/address from remittance advice (Aroma Pizza & Pasta, 20491 Alton Parkway).
-- Normalization merges billings and overrides `total` with billings `amount_paid` (or invoice total). Mismatches recorded in `errors`.
+- Normalization merges billings and overrides `total` with billings `amount_paid` (or invoice total). Mismatches are noted (see below).
   - All orders are pickup.
   - Drops `status=canceled` / `status=inactive` from normalized output.
-  - Commission/tax logic: Foodee billings reflect the 15% commission (net 85% payout), so we divide by 0.85 to recover the true subtotal. `payout` = billings (plus adjustments), `subtotal = payout / 0.85`, `commission_fee = -(subtotal - payout)`, `tax_withheld = subtotal * 0.0775`.
-  - Manual adjustments in `data/raw/foodee/adjustments_raw.csv` (applied to billings total before recomputing).
-  - `payout` is mapped from billings (amount_paid/invoice_total). `total` is computed as subtotal + tax + tip + delivery_fee.
+  - Commission/tax logic: Foodee billings reflect the 15% commission (net 85% payout), so we divide by 0.85 to recover the true subtotal.
+    - `total` uses the **orders** total when present (fallback to billings total).
+    - `subtotal = total / 0.85`, `commission_fee = -(subtotal - total)`, `tax_withheld = subtotal * 0.0775`.
+  - Manual adjustments in `data/raw/foodee/adjustments_raw.csv` are applied **only** to the `adjustments` column; they do **not** change `total` or `subtotal`.
+  - `payout` is taken directly from billings (`amount_paid`/`invoice_total`) without adjustments applied.
+  - When orders total != billings total, we add a note:
+    `total mismatch (orders=<orders_total>, billings=<billings_total>) handled in adjustments`.
 
 ## Food Runners
 - Sources: `Takeout/Mail/Orders-FoodRunners.mbox`, `Takeout/Mail/Billings-FoodRunners.mbox`
