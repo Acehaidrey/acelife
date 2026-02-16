@@ -15,7 +15,6 @@ if REPO_ROOT not in sys.path:
 
 from orders_analytics.utils.constants import DEFAULT_DB_PATH, NORMALIZED_DIR, ERRORS_PATH
 
-
 ORDER_COLUMNS = [
     "order_id",
     "platform",
@@ -50,7 +49,6 @@ ORDER_COLUMNS = [
     "errors",
     "notes",
 ]
-
 
 def get_connection() -> duckdb.DuckDBPyConnection:
     os.makedirs(os.path.dirname(DEFAULT_DB_PATH), exist_ok=True)
@@ -123,7 +121,6 @@ def get_connection() -> duckdb.DuckDBPyConnection:
     )
     return conn
 
-
 def ingest_normalized(conn: duckdb.DuckDBPyConnection) -> int:
     if not os.path.isdir(NORMALIZED_DIR):
         return 0
@@ -155,7 +152,6 @@ def ingest_normalized(conn: duckdb.DuckDBPyConnection) -> int:
     conn.register("orders_df", data)
     conn.execute("CREATE OR REPLACE TABLE orders_raw AS SELECT * FROM orders_df")
     return len(data)
-
 
 def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     tables = conn.execute("SHOW TABLES").fetchall()
@@ -239,7 +235,6 @@ def load_orders(conn: duckdb.DuckDBPyConnection) -> pd.DataFrame:
     merged = merged[ORDER_COLUMNS]
     return merged
 
-
 def load_errors() -> pd.DataFrame:
     if not os.path.exists(ERRORS_PATH):
         return pd.DataFrame()
@@ -250,7 +245,6 @@ def load_errors() -> pd.DataFrame:
         df["resolved_time"] = ""
     return df
 
-
 def resolve_error_row(row_id: int) -> None:
     df = load_errors()
     if df.empty or row_id not in df.index:
@@ -259,19 +253,16 @@ def resolve_error_row(row_id: int) -> None:
     df.loc[row_id, "resolved_time"] = datetime.utcnow().isoformat()
     df.to_csv(ERRORS_PATH, index=False)
 
-
 def load_markdown_file(path: str) -> str:
     file_path = Path(path)
     if not file_path.exists():
         return ""
     return file_path.read_text(encoding="utf-8")
 
-
 def _format_mtime(path: Path) -> str:
     if not path.exists():
         return ""
     return datetime.fromtimestamp(path.stat().st_mtime).isoformat(sep=" ", timespec="seconds")
-
 
 def build_sync_status() -> pd.DataFrame:
     from orders_analytics.utils.platforms import Platforms
@@ -304,33 +295,36 @@ def build_sync_status() -> pd.DataFrame:
         })
     return pd.DataFrame(rows)
 
-
 def load_wave_payouts(provider: str) -> pd.DataFrame:
-    path = Path(f"orders_analytics/data/raw/{provider}/wave_payouts_ameci.csv")
-    if not path.exists():
+    base_dir = Path(f"orders_analytics/data/raw/{provider}")
+    paths = sorted(base_dir.glob("wave_payouts_*.csv"))
+    if not paths:
         return pd.DataFrame()
-    df = pd.read_csv(path)
-    df.columns = [c.strip().lower() for c in df.columns]
-    # date column
-    date_col = None
-    for col in df.columns:
-        if col in ("transaction date", "date"):
-            date_col = col
-            break
-    if date_col is None:
+    frames = []
+    for path in paths:
+        df = pd.read_csv(path)
+        df.columns = [c.strip().lower() for c in df.columns]
+        # date column
+        date_col = None
+        for col in df.columns:
+            if col in ("transaction date", "date"):
+                date_col = col
+                break
+        if date_col is None:
+            continue
+        df["transaction_date"] = pd.to_datetime(df[date_col], errors="coerce")
+        # amount column
+        if "amount (one column)" in df.columns:
+            df["amount"] = pd.to_numeric(df["amount (one column)"], errors="coerce")
+        else:
+            credit = pd.to_numeric(df.get("credit amount (two column approach)"), errors="coerce")
+            debit = pd.to_numeric(df.get("debit amount (two column approach)"), errors="coerce")
+            df["amount"] = credit.fillna(0) - debit.fillna(0)
+        df["wave_account"] = path.stem.replace("wave_payouts_", "")
+        frames.append(df)
+    if not frames:
         return pd.DataFrame()
-    df["transaction_date"] = pd.to_datetime(df[date_col], errors="coerce")
-    # amount column
-    amount_col = None
-    if "amount (one column)" in df.columns:
-        amount_col = "amount (one column)"
-        df["amount"] = pd.to_numeric(df[amount_col], errors="coerce")
-    else:
-        credit = pd.to_numeric(df.get("credit amount (two column approach)"), errors="coerce")
-        debit = pd.to_numeric(df.get("debit amount (two column approach)"), errors="coerce")
-        df["amount"] = credit.fillna(0) - debit.fillna(0)
-    return df
-
+    return pd.concat(frames, ignore_index=True)
 
 def build_global_status() -> pd.DataFrame:
     rows = []
@@ -353,34 +347,6 @@ def build_global_status() -> pd.DataFrame:
         rows.append({"artifact": "raw_latest", "last_modified": ""})
     return pd.DataFrame(rows)
 
-
-def load_wave_payouts(provider: str) -> pd.DataFrame:
-    path = Path(f"orders_analytics/data/raw/{provider}/wave_payouts_ameci.csv")
-    if not path.exists():
-        return pd.DataFrame()
-    df = pd.read_csv(path)
-    df.columns = [c.strip().lower() for c in df.columns]
-    # date column
-    date_col = None
-    for col in df.columns:
-        if col in ("transaction date", "date"):
-            date_col = col
-            break
-    if date_col is None:
-        return pd.DataFrame()
-    df["transaction_date"] = pd.to_datetime(df[date_col], errors="coerce")
-    # amount column
-    amount_col = None
-    if "amount (one column)" in df.columns:
-        amount_col = "amount (one column)"
-        df["amount"] = pd.to_numeric(df[amount_col], errors="coerce")
-    else:
-        credit = pd.to_numeric(df.get("credit amount (two column approach)"), errors="coerce")
-        debit = pd.to_numeric(df.get("debit amount (two column approach)"), errors="coerce")
-        df["amount"] = credit.fillna(0) - debit.fillna(0)
-    return df
-
-
 def add_date_grain(data: pd.DataFrame, grain: str) -> pd.DataFrame:
     if grain == "day":
         data["date_bucket"] = data["order_datetime"].dt.date
@@ -389,7 +355,6 @@ def add_date_grain(data: pd.DataFrame, grain: str) -> pd.DataFrame:
     else:
         data["date_bucket"] = data["order_datetime"].dt.to_period("Y").dt.to_timestamp()
     return data
-
 
 def main() -> None:
     st.set_page_config(page_title="Orders Analytics", layout="wide")
@@ -885,7 +850,7 @@ def main() -> None:
                 )
                 wave = load_wave_payouts(selected_platform)
                 if wave.empty:
-                    st.warning(f"No Wave payout records found for {selected_platform} (wave_payouts_ameci.csv).")
+                    st.warning(f"No Wave payout records found for {selected_platform} (wave_payouts_*.csv).")
                     combined = expected_monthly.copy()
                     combined["wave_payout_sum"] = 0.0
                 else:
@@ -1378,7 +1343,6 @@ def main() -> None:
                 height=300,
             )
 
-
     with tab_errors:
         st.subheader("Errors")
         errors_df = load_errors()
@@ -1623,7 +1587,6 @@ def main() -> None:
             st.dataframe(ameci_monthly, column_config=ameci_column_config, width="stretch")
 
     conn.close()
-
 
 if __name__ == "__main__":
     main()
