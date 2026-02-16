@@ -57,6 +57,10 @@
   - Address uses `Street` + `City/State` lines when present.
   - Order type inferred from “Online Order (Delivery/Takeout)” header.
 - Report CSV aggregation: `orders_analytics/scripts/brygid_aggregate_report_csvs.py`
+- Google Sheet supplement: `brygid_jan202020_june262020` (sheet_id `1Z-XdTaH8xmh4hkiJPkRDlYMZh0yykH3oIBCuRJ_vuw4`, gid `63449493`)
+  - Downloaded to `Takeout/reports2022/Ameci/brygid_jan202020_june262020.csv` via the registry and included in the report CSV aggregation.
+  - The file is CSV (not TSV); the aggregator detects single-column CSV/TSV headers and reparses accordingly.
+  - If `STATUS` is blank, rows are treated as completed (included).
   - Keeps only `STATUS=Completed`.
   - Adds `source_file`, `added_at`, `delivery_fee` (zip rules; delivery only), and `import_notes=unseen_zip` (delivery only).
   - Delivery fee rules (when CSVs don't include one): ZIP `92618`=$5, `92610`=$4, `92691`=$4, `92630`=$3, else $3 + `unseen_zip` note.

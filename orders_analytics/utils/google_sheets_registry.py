@@ -40,6 +40,12 @@ SHEETS = {
         "format": "csv",
         "out": "orders_analytics/data/raw/beyondmenu/beyond_menu_annual_billing_summary.csv",
     },
+    "brygid_jan202020_june262020": {
+        "sheet_id": "1Z-XdTaH8xmh4hkiJPkRDlYMZh0yykH3oIBCuRJ_vuw4",
+        "gid": "63449493",
+        "format": "csv",
+        "out": "Takeout/reports2022/Ameci/brygid_jan202020_june262020.csv",
+    },
     "monthly_finance_report_history": {
         "sheet_id": VA_TASK_SHEET,
         "gid": "1693982203",

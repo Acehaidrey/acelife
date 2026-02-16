@@ -1,18 +1,26 @@
 #!/usr/bin/env python3
 import argparse
+import os
 from pathlib import Path
 from typing import List
 
 import pandas as pd
 
+from orders_analytics.utils.google_sheets import download_sheet_entry
+from orders_analytics.utils.google_sheets_registry import SHEETS
+
 
 def read_report_csv(path: Path) -> pd.DataFrame:
     try:
-        df = pd.read_csv(path, sep="\t", engine="python", on_bad_lines="skip")
+        df = pd.read_csv(path, sep="	", engine="python", on_bad_lines="skip")
     except Exception:
         df = pd.read_csv(path, engine="python", on_bad_lines="skip")
-    if len(df.columns) == 1 and "\t" in df.columns[0]:
-        df = pd.read_csv(path, sep="\t", engine="python", on_bad_lines="skip")
+    if len(df.columns) == 1:
+        header = df.columns[0]
+        if "	" in header:
+            df = pd.read_csv(path, sep="	", engine="python", on_bad_lines="skip")
+        elif "," in header:
+            df = pd.read_csv(path, engine="python", on_bad_lines="skip")
     return df
 
 
@@ -55,6 +63,15 @@ def main() -> None:
     if not base_dir.exists():
         raise SystemExit(f"Missing base dir: {base_dir}")
 
+    sheet = SHEETS.get("brygid_jan202020_june262020")
+    if sheet:
+        try:
+            download_sheet_entry(sheet)
+        except Exception:
+            # If download fails but file exists locally, continue.
+            if not os.path.exists(sheet["out"]):
+                raise
+
     files: List[Path] = []
     for path in base_dir.rglob("*.csv"):
         name = path.name.lower()
@@ -73,7 +90,8 @@ def main() -> None:
     for path in sorted(files):
         df = read_report_csv(path)
         if "STATUS" in df.columns:
-            df = df[df["STATUS"].astype(str).str.strip().str.lower() == "completed"].copy()
+            status = df["STATUS"].astype(str).str.strip().str.lower()
+            df = df[(status == "completed") | (status == "")].copy()
         df["source_file"] = str(path)
         df["added_at"] = now
         if "ZIP" in df.columns:
