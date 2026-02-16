@@ -296,6 +296,7 @@ Concerns / follow-ups:
     - `marketing_fee` = Targeted Promotion + Rewards
   - `N/A` values are treated as null/0.
   - `Description` is appended to notes as the last segment.
+  - Orders with ID prefix `W-` are commission-free corporate web orders (amecipizzaandpasta.com). Notes include `commission_free_link`.
   - String fields are merged with distinct values joined by `|` when duplicates exist.
   - Adjustment rows:
     - If the Order ID starts with `T-` or any merged row has `Type` containing `Adjustment`, the sum of `Restaurant Total` for those rows is recorded as `adjustments`.

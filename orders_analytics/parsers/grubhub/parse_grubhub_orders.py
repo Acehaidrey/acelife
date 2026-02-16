@@ -192,6 +192,8 @@ class GrubhubOrdersParser(BaseParser):
             notes: List[str] = []
             if merged_count > 1:
                 notes.append(f"merged_rows={merged_count}")
+            if order_id_clean.startswith("W-"):
+                notes.append("commission_free_link")
             if has_adjustment_rows:
                 notes.append(f"adjustment_total={adjustment_total:.2f}")
             if fulfillment == "self delivery":
