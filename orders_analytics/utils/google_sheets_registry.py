@@ -20,7 +20,7 @@ SHEETS = {
         "sheet_id": VA_TASK_SHEET,
         "gid": "104633095",
         "format": "csv",
-        "out": "Takeout/GoogleSheets/grubhub_order_history.csv",
+        "out": "orders_analytics/data/raw/grubhub/grubhub_order_history.csv",
     },
     "slice_order_history": {
         "sheet_id": VA_TASK_SHEET,

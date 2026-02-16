@@ -4,10 +4,13 @@ import re
 from typing import Dict, List
 
 import pandas as pd
+import os
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path, takeout_path
 from orders_analytics.utils.grubhub_adjustments import compute_adjustment_total
+from orders_analytics.utils.google_sheets import download_sheet_entry
+from orders_analytics.utils.google_sheets_registry import SHEETS
 from orders_analytics.utils.order_types import OrderTypes
 from orders_analytics.utils.payment_types import PaymentTypes
 from orders_analytics.utils.platforms import Platforms
@@ -47,6 +50,16 @@ def _first_non_empty(values: List[str]) -> str:
 def _join_distinct(values: List[str]) -> str:
     return " | ".join(sorted({v for v in values if v}))
 
+
+
+
+def _pick_col(row: dict, options: list[str]) -> str:
+    for key in options:
+        if key in row:
+            val = str(row.get(key, "") or "").strip()
+            if val:
+                return val
+    return ""
 
 def _build_datetime(date_str: str, time_str: str) -> str:
     if " | " in date_str:
@@ -91,6 +104,41 @@ class GrubhubOrdersParser(BaseParser):
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
         df = inputs["orders"].copy()
+        supplemental_sheet = SHEETS.get("grubhub_order_history")
+        supplemental_path = supplemental_sheet["out"] if supplemental_sheet else raw_path("grubhub", "grubhub_order_history.csv")
+        if supplemental_sheet:
+            try:
+                download_sheet_entry(supplemental_sheet)
+            except Exception:
+                if not os.path.exists(supplemental_path):
+                    raise
+        supplement = {}
+        supplement_suffix = {}
+        if supplemental_path and os.path.exists(supplemental_path):
+            sup_df = pd.read_csv(supplemental_path, dtype=str).fillna("")
+            for _, sup_row in sup_df.iterrows():
+                order_id = _pick_col(sup_row, ["Order ID", "Order Number", "Order #", "Order", "ID"])
+                if not order_id:
+                    continue
+                order_id_clean = order_id.strip()
+                parts = [p for p in re.split(r"\s*[–—\-]\s*|\s+—\s+", order_id_clean) if p.strip()]
+                right = re.sub(r"\D", "", parts[1]) if len(parts) >= 2 else ""
+
+                email_value = _pick_col(sup_row, ["Email", "Email Address", "Customer Email"])
+                if email_value.strip().lower() == "aroma-pizza+unsubscribe@googlegroups.com":
+                    email_value = ""
+                payload = {
+                    "customer_name": _pick_col(sup_row, ["Customer Name", "Customer", "Name"]),
+                    "company_name": _pick_col(sup_row, ["Company", "Company Name"]),
+                    "phone": _pick_col(sup_row, ["Phone", "Phone Number", "Customer Phone"]),
+                    "email": email_value,
+                    "address": _pick_col(sup_row, ["Address", "Address ", "Customer Address", "Delivery Address"]),
+                    "items": _pick_col(sup_row, ["Items", "Order Items", "Item Summary"]),
+                    "item_count": _pick_col(sup_row, ["Item Count", "Items Count", "Item Qty"]),
+                }
+                supplement[order_id_clean] = payload
+                if right:
+                    supplement_suffix.setdefault(right, []).append(payload)
         # normalize column names
         df.columns = [c.strip() for c in df.columns]
 
@@ -169,6 +217,20 @@ class GrubhubOrdersParser(BaseParser):
 
             order_datetime = _build_datetime(date_str, time_str)
 
+            sup = supplement.get(order_id_clean)
+            if sup is None and "-" in order_id_clean:
+                suffix_raw = order_id_clean.split("-", 1)[1]
+                suffix_digits = re.sub(r"\D", "", suffix_raw)
+                candidates = []
+                if suffix_digits:
+                    for right, payloads in supplement_suffix.items():
+                        if suffix_digits.endswith(right):
+                            candidates.extend(payloads)
+                if len(candidates) == 1:
+                    sup = candidates[0]
+            if sup is None:
+                sup = {}
+
             grouped.append(build_normalized_row(
                 Platforms.GRUBHUB.upper(),
                 order_id=order_id_clean,
@@ -189,6 +251,13 @@ class GrubhubOrdersParser(BaseParser):
                 misc_fee=f"{misc_fee:.2f}" if misc_fee else "",
                 adjustments=f"{adjustment_total:.2f}" if adjustment_total else "",
                 payout="",
+                customer_name=sup.get("customer_name", ""),
+                company_name=sup.get("company_name", ""),
+                phone=sup.get("phone", ""),
+                email=sup.get("email", ""),
+                address=sup.get("address", ""),
+                items=sup.get("items", ""),
+                item_count=sup.get("item_count", ""),
                 notes=" | ".join([n for n in notes if n]),
             ))
 

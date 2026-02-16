@@ -20,7 +20,7 @@ def normalize_provider(name: str) -> str:
         return Providers.AROMA
     if "ameci" in text:
         return Providers.AMECI
-    if "wing" in text and "stop" in text:
+    if "wing" in text:
         return Providers.WINGSHOP
     if "trattoria" in text:
         return Providers.TRATTORIA

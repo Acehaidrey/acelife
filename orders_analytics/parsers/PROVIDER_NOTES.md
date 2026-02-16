@@ -274,6 +274,9 @@ Concerns / follow-ups:
   - Dedupe: rows are grouped by `ID` and summed; notes include `merged_rows=<count>` when duplicates exist.
   - `order_datetime` uses `Date` + `Time` (time portion before comma, e.g. `7:42 PM PDT, UTC-07:00`).
   - Provider inferred from `Restaurant` name (Aroma/Ameci).
+  - Supplemental customer info from Google Sheet `grubhub_order_history` (downloaded to `orders_analytics/data/raw/grubhub/grubhub_order_history.csv` when available).
+    - Fields used: customer_name, company_name, phone, email, address, items, item_count (matched by Order ID).
+    - If no exact Order ID match, we fall back to suffix matching: we take the numeric portion after `-` in the Grubhub order_id and match it to the right-hand number in `Order Number` (e.g., `71892119 — 1078152` matches any order_id ending in `1078152`). Only unique matches are applied.
   - `order_type` mapping:
     - `Self Delivery` -> delivery
     - `Pick-Up` -> pickup
