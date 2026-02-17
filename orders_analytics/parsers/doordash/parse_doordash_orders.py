@@ -164,6 +164,8 @@ class DoorDashOrdersParser(BaseParser):
                 notes.append(f"status={status}")
             if row.get("Transaction type"):
                 notes.append(f"transaction_type={row.get('Transaction type')}")
+            if row.get("Description"):
+                notes.append(f"description={row.get('Description')}")
             if note_mismatch:
                 notes.append(f"error_adjustment_mismatch detailed={adjustments:.2f} errors={extra_error:.2f}")
             if payout_id:
