@@ -30,4 +30,23 @@ as it takes too much time and too many errors. They don't generally have APIs ma
 it extra difficult to do something of this sort.
 
 ## Project Details:
-https://docs.google.com/document/d/1SY-x9IjD4EF6XFukgUbjEhsaYp_CBOY1gGCEC3FQk6c/edit?usp=sharing 
+https://docs.google.com/document/d/1SY-x9IjD4EF6XFukgUbjEhsaYp_CBOY1gGCEC3FQk6c/edit?usp=sharing
+
+## Project 4: Orders Analytics
+
+This folder contains the normalization pipelines and validation utilities for marketplace orders.
+
+### Comparison Script
+Use the comparison tool to diff orders vs billings (or any two CSVs) based on a YAML config.
+
+Run:
+```bash
+PYTHONPATH=. .venv/bin/python -m orders_analytics.scripts.compare_csvs --config <config_path>
+```
+
+Example configs live in: `orders_analytics/config/compare/`
+
+Notes:
+- Use the config to map column names between files, set key columns, and filter rows.
+- The output only includes mismatches and missing rows (no matched rows).
+- Null and 0 are treated as equivalent for comparisons.
