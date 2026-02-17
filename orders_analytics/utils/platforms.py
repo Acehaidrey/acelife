@@ -30,6 +30,7 @@ class Platforms:
         FOODEE,
         BRYGID,
         ORDERINN,
+        MEALHI5,
     }
 
     @classmethod
