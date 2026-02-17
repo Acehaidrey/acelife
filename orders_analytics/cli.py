@@ -632,8 +632,16 @@ def run_normalize(
         print(f"[chownow] normalized -> {normalized_out}")
         return
     if platform == Platforms.BRYGID:
+        from orders_analytics.scripts import (
+            brygid_merge_email_csv_orders,
+            brygid_normalize_report_csvs,
+        )
         from orders_analytics.parsers.brygid import normalize_brygid_from_raw
         from orders_analytics.utils.constants import normalized_path, raw_path
+
+        # Ensure Brygid CSV + email merges are fresh before normalization.
+        brygid_normalize_report_csvs.run()
+        brygid_merge_email_csv_orders.run()
 
         orders_raw_path = orders_raw or extras.pop(
             "orders_raw", raw_path("brygid", "orders_raw.csv")
