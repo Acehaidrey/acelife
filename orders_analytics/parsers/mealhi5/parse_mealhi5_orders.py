@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import argparse
 import os
+from datetime import datetime, date
+from email.utils import parsedate_to_datetime
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Dict, List
 
@@ -14,6 +16,95 @@ from orders_analytics.utils.payment_types import PaymentTypes
 from orders_analytics.utils.platforms import Platforms
 from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.schema import build_normalized_row
+
+
+BILLING_RANGES = [
+    # (start_date, end_date, payout_dates, label)
+    (date(2019, 10, 1), date(2019, 10, 31), [date(2019, 11, 7)], "2019-10"),
+    (date(2019, 11, 1), date(2019, 11, 22), [date(2019, 11, 23)], "2019-11-01_22"),
+    (date(2020, 2, 1), date(2020, 2, 28), [date(2020, 3, 3)], "2020-02"),
+    # March 2020 split across two payments
+    (date(2020, 3, 1), date(2020, 3, 17), [date(2020, 3, 18), date(2020, 4, 3)], "2020-03-01_17"),
+    (date(2021, 1, 1), date(2021, 1, 31), [date(2021, 2, 4)], "2021-01"),
+]
+
+
+def _parse_billings_map(billings_df):
+    payouts = {}
+    for _, row in billings_df.iterrows():
+        amount = row.get("amount", "")
+        payment_date = row.get("payment_date", "")
+        if not amount or not payment_date:
+            continue
+        try:
+            dt = datetime.fromisoformat(payment_date.replace("Z", "+00:00"))
+        except Exception:
+            try:
+                dt = parsedate_to_datetime(payment_date)
+            except Exception:
+                dt = None
+        if not dt:
+            continue
+        payouts[dt.date()] = payouts.get(dt.date(), 0) + float(amount)
+    return payouts
+
+
+def _allocate_offsets(rows, payouts_by_date):
+    # Build index of rows by order date
+    for start, end, payout_dates, label in BILLING_RANGES:
+        payout_total = 0.0
+        for d in payout_dates:
+            payout_total += payouts_by_date.get(d, 0.0)
+        if payout_total == 0:
+            continue
+        # collect rows in date range
+        idxs = []
+        totals = []
+        for i, row in enumerate(rows):
+            dt_str = row.get("order_datetime", "")
+            if not dt_str:
+                continue
+            try:
+                order_date = datetime.fromisoformat(dt_str.replace("Z", "+00:00")).date()
+            except Exception:
+                continue
+            if start <= order_date <= end:
+                idxs.append(i)
+                try:
+                    totals.append(float(row.get("total", "0") or 0))
+                except Exception:
+                    totals.append(0.0)
+        if not idxs:
+            continue
+        total_sum = sum(totals)
+        diff = round(payout_total - total_sum, 2)
+        if diff == 0:
+            continue
+        # allocate diff proportionally (or evenly if total_sum is 0)
+        weights = totals if total_sum else [1.0] * len(idxs)
+        weight_sum = sum(weights) or 1.0
+        allocated = []
+        running = 0.0
+        for w in weights[:-1]:
+            amt = round(diff * (w / weight_sum), 2)
+            allocated.append(amt)
+            running += amt
+        allocated.append(round(diff - running, 2))
+        for i, amt in zip(idxs, allocated):
+            row = rows[i]
+            notes = row.get("notes", "")
+            if diff < 0:
+                # commission offset (negative reduces expected payout)
+                existing = float(row.get("commission_fee", "0") or 0)
+                row["commission_fee"] = f"{round(existing + amt, 2):.2f}"
+            else:
+                existing = float(row.get("adjustments", "0") or 0)
+                row["adjustments"] = f"{round(existing + amt, 2):.2f}"
+                if notes:
+                    notes += " | "
+                notes += f"manual_offset_for_billing={label}"
+                row["notes"] = notes
+    return rows
 
 
 class MealHi5OrdersParser(BaseParser):
@@ -92,7 +183,8 @@ class MealHi5OrdersParser(BaseParser):
                 )
             )
 
-        # Billings are check amounts only (no order IDs). We leave payout reconciliation to manual entry.
+        payouts_by_date = _parse_billings_map(billings)
+        rows = _allocate_offsets(rows, payouts_by_date)
         return rows
 
 

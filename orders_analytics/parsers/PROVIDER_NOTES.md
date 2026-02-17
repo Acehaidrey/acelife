@@ -489,5 +489,14 @@ Concerns / follow-ups:
   - Extracted to `orders_analytics/data/raw/mealhi5/billings_raw.csv` by `parsers/mealhi5/extract_mealhi5_billings_raw.py`.
   - Billings are check amounts with payment dates; no order IDs are available, so payout allocation is manual for now.
 - Normalizer: `parsers/mealhi5/parse_mealhi5_orders.py`
+  - Billing allocation rules (checkbook payouts):
+    - 2019-10-01 to 2019-10-31 -> payment dated 2019-11-07.
+    - 2019-11-01 to 2019-11-22 -> payment dated 2019-11-23.
+    - 2020-02-01 to 2020-02-28 -> payment dated 2020-03-03.
+    - 2020-03-01 to 2020-03-17 -> payments dated 2020-03-18 and 2020-04-03 (combined).
+    - 2021-01-01 to 2021-01-31 -> payment dated 2021-02-04.
+    - For each range, we compare payout total vs summed order totals.
+      - If payout < orders total, we distribute the negative difference into `commission_fee` across orders (proportional to order total).
+      - If payout >= orders total, we distribute the positive difference into `adjustments` and add `manual_offset_for_billing=<range>` note.
   - Discounts (if present) are recorded as negative `adjustments`.
   - Payment type is assumed credit; order type from the `FOR:` line.
