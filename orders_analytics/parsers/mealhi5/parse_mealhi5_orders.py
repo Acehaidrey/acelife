@@ -53,8 +53,6 @@ class MealHi5OrdersParser(BaseParser):
                     adjustments = ""
 
             notes = []
-            if row.get("order_type_raw"):
-                notes.append(f"order_type_raw={row.get('order_type_raw')}")
             if discount and discount not in ("0", "0.00"):
                 notes.append(f"discount={discount}")
 
