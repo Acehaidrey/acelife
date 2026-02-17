@@ -169,6 +169,7 @@ class MealHi5OrdersParser(BaseParser):
         billings = inputs["billings"].copy()
         rows: List[Dict[str, str]] = []
 
+        store_address_prefix = "20491 alton pkwy"
         for _, row in orders.iterrows():
             subtotal = normalize_money(row.get("subtotal", ""))
             discount = normalize_money(row.get("discount", ""))
@@ -188,6 +189,10 @@ class MealHi5OrdersParser(BaseParser):
             if discount and discount not in ("0", "0.00"):
                 notes.append(f"discount={discount}")
 
+            address = row.get("address", "")
+            if address.lower().startswith(store_address_prefix):
+                address = ""
+
             rows.append(
                 build_normalized_row(
                     Platforms.MEALHI5.upper(),
@@ -200,7 +205,7 @@ class MealHi5OrdersParser(BaseParser):
                     customer_name=row.get("customer_name", ""),
                     email=row.get("email", ""),
                     phone=row.get("phone", ""),
-                    address=row.get("address", ""),
+                    address=address,
                     items=row.get("items", ""),
                     item_count=row.get("item_count", ""),
                     subtotal=subtotal,
