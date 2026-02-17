@@ -78,11 +78,26 @@ def _allocate_offsets(rows, payouts_by_date):
             continue
         total_sum = sum(totals)
         diff = round(payout_total - total_sum, 2)
+        # allocate payout proportionally (or evenly if total_sum is 0)
+        weights = totals if total_sum else [1.0] * len(idxs)
+        weight_sum = sum(weights) or 1.0
+        allocated_payouts = []
+        running = 0.0
+        for w in weights[:-1]:
+            amt = round(payout_total * (w / weight_sum), 2)
+            allocated_payouts.append(amt)
+            running += amt
+        allocated_payouts.append(round(payout_total - running, 2))
+        for i, payout_amt in zip(idxs, allocated_payouts):
+            rows[i]["payout"] = f"{payout_amt:.2f}"
+            notes = rows[i].get("notes", "")
+            if notes:
+                notes += " | "
+            notes += f"payout_allocated={label}"
+            rows[i]["notes"] = notes
         if diff == 0:
             continue
         # allocate diff proportionally (or evenly if total_sum is 0)
-        weights = totals if total_sum else [1.0] * len(idxs)
-        weight_sum = sum(weights) or 1.0
         allocated = []
         running = 0.0
         for w in weights[:-1]:
@@ -104,6 +119,16 @@ def _allocate_offsets(rows, payouts_by_date):
                     notes += " | "
                 notes += f"manual_offset_for_billing={label}"
                 row["notes"] = notes
+        # sanity check: sum of payouts in range
+        payout_check = round(sum(float(rows[i].get("payout") or 0) for i in idxs), 2)
+        if round(payout_check - payout_total, 2) != 0:
+            # flag first row in range
+            first = rows[idxs[0]]
+            note = first.get("notes", "")
+            if note:
+                note += " | "
+            note += f"payout_allocation_mismatch={round(payout_check - payout_total,2):.2f}"
+            first["notes"] = note
     return rows
 
 

@@ -495,8 +495,10 @@ Concerns / follow-ups:
     - 2020-02-01 to 2020-02-28 -> payment dated 2020-03-03.
     - 2020-03-01 to 2020-03-17 -> payments dated 2020-03-18 and 2020-04-03 (combined).
     - 2021-01-01 to 2021-01-31 -> payment dated 2021-02-04.
-    - For each range, we compare payout total vs summed order totals.
+    - For each range, we allocate the check payout across orders (proportional to order total) into the `payout` column and tag `payout_allocated=<range>`.
+    - We compare payout total vs summed order totals.
       - If payout < orders total, we distribute the negative difference into `commission_fee` across orders (proportional to order total).
       - If payout >= orders total, we distribute the positive difference into `adjustments` and add `manual_offset_for_billing=<range>` note.
+      - If payout allocation rounding drifts, we add `payout_allocation_mismatch=<delta>` to the first row in the range.
   - Discounts (if present) are recorded as negative `adjustments`.
   - Payment type is assumed credit; order type from the `FOR:` line.
