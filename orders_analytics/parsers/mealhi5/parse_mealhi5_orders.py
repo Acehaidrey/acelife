@@ -88,12 +88,14 @@ def _allocate_offsets(rows, payouts_by_date):
             allocated_payouts.append(amt)
             running += amt
         allocated_payouts.append(round(payout_total - running, 2))
+        payout_dates_str = ",".join(d.isoformat() for d in payout_dates)
         for i, payout_amt in zip(idxs, allocated_payouts):
             rows[i]["payout"] = f"{payout_amt:.2f}"
             notes = rows[i].get("notes", "")
             if notes:
                 notes += " | "
             notes += f"payout_allocated={label}"
+            notes += f" | payment_date={payout_dates_str}"
             rows[i]["notes"] = notes
         if diff == 0:
             continue
