@@ -202,10 +202,10 @@ Concerns / follow-ups:
   - Uses `Timestamp local time` for `order_datetime`.
   - Keeps all order statuses; notes include `status=<Final order status>` and `transaction_type=<Transaction type>`.
   - `order_id` uses DoorDash order ID, else Delivery UUID, else transaction ID (custom IDs `DD_DELIVERY_*` / `DD_TX_*`).
-  - `subtotal` = Subtotal; `tax` = Subtotal tax passed to merchant; `tax_withheld` = Subtotal tax remitted by DoorDash.
+  - `subtotal` = Subtotal; `tax` = Subtotal tax passed to merchant (+ Ad fee tax); `tax_withheld` = Subtotal tax remitted by DoorDash.
   - `tip` = Staff tip; `delivery_fee` = Consumer delivery fee.
-  - `total` is computed from customer-facing components (subtotal + tax + tips + consumer fees).
-  - `commission_fee` = Commission; `processing_fee` = Payment processing fee; `marketing_fee` = Marketing fees.
+  - `total` = Net total (from detailed transactions).
+  - `commission_fee` = Commission; `processing_fee` = Payment processing fee; `marketing_fee` = Marketing fees + customer discounts + marketing credits + historical marketing fees + ad fees.
   - `adjustments` = Error charges + Adjustments from detailed file; errors file is cross-checked.
     - If the errors file total differs, a `error_adjustment_mismatch` note is added.
     - Errors-only rows create synthetic records with `errors_only_record` notes.

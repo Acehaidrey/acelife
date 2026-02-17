@@ -126,10 +126,22 @@ class DoorDashOrdersParser(BaseParser):
             tax = normalize_money(row.get("Subtotal tax passed to merchant", ""))
             tax_withheld = normalize_money(row.get("Subtotal tax remitted by DoorDash to tax authorities", ""))
             tip = normalize_money(row.get("Staff tip", ""))
+            ad_fee_tax = parse_float(row.get("Ad fee tax (for historical reference only)", ""))
+            if ad_fee_tax:
+                tax = f"{parse_float(tax) + ad_fee_tax:.2f}"
             delivery_fee = normalize_money(row.get("Consumer delivery fee", ""))
             commission_fee = normalize_money(row.get("Commission", ""))
             processing_fee = normalize_money(row.get("Payment processing fee", ""))
-            marketing_fee = normalize_money(row.get("Marketing fees | (including any applicable taxes)", ""))
+            marketing_total = (
+                parse_float(row.get("Marketing fees | (including any applicable taxes)", ""))
+                + parse_float(row.get("Customer discounts from marketing | (funded by you)", ""))
+                + parse_float(row.get("Customer discounts from marketing | (funded by DoorDash)", ""))
+                + parse_float(row.get("Customer discounts from marketing | (funded by a third-party)", ""))
+                + parse_float(row.get("DoorDash marketing credit", ""))
+                + parse_float(row.get("Marketing fees (for historical reference only) | (all discounts and fees)", ""))
+                + parse_float(row.get("Ad fee (for historical reference only)", ""))
+            )
+            marketing_fee = f"{marketing_total:.2f}" if marketing_total else ""
             misc_fee = ""
             adjustments = parse_float(row.get("Error charges", "")) + parse_float(row.get("Adjustments", ""))
 
@@ -145,7 +157,7 @@ class DoorDashOrdersParser(BaseParser):
                 note_mismatch = False
 
             adjustments_str = f"{adjustments:.2f}" if adjustments else ""
-            total = map_total(row)
+            total = normalize_money(row.get("Net total", ""))
 
             notes = []
             if status:
