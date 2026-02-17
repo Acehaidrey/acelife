@@ -21,6 +21,7 @@ class Platforms:
     UBEREATS = "ubereats"
     GRUBHUB = "grubhub"
     MEALHI5 = "mealhi5"
+    DOORDASH = "doordash"
 
     # list of inactive platforms that no longer partner with
     INACTIVE = {
@@ -55,6 +56,7 @@ class Platforms:
             cls.UBEREATS,
             cls.GRUBHUB,
             cls.MEALHI5,
+            cls.DOORDASH,
         ]
 
     @classmethod
@@ -77,6 +79,7 @@ class Platforms:
             cls.UBEREATS,
             cls.GRUBHUB,
             cls.MEALHI5,
+            cls.DOORDASH,
         ]
 
     @classmethod

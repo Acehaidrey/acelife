@@ -82,6 +82,10 @@ def run_parse(
         from orders_analytics.parsers.grubhub.parse_grubhub_orders import GrubhubOrdersParser
 
         runner = GrubhubOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.DOORDASH:
+        from orders_analytics.parsers.doordash.parse_doordash_orders import DoorDashOrdersParser
+
+        runner = DoorDashOrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == Platforms.MEALHI5:
         from orders_analytics.parsers.mealhi5.parse_mealhi5_orders import MealHi5OrdersParser
 
@@ -704,6 +708,10 @@ def run_normalize(
         from orders_analytics.parsers.grubhub.parse_grubhub_orders import GrubhubOrdersParser
 
         runner = GrubhubOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.DOORDASH:
+        from orders_analytics.parsers.doordash.parse_doordash_orders import DoorDashOrdersParser
+
+        runner = DoorDashOrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == Platforms.MEALHI5:
         from orders_analytics.parsers.mealhi5.parse_mealhi5_orders import MealHi5OrdersParser
 

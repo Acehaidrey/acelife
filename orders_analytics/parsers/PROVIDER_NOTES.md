@@ -6,6 +6,7 @@
 - [Cater2Me](#cater2me)
 - [ChowNow](#chownow)
 - [delivery.com](#deliverycom)
+- [DoorDash](#doordash)
 - [EatStreet](#eatstreet)
 - [ezCater](#ezcater)
 - [Food Runners](#food-runners)
@@ -187,6 +188,28 @@ Concerns / follow-ups:
 - Item parsing is simplistic; may miss modifiers or quantities.
 - Email sometimes has “FUTURE DELIVERY (Hold)” blocks; currently not captured in notes.
 - Billings rows are merged into normalized output; billings values override orders values for subtotal/tax/tip/delivery_fee/total and mismatches are recorded in `errors`.
+
+## DoorDash
+- Sources:
+  - Detailed transactions: `orders_analytics/data/raw/doordash/orders_raw.csv`
+  - Error charges/adjustments: `orders_analytics/data/raw/doordash/errors_raw.csv`
+  - Payout summary: `orders_analytics/data/raw/doordash/payouts_raw.csv`
+- Raw extract scripts:
+  - `parsers/doordash/extract_doordash_orders_raw.py`
+  - `parsers/doordash/extract_doordash_errors_raw.py`
+  - `parsers/doordash/extract_doordash_payouts_raw.py`
+- Normalizer: `parsers/doordash/parse_doordash_orders.py`
+  - Uses `Timestamp local time` for `order_datetime`.
+  - Keeps all order statuses; notes include `status=<Final order status>` and `transaction_type=<Transaction type>`.
+  - `order_id` uses DoorDash order ID, else Delivery UUID, else transaction ID (custom IDs `DD_DELIVERY_*` / `DD_TX_*`).
+  - `subtotal` = Subtotal; `tax` = Subtotal tax passed to merchant; `tax_withheld` = Subtotal tax remitted by DoorDash.
+  - `tip` = Staff tip; `delivery_fee` = Consumer delivery fee.
+  - `total` is computed from customer-facing components (subtotal + tax + tips + consumer fees).
+  - `commission_fee` = Commission; `processing_fee` = Payment processing fee; `marketing_fee` = Marketing fees.
+  - `adjustments` = Error charges + Adjustments from detailed file; errors file is cross-checked.
+    - If the errors file total differs, a `error_adjustment_mismatch` note is added.
+    - Errors-only rows create synthetic records with `errors_only_record` notes.
+  - `payout` uses Net total from detailed transactions.
 
 ## EatStreet
 - Sources: `Takeout/Mail/Orders-Eatstreet.mbox`, `Takeout/Mail/Billings-Eatstreet.mbox`
