@@ -26,13 +26,13 @@
   - Filters `Status=active` only; inactive orders are excluded.
   - Order datetime: `Req Time` + `year` using `MM/DD HH:MM am/pm` format.
   - Provider/restaurant: provider normalized from `Store`; Aroma/Ameci names standardized.
-  - Address: title-cased with state abbreviation preserved.
   - Fees: `Merchant Fee` and `Commission Fee` are negated.
   - `Misc Fee` is kept as provided (may be negative).
   - `Convenience Fee` is added to `misc_fee`, and also added as a **negative** amount in `adjustments` so totals net out.
   - Notes include `convenience_fee=<amount>` for rows with a convenience fee.
   - Payment type: from `Payment Type` (or `Payment`) normalized.
   - Total-components validation uses `subtotal + tax + tip + delivery_fee + adjustments` (misc fees are handled via adjustments).
+  - Additional charges (e.g., Domain Renew Annual Fee $25) are treated as annual billing adjustments and distributed across active orders as `misc_fee` for the matching provider/year.
   - Annual billing adjustments (Additional Charges + Credits):
     - Net annual adjustment per provider/year = `-(additional_charges + credits)` from the annual billing summary.
     - Net adjustment is distributed across **active** orders in that provider/year, proportional to subtotal with cent‑balancing, and applied to `misc_fee`.

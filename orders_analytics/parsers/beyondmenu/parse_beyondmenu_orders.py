@@ -15,7 +15,6 @@ from orders_analytics.utils.normalize import (
     normalize_datetime,
     normalize_order_type,
     normalize_payment_type,
-    title_with_state,
 )
 from orders_analytics.utils.payment_types import PaymentTypes
 from orders_analytics.utils.platforms import Platforms
@@ -162,7 +161,7 @@ class BeyondMenuOrdersParser(BaseParser):
         df["restaurant"] = df["Store"].apply(normalize_restaurant)
         df["order_type"] = df["Type"].astype(str).apply(normalize_order_type)
         df["Name"] = df["Name"].fillna("").astype(str).str.title()
-        df["Address"] = df["Address"].fillna("").astype(str).apply(title_with_state)
+        df["Address"] = df["Address"].fillna("").astype(str)
 
         payment_source = ""
         if "Payment Type" in df.columns:
