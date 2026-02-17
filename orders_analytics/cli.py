@@ -82,6 +82,10 @@ def run_parse(
         from orders_analytics.parsers.grubhub.parse_grubhub_orders import GrubhubOrdersParser
 
         runner = GrubhubOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.MEALHI5:
+        from orders_analytics.parsers.mealhi5.parse_mealhi5_orders import MealHi5OrdersParser
+
+        runner = MealHi5OrdersParser(input_path=input_path, out_path=out_path, **extras)
     elif platform == Platforms.DELIVERYCOM:
         from orders_analytics.parsers.deliverycom.parse_deliverycom_orders import (
             DeliveryComOrdersParser,
@@ -700,6 +704,10 @@ def run_normalize(
         from orders_analytics.parsers.grubhub.parse_grubhub_orders import GrubhubOrdersParser
 
         runner = GrubhubOrdersParser(input_path=input_path, out_path=out_path, **extras)
+    elif platform == Platforms.MEALHI5:
+        from orders_analytics.parsers.mealhi5.parse_mealhi5_orders import MealHi5OrdersParser
+
+        runner = MealHi5OrdersParser(input_path=input_path, out_path=out_path, **extras)
     else:
         raise ValueError(f"Unknown platform: {platform}")
 

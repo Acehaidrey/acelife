@@ -18,6 +18,7 @@
 - [Order Inn](#order-inn)
 - [Slice](#slice)
 - [Uber Eats](#uber-eats)
+- [MealHi5](#mealhi5)
 
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv` (downloaded from Google Sheets)
@@ -477,3 +478,16 @@ Concerns / follow-ups:
   - Legacy column mapping:
     - Older reports use columns like `Tax on Food Sales`, `Uber Service Fee`, `Gratuity`, `Misc Payment Description`,
       and `Payout`. These are normalized to the modern Uber export column names during backfill/stitching.
+
+## MealHi5
+- Orders source: `Takeout/Mail/Orders-mealhi5.mbox` (PDF attachments).
+  - Extracted to `orders_analytics/data/raw/mealhi5/orders_raw.csv` by `parsers/mealhi5/extract_mealhi5_orders_raw.py`.
+  - Address uses the **customer** Address block (last `Address:` in the PDF) and includes the following city/state/zip line.
+  - Phone uses the customer `Phone No` (ignores `Restaurant Phone No`).
+  - Order totals use the `Total:` line (not `Subtotal:`); tax supports both `Tax:` and `Tax and Fee` formats.
+- Billings source: `Takeout/Mail/Billings-mealhi5.mbox` (checkbook.io emails).
+  - Extracted to `orders_analytics/data/raw/mealhi5/billings_raw.csv` by `parsers/mealhi5/extract_mealhi5_billings_raw.py`.
+  - Billings are check amounts with payment dates; no order IDs are available, so payout allocation is manual for now.
+- Normalizer: `parsers/mealhi5/parse_mealhi5_orders.py`
+  - Discounts (if present) are recorded as negative `adjustments`.
+  - Payment type is assumed credit; order type from the `FOR:` line.

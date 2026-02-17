@@ -20,6 +20,7 @@ class Platforms:
     ORDERINN = "orderinn"
     UBEREATS = "ubereats"
     GRUBHUB = "grubhub"
+    MEALHI5 = "mealhi5"
 
     # list of inactive platforms that no longer partner with
     INACTIVE = {
@@ -52,6 +53,7 @@ class Platforms:
             cls.ORDERINN,
             cls.UBEREATS,
             cls.GRUBHUB,
+            cls.MEALHI5,
         ]
 
     @classmethod
@@ -73,6 +75,7 @@ class Platforms:
             cls.SLICE,
             cls.UBEREATS,
             cls.GRUBHUB,
+            cls.MEALHI5,
         ]
 
     @classmethod
@@ -87,4 +90,5 @@ class Platforms:
             cls.OFFICECATERER,
             cls.CHOWNOW,
             cls.BRYGID,
+            cls.MEALHI5,
         ]
