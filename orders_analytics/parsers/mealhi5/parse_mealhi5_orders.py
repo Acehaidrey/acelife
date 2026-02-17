@@ -19,6 +19,13 @@ from orders_analytics.utils.schema import build_normalized_row
 class MealHi5OrdersParser(BaseParser):
     platform = "MEALHI5"
     dedupe_key = "order_id"
+    total_components_fields = (
+        "subtotal",
+        "tax",
+        "tip",
+        "delivery_fee",
+        "adjustments",
+    )
 
     def default_input_path(self) -> str:
         return raw_path("mealhi5", "orders_raw.csv")
