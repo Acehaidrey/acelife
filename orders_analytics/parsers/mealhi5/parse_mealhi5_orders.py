@@ -52,6 +52,22 @@ def _parse_billings_map(billings_df):
 
 
 
+
+
+def _row_expected(row: dict) -> float:
+    def to_f(val):
+        try:
+            return float(val)
+        except Exception:
+            return 0.0
+    subtotal = to_f(row.get("subtotal"))
+    tax = to_f(row.get("tax"))
+    tip = to_f(row.get("tip"))
+    delivery_fee = to_f(row.get("delivery_fee"))
+    adjustments = to_f(row.get("adjustments"))
+    commission_fee = to_f(row.get("commission_fee"))
+    processing_fee = to_f(row.get("processing_fee"))
+    return round(subtotal + tax + tip + delivery_fee + adjustments + commission_fee + processing_fee, 2)
 def _allocate_amount(total: float, weights: list[float]) -> list[float]:
     weight_sum = sum(weights) or 1.0
     allocated = []
@@ -128,6 +144,15 @@ def _allocate_offsets(rows, payouts_by_date):
                     notes += " | "
                 notes += f"manual_offset_for_billing={label}"
                 row["notes"] = notes
+        # per-row rounding reconciliation: ensure expected matches payout within 0.01
+        for i in idxs:
+            row = rows[i]
+            payout_val = float(row.get("payout") or 0)
+            expected = _row_expected(row)
+            delta = round(payout_val - expected, 2)
+            if abs(delta) <= 0.01 and delta != 0:
+                existing_comm = float(row.get("commission_fee", "0") or 0)
+                row["commission_fee"] = f"{round(existing_comm + delta, 2):.2f}"
         # sanity check: sum of payouts in range
         payout_check = round(sum(float(rows[i].get("payout") or 0) for i in idxs), 2)
         if round(payout_check - payout_total, 2) != 0:
