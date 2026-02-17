@@ -12,13 +12,13 @@
 - [Foodee](#foodee)
 - [Foodja](#foodja)
 - [Grubhub](#grubhub)
+- [MealHi5](#mealhi5)
 - [Menufy](#menufy)
 - [MenuStar](#menustar)
 - [Office Caterer](#office-caterer)
 - [Order Inn](#order-inn)
 - [Slice](#slice)
 - [Uber Eats](#uber-eats)
-- [MealHi5](#mealhi5)
 
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv` (downloaded from Google Sheets)
@@ -338,6 +338,32 @@ Concerns / follow-ups:
   - `T-` rows force missing numeric fields to `0.00`.
   - Total-components validation includes `adjustments` for Grubhub.
   - Adjustment totals are computed via shared helper `orders_analytics/utils/grubhub_adjustments.py` for both normalized output and the deduped raw file.
+
+## MealHi5
+- Orders source: `Takeout/Mail/Orders-mealhi5.mbox` (PDF attachments).
+  - Extracted to `orders_analytics/data/raw/mealhi5/orders_raw.csv` by `parsers/mealhi5/extract_mealhi5_orders_raw.py`.
+  - Address uses the **customer** Address block (last `Address:` in the PDF) and includes the following city/state/zip line.
+  - Phone uses the customer `Phone No` (ignores `Restaurant Phone No`).
+  - Order totals use the `Total:` line (not `Subtotal:`); tax supports both `Tax:` and `Tax and Fee` formats.
+- Billings source: `Takeout/Mail/Billings-mealhi5.mbox` (checkbook.io emails).
+  - Extracted to `orders_analytics/data/raw/mealhi5/billings_raw.csv` by `parsers/mealhi5/extract_mealhi5_billings_raw.py`.
+  - Billings are check amounts with payment dates; no order IDs are available, so payout allocation is manual for now.
+- Normalizer: `parsers/mealhi5/parse_mealhi5_orders.py`
+  - Billing allocation rules (checkbook payouts):
+    - 2019-10-01 to 2019-10-31 -> payment dated 2019-11-07.
+    - 2019-11-01 to 2019-11-22 -> payment dated 2019-11-23.
+    - 2020-02-01 to 2020-02-28 -> payment dated 2020-03-03.
+    - 2020-03-01 to 2020-03-17 -> payments dated 2020-03-18 and 2020-04-03 (combined).
+    - 2021-01-01 to 2021-01-31 -> payment dated 2021-02-04.
+    - For each range, we allocate the check payout across orders (proportional to order total) into the `payout` column and tag `payout_allocated=<range>`.
+    - We compare payout total vs summed order totals.
+      - If payout < orders total, we split the negative difference into 40% `processing_fee` and 60% `commission_fee`, allocated across orders proportionally.
+      - If payout >= orders total, we distribute the positive difference into `adjustments` and add `manual_offset_for_billing=<range>` note.
+    - Order 68642 has `commission_fee` coerced to 0.00 when blank.
+      - If payout allocation rounding drifts, we add `payout_allocation_mismatch=<delta>` to the first row in the range.
+  - Discounts (if present) are recorded as negative `adjustments`.
+  - Payment type is assumed credit; order type from the `FOR:` line.
+
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
 - Customers: `Takeout/Menufy/Customer_Emails_02-05-2026.csv`, `Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv`
@@ -478,28 +504,3 @@ Concerns / follow-ups:
   - Legacy column mapping:
     - Older reports use columns like `Tax on Food Sales`, `Uber Service Fee`, `Gratuity`, `Misc Payment Description`,
       and `Payout`. These are normalized to the modern Uber export column names during backfill/stitching.
-
-## MealHi5
-- Orders source: `Takeout/Mail/Orders-mealhi5.mbox` (PDF attachments).
-  - Extracted to `orders_analytics/data/raw/mealhi5/orders_raw.csv` by `parsers/mealhi5/extract_mealhi5_orders_raw.py`.
-  - Address uses the **customer** Address block (last `Address:` in the PDF) and includes the following city/state/zip line.
-  - Phone uses the customer `Phone No` (ignores `Restaurant Phone No`).
-  - Order totals use the `Total:` line (not `Subtotal:`); tax supports both `Tax:` and `Tax and Fee` formats.
-- Billings source: `Takeout/Mail/Billings-mealhi5.mbox` (checkbook.io emails).
-  - Extracted to `orders_analytics/data/raw/mealhi5/billings_raw.csv` by `parsers/mealhi5/extract_mealhi5_billings_raw.py`.
-  - Billings are check amounts with payment dates; no order IDs are available, so payout allocation is manual for now.
-- Normalizer: `parsers/mealhi5/parse_mealhi5_orders.py`
-  - Billing allocation rules (checkbook payouts):
-    - 2019-10-01 to 2019-10-31 -> payment dated 2019-11-07.
-    - 2019-11-01 to 2019-11-22 -> payment dated 2019-11-23.
-    - 2020-02-01 to 2020-02-28 -> payment dated 2020-03-03.
-    - 2020-03-01 to 2020-03-17 -> payments dated 2020-03-18 and 2020-04-03 (combined).
-    - 2021-01-01 to 2021-01-31 -> payment dated 2021-02-04.
-    - For each range, we allocate the check payout across orders (proportional to order total) into the `payout` column and tag `payout_allocated=<range>`.
-    - We compare payout total vs summed order totals.
-      - If payout < orders total, we split the negative difference into 40% `processing_fee` and 60% `commission_fee`, allocated across orders proportionally.
-      - If payout >= orders total, we distribute the positive difference into `adjustments` and add `manual_offset_for_billing=<range>` note.
-    - Order 68642 has `commission_fee` coerced to 0.00 when blank.
-      - If payout allocation rounding drifts, we add `payout_allocation_mismatch=<delta>` to the first row in the range.
-  - Discounts (if present) are recorded as negative `adjustments`.
-  - Payment type is assumed credit; order type from the `FOR:` line.
