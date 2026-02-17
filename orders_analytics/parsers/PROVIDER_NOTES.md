@@ -12,7 +12,7 @@
 - [Foodee](#foodee)
 - [Foodja](#foodja)
 - [Grubhub](#grubhub)
-- [MealHi5](#mealhi5)
+- [Meal-Hi5](#meal-hi5)
 - [Menufy](#menufy)
 - [MenuStar](#menustar)
 - [Office Caterer](#office-caterer)
@@ -339,7 +339,7 @@ Concerns / follow-ups:
   - Total-components validation includes `adjustments` for Grubhub.
   - Adjustment totals are computed via shared helper `orders_analytics/utils/grubhub_adjustments.py` for both normalized output and the deduped raw file.
 
-## MealHi5
+## Meal-Hi5
 - Orders source: `Takeout/Mail/Orders-mealhi5.mbox` (PDF attachments).
   - Extracted to `orders_analytics/data/raw/mealhi5/orders_raw.csv` by `parsers/mealhi5/extract_mealhi5_orders_raw.py`.
   - Address uses the **customer** Address block (last `Address:` in the PDF) and includes the following city/state/zip line.
