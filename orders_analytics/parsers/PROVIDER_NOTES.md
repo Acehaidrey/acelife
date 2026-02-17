@@ -265,19 +265,31 @@ Concerns / follow-ups:
     `total mismatch (orders=<orders_total>, billings=<billings_total>) handled in adjustments`.
 
 ## Foodja
-- Source: `data/raw/foodja/oex-orders-01-28-26.csv`
+- Orders source: `data/raw/foodja/orders_raw.csv`.
+- Billings source: XLSX exports in `Takeout/foodja/*.xlsx` (Aroma/Ameci file name infers provider).
+  - Extracted to `orders_analytics/data/raw/foodja/billings_raw.csv` by `parsers/foodja/extract_foodja_billings_raw.py`.
 - Parser: `parsers/foodja/parse_foodja_orders.py`
-  - Commission fee = 30% of subtotal (negative).
-  - Tax withheld = 7.75% of subtotal.
-  - `payout` = subtotal + commission_fee + processing_fee.
+  - Orders/billings alignment:
+    - Orders-only rows (receivables) are included normally (no billings yet).
+    - Billings-only rows are added to normalized output with `billings_only_record` note (and use `payment_date` for `order_datetime`).
+    - Subtotal mismatches between orders vs billings add a note and error: `subtotal_mismatch_orders_vs_billings`.
+  - Uses billings overrides when available:
+    - `subtotal` and `payout` are taken from billings if present.
+    - `commission_fee` is computed as `payout - subtotal` (exact from billings).
+    - Notes include `billings_override`.
+  - Fallback when billings are missing:
+    - `commission_fee` = 30% of subtotal (negative).
+    - `tax_withheld` = 7.75% of subtotal.
+    - `payout` = subtotal + commission_fee + processing_fee.
+    - Notes include `billings_missing_commission_payout_estimated`.
 
 ## Grubhub
-- Source: `orders_analytics/data/raw/grubhub/orders_raw.csv` (extracted from `Takeout/gh_jan25_jun25.csv`)
+- Source: `orders_analytics/data/raw/grubhub/orders_raw.csv` (extracted from `Takeout/grubhub/*.csv`).
 - Raw extract also writes `orders_analytics/data/raw/grubhub/orders_raw_deduped.csv` (grouped by `ID`, sums numeric columns, adds `merged_rows`).
 - Parser: `parsers/grubhub/parse_grubhub_orders.py`
   - Dedupe: rows are grouped by `ID` and summed; notes include `merged_rows=<count>` when duplicates exist.
   - `order_datetime` uses `Date` + `Time` (time portion before comma, e.g. `7:42 PM PDT, UTC-07:00`).
-  - Provider inferred from `Restaurant` name (Aroma/Ameci).
+  - Provider inferred from `Restaurant` name (Aroma/Ameci/Wingshop).
   - Supplemental customer info from Google Sheet `grubhub_order_history` (downloaded to `orders_analytics/data/raw/grubhub/grubhub_order_history.csv` when available).
     - Fields used: customer_name, company_name, phone, email, address, items, item_count (matched by Order ID).
     - If no exact Order ID match, we fall back to suffix matching: we take the numeric portion after `-` in the Grubhub order_id and match it to the right-hand number in `Order Number` (e.g., `71892119 — 1078152` matches any order_id ending in `1078152`). Only unique matches are applied.
@@ -286,7 +298,15 @@ Concerns / follow-ups:
     - `Pick-Up` -> pickup
     - `Grubhub Delivery` -> pickup + note `grubhub_delivery`
     - Other values -> note `fulfillment_type_raw=<value>`
-  - Payment type: `Prepaid Order` -> credit; any other type is left blank and noted as `payment_type_raw=<value>`.
+  - Payment type mapping:
+    - `Prepaid Order` -> credit
+    - `Phone Order` -> order_type `phone_call` + payment_type `credit`
+    - `Cash Order` -> payment_type `cash`
+    - `Type` containing `Adjustment` or Order IDs starting with `T-` -> payment_type `credit`
+    - Other values -> note `payment_type_raw=<value>`
+  - Adjustments overrides: `orders_analytics/data/raw/grubhub/grubhub_adjustments.csv`
+    - Columns: `order_id`, `service_fee_override`, `note`
+    - Used to zero erroneous service fees and append a note.
   - Money mapping:
     - `subtotal` = Subtotal
     - `delivery_fee` = Delivery Fee
@@ -296,19 +316,27 @@ Concerns / follow-ups:
     - `commission_fee` = Commission + GH+ Commission + Delivery Commission
     - `processing_fee` = Processing Fee
     - `tax_withheld` = Withheld Tax + Withheld Tax Exemption
-    - `misc_fee` = Service Fee + Service Fee Exemption + (flexible fees)
+    - `adjustments` = adjustment rows total + **Service Fee**
+    - `misc_fee` = Service Fee Exemption + (flexible fees)
     - `marketing_fee` = Targeted Promotion + Rewards
   - `N/A` values are treated as null/0.
   - `Description` is appended to notes as the last segment.
   - Orders with ID prefix `W-` are commission-free corporate web orders (amecipizzaandpasta.com). Notes include `commission_free_link`.
-  - String fields are merged with distinct values joined by `|` when duplicates exist.
   - Adjustment rows:
     - If the Order ID starts with `T-` or any merged row has `Type` containing `Adjustment`, the sum of `Restaurant Total` for those rows is recorded as `adjustments`.
     - Notes include `adjustment_total=<amount>` when adjustments are present.
+  - Cash orders:
+    - If total != subtotal + delivery_fee + tax + tip, total is adjusted and note `cash_total_adjusted_from=<raw>` is added.
+    - If tip is non-zero, note `cash_tip_nonzero=<amount>` is added.
+  - Prefix merge: if `W-/O-/T-` rows share the same suffix and store, they are merged into one row.
+    - `order_id` keeps W- first, then O-, then T-.
+    - `order_datetime` uses earliest value.
+    - Numeric fields are summed.
+    - Notes include `merged_orders=W-...,O-...,T-...` and are token-deduped.
+  - Rows where **all financial fields are zero** are dropped (canceled pairs).
+  - `T-` rows force missing numeric fields to `0.00`.
   - Total-components validation includes `adjustments` for Grubhub.
   - Adjustment totals are computed via shared helper `orders_analytics/utils/grubhub_adjustments.py` for both normalized output and the deduped raw file.
-
-
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
 - Customers: `Takeout/Menufy/Customer_Emails_02-05-2026.csv`, `Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv`
