@@ -398,13 +398,13 @@ def main() -> None:
     )
 
     platform_options = sorted(data["platform"].dropna().unique().tolist())
-    provider_options = ["ALL"] + sorted(data["provider"].dropna().unique().tolist())
+    provider_options = sorted(data["provider"].dropna().unique().tolist())
 
     col1, col2, col3 = st.columns(3)
     with col1:
         platform = st.multiselect("Platform", platform_options, default=platform_options)
     with col2:
-        provider = st.selectbox("Provider", provider_options)
+        provider = st.multiselect("Provider", provider_options, default=provider_options)
     with col3:
         grain = st.selectbox("Date Grain", ["day", "month", "year"], index=1)
 
@@ -477,8 +477,8 @@ def main() -> None:
     filtered = data.copy()
     if platform:
         filtered = filtered[filtered["platform"].isin(platform)]
-    if provider != "ALL":
-        filtered = filtered[filtered["provider"] == provider]
+    if provider:
+        filtered = filtered[filtered["provider"].isin(provider)]
     filtered = filtered[
         (filtered["order_datetime"] >= pd.to_datetime(start_date))
         & (filtered["order_datetime"] <= pd.to_datetime(end_date) + pd.Timedelta(days=1))
@@ -645,8 +645,8 @@ def main() -> None:
         if not overrides.empty:
             if platform:
                 overrides = overrides[overrides["platform"].isin(platform)]
-            if provider != "ALL":
-                overrides = overrides[overrides["provider"] == provider]
+            if provider:
+                overrides = overrides[overrides["provider"].isin(provider)]
             overrides["date_bucket"] = pd.to_datetime(
                 dict(year=overrides["year"], month=overrides["month"], day=1),
                 errors="coerce",
@@ -1550,6 +1550,7 @@ def main() -> None:
     with tab_ameci:
         st.subheader("Ameci Royalty (Monthly)")
         st.caption("Royalty providers only: Toast, UberEats, Grubhub, Slice, DoorDash")
+        st.caption("Calculated sales amount = credit_subtotal + adjustments + marketing_fee + misc_fee + processing_fee + commission_fee; royalty = 4% of calculated sales.")
         ameci_monthly = monthly[monthly["provider"].astype(str).str.upper() == "AMECI"].copy()
         if ameci_monthly.empty:
             st.info("No AMECI records in current filters.")
@@ -1559,18 +1560,14 @@ def main() -> None:
                 if col not in ameci_monthly.columns:
                     ameci_monthly[col] = 0.0
             ameci_monthly["calculated_sales_amount"] = (
-                ameci_monthly["subtotal"]
+                ameci_monthly["credit_subtotal"]
                 + ameci_monthly["adjustments"]
-                + ameci_monthly["misc_fee"]
                 + ameci_monthly["marketing_fee"]
+                + ameci_monthly["misc_fee"]
+                + ameci_monthly["processing_fee"]
+                + ameci_monthly["commission_fee"]
             )
-            ameci_monthly["royalty"] = ameci_monthly["calculated_sales_amount"] * 0.04
-
-            royalty_platforms = {"toast", "ubereats", "grubhub", "slice", "doordash"}
-            ameci_royalty_only = ameci_monthly[ameci_monthly["platform"].astype(str).str.lower().isin(royalty_platforms)].copy()
-            if not ameci_royalty_only.empty:
-                st.subheader("Royalty Providers Only")
-                st.dataframe(ameci_royalty_only, width="stretch")
+            ameci_monthly["royalty"] = (ameci_monthly["calculated_sales_amount"] * 0.04).round(2)
 
             total_cols = [
                 "orders",
@@ -1581,20 +1578,37 @@ def main() -> None:
                 "tax_withheld",
                 "tip",
                 "delivery_fee",
-                "misc_fee",
-                "commission_fee",
-                "processing_fee",
                 "adjustments",
                 "marketing_fee",
-                "calculated_sales_amount",
+                "misc_fee",
+                "processing_fee",
+                "commission_fee",
                 "total",
-                    "royalty",
+                "calculated_sales_amount",
+                "royalty",
             ]
+
+            display_cols = [col for col in total_cols if col in ameci_monthly.columns]
+            display_cols = [c for c in display_cols if c not in {"platform", "provider", "year", "month"}]
+            display_cols = ["platform", "provider", "year", "month"] + display_cols
+
+            royalty_platforms = {"toast", "ubereats", "grubhub", "slice", "doordash"}
+            ameci_royalty_only = ameci_monthly[ameci_monthly["platform"].astype(str).str.lower().isin(royalty_platforms)].copy()
+            if not ameci_royalty_only.empty:
+                st.subheader("Royalty Providers Only")
+                ameci_royalty_only = ameci_royalty_only[display_cols]
+                ameci_royalty_config = {
+                    col: st.column_config.NumberColumn(format="dollar")
+                    for col in money_cols + ["calculated_sales_amount", "royalty"]
+                    if col in ameci_royalty_only.columns
+                }
+                st.dataframe(ameci_royalty_only, column_config=ameci_royalty_config, width="stretch")
             st.subheader("All Providers")
             totals = {col: ameci_monthly[col].sum() for col in total_cols if col in ameci_monthly.columns}
             totals.update({"platform": "", "provider": "Total", "year": "", "month": ""})
             ameci_monthly = ameci_monthly.copy()
             ameci_monthly = pd.concat([ameci_monthly, pd.DataFrame([totals])], ignore_index=True)
+            ameci_monthly = ameci_monthly[display_cols]
 
             ameci_column_config = {
                 col: st.column_config.NumberColumn(format="dollar")

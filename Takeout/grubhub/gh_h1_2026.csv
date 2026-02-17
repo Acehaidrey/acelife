@@ -1,0 +1,178 @@
+Order Channel,ID,Fulfillment Type,Restaurant,Type,Description,Date,Time,Subtotal,Delivery Fee,Service Fee,Service Fee Exemption,(flexible fees),Tax Fee,Tax Fee Exemption,Tip,Restaurant Total,Commission,GH+ Commission,Delivery Commission,Processing Fee,Withheld Tax,Withheld Tax Exemption,Targeted Promotion,Rewards
+MARKETPLACE,W-363532581150064,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/13/26,"7:39 PM PST, UTC-08:00",53.36,4.99,0,0,n/a,4.53,0,5,67.88,0,n/a,0,-2.37,0,0,0,n/a
+MARKETPLACE,O-833032196252282,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/05/26,"5:50 PM PST, UTC-08:00",63.92,0,0,0,n/a,4.95,0,0,68.87,-7.99,n/a,0,-2.4,0,0,0,n/a
+MARKETPLACE,O-645432247353749,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/10/26,"5:27 PM PST, UTC-08:00",17.24,0,0,0,n/a,1.34,0,0,18.58,-2.16,n/a,0,-0.87,0,0,0,n/a
+MARKETPLACE,O-780832522856167,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/08/26,"3:12 PM PST, UTC-08:00",27.68,2.99,0,0,n/a,2.38,0,9,42.05,-3.83,n/a,0,-1.58,0,0,0,n/a
+MARKETPLACE,O-292332233214173,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/09/26,"5:58 PM PST, UTC-08:00",37.67,0,0,0,n/a,2.92,0,0,40.59,-4.71,n/a,0,-1.54,0,0,0,n/a
+MARKETPLACE,O-821332578805852,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/12/26,"8:03 PM PST, UTC-08:00",29.98,0,0,0,n/a,2.32,0,0,32.3,-3.75,n/a,0,-1.29,0,0,0,n/a
+MARKETPLACE,O-378932420501960,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/28/26,"7:25 PM PST, UTC-08:00",35.47,0,0,0,n/a,2.75,0,0,38.22,-4.43,n/a,0,-1.47,0,0,0,n/a
+MARKETPLACE,O-074332308112409,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/16/26,"5:41 PM PST, UTC-08:00",54.94,0,0,0,n/a,4.26,0,0,59.2,-6.87,n/a,0,-2.11,0,0,0,n/a
+MARKETPLACE,O-550432524490980,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/07/26,"7:06 PM PST, UTC-08:00",34.33,2.99,0,0,n/a,2.89,0,5.83,46.04,-4.67,n/a,0,-1.7,0,0,0,n/a
+MARKETPLACE,O-862532208104978,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Cancelation of O-862532208104978,,01/06/26,"10:06 PM PST, UTC-08:00",-44.17,-2.99,0,0,n/a,-3.65,0,0,-50.81,5.9,n/a,0,1.85,0,0,0,n/a
+MARKETPLACE,O-258432324155108,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/18/26,"6:04 PM PST, UTC-08:00",22.68,2.99,0,0,n/a,1.99,0,3.85,31.51,-3.21,n/a,0,-1.26,0,0,0,n/a
+MARKETPLACE,O-780032354024471,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/21/26,"9:17 PM PST, UTC-08:00",25.48,0,0,0,n/a,1.97,0,0,27.45,-3.19,n/a,0,-1.14,0,0,0,n/a
+MARKETPLACE,O-788932595090016,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/14/26,"7:16 PM PST, UTC-08:00",39.72,0,0,0,n/a,3.08,0,0,42.8,-4.97,n/a,0,-1.61,0,0,0,n/a
+MARKETPLACE,O-578332355084288,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/22/26,"4:48 PM PST, UTC-08:00",62.15,0,0,0,n/a,4.82,0,0,66.97,-7.77,n/a,0,-2.34,0,0,0,n/a
+MARKETPLACE,O-844432606045989,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/15/26,"7:03 PM PST, UTC-08:00",51.85,0,0,0,n/a,4.02,0,0,55.87,-6.48,n/a,0,-2,0,0,0,n/a
+MARKETPLACE,O-790832578320890,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/12/26,"7:09 PM PST, UTC-08:00",33.82,2.99,0,0,n/a,2.85,0,5.74,45.4,-4.6,n/a,0,-1.68,0,0,0,n/a
+MARKETPLACE,W-182832530956831,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/08/26,"4:39 PM PST, UTC-08:00",34.98,0,0,0,n/a,2.71,0,0,37.69,0,n/a,0,-1.45,0,0,0,n/a
+MARKETPLACE,W-147132179738976,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/04/26,"10:42 AM PST, UTC-08:00",80.97,0,0,0,n/a,6.28,0,0,87.25,0,n/a,0,-2.96,0,0,0,n/a
+MARKETPLACE,O-591432504023645,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/05/26,"7:05 PM PST, UTC-08:00",28.34,0,0,0,n/a,2.2,0,0,30.54,-3.54,n/a,0,-1.23,0,0,0,n/a
+MARKETPLACE,O-897732461879163,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/01/26,"8:24 PM PST, UTC-08:00",34.2,4.99,0,0,n/a,3.04,0,3.87,46.1,-4.9,n/a,0,-1.71,0,0,0,n/a
+MARKETPLACE,O-494232268571962,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/12/26,"9:32 PM PST, UTC-08:00",14.99,0,0,0,n/a,1.16,0,0,16.15,-1.87,n/a,0,-0.79,0,0,0,n/a
+MARKETPLACE,O-427632596196715,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/14/26,"7:55 PM PST, UTC-08:00",24.99,0,0,0,n/a,1.94,0,0,26.93,-3.12,n/a,0,-1.12,0,0,0,n/a
+MARKETPLACE,O-444532595375171,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/14/26,"8:25 PM PST, UTC-08:00",69.25,0,0,0,n/a,5.37,0,0,74.62,-8.66,n/a,0,-2.58,0,0,0,n/a
+MARKETPLACE,O-074332308116574,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/16/26,"7:26 PM PST, UTC-08:00",16.48,4.99,0,0,n/a,1.67,0,0,23.14,-2.68,n/a,0,-1.01,0,0,0,n/a
+MARKETPLACE,W-590432161533578,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/02/26,"5:39 PM PST, UTC-08:00",27.98,0,0,0,n/a,2.17,0,0,30.15,0,n/a,0,-1.22,0,0,0,n/a
+MARKETPLACE,O-251432597968429,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/14/26,"8:11 PM PST, UTC-08:00",53.94,2.99,0,0,n/a,4.41,0,12.27,73.61,-7.12,n/a,0,-2.55,0,0,0,n/a
+MARKETPLACE,O-392632300810202,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/17/26,"1:10 PM PST, UTC-08:00",50.97,2.99,0,0,n/a,4.18,0,0,58.14,-6.75,n/a,0,-2.07,0,0,0,n/a
+MARKETPLACE,O-180432278075900,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/14/26,"3:37 PM PST, UTC-08:00",41.97,0,0,0,n/a,3.25,0,0,45.22,-5.25,n/a,0,-1.68,0,0,0,n/a
+MARKETPLACE,W-350032380102013,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/24/26,"5:37 PM PST, UTC-08:00",58.98,0,0,0,n/a,4.57,0,0,63.55,0,n/a,0,-2.24,0,0,0,n/a
+MARKETPLACE,O-624732257468900,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/12/26,"1:15 PM PST, UTC-08:00",16.69,0,0,0,n/a,1.29,0,0,17.98,-2.09,n/a,0,-0.85,0,0,0,n/a
+MARKETPLACE,O-462032180737415,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/04/26,"5:18 PM PST, UTC-08:00",52.17,2.99,0,0,n/a,4.27,0,8.85,68.28,-6.9,n/a,0,-2.38,0,0,0,n/a
+MARKETPLACE,O-859732219920490,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/07/26,"5:02 PM PST, UTC-08:00",13.97,0,0,0,n/a,1.08,0,0,15.05,-1.75,n/a,0,-0.76,0,0,0,n/a
+MARKETPLACE,O-202032400470997,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/26/26,"7:57 PM PST, UTC-08:00",68.86,0,0,0,n/a,5.34,0,0,74.2,-8.61,n/a,0,-2.56,0,0,0,n/a
+MARKETPLACE,O-431532455778196,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/31/26,"6:16 PM PST, UTC-08:00",37.93,0,0,0,n/a,2.94,0,0,40.87,-4.74,n/a,0,-1.55,0,0,0,n/a
+MARKETPLACE,O-419532314490706,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/17/26,"5:17 PM PST, UTC-08:00",25.98,0,0,0,n/a,2.01,0,0,27.99,-3.25,n/a,0,-1.15,0,0,0,n/a
+MARKETPLACE,W-567432344795766,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/21/26,"4:52 PM PST, UTC-08:00",37.36,0,0,0,n/a,2.9,0,0,40.26,0,n/a,0,-1.53,0,0,0,n/a
+MARKETPLACE,W-718432303104152,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/16/26,"4:49 PM PST, UTC-08:00",19.99,0,0,0,n/a,1.55,0,0,21.54,0,n/a,0,-0.96,0,0,0,n/a
+MARKETPLACE,O-593432382044697,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/24/26,"8:08 PM PST, UTC-08:00",27.47,2.99,0,0,n/a,2.36,0,3.58,36.4,-3.81,n/a,0,-1.41,0,0,0,n/a
+MARKETPLACE,O-223432534133267,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/08/26,"5:23 PM PST, UTC-08:00",61.52,0,0,0,n/a,4.77,0,0,66.29,-7.69,n/a,0,-2.32,0,0,0,n/a
+MARKETPLACE,O-162632527666293,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/07/26,"7:45 PM PST, UTC-08:00",83,2.99,0,0,n/a,6.66,0,18.53,111.18,-10.75,n/a,0,-3.69,0,0,0,n/a
+MARKETPLACE,O-897732471875158,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/02/26,"4:52 PM PST, UTC-08:00",13.99,0,0,0,n/a,1.08,0,0,15.07,-1.75,n/a,0,-0.76,0,0,0,n/a
+MARKETPLACE,W-624732267465687,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/12/26,"5:27 PM PST, UTC-08:00",21.98,0,0,0,n/a,1.7,0,0,23.68,0,n/a,0,-1.02,0,0,0,n/a
+MARKETPLACE,O-468032301045714,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/16/26,"7:31 PM PST, UTC-08:00",24.99,0,0,0,n/a,1.94,0,0,26.93,-3.12,n/a,0,-1.12,0,0,0,n/a
+MARKETPLACE,O-809832158722372,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/02/26,"1:11 PM PST, UTC-08:00",55.46,2.99,0,0,n/a,4.53,0,6.27,69.25,-7.31,n/a,0,-2.41,0,0,0,n/a
+MARKETPLACE,O-698732437220829,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/29/26,"8:56 PM PST, UTC-08:00",53.46,2.99,0,0,n/a,4.37,0,9.12,69.94,-7.06,n/a,0,-2.43,0,0,0,n/a
+MARKETPLACE,O-091632411905232,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/27/26,"5:31 PM PST, UTC-08:00",22.83,0,0,0,n/a,1.77,0,0,24.6,-2.85,n/a,0,-1.05,0,0,0,n/a
+MARKETPLACE,O-490832492975298,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/04/26,"6:08 PM PST, UTC-08:00",50.47,2.99,0,0,n/a,4.14,0,5,62.6,-6.68,n/a,0,-2.21,0,0,0,n/a
+MARKETPLACE,O-303432587952351,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/13/26,"6:26 PM PST, UTC-08:00",25.98,2.99,0,0,n/a,2.24,0,1,32.21,-3.62,n/a,0,-1.28,0,0,0,n/a
+MARKETPLACE,O-763132223310003,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/08/26,"5:41 PM PST, UTC-08:00",21.98,0,0,0,n/a,1.7,0,0,23.68,-2.75,n/a,0,-1.02,0,0,0,n/a
+MARKETPLACE,O-010932519494210,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/06/26,"10:29 PM PST, UTC-08:00",18.18,0,0,0,n/a,1.41,0,0,19.59,-2.27,n/a,0,-0.9,0,0,0,n/a
+MARKETPLACE,O-711732346857062,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/21/26,"10:45 AM PST, UTC-08:00",29.99,0,0,0,n/a,2.32,0,0,32.31,-3.75,n/a,0,-1.29,0,0,0,n/a
+MARKETPLACE,O-759432432380290,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/29/26,"6:39 PM PST, UTC-08:00",57.53,2.99,0,0,n/a,4.69,0,6.2,71.41,-7.57,n/a,0,-2.48,0,0,0,n/a
+MARKETPLACE,O-762332294319309,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/15/26,"7:34 PM PST, UTC-08:00",27.73,4.99,0,0,n/a,2.54,0,6,41.26,-4.09,n/a,0,-1.56,0,0,0,n/a
+MARKETPLACE,O-620732314795949,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/17/26,"6:49 PM PST, UTC-08:00",17.99,0,0,0,n/a,1.39,0,0,19.38,-2.25,n/a,0,-0.89,0,0,0,n/a
+MARKETPLACE,O-014532509392084,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/05/26,"5:48 PM PST, UTC-08:00",10.99,0,0,0,n/a,0.85,0,0,11.84,-1.37,n/a,0,-0.66,0,0,0,n/a
+MARKETPLACE,O-297432388068219,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/24/26,"7:16 PM PST, UTC-08:00",45.67,0,0,0,n/a,3.54,0,0,49.21,-5.71,n/a,0,-1.8,0,0,0,n/a
+MARKETPLACE,O-201932199658623,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/06/26,"3:39 PM PST, UTC-08:00",39.98,2.99,0,0,n/a,3.33,0,6.79,53.09,-5.37,n/a,0,-1.92,0,0,0,n/a
+MARKETPLACE,O-862532208104978,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/06/26,"10:06 PM PST, UTC-08:00",44.17,2.99,0,0,n/a,3.65,0,0,50.81,-5.9,n/a,0,-1.85,0,0,0,n/a
+MARKETPLACE,O-012632555111301,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/10/26,"7:42 PM PST, UTC-08:00",10.99,0,0,0,n/a,0.85,0,0,11.84,-1.37,n/a,0,-0.66,0,0,0,n/a
+MARKETPLACE,W-440232414365312,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/27/26,"5:46 PM PST, UTC-08:00",56.2,0,0,0,n/a,4.36,0,0,60.56,0,n/a,0,-2.15,0,0,0,n/a
+MARKETPLACE,O-793632458498043,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/31/26,"4:51 PM PST, UTC-08:00",20.38,0,0,0,n/a,1.58,0,0,21.96,-2.55,n/a,0,-0.97,0,0,0,n/a
+MARKETPLACE,W-836132501041756,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/05/26,"6:22 PM PST, UTC-08:00",50.81,2.99,0,0,n/a,4.17,0,11.59,69.56,0,n/a,0,-2.42,0,0,0,n/a
+MARKETPLACE,W-365632171387695,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/03/26,"6:16 PM PST, UTC-08:00",66.96,2.99,0,0,n/a,5.42,0,5,80.37,0,n/a,0,-2.75,0,0,0,n/a
+MARKETPLACE,O-869032364246488,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/22/26,"5:23 PM PST, UTC-08:00",16.98,2.99,0,0,n/a,1.55,0,3.84,25.36,-2.5,n/a,0,-1.07,0,0,0,n/a
+MARKETPLACE,O-788632471034604,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/02/26,"4:33 PM PST, UTC-08:00",22.83,0,0,0,n/a,1.77,0,0,24.6,-2.85,n/a,0,-1.05,0,0,0,n/a
+MARKETPLACE,O-855632595405783,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/14/26,"6:38 PM PST, UTC-08:00",33.97,0,0,0,n/a,2.63,0,0,36.6,-4.25,n/a,0,-1.42,0,0,0,n/a
+MARKETPLACE,W-398732230181435,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/09/26,"10:06 PM PST, UTC-08:00",36.98,0,0,0,n/a,2.87,0,0,39.85,0,n/a,0,-1.52,0,0,0,n/a
+MARKETPLACE,O-199732386392377,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/25/26,"12:36 PM PST, UTC-08:00",32.98,0,0,0,n/a,2.56,0,0,35.54,-4.12,n/a,0,-1.38,0,0,0,n/a
+MARKETPLACE,O-596032239165042,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/09/26,"9:05 PM PST, UTC-08:00",25.98,2.99,0,0,n/a,2.24,0,2.94,34.15,-3.62,n/a,0,-1.34,0,0,0,n/a
+MARKETPLACE,O-402432156392497,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/01/26,"5:42 PM PST, UTC-08:00",35.46,0,0,0,n/a,2.75,0,0,38.21,-4.43,n/a,0,-1.47,0,0,0,n/a
+MARKETPLACE,O-031032529564669,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/07/26,"9:05 PM PST, UTC-08:00",74.87,0,0,0,n/a,5.8,0,0,80.67,-9.36,n/a,0,-2.76,0,0,0,n/a
+MARKETPLACE,O-434832577301404,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/12/26,"6:19 PM PST, UTC-08:00",19.96,4.99,0,0,n/a,1.94,0,0,26.89,-3.12,n/a,0,-1.12,0,0,0,n/a
+MARKETPLACE,O-501532238220998,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/09/26,"8:15 PM PST, UTC-08:00",24.72,4.99,0,0,n/a,2.31,0,0,32.02,-3.71,n/a,0,-1.28,0,0,0,n/a
+MARKETPLACE,T-118332140882806,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Account Adjustment,,01/16/26,"12:53 PM PST, UTC-08:00",0,0,0,0,n/a,0,0,0,48.37,0,n/a,0,0,0,0,0,n/a
+MARKETPLACE,O-390232308688885,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/17/26,"3:37 PM PST, UTC-08:00",150.12,2.99,0,0,n/a,11.86,0,10,174.97,-19.14,n/a,0,-5.64,0,0,0,n/a
+MARKETPLACE,O-611332419537116,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/27/26,"7:25 PM PST, UTC-08:00",41.9,2.99,0,0,n/a,3.48,0,3,51.37,-5.61,n/a,0,-1.87,0,0,0,n/a
+MARKETPLACE,O-378932410508946,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/27/26,"7:56 PM PST, UTC-08:00",28.47,0,0,0,n/a,2.21,0,0,30.68,-3.56,n/a,0,-1.24,0,0,0,n/a
+MARKETPLACE,O-226132202592651,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/06/26,"7:43 PM PST, UTC-08:00",68.42,2.99,0,0,n/a,5.53,0,11.62,88.56,-8.93,n/a,0,-3,0,0,0,n/a
+MARKETPLACE,O-983032515033911,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/07/26,"12:45 PM PST, UTC-08:00",25.83,2.99,0,0,n/a,2.23,0,3,34.05,-3.6,n/a,0,-1.34,0,0,0,n/a
+MARKETPLACE,O-046832390265581,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/25/26,"5:03 PM PST, UTC-08:00",41.21,2.99,0,0,n/a,3.42,0,4.66,52.28,-5.53,n/a,0,-1.89,0,0,0,n/a
+MARKETPLACE,W-074332308116843,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/16/26,"7:17 PM PST, UTC-08:00",35.98,0,0,0,n/a,2.79,0,0,38.77,0,n/a,0,-1.48,0,0,0,n/a
+MARKETPLACE,O-392632310891515,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/17/26,"4:40 PM PST, UTC-08:00",53.44,0,0,0,n/a,4.14,0,0,57.58,-6.68,n/a,0,-2.06,0,0,0,n/a
+MARKETPLACE,W-014532519392210,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/06/26,"5:15 PM PST, UTC-08:00",23.98,0,0,0,n/a,1.86,0,0,25.84,0,n/a,0,-1.09,0,0,0,n/a
+MARKETPLACE,O-490532290631622,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/15/26,"5:40 PM PST, UTC-08:00",22.83,0,0,0,n/a,1.77,0,0,24.6,-2.85,n/a,0,-1.05,0,0,0,n/a
+MARKETPLACE,W-852132523508782,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/08/26,"12:39 PM PST, UTC-08:00",106.95,0,0,0,n/a,8.29,0,0,115.24,0,n/a,0,-3.81,0,0,0,n/a
+MARKETPLACE,O-041932379135240,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/23/26,"8:10 PM PST, UTC-08:00",22.84,0,0,0,n/a,1.77,0,0,24.61,-2.86,n/a,0,-1.05,0,0,0,n/a
+MARKETPLACE,W-541432216705277,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/08/26,"1:52 PM PST, UTC-08:00",19.99,2.99,0,0,n/a,1.78,0,4.04,28.8,0,n/a,0,-1.18,0,0,0,n/a
+MARKETPLACE,O-158232231142654,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/09/26,"5:00 PM PST, UTC-08:00",21.99,0,0,0,n/a,1.7,0,0,23.69,-2.75,n/a,0,-1.02,0,0,0,n/a
+MARKETPLACE,O-821332578802673,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/12/26,"5:43 PM PST, UTC-08:00",21.98,0,0,0,n/a,1.7,0,0,23.68,-2.75,n/a,0,-1.02,0,0,0,n/a
+MARKETPLACE,O-759432522380945,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/08/26,"1:18 PM PST, UTC-08:00",25.98,0,0,0,n/a,2.01,0,0,27.99,-3.25,n/a,0,-1.15,0,0,0,n/a
+MARKETPLACE,O-462032180737415,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Adjustment of O-462032180737415,Tip increased by diner via self-service,01/04/26,"5:18 PM PST, UTC-08:00",0,0,0,0,n/a,0,0,7,7,0,n/a,0,0,0,0,0,n/a
+MARKETPLACE,O-113932320093432,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/18/26,"7:45 PM PST, UTC-08:00",32.98,0,0,0,n/a,2.56,0,0,35.54,-4.12,n/a,0,-1.38,0,0,0,n/a
+MARKETPLACE,O-780032354026356,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/21/26,"7:56 PM PST, UTC-08:00",61.04,0,0,0,n/a,4.73,0,0,65.77,-7.63,n/a,0,-2.31,0,0,0,n/a
+MARKETPLACE,O-384032194512349,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/05/26,"5:01 PM PST, UTC-08:00",32.98,0,0,0,n/a,2.56,0,0,35.54,-4.12,n/a,0,-1.38,0,0,0,n/a
+MARKETPLACE,O-427632606197582,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/15/26,"5:22 PM PST, UTC-08:00",47.45,0,0,0,n/a,3.68,0,0,51.13,-5.93,n/a,0,-1.86,0,0,0,n/a
+MARKETPLACE,O-078932141937365,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/01/26,"3:55 PM PST, UTC-08:00",22.99,0,0,0,n/a,1.78,0,0,24.77,-2.87,n/a,0,-1.06,0,0,0,n/a
+MARKETPLACE,O-056232334804741,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/19/26,"8:02 PM PST, UTC-08:00",19.96,4.99,0,0,n/a,1.94,0,0,26.89,-3.12,n/a,0,-1.12,0,0,0,n/a
+MARKETPLACE,O-637032493361201,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/05/26,"5:30 PM PST, UTC-08:00",13.99,0,0,0,n/a,1.08,0,0,15.07,-1.75,n/a,0,-0.76,0,0,0,n/a
+MARKETPLACE,O-272232255541702,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/11/26,"7:06 PM PST, UTC-08:00",34.47,0,0,0,n/a,2.67,0,0,37.14,-4.31,n/a,0,-1.43,0,0,0,n/a
+MARKETPLACE,O-717432424108417,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/28/26,"7:44 PM PST, UTC-08:00",18.97,4.99,0,0,n/a,1.86,0,0,25.82,-3,n/a,0,-1.09,0,0,0,n/a
+MARKETPLACE,O-534832597553226,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/15/26,"4:45 PM PST, UTC-08:00",25.37,0,0,0,n/a,1.97,0,0,27.34,-3.17,n/a,0,-1.13,0,0,0,n/a
+MARKETPLACE,O-596032239162730,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/09/26,"9:34 PM PST, UTC-08:00",14.99,0,0,0,n/a,1.16,0,0,16.15,-1.87,n/a,0,-0.79,0,0,0,n/a
+MARKETPLACE,O-884832605075267,Self Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/15/26,"8:09 PM PST, UTC-08:00",50.97,2.99,0,0,n/a,4.18,0,1,59.14,-6.75,n/a,0,-2.1,0,0,0,n/a
+MARKETPLACE,W-561032463090374,Pick-Up,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,02/01/26,"7:08 PM PST, UTC-08:00",44.76,0,0,0,n/a,3.47,0,0,48.23,0,n/a,0,-1.77,0,0,0,n/a
+MARKETPLACE,O-280432373111559,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/23/26,"8:14 PM PST, UTC-08:00",29.47,0,0,0,n/a,2.28,0,0,31.75,-3.68,n/a,0,-1.27,0,0,0,n/a
+MARKETPLACE,O-609432442441602,Grubhub Delivery,Ameci Pizza & Pasta - Trabuco Rd,Prepaid Order,,01/30/26,"5:43 PM PST, UTC-08:00",31.98,0,0,0,n/a,2.48,0,0,34.46,-4,n/a,0,-1.35,0,0,0,n/a
+MARKETPLACE,O-427632606198045,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Prepaid Order,,02/15/26,"7:44 PM PST, UTC-08:00",25.98,0,0,0,n/a,1.56,0,0,27.54,-5.2,n/a,-2.6,-1.14,0,0,0,n/a
+MARKETPLACE,O-303432587916117,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Prepaid Order,,02/14/26,"4:00 PM PST, UTC-08:00",45.7,0,0,0,n/a,2.74,0,0,48.44,-9.14,n/a,-4.57,-1.78,0,0,0,n/a
+MARKETPLACE,O-435532240948550,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Prepaid Order,,01/10/26,"6:12 PM PST, UTC-08:00",48.95,0,0,0,n/a,2.94,0,0,51.89,-9.79,n/a,-4.9,-1.88,0,0,0,n/a
+MARKETPLACE,O-217432391220474,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Prepaid Order,,01/26/26,"11:17 AM PST, UTC-08:00",22.98,0,0,0,n/a,1.38,0,0,24.36,-4.6,n/a,-2.3,-1.04,0,0,0,n/a
+MARKETPLACE,O-427632606198045,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Adjustment of O-427632606198045,MISSING_ITEM - Refund requested by diner via help interaction,02/15/26,"7:49 PM PST, UTC-08:00",-11.99,0,0,0,n/a,-0.72,0,0,-12.71,0,n/a,0,0,0,0,0,n/a
+MARKETPLACE,O-386932202609021,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Prepaid Order,,01/06/26,"7:39 PM PST, UTC-08:00",34.96,0,0,0,n/a,2.1,0,0,37.06,-6.99,n/a,-3.5,-1.43,0,0,0,n/a
+MARKETPLACE,O-381532375549994,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Prepaid Order,,01/24/26,"2:11 PM PST, UTC-08:00",37.97,0,0,0,n/a,2.28,0,0,40.25,-7.59,n/a,-3.8,-1.53,0,0,0,n/a
+MARKETPLACE,O-836132541044821,Grubhub Delivery,Trattoria Contadina - Alton Pkwy,Prepaid Order,,02/09/26,"7:39 PM PST, UTC-08:00",27.97,0,0,0,n/a,1.68,0,0,29.65,-5.59,n/a,-2.8,-1.2,0,0,0,n/a
+MARKETPLACE,O-992432324744048,Grubhub Delivery,The Wing Shop - Alton Pkwy,Prepaid Order,,01/18/26,"8:26 PM PST, UTC-08:00",164.96,0,0,0,n/a,12.78,0,0,177.74,-32.99,n/a,-16.5,-5.72,0,0,0,n/a
+MARKETPLACE,O-943232166269959,Grubhub Delivery,The Wing Shop - Alton Pkwy,Prepaid Order,,01/02/26,"6:21 PM PST, UTC-08:00",14.99,0,0,0,n/a,1.16,0,0,16.15,-3,n/a,-1.5,-0.79,0,0,0,n/a
+MARKETPLACE,O-514532252999978,Grubhub Delivery,The Wing Shop - Alton Pkwy,Prepaid Order,,01/11/26,"5:49 PM PST, UTC-08:00",55.47,0,0,0,n/a,4.3,0,0,59.77,-11.09,n/a,-5.55,-2.12,0,0,0,n/a
+MARKETPLACE,O-389232285712136,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/14/26,"8:30 PM PST, UTC-08:00",23.73,0,0,0,n/a,1.84,0,0,25.57,-3.56,n/a,-2.37,-1.08,0,0,0,n/a
+MARKETPLACE,O-163432407360261,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/26/26,"5:30 PM PST, UTC-08:00",19.49,0,0,0,n/a,1.51,0,0,21,-2.92,n/a,0,-0.94,0,0,0,n/a
+MARKETPLACE,O-124332582675456,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/13/26,"7:25 PM PST, UTC-08:00",26.98,0,0,0,n/a,1.47,0,0,28.45,-4.05,n/a,0,-0.92,0,0,-8,n/a
+MARKETPLACE,O-378932592886490,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/14/26,"6:53 PM PST, UTC-08:00",33.97,4.99,0,0,n/a,2.4,0,3.74,45.1,-5.84,n/a,0,-1.43,0,0,-8,n/a
+MARKETPLACE,O-745632231429862,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/09/26,"6:42 PM PST, UTC-08:00",44.46,4.99,0,0,n/a,3.84,0,5.03,58.32,-7.42,n/a,0,-2.08,0,0,0,n/a
+MARKETPLACE,O-698732447227818,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/31/26,"11:45 AM PST, UTC-08:00",55.88,4.99,0,0,n/a,4.72,0,9.84,75.43,-9.13,n/a,0,-2.6,0,0,0,n/a
+MARKETPLACE,O-086932383773565,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/24/26,"7:59 PM PST, UTC-08:00",14.99,0,0,0,n/a,1.16,0,0,16.15,-2.25,n/a,0,-0.79,0,0,0,n/a
+MARKETPLACE,O-690632437222252,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/29/26,"8:02 PM PST, UTC-08:00",29.49,0,0,0,n/a,2.29,0,0,31.78,-4.42,n/a,-2.95,-1.27,0,0,0,n/a
+MARKETPLACE,O-759432442382420,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/30/26,"5:16 PM PST, UTC-08:00",24.99,0,0,0,n/a,1.94,0,0,26.93,-3.75,n/a,0,-1.12,0,0,0,n/a
+MARKETPLACE,O-199132480384690,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/03/26,"8:00 PM PST, UTC-08:00",26.95,0,0,0,n/a,1.47,0,0,28.42,-4.04,n/a,0,-0.92,0,0,-8,n/a
+MARKETPLACE,O-118932184177162,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/05/26,"4:02 PM PST, UTC-08:00",32.97,2.99,0,0,n/a,2.17,0,5,43.13,-5.39,n/a,0,-1.37,0,0,-8,n/a
+MARKETPLACE,O-355232153558793,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Adjustment of O-355232153558793,,01/01/26,"8:51 PM PST, UTC-08:00",-57.88,-6.99,0,0,n/a,-4.41,0,-8.57,-77.85,0,n/a,0,0,0,0,8,n/a
+MARKETPLACE,O-618232203274288,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/07/26,"12:34 PM PST, UTC-08:00",29.49,0,0,0,n/a,1.67,0,0,31.16,-4.42,n/a,-2.95,-1.01,0,0,-8,n/a
+MARKETPLACE,O-570132232689441,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/10/26,"4:31 PM PST, UTC-08:00",44.56,6.99,0,0,n/a,3.99,0,9.05,64.59,-7.73,n/a,0,-2.27,0,0,0,n/a
+MARKETPLACE,O-351932552361333,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/10/26,"9:35 PM PST, UTC-08:00",29.49,0,0,0,n/a,1.67,0,0,31.16,-4.42,n/a,-2.95,-1.01,0,0,-8,n/a
+MARKETPLACE,O-984432245319545,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/10/26,"6:10 PM PST, UTC-08:00",17.99,8.99,0,0,n/a,2.09,0,5,34.07,-4.05,n/a,0,-1.34,0,0,0,n/a
+MARKETPLACE,O-637032443366702,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/30/26,"6:19 PM PST, UTC-08:00",33.97,4.99,0,0,n/a,3.02,0,5,46.98,-5.84,n/a,0,-1.73,0,0,0,n/a
+MARKETPLACE,O-191532238736732,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/10/26,"11:55 AM PST, UTC-08:00",50.96,4.99,0,0,n/a,3.72,0,5,64.67,-8.39,n/a,0,-2.03,0,0,-8,n/a
+MARKETPLACE,O-176132174209854,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/04/26,"2:40 PM PST, UTC-08:00",69.83,2.99,0,0,n/a,5.02,0,6,83.84,-10.92,n/a,0,-2.61,0,0,-8,n/a
+MARKETPLACE,O-988532394993972,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/25/26,"6:51 PM PST, UTC-08:00",52.96,4.99,0,0,n/a,3.87,0,4,65.82,-8.69,n/a,0,-2.06,0,0,-8,n/a
+MARKETPLACE,O-932932214783173,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/07/26,"5:14 PM PST, UTC-08:00",29.33,4.99,0,0,n/a,2.04,0,4.82,41.18,-5.15,n/a,0,-1.31,0,0,-8,n/a
+MARKETPLACE,O-521332174434723,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/03/26,"5:33 PM PST, UTC-08:00",25.83,6.99,0,0,n/a,1.92,0,2.82,37.56,-4.92,n/a,0,-1.2,0,0,-8,n/a
+MARKETPLACE,O-461032518262174,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/06/26,"7:47 PM PST, UTC-08:00",39.73,0,0,0,n/a,2.46,0,0,42.19,-5.96,n/a,0,-1.34,0,0,-8,n/a
+MARKETPLACE,O-919232567802800,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/11/26,"5:14 PM PST, UTC-08:00",26.97,2.99,0,0,n/a,2.32,0,5.28,37.56,-4.49,n/a,0,-1.45,0,0,0,n/a
+MARKETPLACE,O-886132360640955,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/22/26,"8:13 PM PST, UTC-08:00",36.47,2.99,0,0,n/a,2.44,0,2,43.9,-5.92,n/a,0,-1.39,0,0,-8,n/a
+MARKETPLACE,O-596032265826518,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/12/26,"7:06 PM PST, UTC-08:00",29.49,0,0,0,n/a,1.67,0,0,31.16,-4.42,n/a,-2.95,-1.01,0,0,-8,n/a
+MARKETPLACE,T-52853229-2927228,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Account Adjustment,,01/16/26,"7:40 PM PST, UTC-08:00",0,0,0,0,n/a,0,0,0,8.76,0,n/a,0,0,0,0,0,n/a
+MARKETPLACE,O-788032600455200,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/15/26,"7:26 PM PST, UTC-08:00",45.46,2.99,0,0,n/a,3.13,0,2,53.58,-7.27,n/a,0,-1.69,0,0,-8,n/a
+MARKETPLACE,O-897032187759255,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/04/26,"5:56 PM PST, UTC-08:00",35.46,2.99,0,0,n/a,2.36,0,2,42.81,-5.77,n/a,0,-1.36,0,0,-8,n/a
+MARKETPLACE,O-586832387670384,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/24/26,"7:57 PM PST, UTC-08:00",39.98,0,0,0,n/a,3.1,0,0,43.08,-6,n/a,0,-1.61,0,0,0,n/a
+MARKETPLACE,O-528532292927228,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/15/26,"7:28 PM PST, UTC-08:00",18.99,0,0,0,n/a,0.85,0,0,19.84,-2.85,n/a,0,-0.66,0,0,-8,n/a
+MARKETPLACE,O-938532343153045,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/20/26,"5:33 PM PST, UTC-08:00",13.98,0,0,0,n/a,1.08,0,0,15.06,-2.1,n/a,0,-0.76,0,0,0,n/a
+MARKETPLACE,O-524832348079196,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/20/26,"7:08 PM PST, UTC-08:00",39.48,0,0,0,n/a,3.06,0,0,42.54,-5.92,n/a,-3.95,-1.6,0,0,0,n/a
+MARKETPLACE,O-355232153558793,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/01/26,"6:17 PM PST, UTC-08:00",57.88,6.99,0,0,n/a,4.41,0,8.57,77.85,-9.73,n/a,0,-2.43,0,0,-8,n/a
+MARKETPLACE,O-221632328608921,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/18/26,"5:12 PM PST, UTC-08:00",50.46,0,0,0,n/a,3.29,0,5.38,59.13,-7.57,n/a,0,-1.86,0,0,-8,n/a
+MARKETPLACE,O-821832192438787,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/05/26,"6:28 PM PST, UTC-08:00",27.27,0,0,0,n/a,1.49,0,0,28.76,-4.09,n/a,0,-0.93,0,0,-8,n/a
+MARKETPLACE,O-017532252172122,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/11/26,"5:53 PM PST, UTC-08:00",49.72,4.99,0,0,n/a,3.62,0,8.28,66.61,-8.21,n/a,0,-2.09,0,0,-8,n/a
+MARKETPLACE,O-835432403200145,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/26/26,"5:16 PM PST, UTC-08:00",29.98,0,0,0,n/a,2.32,0,0,32.3,-4.5,n/a,0,-1.29,0,0,0,n/a
+MARKETPLACE,O-561232165322320,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/02/26,"6:03 PM PST, UTC-08:00",30.34,0,0,0,n/a,1.73,0,0,32.07,-4.55,n/a,-3.03,-1.03,0,0,-8,n/a
+MARKETPLACE,O-201532188783083,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/04/26,"8:19 PM PST, UTC-08:00",20.98,0,0,0,n/a,1.63,0,0,22.61,-3.15,n/a,0,-0.99,0,0,0,n/a
+MARKETPLACE,O-621432547326943,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/10/26,"4:54 PM PST, UTC-08:00",26.48,6.99,0,0,n/a,1.97,0,2.89,38.33,-5.02,n/a,0,-1.23,0,0,-8,n/a
+MARKETPLACE,O-460132374471664,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/23/26,"9:23 PM PST, UTC-08:00",28.94,0,0,0,n/a,2.24,0,0,31.18,-4.34,n/a,0,-1.25,0,0,0,n/a
+MARKETPLACE,O-637032443366702,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Adjustment of O-637032443366702,Refund due to a missing item,01/30/26,"6:55 PM PST, UTC-08:00",-7.5,0,0,0,n/a,-0.58,0,0,-8.08,0,n/a,0,0,0,0,0,n/a
+MARKETPLACE,O-735532470428932,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/03/26,"12:00 PM PST, UTC-08:00",136.23,12.99,0,0,n/a,11.57,0,16.81,177.6,-26.11,n/a,0,-5.72,0,0,0,n/a
+MARKETPLACE,O-490832482970578,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/03/26,"8:28 PM PST, UTC-08:00",31.19,0,0,0,n/a,1.8,0,0,32.99,-4.68,n/a,-3.12,-1.06,0,0,-8,n/a
+MARKETPLACE,O-819132449404563,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/30/26,"5:03 PM PST, UTC-08:00",41.72,2.99,0,0,n/a,3.46,0,5,53.17,-6.71,n/a,0,-1.92,0,0,0,n/a
+MARKETPLACE,O-771132303205193,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/16/26,"7:10 PM PST, UTC-08:00",55.29,6.99,0,0,n/a,4.2,0,9.22,75.7,-9.34,n/a,0,-2.36,0,0,-8,n/a
+MARKETPLACE,T-35523215-3558793,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Account Adjustment,35523215-3558793,01/05/26,"11:22 AM PST, UTC-08:00",0,0,0,0,n/a,0,0,0,69.85,0,n/a,0,0,0,0,0,n/a
+MARKETPLACE,O-694932590377890,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/14/26,"6:19 PM PST, UTC-08:00",56.26,4.99,0,0,n/a,4.13,0,6.54,71.92,-9.19,n/a,0,-2.25,0,0,-8,n/a
+MARKETPLACE,O-453432173002344,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/03/26,"9:17 PM PST, UTC-08:00",25.98,1.99,0,0,n/a,1.54,0,2.83,32.34,-4.2,n/a,0,-1.04,0,0,-8,n/a
+MARKETPLACE,O-678232561121544,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/11/26,"7:06 PM PST, UTC-08:00",26.48,6.99,0,0,n/a,1.97,0,2.89,38.33,-5.02,n/a,0,-1.23,0,0,-8,n/a
+MARKETPLACE,O-509832472339597,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/03/26,"12:00 PM PST, UTC-08:00",24.99,6.99,0,0,n/a,2.17,0,0,34.15,-4.8,n/a,0,-1.22,0,0,-4,n/a
+MARKETPLACE,O-085832488785906,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/03/26,"8:51 PM PST, UTC-08:00",26.98,1.99,0,0,n/a,1.62,0,4.58,35.17,-4.35,n/a,0,-1.13,0,0,-8,n/a
+MARKETPLACE,O-852132473503806,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/02/26,"9:54 PM PST, UTC-08:00",23.73,0,0,0,n/a,1.22,0,0,24.95,-3.56,n/a,-2.37,-0.82,0,0,-8,n/a
+MARKETPLACE,O-736432179398380,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/03/26,"7:49 PM PST, UTC-08:00",18.98,0,0,0,n/a,1.47,0,0,20.45,-2.85,n/a,0,-0.92,0,0,0,n/a
+MARKETPLACE,O-014532519393139,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/06/26,"8:28 PM PST, UTC-08:00",27.83,2.99,0,0,n/a,1.77,0,1,33.59,-4.62,n/a,0,-1.08,0,0,-8,n/a
+MARKETPLACE,O-099832556486480,Grubhub Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/10/26,"8:40 PM PST, UTC-08:00",31.19,0,0,0,n/a,1.8,0,0,32.99,-4.68,n/a,-3.12,-1.06,0,0,-8,n/a
+MARKETPLACE,O-679232349851106,Self Delivery,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/20/26,"5:52 PM PST, UTC-08:00",25.73,4.99,0,0,n/a,1.76,0,5.89,38.37,-4.61,n/a,0,-1.23,0,0,-8,n/a
+MARKETPLACE,O-815332264808812,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,01/13/26,"12:47 PM PST, UTC-08:00",36.97,0,0,0,n/a,2.25,0,3.92,43.14,-5.55,n/a,0,-1.37,0,0,-8,n/a
+MARKETPLACE,O-015332542025921,Pick-Up,Aroma Pizza & Pasta - Alton Pkwy,Prepaid Order,,02/09/26,"8:36 PM PST, UTC-08:00",29.98,0,0,0,n/a,1.7,0,0,31.68,-4.5,n/a,0,-1.02,0,0,-8,n/a
