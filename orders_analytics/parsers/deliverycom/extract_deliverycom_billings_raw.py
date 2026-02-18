@@ -22,6 +22,11 @@ RAW_COLUMNS = [
     "tax_note",
     "delivery_fee",
     "service_fee",
+    "account_credit_card_payment",
+    "account_promo_gift_card_redemption",
+    "account_service_fee",
+    "account_cc_percent_fee",
+    "account_cc_transaction_fee",
     "payment",
     "total_invoice_amount",
     "invoice_id",
@@ -73,6 +78,14 @@ LABEL_MAP = {
     "sf": "service_fee",
     "payment": "payment",
     "tia": "total_invoice_amount",
+}
+
+SUMMARY_LABEL_MAP = {
+    "creditcardpayment": "account_credit_card_payment",
+    "promotionalgiftcardredemption": "account_promo_gift_card_redemption",
+    "servicefee": "account_service_fee",
+    "ccpercentfee": "account_cc_percent_fee",
+    "cctransactionfee": "account_cc_transaction_fee",
 }
 
 
@@ -133,10 +146,33 @@ def parse_charge_table(table_html: str) -> Tuple[List[str], List[List[str]]]:
     return headers, rows
 
 
+def parse_account_summary(text: str) -> Dict[str, str]:
+    summary: Dict[str, str] = {}
+    for table_html in re.findall(r"<table[^>]*>.*?</table>", text, re.DOTALL | re.IGNORECASE):
+        headers = [clean_cell(h) for h in re.findall(r"<th[^>]*>(.*?)</th>", table_html, re.DOTALL)]
+        if len(headers) < 3:
+            continue
+        normalized_headers = [normalize_label(h) for h in headers[:3]]
+        if normalized_headers[:3] != ["date", "description", "amount"]:
+            continue
+        _, table_rows = parse_charge_table(table_html)
+        for cells in table_rows:
+            if len(cells) < 3:
+                continue
+            description = cells[1]
+            key = SUMMARY_LABEL_MAP.get(normalize_label(description))
+            if not key:
+                continue
+            summary[key] = extract_money(cells[2])
+        break
+    return summary
+
+
 def parse_billings_html(html_text: str) -> List[Dict[str, str]]:
     rows: List[Dict[str, str]] = []
     text = html.unescape(html_text)
     invoice_id, account_number, restaurant_name = parse_invoice_meta(text)
+    account_summary = parse_account_summary(text)
 
     for table_html in re.findall(
         r"<table[^>]*class=\"charge-table\"[^>]*>.*?</table>",
@@ -158,6 +194,17 @@ def parse_billings_html(html_text: str) -> List[Dict[str, str]]:
                 "tax_note": "",
                 "delivery_fee": "",
                 "service_fee": "",
+                "account_credit_card_payment": account_summary.get(
+                    "account_credit_card_payment", ""
+                ),
+                "account_promo_gift_card_redemption": account_summary.get(
+                    "account_promo_gift_card_redemption", ""
+                ),
+                "account_service_fee": account_summary.get("account_service_fee", ""),
+                "account_cc_percent_fee": account_summary.get("account_cc_percent_fee", ""),
+                "account_cc_transaction_fee": account_summary.get(
+                    "account_cc_transaction_fee", ""
+                ),
                 "payment": "",
                 "total_invoice_amount": "",
                 "invoice_id": invoice_id,

@@ -35,4 +35,12 @@ compare:
 options:
   null_equals_zero: true
   include_missing: true
+excludes:
+  left:
+    - column: status
+      contains: cancel
+exclude_keys:
+  - path: orders_analytics/data/raw/deliverycom/canceled_orders.csv
+    keys:
+      - order_id
 output: orders_analytics/data/raw/deliverycom/orders_vs_billings_differences.csv

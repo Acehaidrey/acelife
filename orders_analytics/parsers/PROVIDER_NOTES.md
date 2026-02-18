@@ -162,6 +162,9 @@
     - Any order where customer_name contains “test order” is dropped from normalized output.
 
 ## delivery.com
+- Additional source: `Takeout/Mail/Daily Order Summary for *.eml`
+  - Parsed via `parsers/deliverycom/extract_deliverycom_orders_raw.py` (daily summary format).
+  - Status is captured from the daily summary; orders with status containing `cancel` are excluded from normalized output.
 - Source: `Takeout/Mail/Orders-DeliveryCom.mbox` (HTML in text/html or text/plain)
 - Parser: `orders_analytics/parsers/deliverycom/parse_deliverycom_orders.py`
 - Order ID: `Order #<digits>` from email body.
@@ -179,6 +182,7 @@ Billings:
 - Source: `Takeout/Mail/Billings-DeliveryCom.mbox`
 - Parser: `orders_analytics/parsers/deliverycom/extract_deliverycom_billings_raw.py`
 - Pulls per-order rows from the “charge-table” (`OID`, `Time`, `SubT`, `Tip`, `Tax`, `DF`, `SF`, `Payment`, `TIA`).
+- Account Summary rows are captured per invoice and copied to each order row (`account_credit_card_payment`, `account_promo_gift_card_redemption`, `account_service_fee`, `account_cc_percent_fee`, `account_cc_transaction_fee`).
 - Captures invoice metadata when available: invoice ID, account number, and restaurant name.
 - Service Fee is stored in `service_fee` (raw only), Payment/Total Invoice are captured as provided (may be negative).
 - Tax rows sometimes show tags like `[EXPT]`; parser captures `tax_note` and normalizes the numeric tax.
@@ -188,6 +192,8 @@ Concerns / follow-ups:
 - Item parsing is simplistic; may miss modifiers or quantities.
 - Email sometimes has “FUTURE DELIVERY (Hold)” blocks; currently not captured in notes.
 - Billings rows are merged into normalized output; billings values override orders values for subtotal/tax/tip/delivery_fee/total and mismatches are recorded in `errors`.
+- Comparison config excludes canceled order IDs via `orders_analytics/data/raw/deliverycom/canceled_orders.csv` (includes manual cancellations like `30356901` -> replaced by `30357135`).
+- Orders extraction also parses Daily Order Summary tables found in `Orders-DeliveryCom.mbox` (notes include `daily_order_summary`; `order_datetime` uses header date + row time).
 
 ## DoorDash
 - Sources:

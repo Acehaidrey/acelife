@@ -58,7 +58,13 @@ def merge_billings(
 def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
     normalized = []
     for row in rows:
+        status = row.get("status", "")
+        if status and "cancel" in status.lower():
+            continue
         discount = row.get("discount", "")
+        notes = row.get("notes", "")
+        if status and status.lower() not in ("confirmed", "complete", "completed"):
+            notes = " | ".join([notes, f"status={status}"]).strip(" |")
         normalized.append(
             build_normalized_row(
                 Platforms.DELIVERYCOM.upper(),
@@ -81,7 +87,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 items=row.get("items", ""),
                 adjustments=discount,
                 errors=row.get("errors", ""),
-                notes=row.get("notes", ""),
+                notes=notes,
             )
         )
     return normalized
