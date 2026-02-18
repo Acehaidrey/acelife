@@ -1,0 +1,38 @@
+name: deliverycom_orders_vs_billings
+left:
+  path: orders_analytics/data/raw/deliverycom/orders_raw.csv
+  name: orders
+  keys:
+    - order_id
+right:
+  path: orders_analytics/data/raw/deliverycom/billings_raw.csv
+  name: billings
+  keys:
+    - order_id
+compare:
+  columns:
+    order_datetime:
+      left: order_datetime
+      right: order_datetime
+    subtotal:
+      left: subtotal
+      right: subtotal
+    tax:
+      left: tax
+      right: tax
+    tip:
+      left: tip
+      right: tip
+    delivery_fee:
+      left: delivery_fee
+      right: delivery_fee
+    total:
+      left: total
+      right: total_invoice_amount
+    restaurant_name:
+      left: restaurant_name
+      right: restaurant_name
+options:
+  null_equals_zero: true
+  include_missing: true
+output: orders_analytics/data/raw/deliverycom/orders_vs_billings_differences.csv
