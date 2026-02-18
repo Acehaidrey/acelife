@@ -194,6 +194,8 @@ Concerns / follow-ups:
 - Billings rows are merged into normalized output; billings values override orders values for subtotal/tax/tip/delivery_fee/total and mismatches are recorded in `errors`.
 - Comparison config excludes canceled order IDs via `orders_analytics/data/raw/deliverycom/canceled_orders.csv` (includes manual cancellations like `30356901` -> replaced by `30357135`).
 - Orders extraction also parses Daily Order Summary tables found in `Orders-DeliveryCom.mbox` (notes include `daily_order_summary`; `order_datetime` uses header date + row time).
+- Manual adjustments/payout overrides: `orders_analytics/data/raw/deliverycom/deliverycom_adjustments.csv` (per-order adjustments and payout overrides; notes appended).
+- Orders: `delivery.com promo:` blocks and `Discount (X% off):` lines are captured as negative discounts (adjustments).
 
 ## DoorDash
 - Sources:

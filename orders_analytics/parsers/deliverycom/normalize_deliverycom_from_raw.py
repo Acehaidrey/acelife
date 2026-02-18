@@ -1,16 +1,28 @@
 #!/usr/bin/env python3
 import argparse
 import os
+from decimal import Decimal, InvalidOperation
 from typing import Dict, List, Tuple
 
 import pandas as pd
 
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
-from orders_analytics.utils.normalize import normalize_money
+from orders_analytics.utils.normalize import normalize_money, normalize_datetime
+from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.validation import normalize_order_type, normalize_payment_type
 from orders_analytics.utils.platforms import Platforms
 from orders_analytics.utils.schema import build_normalized_row
+
+
+def to_decimal(value: str) -> Decimal | None:
+    text = str(value or "").strip()
+    if not text:
+        return None
+    try:
+        return Decimal(text.replace("$", "").replace(",", ""))
+    except InvalidOperation:
+        return None
 
 
 def load_raw(path: str) -> pd.DataFrame:
@@ -19,9 +31,35 @@ def load_raw(path: str) -> pd.DataFrame:
     return pd.read_csv(path, dtype=str).fillna("")
 
 
+def load_canceled_ids(path: str) -> set[str]:
+    if not os.path.exists(path):
+        return set()
+    df = pd.read_csv(path, dtype=str).fillna("")
+    return {str(v).strip() for v in df.get("order_id", []) if str(v).strip()}
+
+
+
+
+def load_adjustments_overrides(path: str) -> dict[str, dict[str, str]]:
+    if not os.path.exists(path):
+        return {}
+    df = pd.read_csv(path, dtype=str).fillna("")
+    overrides = {}
+    for _, row in df.iterrows():
+        oid = str(row.get("order_id", "")).strip()
+        if not oid:
+            continue
+        overrides[oid] = {
+            "adjustments": str(row.get("adjustments", "")).strip(),
+            "payout": str(row.get("payout", "")).strip(),
+            "notes": str(row.get("notes", "")).strip(),
+        }
+    return overrides
+
 def merge_billings(
     orders: List[Dict[str, str]],
     billings: List[Dict[str, str]],
+    canceled_ids: set[str],
 ) -> List[Dict[str, str]]:
     if not billings:
         return orders
@@ -39,32 +77,143 @@ def merge_billings(
             ("tax", "tax"),
             ("tip", "tip"),
             ("delivery_fee", "delivery_fee"),
-            ("total", "total_invoice_amount"),
+            ("total", "payment"),
         ):
             order_val = row.get(field, "")
             billing_val = billing.get(bill_field, "")
-            if billing_val:
+            if field == "total" and billing_val:
+                payment_dec = to_decimal(billing_val)
+                if payment_dec is not None:
+                    row[field] = f"{abs(payment_dec):.2f}"
+            elif billing_val:
                 row[field] = billing_val
             if order_val and billing_val:
-                if normalize_money(order_val) != normalize_money(billing_val):
+                compare_val = billing_val
+                if field == "total":
+                    payment_dec = to_decimal(billing_val)
+                    compare_val = f"{abs(payment_dec):.2f}" if payment_dec is not None else billing_val
+                if normalize_money(order_val) != normalize_money(compare_val):
                     mismatches.append(
-                        f"{field} mismatch (orders={order_val}, billings={billing_val})"
+                        f"{field} mismatch (orders={order_val}, billings={compare_val})"
                     )
         if mismatches:
             row["errors"] = " | ".join([row.get("errors", ""), *mismatches]).strip(" |")
+        row["billing_payment"] = billing.get("payment", "")
+        row["billing_service_fee"] = billing.get("service_fee", "")
+        row["billing_total_invoice_amount"] = billing.get("total_invoice_amount", "")
+        row["billing_invoice_id"] = billing.get("invoice_id", "")
+
+    existing_ids = {str(row.get("order_id", "")).strip() for row in orders if row.get("order_id")}
+    for billing in billings:
+        order_id = str(billing.get("order_id", "")).strip()
+        if not order_id or order_id in existing_ids or order_id in canceled_ids:
+            continue
+        orders.append(
+            {
+                "order_id": order_id,
+                "provider": normalize_provider(billing.get("restaurant_name", "")),
+                "restaurant_name": billing.get("restaurant_name", ""),
+                "order_datetime": normalize_datetime(
+                    billing.get("order_datetime", ""),
+                    formats=("%m/%d/%Y %I:%M%p", "%m/%d/%Y %I:%M %p"),
+                    allow_iso=False,
+                ),
+                "order_type": "",
+                "payment_type": "",
+                "customer_name": "",
+                "phone": "",
+                "address": "",
+                "items": "",
+                "item_count": "",
+                "subtotal": billing.get("subtotal", ""),
+                "tax": billing.get("tax", ""),
+                "tip": billing.get("tip", ""),
+                "delivery_fee": billing.get("delivery_fee", ""),
+                "total": billing.get("payment", ""),
+                "discount": billing.get("account_dcom_promotion", ""),
+                "notes": "missing_order_record",
+                "billing_payment": billing.get("payment", ""),
+                "billing_service_fee": billing.get("service_fee", ""),
+                "billing_total_invoice_amount": billing.get("total_invoice_amount", ""),
+                "billing_invoice_id": billing.get("invoice_id", ""),
+            }
+        )
     return orders
 
 
-def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
+def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides: dict[str, dict[str, str]]) -> List[Dict[str, str]]:
     normalized = []
     for row in rows:
+        order_id = str(row.get("order_id", "")).strip()
+        if order_id and order_id in canceled_ids:
+            continue
         status = row.get("status", "")
         if status and "cancel" in status.lower():
             continue
         discount = row.get("discount", "")
+        promo = to_decimal(row.get("account_dcom_promotion", ""))
+        if promo is not None:
+            base = to_decimal(discount) or Decimal("0.00")
+            discount = f"{(base + promo).quantize(Decimal('0.01'))}"
+        if "missing_order_record" in (row.get("notes", "") or ""):
+            if not row.get("order_type"):
+                delivery_fee = to_decimal(row.get("delivery_fee", "")) or Decimal("0.00")
+                row["order_type"] = "delivery" if delivery_fee > Decimal("0.00") else "pickup"
+                notes = " | ".join([row.get("notes", ""), "order_type_inferred"]).strip(" |")
+                row["notes"] = notes
+            if not row.get("payment_type"):
+                row["payment_type"] = "credit"
+                notes = " | ".join([row.get("notes", ""), "payment_type_inferred"]).strip(" |")
+                row["notes"] = notes
         notes = row.get("notes", "")
+        if "special_instructions" in notes.lower():
+            notes = ""
+        invoice_id = row.get("billing_invoice_id", "") or row.get("invoice_id", "")
+        if invoice_id:
+            notes = " | ".join([notes, f"invoice_id={invoice_id}"]).strip(" |")
         if status and status.lower() not in ("confirmed", "complete", "completed"):
             notes = " | ".join([notes, f"status={status}"]).strip(" |")
+
+        payment = to_decimal(row.get("billing_payment", "") or row.get("payment", ""))
+        total_invoice_amount = to_decimal(row.get("billing_total_invoice_amount", ""))
+        service_fee = to_decimal(row.get("billing_service_fee", "") or row.get("service_fee", ""))
+
+        total = row.get("total", "")
+        payout = ""
+        override = overrides.get(order_id, {})
+        if override.get("adjustments"):
+            discount = override.get("adjustments")
+        if override.get("notes"):
+            notes = " | ".join([notes, override.get("notes")]).strip(" |")
+
+        if payment is not None and abs(payment) >= Decimal("0.01"):
+            total = f"{(-payment).quantize(Decimal('0.01'))}"
+        else:
+            component_sum = sum(
+                to_decimal(row.get(field, "")) or Decimal("0.00")
+                for field in ("subtotal", "tax", "tip", "delivery_fee", "discount")
+            )
+            if component_sum != Decimal("0.00"):
+                total = f"{component_sum.quantize(Decimal('0.01'))}"
+                notes = " | ".join([notes, "total_from_components"]).strip(" |")
+        if total_invoice_amount is not None:
+            payout = f"{(-total_invoice_amount).quantize(Decimal('0.01'))}"
+        if override.get("payout"):
+            payout = override.get("payout")
+
+        commission_fee = ""
+        processing_fee = ""
+        if service_fee is not None and payment is not None:
+            fee_total = abs(service_fee)
+            commission_calc = Decimal("0.25") + (abs(payment) * Decimal("0.0275"))
+            commission_calc = commission_calc.quantize(Decimal("0.01"))
+            processing_calc = fee_total - commission_calc
+            processing_calc = processing_calc.quantize(Decimal("0.01"))
+            if commission_calc + processing_calc != fee_total:
+                processing_calc = fee_total - commission_calc
+            commission_fee = f"{-commission_calc:.2f}"
+            processing_fee = f"{-processing_calc:.2f}"
+
         normalized.append(
             build_normalized_row(
                 Platforms.DELIVERYCOM.upper(),
@@ -82,10 +231,13 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
                 tax_withheld="",
                 tip=row.get("tip", ""),
                 delivery_fee=row.get("delivery_fee", ""),
-                total=row.get("total", ""),
+                total=total,
                 item_count=row.get("item_count", ""),
                 items=row.get("items", ""),
                 adjustments=discount,
+                commission_fee=commission_fee,
+                processing_fee=processing_fee,
+                payout=payout,
                 errors=row.get("errors", ""),
                 notes=notes,
             )
@@ -96,6 +248,7 @@ def normalize_rows(rows: List[Dict[str, str]]) -> List[Dict[str, str]]:
 class DeliveryComNormalizer(BaseParser):
     platform = "DELIVERYCOM"
     provider = ""
+    total_components_fields = ("subtotal", "tax", "tip", "delivery_fee", "adjustments")
 
     def default_input_path(self) -> str:
         return raw_path("deliverycom", "orders_raw.csv")
@@ -107,16 +260,22 @@ class DeliveryComNormalizer(BaseParser):
         billings_path = self.extra.get("billings_raw") or raw_path(
             "deliverycom", "billings_raw.csv"
         )
+        canceled_path = raw_path("deliverycom", "canceled_orders.csv")
+        overrides_path = raw_path("deliverycom", "deliverycom_adjustments.csv")
         return {
             "orders_raw": load_raw(input_path),
             "billings_raw": load_raw(billings_path),
+            "canceled_ids": load_canceled_ids(canceled_path),
+            "adjustments_overrides": load_adjustments_overrides(overrides_path),
         }
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
         orders = inputs["orders_raw"].to_dict("records")
         billings = inputs["billings_raw"].to_dict("records")
-        merged = merge_billings(orders, billings)
-        return normalize_rows(merged)
+        canceled_ids = inputs.get("canceled_ids", set())
+        merged = merge_billings(orders, billings, canceled_ids)
+        overrides = inputs.get("adjustments_overrides", {})
+        return normalize_rows(merged, canceled_ids, overrides)
 
 
 def run(

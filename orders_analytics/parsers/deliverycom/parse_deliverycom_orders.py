@@ -134,6 +134,27 @@ def parse_money_field(lines: List[str], label: str) -> str:
     return ""
 
 
+def _add_discount(summary: Dict[str, str], value: str) -> None:
+    if not value:
+        return
+    existing = summary.get("discount", "")
+    try:
+        from decimal import Decimal, InvalidOperation
+        def to_dec(v: str) -> Decimal:
+            v = v.replace("$", "").replace(",", "").strip()
+            if v.startswith("(") and v.endswith(")"):
+                v = "-" + v[1:-1]
+            return Decimal(v)
+        new_val = to_dec(value)
+        if existing:
+            total = to_dec(existing) + new_val
+            summary["discount"] = f"{total.quantize(Decimal('0.01'))}"
+        else:
+            summary["discount"] = f"{new_val.quantize(Decimal('0.01'))}"
+    except Exception:
+        summary["discount"] = value
+
+
 def parse_summary(lines: List[str]) -> Dict[str, str]:
     summary = {
         "subtotal": "",
@@ -145,6 +166,48 @@ def parse_summary(lines: List[str]) -> Dict[str, str]:
     }
     if "Customer paid:" in lines:
         summary["total"] = parse_money_field(lines, "Customer paid")
+        idx = lines.index("Customer paid:")
+        values = []
+        for line in lines[idx + 1 : idx + 4]:
+            value = line.strip()
+            if value.startswith("$") or value.startswith("-") or value.startswith("("):
+                values.append(normalize_money(value))
+        if len(values) >= 2:
+            # handle promo block: negative promo then actual total
+            for val in reversed(values):
+                if not val.startswith("-"):
+                    summary["total"] = val
+                    break
+
+    # delivery.com promo discount
+    for idx, line in enumerate(lines):
+        if line.lower().startswith("delivery.com promo"):
+            for j in range(idx + 1, min(idx + 4, len(lines))):
+                value = lines[j].strip()
+                if value.startswith("$") or value.startswith("-") or value.startswith("("):
+                    _add_discount(summary, normalize_money(value))
+                    break
+            break
+    # Discount (X% off):
+    for idx, line in enumerate(lines):
+        if line.lower().startswith("discount") and line.strip().endswith(":"):
+            for j in range(idx + 1, min(idx + 10, len(lines))):
+                value = lines[j].strip()
+                if not (value.startswith("-") or value.startswith("(")):
+                    continue
+                _add_discount(summary, normalize_money(value))
+                break
+            break
+
+    # delivery.com promo discount
+    for idx, line in enumerate(lines):
+        if line.lower().startswith("delivery.com promo"):
+            for j in range(idx + 1, min(idx + 4, len(lines))):
+                value = lines[j].strip()
+                if value.startswith("$") or value.startswith("-") or value.startswith("("):
+                    summary["discount"] = normalize_money(value)
+                    break
+            break
 
     label_values: Dict[str, str] = {}
     start_idx = None
@@ -190,7 +253,8 @@ def parse_summary(lines: List[str]) -> Dict[str, str]:
         summary["delivery_fee"] = label_values.get("delivery fee", summary["delivery_fee"])
         summary["tax"] = label_values.get("tax", summary["tax"])
         summary["tip"] = label_values.get("tip", summary["tip"])
-        summary["discount"] = label_values.get("discount", summary["discount"])
+        if "discount" in label_values and not summary.get("discount"):
+            _add_discount(summary, label_values.get("discount", ""))
         summary["total"] = summary["total"] or label_values.get(
             "customer paid", label_values.get("merchant receives", "")
         )

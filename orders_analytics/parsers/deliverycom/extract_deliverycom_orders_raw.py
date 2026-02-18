@@ -190,6 +190,8 @@ def upsert_raw(existing_path: str, new_rows: List[Dict[str, str]]) -> int:
                 continue
             old_val = str(current.get(col, "") or "")
             new_val = str(row.get(col, "") or "")
+            if new_val == "" and old_val != "":
+                continue
             if old_val != new_val:
                 current[col] = new_val
                 changed = True
