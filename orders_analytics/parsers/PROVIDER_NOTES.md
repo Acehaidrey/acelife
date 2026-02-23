@@ -175,7 +175,11 @@
 - Customer name/phone/address: name after payment line; address lines before phone number (if present). Pickup orders often have no address.
 - Totals: Subtotal / Tax / Tip / Delivery fee / Customer paid extracted from label lines.
 - Items: naive parse between `Qty` and `Customer paid` / `Subtotal`; captures item names and counts; options lines may be skipped.
-- Notes: “SPECIAL INSTRUCTIONS” block appended to notes.
+- Notes: “SPECIAL INSTRUCTIONS” block appended to notes (then stripped during normalization).
+- delivery.com promos/credits:
+  - “delivery.com promo:” / “delivery.com credit:” are captured into notes only (e.g., `delivery_com_promo=...`, `delivery_com_credit=...`).
+  - These do **not** flow into `marketing_fee` or `adjustments`.
+- Discounts (e.g., `Discount (15% off)`) are captured as negative discounts and mapped to `marketing_fee`.
 - Known quirk: some “FUTURE DELIVERY (Hold)” lines can be captured as an item; needs refinement if you want to drop those.
 
 Billings:
@@ -185,13 +189,20 @@ Billings:
 - Account Summary rows are captured per invoice and copied to each order row (`account_credit_card_payment`, `account_promo_gift_card_redemption`, `account_service_fee`, `account_cc_percent_fee`, `account_cc_transaction_fee`).
 - Captures invoice metadata when available: invoice ID, account number, and restaurant name.
 - Service Fee is stored in `service_fee` (raw only), Payment/Total Invoice are captured as provided (may be negative).
+- CC percent/transaction fees are captured from Account Summary and **prorated per order within the invoice**.
+  - `processing_fee = -(cc_percent_fee + cc_transaction_fee)` (per-order).
+  - `commission_fee = -(service_fee - processing_fee)`.
 - Tax rows sometimes show tags like `[EXPT]`; parser captures `tax_note` and normalizes the numeric tax.
+- Marketplace Facilitator Sales Tax Withhold:
+  - If invoice tax sum equals withheld, each order’s tax is used as `tax_withheld`.
+  - If mismatch, withheld is prorated evenly across invoice orders; mismatch note is kept.
 
 Concerns / follow-ups:
 - Address extraction for delivery orders is heuristic; if delivery orders are missing addresses, need to inspect additional samples.
 - Item parsing is simplistic; may miss modifiers or quantities.
 - Email sometimes has “FUTURE DELIVERY (Hold)” blocks; currently not captured in notes.
 - Billings rows are merged into normalized output; billings values override orders values for subtotal/tax/tip/delivery_fee/total and mismatches are recorded in `errors`.
+  - Total mismatch is suppressed when a delivery.com promo/credit is present (since customer-paid differs from billing).
 - Comparison config excludes canceled order IDs via `orders_analytics/data/raw/deliverycom/canceled_orders.csv` (includes manual cancellations like `30356901` -> replaced by `30357135`).
 - Orders extraction also parses Daily Order Summary tables found in `Orders-DeliveryCom.mbox` (notes include `daily_order_summary`; `order_datetime` uses header date + row time).
 - Manual adjustments/payout overrides: `orders_analytics/data/raw/deliverycom/deliverycom_adjustments.csv` (per-order adjustments and payout overrides; notes appended).

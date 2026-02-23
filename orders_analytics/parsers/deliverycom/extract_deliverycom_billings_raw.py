@@ -26,6 +26,7 @@ RAW_COLUMNS = [
     "account_promo_gift_card_redemption",
     "account_service_fee",
     "account_dcom_promotion",
+    "account_marketplace_facilitator_tax_withhold",
     "account_cc_percent_fee",
     "account_cc_transaction_fee",
     "payment",
@@ -86,6 +87,7 @@ SUMMARY_LABEL_MAP = {
     "promotionalgiftcardredemption": "account_promo_gift_card_redemption",
     "servicefee": "account_service_fee",
     "dcompromotion": "account_dcom_promotion",
+    "marketplacefacilitatorsalestaxwithhold": "account_marketplace_facilitator_tax_withhold",
     "ccpercentfee": "account_cc_percent_fee",
     "cctransactionfee": "account_cc_transaction_fee",
 }
@@ -204,6 +206,7 @@ def parse_billings_html(html_text: str) -> List[Dict[str, str]]:
                 ),
                 "account_service_fee": account_summary.get("account_service_fee", ""),
                 "account_dcom_promotion": account_summary.get("account_dcom_promotion", ""),
+                "account_marketplace_facilitator_tax_withhold": account_summary.get("account_marketplace_facilitator_tax_withhold", ""),
                 "account_cc_percent_fee": account_summary.get("account_cc_percent_fee", ""),
                 "account_cc_transaction_fee": account_summary.get(
                     "account_cc_transaction_fee", ""

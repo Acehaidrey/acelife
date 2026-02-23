@@ -135,7 +135,7 @@ def parse_money_field(lines: List[str], label: str) -> str:
 
 
 def _add_discount(summary: Dict[str, str], value: str) -> None:
-    if not value:
+    if not value or summary.get("dcom_promo"):
         return
     existing = summary.get("discount", "")
     try:
@@ -163,6 +163,8 @@ def parse_summary(lines: List[str]) -> Dict[str, str]:
         "delivery_fee": "",
         "total": "",
         "discount": "",
+        "dcom_credit": "",
+        "dcom_promo": "",
     }
     if "Customer paid:" in lines:
         summary["total"] = parse_money_field(lines, "Customer paid")
@@ -179,15 +181,36 @@ def parse_summary(lines: List[str]) -> Dict[str, str]:
                     summary["total"] = val
                     break
 
-    # delivery.com promo discount
+    # delivery.com credit
+    for idx, line in enumerate(lines):
+        if line.lower().startswith("delivery.com credit"):
+            for j in range(idx + 1, min(idx + 4, len(lines))):
+                value = lines[j].strip()
+                if value.startswith("$") or value.startswith("-") or value.startswith("("):
+                    summary["dcom_credit"] = normalize_money(value).lstrip("-")
+                    break
+            break
+
+    # delivery.com promo (do not treat as discount)
     for idx, line in enumerate(lines):
         if line.lower().startswith("delivery.com promo"):
             for j in range(idx + 1, min(idx + 4, len(lines))):
                 value = lines[j].strip()
                 if value.startswith("$") or value.startswith("-") or value.startswith("("):
-                    _add_discount(summary, normalize_money(value))
+                    summary["dcom_promo"] = normalize_money(value).lstrip("-")
                     break
             break
+    # promo/credit variations that include delivery.com promo text
+    for idx, line in enumerate(lines):
+        lower = line.lower()
+        if "promo" in lower and "delivery" in lower:
+            for j in range(idx + 1, min(idx + 4, len(lines))):
+                value = lines[j].strip()
+                if value.startswith("$") or value.startswith("-") or value.startswith("("):
+                    summary["dcom_promo"] = normalize_money(value).lstrip("-")
+                    break
+            break
+
     # Discount (X% off):
     for idx, line in enumerate(lines):
         if line.lower().startswith("discount") and line.strip().endswith(":"):
@@ -199,15 +222,6 @@ def parse_summary(lines: List[str]) -> Dict[str, str]:
                 break
             break
 
-    # delivery.com promo discount
-    for idx, line in enumerate(lines):
-        if line.lower().startswith("delivery.com promo"):
-            for j in range(idx + 1, min(idx + 4, len(lines))):
-                value = lines[j].strip()
-                if value.startswith("$") or value.startswith("-") or value.startswith("("):
-                    summary["discount"] = normalize_money(value)
-                    break
-            break
 
     label_values: Dict[str, str] = {}
     start_idx = None
@@ -293,6 +307,13 @@ def parse_summary(lines: List[str]) -> Dict[str, str]:
         summary["delivery_fee"] = parse_money_field(lines, "Delivery fee")
     if not summary["discount"]:
         summary["discount"] = parse_money_field(lines, "Discount")
+
+    # if promo/credit present, do not treat as discount
+    if summary.get("dcom_promo") or summary.get("dcom_credit"):
+        summary["discount"] = ""
+
+    if summary.get("dcom_promo") or summary.get("dcom_credit"):
+        summary["discount"] = ""
     return summary
 
 
@@ -400,10 +421,16 @@ def parse_order(msg) -> Optional[Dict[str, str]]:
     delivery_fee = summary["delivery_fee"]
     total = summary["total"]
     discount = summary["discount"]
+    dcom_credit = summary.get("dcom_credit", "")
+    dcom_promo = summary.get("dcom_promo", "")
 
     items, item_count = parse_items(lines)
 
     notes = []
+    if dcom_credit:
+        notes.append(f"delivery_com_credit={dcom_credit}")
+    if dcom_promo:
+        notes.append(f"delivery_com_promo={dcom_promo}")
     for idx, line in enumerate(lines):
         if line.lower().startswith("special instructions"):
             block = []
@@ -447,6 +474,8 @@ def parse_order(msg) -> Optional[Dict[str, str]]:
         "errors": "",
         "notes": " | ".join(notes),
         "discount": discount,
+        "dcom_credit": dcom_credit,
+        "dcom_promo": dcom_promo,
     }
 
 

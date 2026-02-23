@@ -1,0 +1,17 @@
+left:
+  path: orders_analytics/data/raw/foodja/orders_raw.csv
+  name: orders
+  keys:
+    order_id: order_id
+right:
+  path: orders_analytics/data/raw/foodja/billings_raw.csv
+  name: billings
+  keys:
+    order_id: order_id
+fields:
+  - name: subtotal
+    left: Food Total
+    right: subtotal
+    transform: money
+    tolerance: 0.01
+output: orders_analytics/data/raw/foodja/foodja_orders_vs_billings_diff.csv

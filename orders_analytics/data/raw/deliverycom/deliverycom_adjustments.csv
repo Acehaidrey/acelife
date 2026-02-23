@@ -1,3 +1,7 @@
 order_id,adjustments,payout,notes
-27577955,-4.99,,not paid out del fee - manual adjustment
-28180571,-469.15,13.15,$13.15 payout for 2263115 mistake from provider
+27577955,-3.42,,not paid out del fee - manual adjustment
+28180571,-456.00,0,"$13.15 payout for 2263115 charged. Original order we cancelled but they charged us service fees, and then paid out later here"
+27725863,-23.57,,"order was cancelled, charged us service charge still"
+29690431,-21.59,,unknown difference of $21.59 we were shorted (only charged half del fee)
+33582502,0,,refund of marketing_fee - cancelled but paid order
+35304414,0,,zeroing out discount of $8.51 as subtotal is reduced by it

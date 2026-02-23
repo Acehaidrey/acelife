@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import os
+from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from typing import Dict, List, Tuple
 
@@ -38,8 +39,6 @@ def load_canceled_ids(path: str) -> set[str]:
     return {str(v).strip() for v in df.get("order_id", []) if str(v).strip()}
 
 
-
-
 def load_adjustments_overrides(path: str) -> dict[str, dict[str, str]]:
     if not os.path.exists(path):
         return {}
@@ -56,6 +55,7 @@ def load_adjustments_overrides(path: str) -> dict[str, dict[str, str]]:
         }
     return overrides
 
+
 def merge_billings(
     orders: List[Dict[str, str]],
     billings: List[Dict[str, str]],
@@ -63,6 +63,12 @@ def merge_billings(
 ) -> List[Dict[str, str]]:
     if not billings:
         return orders
+    invoice_counts: Dict[str, int] = {}
+    for row in billings:
+        invoice_id = str(row.get("invoice_id", "")).strip()
+        order_id = str(row.get("order_id", "")).strip()
+        if invoice_id and order_id:
+            invoice_counts[invoice_id] = invoice_counts.get(invoice_id, 0) + 1
     billings_map = {
         str(row.get("order_id", "")).strip(): row for row in billings if row.get("order_id")
     }
@@ -92,6 +98,8 @@ def merge_billings(
                 if field == "total":
                     payment_dec = to_decimal(billing_val)
                     compare_val = f"{abs(payment_dec):.2f}" if payment_dec is not None else billing_val
+                    if row.get("dcom_credit") or row.get("discount"):
+                        continue
                 if normalize_money(order_val) != normalize_money(compare_val):
                     mismatches.append(
                         f"{field} mismatch (orders={order_val}, billings={compare_val})"
@@ -102,6 +110,29 @@ def merge_billings(
         row["billing_service_fee"] = billing.get("service_fee", "")
         row["billing_total_invoice_amount"] = billing.get("total_invoice_amount", "")
         row["billing_invoice_id"] = billing.get("invoice_id", "")
+        cc_percent = billing.get("account_cc_percent_fee", "")
+        cc_tx = billing.get("account_cc_transaction_fee", "")
+        invoice_id = str(billing.get("invoice_id", "")).strip()
+        if invoice_id and invoice_counts.get(invoice_id):
+            if cc_percent:
+                pct_dec = to_decimal(cc_percent)
+                if pct_dec is not None:
+                    per_order_pct = (pct_dec / Decimal(str(invoice_counts[invoice_id]))).quantize(
+                        Decimal("0.01")
+                    )
+                    cc_percent = f"{per_order_pct:.2f}"
+            if cc_tx:
+                tx_dec = to_decimal(cc_tx)
+                if tx_dec is not None:
+                    per_order_tx = (tx_dec / Decimal(str(invoice_counts[invoice_id]))).quantize(
+                        Decimal("0.01")
+                    )
+                    cc_tx = f"{per_order_tx:.2f}"
+        row["account_cc_percent_fee"] = cc_percent
+        row["account_cc_transaction_fee"] = cc_tx
+        row["account_marketplace_facilitator_tax_withhold"] = billing.get(
+            "account_marketplace_facilitator_tax_withhold", ""
+        )
 
     existing_ids = {str(row.get("order_id", "")).strip() for row in orders if row.get("order_id")}
     for billing in billings:
@@ -136,13 +167,50 @@ def merge_billings(
                 "billing_service_fee": billing.get("service_fee", ""),
                 "billing_total_invoice_amount": billing.get("total_invoice_amount", ""),
                 "billing_invoice_id": billing.get("invoice_id", ""),
+                "account_cc_percent_fee": billing.get("account_cc_percent_fee", ""),
+                "account_cc_transaction_fee": billing.get("account_cc_transaction_fee", ""),
+                "account_marketplace_facilitator_tax_withhold": billing.get(
+                    "account_marketplace_facilitator_tax_withhold", ""
+                ),
             }
         )
     return orders
 
 
-def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides: dict[str, dict[str, str]]) -> List[Dict[str, str]]:
+def normalize_rows(
+    rows: List[Dict[str, str]],
+    canceled_ids: set[str],
+    overrides: dict[str, dict[str, str]],
+) -> List[Dict[str, str]]:
     normalized = []
+
+    invoice_tax_data: dict[str, dict[str, Decimal | int | None]] = {}
+    invoice_counts: Dict[str, int] = {}
+    for row in rows:
+        inv = row.get("billing_invoice_id", "") or row.get("invoice_id", "")
+        if inv:
+            invoice_counts[inv] = invoice_counts.get(inv, 0) + 1
+        if not inv:
+            continue
+        withheld = to_decimal(row.get("account_marketplace_facilitator_tax_withhold", ""))
+        if withheld is None:
+            continue
+        tax_val = to_decimal(row.get("tax", "")) or Decimal("0.00")
+        order_dt = str(row.get("order_datetime", "")).strip()
+        year = None
+        try:
+            if order_dt.endswith("Z"):
+                order_dt = order_dt[:-1] + "+00:00"
+            year = datetime.fromisoformat(order_dt).year
+        except Exception:
+            year = None
+        data = invoice_tax_data.setdefault(
+            inv, {"withheld": withheld, "tax_sum": Decimal("0.00"), "year": year}
+        )
+        data["tax_sum"] = data["tax_sum"] + tax_val
+        if data.get("year") is None and year is not None:
+            data["year"] = year
+
     for row in rows:
         order_id = str(row.get("order_id", "")).strip()
         if order_id and order_id in canceled_ids:
@@ -151,6 +219,8 @@ def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides
         if status and "cancel" in status.lower():
             continue
         discount = row.get("discount", "")
+        if row.get("dcom_promo") or row.get("dcom_credit"):
+            discount = ""
         promo = to_decimal(row.get("account_dcom_promotion", ""))
         if promo is not None:
             base = to_decimal(discount) or Decimal("0.00")
@@ -166,6 +236,8 @@ def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides
                 notes = " | ".join([row.get("notes", ""), "payment_type_inferred"]).strip(" |")
                 row["notes"] = notes
         notes = row.get("notes", "")
+        if "daily_order_summary" in notes and (row.get("items") or row.get("customer_name") or row.get("address")):
+            notes = " | ".join([part for part in notes.split("|") if "daily_order_summary" not in part]).strip(" |")
         if "special_instructions" in notes.lower():
             notes = ""
         invoice_id = row.get("billing_invoice_id", "") or row.get("invoice_id", "")
@@ -183,6 +255,12 @@ def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides
         override = overrides.get(order_id, {})
         if override.get("adjustments"):
             discount = override.get("adjustments")
+
+        marketing_fee = discount
+        if row.get("dcom_promo") or row.get("dcom_credit"):
+            marketing_fee = ""
+        if override.get("adjustments"):
+            marketing_fee = ""
         if override.get("notes"):
             notes = " | ".join([notes, override.get("notes")]).strip(" |")
 
@@ -201,16 +279,38 @@ def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides
         if override.get("payout"):
             payout = override.get("payout")
 
+        tax_val = row.get("tax", "")
+        tax_withheld_val = ""
+        if row.get("account_marketplace_facilitator_tax_withhold"):
+            data = invoice_tax_data.get(invoice_id) if invoice_id else None
+            if data and abs(data["tax_sum"] - data["withheld"]) <= Decimal("0.01"):
+                tax_withheld_val = tax_val
+            elif data and invoice_id in invoice_counts:
+                per_order = (data["withheld"] / Decimal(str(invoice_counts[invoice_id]))).quantize(Decimal("0.01"))
+                tax_withheld_val = f"{per_order:.2f}"
+            else:
+                tax_withheld_val = tax_val
+            tax_val = ""
+            if data and data.get("year") and data["year"] >= 2024:
+                if abs(data["tax_sum"] - data["withheld"]) > Decimal("0.01"):
+                    notes = " | ".join(
+                        [
+                            notes,
+                            f"marketplace_tax_withheld_mismatch invoice_withheld={data['withheld']:.2f} sum_tax={data['tax_sum']:.2f}",
+                        ]
+                    ).strip(" |")
+            notes = " | ".join([notes, "tax_withheld_marketplace_facilitator"]).strip(" |")
+
         commission_fee = ""
         processing_fee = ""
-        if service_fee is not None and payment is not None:
+        if service_fee is not None:
             fee_total = abs(service_fee)
-            commission_calc = Decimal("0.25") + (abs(payment) * Decimal("0.0275"))
-            commission_calc = commission_calc.quantize(Decimal("0.01"))
-            processing_calc = fee_total - commission_calc
-            processing_calc = processing_calc.quantize(Decimal("0.01"))
+            cc_percent = to_decimal(row.get("account_cc_percent_fee", "")) or Decimal("0.00")
+            cc_tx = to_decimal(row.get("account_cc_transaction_fee", "")) or Decimal("0.00")
+            processing_calc = (cc_percent + cc_tx).quantize(Decimal("0.01"))
+            commission_calc = (fee_total - processing_calc).quantize(Decimal("0.01"))
             if commission_calc + processing_calc != fee_total:
-                processing_calc = fee_total - commission_calc
+                commission_calc = fee_total - processing_calc
             commission_fee = f"{-commission_calc:.2f}"
             processing_fee = f"{-processing_calc:.2f}"
 
@@ -227,14 +327,15 @@ def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides
                 address=row.get("address", ""),
                 payment_type=normalize_payment_type(row.get("payment_type", "")),
                 subtotal=row.get("subtotal", ""),
-                tax=row.get("tax", ""),
-                tax_withheld="",
+                tax=tax_val,
+                tax_withheld=tax_withheld_val,
                 tip=row.get("tip", ""),
                 delivery_fee=row.get("delivery_fee", ""),
                 total=total,
                 item_count=row.get("item_count", ""),
                 items=row.get("items", ""),
-                adjustments=discount,
+                adjustments=override.get("adjustments", ""),
+                marketing_fee=marketing_fee,
                 commission_fee=commission_fee,
                 processing_fee=processing_fee,
                 payout=payout,
@@ -248,7 +349,7 @@ def normalize_rows(rows: List[Dict[str, str]], canceled_ids: set[str], overrides
 class DeliveryComNormalizer(BaseParser):
     platform = "DELIVERYCOM"
     provider = ""
-    total_components_fields = ("subtotal", "tax", "tip", "delivery_fee", "adjustments")
+    total_components_fields = ("subtotal", "tax", "tax_withheld", "tip", "delivery_fee", "adjustments", "marketing_fee")
 
     def default_input_path(self) -> str:
         return raw_path("deliverycom", "orders_raw.csv")
