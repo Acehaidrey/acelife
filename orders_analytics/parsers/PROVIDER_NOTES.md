@@ -428,6 +428,7 @@ Concerns / follow-ups:
 ## MenuStar
 - Sources: `Takeout/Mail/Orders-Menustar.mbox`, `Takeout/Mail/Billings-Menustar.mbox`
 - Orders parser: `parsers/menustar/extract_menustar_orders_raw.py` (email HTML)
+  - Captures `Discount:` from order email into raw `discount` (negative value).
 - Billings parser: `parsers/menustar/extract_menustar_billings_raw.py` (CSV/XLSX attachments)
   - Statement summary fields captured: all orders, prepaid orders, fees, adjustments, net payout.
   - Statement fees are allocated across orders by subtotal with round‑robin cents to match statement totals.
@@ -435,14 +436,33 @@ Concerns / follow-ups:
   - Dedupes statement rows by provider + order_datetime + order_type + payment_type + amounts (subtotal/tax/delivery_fee/tip/total). Date string is normalized before comparison.
   - When duplicate rows collide, prefers the row with the most non‑blank fields; if tied, prefers the latest `statement_email_date`.
   - Skipped statements are printed with email date + filename for audit.
+- Zip statement backfill: `scripts/menustar_zip_reports.py`
+  - Reads `Takeout/Mail/menustar/*.zip`, extracts CSV/XLSX statement rows using the same `parse_csv_rows` logic as the billings parser, and applies the same restaurant allowlist/filtering.
+  - Writes sidecar audit outputs to `data/raw/menustar/orders_from_zip_reports.csv` and `data/raw/menustar/yearly_summaries_from_zip_reports.csv`.
+  - MenuStar pipeline does not require zip inputs by default; zip backfill is optional during `parse` via extras (`include_zip_backfill=true`), and merge is separately opt-in (`zip_merge_into_billings=true`).
+  - Yearly PDF summaries are audit-only artifacts (not yet used as blocking validation checks).
+- Zip statement summary extractor: `scripts/menustar_zip_statement_summaries.py`
+  - Produces one row per statement file with statement-level summary fields (`all_orders`, `prepaid_orders`, `menustar_fees`, `adjustments`, `net_payout`) to `data/raw/menustar/statement_summaries_from_zip_reports.csv`.
 - Normalizer: `parsers/menustar/normalize_menustar_from_raw.py`
   - Billings do not include order_id; matching uses provider + order_date and strict amount/type/payment matching.
   - Second‑pass matching fixes bad billing dates: for unmatched orders and billings, matches on strict amounts/types and closest date, then records `notes=order_date=... billing_date=...` and uses order date for normalized output.
   - Writes back matched order_id into `billings_raw.csv` for audit.
   - Commission is 70% of MenuStar fees and processing is 30% (cash orders get commission only).
-  - Drops rows with missing order_id after merge (billing‑only rows with no match).
+  - Supports manual controls via `data/raw/menustar/adjustments_raw.csv`:
+    - `status=cancelled` excludes matching order_id from normalized output.
+    - `adjustments` overrides normalized `adjustments` for matching order_id.
+    - `notes` is appended to normalized notes.
+  - Supports billing datetime corrections via `data/raw/menustar/billings_overrides.csv` before matching; corrected billings are deduped before merge.
+  - Unmatched orders are included in normalized output with `notes=missing_billing_record` (unless cancelled in adjustments file).
+  - Unmatched non-zero billing rows are converted to synthetic orders (`order_id` like `MENUSTAR_BILLONLY_*`) with `notes=synthetic_billing_only_record`.
+  - Synthetic billing-only insertion suppresses same-day duplicates when provider + order_type + payment_type + subtotal/tax/delivery_fee/tip/total + processing_fee + commission_fee are identical.
+  - Raw `discount` from order emails maps to normalized `marketing_fee` and appends note `marketing_fee_from_order_discount`.
   - Statement adjustments are statement‑level; applied once per statement to a single matched order with `notes=statement_adjustment_applied`.
-  - Missing-match reports are written to `data/raw/menustar/orders_missing_billings.csv` and `data/raw/menustar/billings_missing_orders.csv` (rows with all zero/blank amounts are filtered).
+  - Missing-match reports are written to:
+    - `data/raw/menustar/orders_missing_billings.csv`
+    - `data/raw/menustar/billings_missing_orders.csv`
+    - `data/raw/menustar/billings_missing_orders_candidates.csv` (synthetic candidate review)
+    (rows with all zero/blank amounts are filtered from billing-side reports).
 
 ## Office Caterer
 - Sources: `Takeout/Mail/Orders-OfficeCaterer.mbox`, `Takeout/Mail/Billings-OfficeCaterer.mbox` (PDF attachments)

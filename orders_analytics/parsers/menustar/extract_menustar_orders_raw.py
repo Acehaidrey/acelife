@@ -30,6 +30,7 @@ RAW_COLUMNS = [
     "tax",
     "delivery_fee",
     "tip",
+    "discount",
     "total",
     "source_file",
     "email_date",
@@ -168,6 +169,7 @@ def parse_order(html: str, subject: str, msg_date: str) -> Dict[str, str]:
     total = ""
     delivery_fee = ""
     tip = ""
+    discount = ""
     for i, line in enumerate(lines):
         if line.strip().lower() == "subtotal:" and i + 1 < len(text.splitlines()):
             subtotal = next_nonempty(lines, i + 1).replace("$", "").replace(",", "")
@@ -177,6 +179,12 @@ def parse_order(html: str, subject: str, msg_date: str) -> Dict[str, str]:
             delivery_fee = next_nonempty(lines, i + 1).replace("$", "").replace(",", "")
         if line.strip().lower() == "tip:" and i + 1 < len(text.splitlines()):
             tip = next_nonempty(lines, i + 1).replace("$", "").replace(",", "")
+        if line.strip().lower() == "discount:" and i + 1 < len(text.splitlines()):
+            raw_discount = next_nonempty(lines, i + 1).replace("$", "").replace(",", "").strip()
+            if raw_discount:
+                discount = raw_discount
+                if not discount.startswith("-"):
+                    discount = f"-{discount}"
         if line.strip().lower() == "total:" and i + 1 < len(text.splitlines()):
             total = next_nonempty(lines, i + 1).replace("$", "").replace(",", "")
 
@@ -226,6 +234,7 @@ def parse_order(html: str, subject: str, msg_date: str) -> Dict[str, str]:
         "tax": tax,
         "delivery_fee": delivery_fee,
         "tip": tip,
+        "discount": discount,
         "total": total,
     }
 

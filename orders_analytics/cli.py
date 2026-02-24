@@ -136,12 +136,41 @@ def run_parse(
         )
         orders_raw = extras.pop("orders_raw", raw_path("menustar", "orders_raw.csv"))
         billings_raw = extras.pop("billings_raw", raw_path("menustar", "billings_raw.csv"))
+        adjustments_raw = extras.pop("adjustments_raw", raw_path("menustar", "adjustments_raw.csv"))
+        billings_overrides_raw = extras.pop(
+            "billings_overrides_raw", raw_path("menustar", "billings_overrides.csv")
+        )
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("menustar_orders_normalized.csv")
         )
         extract_menustar_orders_raw.run(orders_mbox, orders_raw)
         extract_menustar_billings_raw.run(billings, billings_raw)
-        normalize_menustar_from_raw.run(orders_raw, billings_raw, normalized_out)
+        include_zip_backfill = str(extras.pop("include_zip_backfill", "")).strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "y",
+        }
+        if include_zip_backfill:
+            from orders_analytics.scripts import menustar_zip_reports
+
+            zip_merge_into_billings = str(
+                extras.pop("zip_merge_into_billings", "")
+            ).strip().lower() in {"1", "true", "yes", "y"}
+            menustar_zip_reports.run(
+                zip_dir=extras.pop("zip_dir", takeout_path("Mail", "menustar")),
+                orders_out=extras.pop(
+                    "zip_orders_out", raw_path("menustar", "orders_from_zip_reports.csv")
+                ),
+                yearly_out=extras.pop(
+                    "zip_yearly_out", raw_path("menustar", "yearly_summaries_from_zip_reports.csv")
+                ),
+                merge_into_billings=zip_merge_into_billings,
+                billings_out=billings_raw,
+            )
+        normalize_menustar_from_raw.run(
+            orders_raw, billings_raw, adjustments_raw, billings_overrides_raw, normalized_out
+        )
         print("[menustar] extracted raw orders + billings and normalized.")
         return
     elif platform == Platforms.DELIVERYCOM:
@@ -488,11 +517,22 @@ def run_normalize(
         billings_raw_path = billings_raw or extras.pop(
             "billings_raw", raw_path("menustar", "billings_raw.csv")
         )
+        adjustments_raw_path = extras.pop(
+            "adjustments_raw", raw_path("menustar", "adjustments_raw.csv")
+        )
+        billings_overrides_raw_path = extras.pop(
+            "billings_overrides_raw", raw_path("menustar", "billings_overrides.csv")
+        )
         normalized_out = out_path or extras.pop(
             "normalized_out", normalized_path("menustar_orders_normalized.csv")
         )
         normalize_menustar_from_raw.run(
-            orders_raw_path, billings_raw_path, normalized_out, reset_errors=reset_errors
+            orders_raw_path,
+            billings_raw_path,
+            adjustments_raw_path,
+            billings_overrides_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
         )
         print(f"[menustar] normalized -> {normalized_out}")
         return
