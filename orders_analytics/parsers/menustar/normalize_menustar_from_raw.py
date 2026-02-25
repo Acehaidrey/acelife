@@ -209,6 +209,16 @@ def billing_synthetic_suppress_key(row: Dict[str, str]) -> str:
     )
 
 
+def canonical_statement_file(value: str) -> str:
+    filename = " ".join(os.path.basename(str(value or "").strip()).split())
+    stem, ext = os.path.splitext(filename)
+    if stem.endswith(")") and " (" in stem:
+        prefix, suffix = stem.rsplit(" (", 1)
+        if suffix[:-1].isdigit():
+            stem = prefix
+    return f"{stem}{ext.lower()}".strip()
+
+
 def has_nonzero_amounts(row: Dict[str, str]) -> bool:
     for field in ("subtotal", "tax", "delivery_fee", "tip", "total"):
         text = str(row.get(field, "")).strip()
@@ -697,6 +707,22 @@ def normalize_rows(
         manual_notes = str(manual.get("notes", "")).strip()
         if manual_notes:
             notes = " | ".join([notes, manual_notes]).strip(" |")
+        total_dec = parse_decimal(row.get("total", ""))
+        commission_dec = parse_decimal(row.get("commission_fee", "")) or Decimal("0")
+        processing_dec = parse_decimal(row.get("processing_fee", "")) or Decimal("0")
+        payment_type_norm = normalize_payment_type(row.get("payment_type", ""))
+        payout_value = ""
+        payout_dec: Optional[Decimal] = None
+        if payment_type_norm == "cash":
+            payout_dec = commission_dec + processing_dec
+        elif total_dec is not None:
+            payout_dec = total_dec + commission_dec + processing_dec
+        if payout_dec is not None and adjustments_value:
+            adj_dec = parse_decimal(adjustments_value)
+            if adj_dec is not None:
+                payout_dec += adj_dec
+        if payout_dec is not None:
+            payout_value = format_fee(payout_dec)
         normalized.append(
             build_normalized_row(
                 Platforms.MENUSTAR.upper(),
@@ -722,11 +748,230 @@ def normalize_rows(
                 marketing_fee=marketing_fee_value,
                 items=row.get("items_order", ""),
                 adjustments=adjustments_value,
+                payout=payout_value,
                 errors="",
                 notes=notes,
             )
         )
     return normalized
+
+
+def write_statement_payout_reconciliation(
+    merged_rows: List[Dict[str, str]],
+    normalized_rows: List[Dict[str, str]],
+    out_path: str,
+) -> None:
+    payout_by_order_id: Dict[str, Decimal] = {}
+    for row in normalized_rows:
+        order_id = str(row.get("order_id", "")).strip()
+        if not order_id:
+            continue
+        payout = parse_decimal(str(row.get("payout", "")))
+        payout_by_order_id[order_id] = payout or Decimal("0")
+
+    grouped: Dict[Tuple[str, str, str], Dict[str, object]] = {}
+    for row in merged_rows:
+        statement_file = str(row.get("statement_source_file", "")).strip()
+        if not statement_file:
+            continue
+        order_id = str(row.get("order_id_order") or row.get("order_id") or "").strip()
+        if not order_id or order_id not in payout_by_order_id:
+            continue
+        provider = str(row.get("provider", "")).strip().upper()
+        statement_file_canonical = canonical_statement_file(statement_file)
+        statement_email_date = str(row.get("statement_email_date", "")).strip()
+        statement_period = date_key(str(row.get("order_datetime_order") or row.get("order_datetime") or ""))[:7]
+        statement_net_payout = str(row.get("statement_net_payout", "")).strip()
+        date_group = (
+            f"{statement_email_date}:{statement_period}"
+            if statement_email_date
+            else f"MISSING:{statement_period}:{statement_net_payout}"
+        )
+        key = (provider, statement_file_canonical, date_group)
+        bucket = grouped.setdefault(
+            key,
+            {
+                "provider": provider,
+                "statement_source_file": statement_file_canonical,
+                "statement_email_date": statement_email_date,
+                "statement_period": statement_period,
+                "statement_net_payout": statement_net_payout,
+                "orders_count": 0,
+                "sum_order_payout": Decimal("0"),
+                "source_files": set(),
+            },
+        )
+        bucket["source_files"].add(statement_file)
+        bucket["orders_count"] = int(bucket["orders_count"]) + 1
+        bucket["sum_order_payout"] = Decimal(bucket["sum_order_payout"]) + payout_by_order_id[order_id]
+
+    grouped_items = list(grouped.items())
+    # Some statements are split across multiple source files (often one with blank email date)
+    # but carry the same provider/period/net-payout total. Collapse those fragments into one bucket.
+    collapse_candidates: Dict[Tuple[str, str, str], List[Dict[str, object]]] = {}
+    passthrough: List[Dict[str, object]] = []
+    for _, agg in grouped_items:
+        collapse_key = (
+            str(agg.get("provider", "")),
+            str(agg.get("statement_period", "")),
+            str(agg.get("statement_net_payout", "")),
+        )
+        collapse_candidates.setdefault(collapse_key, []).append(agg)
+
+    final_aggs: List[Dict[str, object]] = []
+    for _, aggs in collapse_candidates.items():
+        has_blank_email = any(not str(agg.get("statement_email_date", "")).strip() for agg in aggs)
+        if len(aggs) <= 1 or not has_blank_email:
+            passthrough.extend(aggs)
+            continue
+        merged = {
+            "provider": str(aggs[0].get("provider", "")),
+            "statement_source_file": " | ".join(
+                sorted({str(agg.get("statement_source_file", "")) for agg in aggs if str(agg.get("statement_source_file", "")).strip()})
+            ),
+            "statement_email_date": " | ".join(
+                sorted({str(agg.get("statement_email_date", "")).strip() for agg in aggs if str(agg.get("statement_email_date", "")).strip()})
+            ),
+            "statement_period": str(aggs[0].get("statement_period", "")),
+            "statement_net_payout": str(aggs[0].get("statement_net_payout", "")),
+            "orders_count": 0,
+            "sum_order_payout": Decimal("0"),
+            "source_files": set(),
+        }
+        for agg in aggs:
+            merged["orders_count"] = int(merged["orders_count"]) + int(agg.get("orders_count", 0))
+            merged["sum_order_payout"] = Decimal(merged["sum_order_payout"]) + Decimal(
+                agg.get("sum_order_payout", Decimal("0"))
+            )
+            merged["source_files"].update(agg.get("source_files", set()))
+        final_aggs.append(merged)
+
+    final_aggs.extend(passthrough)
+
+    records: List[Dict[str, str]] = []
+    for agg in sorted(
+        final_aggs,
+        key=lambda x: (
+            str(x.get("provider", "")),
+            str(x.get("statement_period", "")),
+            str(x.get("statement_source_file", "")),
+            str(x.get("statement_email_date", "")),
+        ),
+    ):
+        statement_payout = parse_decimal(str(agg["statement_net_payout"])) or Decimal("0")
+        payout_sum = Decimal(agg["sum_order_payout"])
+        delta = (payout_sum - statement_payout).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        records.append(
+            {
+                "provider": str(agg["provider"]),
+                "statement_source_file": str(agg["statement_source_file"]),
+                "statement_email_date": str(agg["statement_email_date"]),
+                "statement_period": str(agg["statement_period"]),
+                "source_file_count": str(len(agg["source_files"])),
+                "source_files": " | ".join(sorted(str(v) for v in agg["source_files"])),
+                "orders_count": str(agg["orders_count"]),
+                "sum_order_payout": format_fee(payout_sum),
+                "statement_net_payout": str(agg["statement_net_payout"]),
+                "payout_delta": str(delta),
+                "matches_statement": "YES" if delta == Decimal("0.00") else "NO",
+            }
+        )
+
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    pd.DataFrame(records).to_csv(out_path, index=False)
+
+
+def merged_row_order_id(row: Dict[str, str]) -> str:
+    return str(row.get("order_id_order") or row.get("order_id") or "").strip()
+
+
+def merged_row_quality_score(row: Dict[str, str]) -> int:
+    score = 0
+    if str(row.get("order_id_order", "")).strip():
+        # Prefer rows linked directly from orders_raw.
+        score += 100
+    if str(row.get("synthetic_billing_only_note", "")).strip():
+        score -= 100
+    score += sum(
+        1
+        for field in (
+            "customer_name_order",
+            "phone_order",
+            "email_order",
+            "address_order",
+            "items_order",
+            "item_count_order",
+            "discount_order",
+        )
+        if str(row.get(field, "")).strip()
+    )
+    if str(row.get("statement_email_date", "")).strip():
+        score += 1
+    return score
+
+
+def dedupe_merged_rows_by_order_id(
+    rows: List[Dict[str, str]],
+) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
+    chosen: Dict[str, Dict[str, str]] = {}
+    dropped: List[Dict[str, str]] = []
+
+    for row in rows:
+        order_id = merged_row_order_id(row)
+        if not order_id:
+            continue
+        current = chosen.get(order_id)
+        if current is None:
+            chosen[order_id] = row
+            continue
+
+        current_score = merged_row_quality_score(current)
+        new_score = merged_row_quality_score(row)
+        keep_new = False
+        if new_score > current_score:
+            keep_new = True
+        elif new_score == current_score:
+            current_email = str(current.get("statement_email_date", "")).strip()
+            new_email = str(row.get("statement_email_date", "")).strip()
+            if new_email and (not current_email or new_email > current_email):
+                keep_new = True
+
+        if keep_new:
+            dropped.append(
+                {
+                    "order_id": order_id,
+                    "kept_order_datetime": str(
+                        row.get("order_datetime_order") or row.get("order_datetime") or ""
+                    ).strip(),
+                    "kept_statement_source_file": str(row.get("statement_source_file", "")).strip(),
+                    "dropped_order_datetime": str(
+                        current.get("order_datetime_order") or current.get("order_datetime") or ""
+                    ).strip(),
+                    "dropped_statement_source_file": str(
+                        current.get("statement_source_file", "")
+                    ).strip(),
+                    "reason": f"higher_quality_score:{new_score}>{current_score}",
+                }
+            )
+            chosen[order_id] = row
+        else:
+            dropped.append(
+                {
+                    "order_id": order_id,
+                    "kept_order_datetime": str(
+                        current.get("order_datetime_order") or current.get("order_datetime") or ""
+                    ).strip(),
+                    "kept_statement_source_file": str(current.get("statement_source_file", "")).strip(),
+                    "dropped_order_datetime": str(
+                        row.get("order_datetime_order") or row.get("order_datetime") or ""
+                    ).strip(),
+                    "dropped_statement_source_file": str(row.get("statement_source_file", "")).strip(),
+                    "reason": f"lower_quality_score:{new_score}<={current_score}",
+                }
+            )
+
+    deduped_rows = list(chosen.values())
+    return deduped_rows, dropped
 
 
 class MenuStarNormalizer(BaseParser):
@@ -818,23 +1063,50 @@ class MenuStarNormalizer(BaseParser):
                     ]
                 )
 
+            # Keep one preferred billing key per order_id, then project to key->order_id map.
+            preferred_row_by_order_id: Dict[str, Dict[str, str]] = {}
+            for merged_row in rows:
+                order_id = str(merged_row.get("order_id_order", "")).strip()
+                if not order_id:
+                    continue
+                current = preferred_row_by_order_id.get(order_id)
+                if current is None:
+                    preferred_row_by_order_id[order_id] = merged_row
+                    continue
+                current_score = merged_row_quality_score(current)
+                new_score = merged_row_quality_score(merged_row)
+                if new_score > current_score:
+                    preferred_row_by_order_id[order_id] = merged_row
+                    continue
+                if new_score == current_score:
+                    current_email = str(current.get("statement_email_date", "")).strip()
+                    new_email = str(merged_row.get("statement_email_date", "")).strip()
+                    if new_email and (not current_email or new_email > current_email):
+                        preferred_row_by_order_id[order_id] = merged_row
             match_map = {
-                billing_key(row): row.get("order_id_order", "")
-                for row in rows
-                if str(row.get("order_id_order", "")).strip()
+                billing_key(merged_row): order_id
+                for order_id, merged_row in preferred_row_by_order_id.items()
             }
             updated = False
+            stale_cleared = 0
+            assigned = 0
             for idx, row in billings_for_match.iterrows():
                 key = billing_key(row)
                 match_id = match_map.get(key, "")
-                if not match_id:
-                    continue
                 current = str(billings_df.iloc[idx].get("order_id", "") or "").strip()
                 if current != match_id:
                     billings_df.at[idx, "order_id"] = match_id
                     updated = True
+                    if match_id:
+                        assigned += 1
+                    elif current:
+                        stale_cleared += 1
             if updated:
                 billings_df.to_csv(billings_path, index=False)
+                if stale_cleared:
+                    print(f"Cleared {stale_cleared} stale MenuStar billing order_id assignment(s).")
+                if assigned:
+                    print(f"Assigned {assigned} MenuStar billing order_id value(s).")
         if unmatched_orders:
             orders_report = [
                 {
@@ -995,7 +1267,15 @@ class MenuStarNormalizer(BaseParser):
             pd.DataFrame(candidates).reindex(columns=candidate_columns).to_csv(
                 candidate_path, index=False
             )
-        return normalize_rows(rows, manual_adjustments=inputs.get("adjustments_raw", {}))
+        rows, duplicate_drops = dedupe_merged_rows_by_order_id(rows)
+        if duplicate_drops:
+            print(f"Deduped {len(duplicate_drops)} MenuStar merged row(s) by order_id.")
+            dropped_path = raw_path("menustar", "normalized_duplicate_order_ids_dropped.csv")
+            pd.DataFrame(duplicate_drops).to_csv(dropped_path, index=False)
+        normalized_rows = normalize_rows(rows, manual_adjustments=inputs.get("adjustments_raw", {}))
+        reconciliation_path = raw_path("menustar", "statement_payout_reconciliation.csv")
+        write_statement_payout_reconciliation(rows, normalized_rows, reconciliation_path)
+        return normalized_rows
 
 
 def run(

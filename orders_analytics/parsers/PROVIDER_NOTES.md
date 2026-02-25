@@ -447,6 +447,7 @@ Concerns / follow-ups:
   - Billings do not include order_id; matching uses provider + order_date and strict amount/type/payment matching.
   - Second‑pass matching fixes bad billing dates: for unmatched orders and billings, matches on strict amounts/types and closest date, then records `notes=order_date=... billing_date=...` and uses order date for normalized output.
   - Writes back matched order_id into `billings_raw.csv` for audit.
+  - `billings_raw` writeback now clears stale order_id assignments that are not part of the current preferred match set (prevents old cross-period duplicate assignments).
   - Commission is 70% of MenuStar fees and processing is 30% (cash orders get commission only).
   - Supports manual controls via `data/raw/menustar/adjustments_raw.csv`:
     - `status=cancelled` excludes matching order_id from normalized output.
@@ -456,8 +457,11 @@ Concerns / follow-ups:
   - Unmatched orders are included in normalized output with `notes=missing_billing_record` (unless cancelled in adjustments file).
   - Unmatched non-zero billing rows are converted to synthetic orders (`order_id` like `MENUSTAR_BILLONLY_*`) with `notes=synthetic_billing_only_record`.
   - Synthetic billing-only insertion suppresses same-day duplicates when provider + order_type + payment_type + subtotal/tax/delivery_fee/tip/total + processing_fee + commission_fee are identical.
+  - Final merged rows are deduped by order_id before normalize output (one order_id -> one normalized row), and dropped duplicates are audited to `data/raw/menustar/normalized_duplicate_order_ids_dropped.csv`.
   - Raw `discount` from order emails maps to normalized `marketing_fee` and appends note `marketing_fee_from_order_discount`.
   - Statement adjustments are statement‑level; applied once per statement to a single matched order with `notes=statement_adjustment_applied`.
+  - Statement payout reconciliation is written to `data/raw/menustar/statement_payout_reconciliation.csv`; split statement fragments that share provider + statement period + statement net payout are collapsed when a blank-email fragment exists (prevents false deltas from split imports).
+  - Known reconciliation caveat: if an order is intentionally excluded (e.g., customer_name contains “test”), statement tie-out may retain a small expected delta for that statement.
   - Missing-match reports are written to:
     - `data/raw/menustar/orders_missing_billings.csv`
     - `data/raw/menustar/billings_missing_orders.csv`
