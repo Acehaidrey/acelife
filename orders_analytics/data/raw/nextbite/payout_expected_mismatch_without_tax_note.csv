@@ -1,0 +1,65 @@
+order_id,order_datetime,provider,platform,subtotal,tax,tax_withheld,commission_fee,adjustments,marketing_fee,payout,expected_payout,errors,notes,reason_bucket
+#01A3B,2022-04-17T00:00:00,AMECI,NEXTBITE,45.96,0.00,3.56,-20.68,0.00,0.00,40.90,25.28,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#7B74E,2022-04-17T00:00:00,AMECI,NEXTBITE,37.47,0.00,2.90,-16.86,0.00,0.00,36.23,20.61,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#872F2,2022-04-17T00:00:00,AMECI,NEXTBITE,17.00,0.00,1.32,-7.65,0.00,0.00,24.97,9.35,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#CEE98,2022-04-17T00:00:00,AMECI,NEXTBITE,37.00,0.00,2.87,-19.58,0.00,0.00,33.05,17.42,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,tax_withheld_model_diff
+#F3716,2022-04-17T00:00:00,AMECI,NEXTBITE,52.95,0.00,4.10,-23.82,0.00,0.00,29.11,29.13,payout_expected_mismatch,commission_rate=0.24 | platform=postmates,tax_withheld_model_diff
+#74D93,2022-04-19T00:00:00,AMECI,NEXTBITE,27.98,0.00,2.17,-12.59,0.00,0.00,31.01,15.39,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#BE29B,2022-04-19T00:00:00,AMECI,NEXTBITE,56.49,0.00,4.38,-25.42,0.00,0.00,46.69,31.07,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#693E6,2022-04-23T00:00:00,AMECI,NEXTBITE,27.98,0.00,2.17,-12.59,0.00,0.00,31.01,15.39,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#3F617,2022-04-27T00:00:00,AMECI,NEXTBITE,42.96,0.00,3.33,-19.33,0.00,0.00,39.25,23.63,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+bede41c7,2022-05-15T00:00:00,AMECI,NEXTBITE,44.97,3.10,0.00,-20.24,-10.56,0.00,26.08,17.27,payout_expected_mismatch,commission_rate=0.27 | adjustment=-11.91 | savings=1.35 | platform=doordash | collapsed_records=3,adjustment_collapsed_into_order
+#1A808,2022-05-17T00:00:00,AMECI,NEXTBITE,54.99,0.00,4.26,-24.74,0.00,0.00,37.24,30.25,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#E43CA,2022-05-18T00:00:00,AMECI,NEXTBITE,34.99,0.00,2.71,-15.75,0.00,0.00,26.24,19.24,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#747FB,2022-05-19T00:00:00,AMECI,NEXTBITE,18.48,0.00,1.43,-8.32,0.00,0.00,17.16,10.16,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#D1574,2022-05-21T00:00:00,AMECI,NEXTBITE,44.97,0.00,3.49,-20.23,0.00,0.00,31.73,24.74,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#4CD6E,2022-05-29T00:00:00,AMECI,NEXTBITE,41.97,0.00,3.25,-18.88,0.00,0.00,30.08,23.09,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#8324A,2022-05-31T00:00:00,AMECI,NEXTBITE,13.99,0.00,1.08,-6.30,0.00,0.00,14.69,7.69,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#35291,2022-06-13T00:00:00,AMECI,NEXTBITE,20.99,0.00,1.63,-9.44,0.00,0.00,14.00,11.55,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#390CA,2022-06-15T00:00:00,AMECI,NEXTBITE,19.48,0.00,1.51,-8.77,0.00,0.00,13.16,10.71,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#BAECD,2022-06-16T00:00:00,AMECI,NEXTBITE,39.99,0.00,2.71,-18.00,1.20,-5.39,25.09,17.80,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=ubereats,adjustment_collapsed_into_order
+#7B6E4,2022-06-17T00:00:00,AMECI,NEXTBITE,26.96,0.00,1.70,-12.13,1.20,-5.39,17.93,10.64,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=ubereats,adjustment_collapsed_into_order
+#AC7C3,2022-06-18T00:00:00,AMECI,NEXTBITE,27.98,0.00,1.78,-12.59,1.20,-5.39,18.49,11.20,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=ubereats,adjustment_collapsed_into_order
+#0027E,2022-06-19T00:00:00,AMECI,NEXTBITE,13.99,0.00,1.08,-6.30,0.00,0.00,9.59,7.69,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#CF800,2022-06-21T00:00:00,AMECI,NEXTBITE,34.99,0.00,2.32,-15.75,1.20,-5.39,22.34,15.05,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=ubereats,adjustment_collapsed_into_order
+#1ECDD,2022-06-21T00:00:00,AMECI,NEXTBITE,13.99,0.00,1.08,-6.30,0.00,0.00,9.59,7.69,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#2010E,2022-06-22T00:00:00,AMECI,NEXTBITE,29.48,0.00,1.90,-13.27,1.20,-5.39,17.41,12.02,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=postmates,adjustment_collapsed_into_order
+#99164,2022-06-23T00:00:00,AMECI,NEXTBITE,37.97,0.00,2.56,-17.09,1.20,-5.39,23.98,16.69,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=ubereats,adjustment_collapsed_into_order
+#619C7,2022-06-23T00:00:00,AMECI,NEXTBITE,41.97,0.00,2.86,-18.89,1.20,-5.39,26.18,18.89,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=ubereats,adjustment_collapsed_into_order
+#890BA,2022-06-25T00:00:00,AMECI,NEXTBITE,102.93,0.00,7.98,-54.85,0.00,0.00,49.97,48.08,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,tax_withheld_model_diff
+#134A5,2022-06-26T00:00:00,AMECI,NEXTBITE,83.94,0.00,6.12,-37.77,1.20,-5.39,49.27,41.98,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=ubereats,adjustment_collapsed_into_order
+#3DA6E,2022-06-28T00:00:00,AMECI,NEXTBITE,54.97,0.00,3.87,-24.73,1.20,-5.39,31.44,26.05,payout_expected_mismatch,commission_rate=0.24 | promotion=-5.39 | savings=1.20 | platform=postmates,adjustment_collapsed_into_order
+O-190919459328049,2022-07-12T00:00:00,AMECI,NEXTBITE,13.99,1.08,0.00,-6.30,-13.99,0.00,7.69,-5.22,payout_expected_mismatch,commission_rate=0.30 | adjustment=-13.99 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+O-262019466430966,2022-07-12T00:00:00,AMECI,NEXTBITE,22.99,1.78,0.00,-10.35,-6.00,0.00,12.64,8.42,payout_expected_mismatch,commission_rate=0.30 | adjustment=-6.00 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+O-627819593985038,2022-07-26T00:00:00,AMECI,NEXTBITE,13.99,1.08,0.00,-6.30,-13.99,0.00,7.69,-5.22,payout_expected_mismatch,commission_rate=0.30 | adjustment=-13.99 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+FNPFB,2022-07-27T00:00:00,AMECI,NEXTBITE,29.50,0.00,1.20,0.00,0.00,0.00,16.22,29.50,payout_expected_mismatch,commission_rate=0.00 | platform=whitelabel,tax_withheld_model_diff
+O-341419784039779,2022-08-14T00:00:00,AMECI,NEXTBITE,32.48,2.52,0.00,-14.62,-3.00,0.00,17.86,17.38,payout_expected_mismatch,commission_rate=0.30 | adjustment=-3.00 | platform=grubhub | collapsed_records=3,adjustment_collapsed_into_order
+#7DA44,2022-09-03T00:00:00,AMECI,NEXTBITE,35.98,0.00,2.79,-18.29,0.00,0.00,35.69,17.69,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+O-501120000238884,2022-09-04T00:00:00,AMECI,NEXTBITE,34.48,2.67,0.00,-15.52,-5.00,0.00,18.96,16.63,payout_expected_mismatch,commission_rate=0.30 | adjustment=-5.00 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+O-270219998634854,2022-09-04T00:00:00,AMECI,NEXTBITE,35.98,2.79,0.00,-16.19,-17.99,0.00,19.79,4.59,payout_expected_mismatch,commission_rate=0.30 | adjustment=-17.99 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+#187A1,2022-09-05T00:00:00,AMECI,NEXTBITE,27.98,0.00,2.17,-14.68,0.00,0.00,31.28,13.30,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#6DBF5,2022-09-11T00:00:00,AMECI,NEXTBITE,0.00,0.00,0.00,-20.10,0.00,0.00,-2.10,-20.10,tax_tax_withheld_needs_review | payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,statement_allocation_vs_formula
+#51CED,2022-09-17T00:00:00,AMECI,NEXTBITE,0.00,0.00,0.00,-13.04,0.00,0.00,-4.54,-13.04,tax_tax_withheld_needs_review | payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,statement_allocation_vs_formula
+CMV9D,2022-09-19T00:00:00,AMECI,NEXTBITE,28.00,0.00,2.20,0.00,0.00,0.00,15.40,28.00,payout_expected_mismatch,commission_rate=0.00 | platform=whitelabel,tax_withheld_model_diff
+#8334F,2022-09-24T00:00:00,AMECI,NEXTBITE,34.48,0.00,2.67,-15.51,0.00,0.00,27.46,18.97,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#B73A1,2022-09-26T00:00:00,AMECI,NEXTBITE,13.99,0.00,1.08,-8.55,0.00,0.00,13.93,5.44,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,tax_withheld_model_diff
+#404B8,2022-09-30T00:00:00,AMECI,NEXTBITE,32.48,0.00,2.52,-14.62,0.00,0.00,26.36,17.86,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+O-303620286492973,2022-10-02T00:00:00,AMECI,NEXTBITE,30.98,2.40,0.00,-13.94,0.00,0.00,19.85,19.44,payout_expected_mismatch,commission_rate=0.30 | platform=grubhub,statement_allocation_vs_formula
+O-477820294897418,2022-10-03T00:00:00,AMECI,NEXTBITE,0.00,0.00,0.00,-0.01,0.00,0.00,-19.68,-0.01,tax_tax_withheld_needs_review | payout_expected_mismatch,commission_rate=0.30 | platform=grubhub | collapsed_records=2,statement_allocation_vs_formula
+O-994220288857448,2022-10-03T00:00:00,AMECI,NEXTBITE,41.48,3.21,0.00,-18.67,-5.00,0.00,28.44,21.02,payout_expected_mismatch,commission_rate=0.30 | adjustment=-5.00 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+O-285520327988121,2022-10-07T00:00:00,AMECI,NEXTBITE,13.99,1.08,0.00,-6.30,0.00,0.00,10.50,8.77,payout_expected_mismatch,commission_rate=0.30 | platform=grubhub,statement_allocation_vs_formula
+#37470,2022-10-10T00:00:00,AMECI,NEXTBITE,32.98,0.00,2.17,-14.84,-5.39,0.00,18.14,12.75,payout_expected_mismatch,commission_rate=0.24 | adjustment=-5.39 | platform=postmates,adjustment_collapsed_into_order
+O-305920384333321,2022-10-12T00:00:00,AMECI,NEXTBITE,45.97,3.56,0.00,-20.69,-45.97,0.00,33.72,-17.13,payout_expected_mismatch,commission_rate=0.30 | adjustment=-45.97 | platform=grubhub | collapsed_records=3,adjustment_collapsed_into_order
+O-667320551943350,2022-10-29T00:00:00,AMECI,NEXTBITE,21.99,1.70,0.00,-9.90,-6.50,0.00,12.09,7.29,payout_expected_mismatch,commission_rate=0.30 | adjustment=-6.50 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+O-696020604818039,2022-11-03T00:00:00,AMECI,NEXTBITE,20.49,1.59,0.00,-9.22,-6.50,0.00,11.27,6.36,payout_expected_mismatch,commission_rate=0.30 | adjustment=-6.50 | platform=grubhub | collapsed_records=2,adjustment_collapsed_into_order
+#227DF,2022-11-03T00:00:00,AMECI,NEXTBITE,0.00,0.00,0.00,-17.55,0.00,0.00,-4.56,-17.55,tax_tax_withheld_needs_review | payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,statement_allocation_vs_formula
+#4D283,2022-11-04T00:00:00,AMECI,NEXTBITE,40.98,0.00,3.18,-18.44,0.00,0.00,35.54,22.54,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#85784,2022-11-05T00:00:00,AMECI,NEXTBITE,83.98,0.00,6.51,-37.79,0.00,0.00,59.19,46.19,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#663C4,2022-11-17T00:00:00,AMECI,NEXTBITE,48.98,0.00,3.80,-23.84,0.00,0.00,29.14,25.14,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,tax_withheld_model_diff
+#DBEEA,2022-12-01T00:00:00,AMECI,NEXTBITE,27.98,0.00,2.17,-12.59,0.00,0.00,16.89,15.39,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#CD88D,2022-12-07T00:00:00,AMECI,NEXTBITE,13.99,0.00,1.09,-8.99,0.00,0.00,6.50,5.00,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats | collapsed_records=2,tax_withheld_model_diff
+#08672,2022-12-11T00:00:00,AMECI,NEXTBITE,39.99,0.00,3.10,-17.99,0.00,0.00,23.49,22.00,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#663CC,2022-12-13T00:00:00,AMECI,NEXTBITE,23.97,0.00,1.86,-10.79,0.00,0.00,14.68,13.18,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#C7A4E,2023-01-01T00:00:00,AMECI,NEXTBITE,42.99,0.00,3.33,-19.35,0.00,0.00,25.31,23.64,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#6481D,2023-01-06T00:00:00,AMECI,NEXTBITE,67.98,0.00,5.27,-30.59,0.00,0.00,39.06,37.39,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff
+#B2648,2023-01-08T00:00:00,AMECI,NEXTBITE,35.98,0.00,2.79,-16.19,0.00,0.00,21.45,19.79,payout_expected_mismatch,commission_rate=0.24 | platform=ubereats,tax_withheld_model_diff

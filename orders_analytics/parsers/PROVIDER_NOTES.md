@@ -14,8 +14,10 @@
 - [Foodja](#foodja)
 - [Grubhub](#grubhub)
 - [Meal-Hi5](#meal-hi5)
+- [Mayaeats](#mayaeats)
 - [Menufy](#menufy)
 - [MenuStar](#menustar)
+- [Nextbite](#nextbite)
 - [Office Caterer](#office-caterer)
 - [Order Inn](#order-inn)
 - [Slice](#slice)
@@ -406,6 +408,15 @@ Concerns / follow-ups:
   - Discounts (if present) are recorded as negative `adjustments`.
   - Payment type is assumed credit; order type from the `FOR:` line.
 
+## Mayaeats
+- Source: `Takeout/Mail/Billings-Mayaeats.mbox` (PDF attachments).
+- Parser: `parsers/mayaeats/extract_mayaeats_billings_raw.py`
+  - Reads all PDF attachments across all billings emails.
+  - Extracts order rows from PDF tables by detecting header rows containing `Order Id`/`Order ID`.
+  - Preserves all table columns found in the source PDFs (unioned across different statement layouts).
+  - Adds metadata columns: `provider`, `source_file`, `source_sheet` (PDF page marker), `email_date`, `added_at`.
+  - If a PDF does not expose order tables cleanly, falls back to `OrderId:` text-block extraction.
+
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`
 - Customers: `Takeout/Menufy/Customer_Emails_02-05-2026.csv`, `Takeout/Menufy/Customer_Delivery_Addresses_02-05-2026.csv`
@@ -424,6 +435,42 @@ Concerns / follow-ups:
    - `tax_withholdings` → `tax_withheld`.
  - `tax_payout` should match `tax`; mismatch adds `errors=tax_payout_mismatch`.
   - `total_payout` is mapped to `payout`.
+
+## Nextbite
+- Source: `Takeout/Mail/Billings-Nextbite.mbox` (XLSX/PDF/ZIP/CSV attachments).
+- Parser: `parsers/nextbite/extract_nextbite_billings_raw.py`
+  - Output files:
+    - `orders_analytics/data/raw/nextbite/orders_raw.csv` (order-level rows from DSP sheets).
+    - `orders_analytics/data/raw/nextbite/billings_raw.csv` (summary payout rows from the `Summary` sheet).
+  - Reads XLSX/CSV attachments (ZIP attachments are currently skipped).
+  - For XLSX, ingests all sheets and keeps rows where an order-id column is present and non-blank (`Order ID`/`Order Id` variants).
+  - Preserves all source columns found in statements (unioned across attachments/sheets).
+  - Adds metadata columns: `provider`, `source_file`, `source_member` (zip member path when applicable), `source_sheet`, `email_date`, `added_at`.
+  - PDF attachments are currently not parsed for row-level order data because each Nextbite email includes tabular XLSX/CSV statement data.
+- Normalizer: `parsers/nextbite/normalize_nextbite_from_raw.py`
+  - Uses `orders_raw.csv` + `billings_raw.csv` (summary sheet rows) and writes:
+    - `data/raw/nextbite/orders_with_reconciled_payouts_raw.csv` (per-record payout/commission allocation before collapse)
+    - `data/raw/nextbite/orders_collapsed_raw.csv` (collapsed by `Order ID + period_dsp + pay_period_ending`, excludes all-zero rows)
+    - `data/raw/nextbite/pay_period_comparison.csv` (period tie-out to summary statements)
+    - `data/normalized/nextbite_orders_normalized.csv`
+  - Unfulfilled rows are excluded from normalized/collapsed outputs.
+  - `order_type` is forced to `pickup` and provider is forced to `AMECI`.
+  - Tax mapping:
+    - If `Tax Remitted != 0`: `tax=0`, `tax_withheld=Tax Remitted` (sign preserved, so refund rows stay negative).
+    - Else: `tax=Gross Tax`, `tax_withheld=0`.
+  - Commission/payout allocation:
+    - Base payout rule: positive subtotal rows use 55%; negative subtotal rows use full subtotal.
+    - Statement reconciliation is then applied by `(DSP, pay_period_ending)` so per-period sums exactly match summary `Total FP Payout`.
+    - Negative-subtotal rows are locked during reconciliation; residual is distributed across non-negative rows.
+    - Commission is not attributed to refund rows or rows where raw `Total Commissions == 0`.
+  - Count/date overrides are statement-specific for known Nextbite quirks (half-month boundaries and count semantics differ by DSP/period).
+  - Notes added during normalize:
+    - `original_order_id=...` when suffixed order IDs are generated to avoid collisions across periods.
+    - `tax_not_paid_in_payout=...` when payout appears short by exactly the tax amount.
+  - Payout mismatches without `tax_not_paid_in_payout` generally fall into:
+    - tax-withheld modeling differences (`tax_withheld` present; statement payout treatment differs from standard expected formula),
+    - collapsed adjustment effects (adjustment rows merged into order-level records),
+    - statement allocation vs formula differences for statement-specific exceptions.
 
 ## MenuStar
 - Sources: `Takeout/Mail/Orders-Menustar.mbox`, `Takeout/Mail/Billings-Menustar.mbox`
