@@ -22,6 +22,8 @@ class Platforms:
     GRUBHUB = "grubhub"
     MEALHI5 = "mealhi5"
     DOORDASH = "doordash"
+    MAYAEATS = "mayaeats"
+    NEXTBITE = "nextbite"
 
     # list of inactive platforms that no longer partner with
     INACTIVE = {
@@ -32,6 +34,8 @@ class Platforms:
         BRYGID,
         ORDERINN,
         MEALHI5,
+        MAYAEATS,
+        NEXTBITE,
     }
 
     @classmethod
@@ -57,6 +61,8 @@ class Platforms:
             cls.GRUBHUB,
             cls.MEALHI5,
             cls.DOORDASH,
+            cls.MAYAEATS,
+            cls.NEXTBITE,
         ]
 
     @classmethod
@@ -95,4 +101,6 @@ class Platforms:
             cls.CHOWNOW,
             cls.BRYGID,
             cls.MEALHI5,
+            cls.MAYAEATS,
+            cls.NEXTBITE,
         ]

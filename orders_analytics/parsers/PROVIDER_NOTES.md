@@ -414,8 +414,28 @@ Concerns / follow-ups:
   - Reads all PDF attachments across all billings emails.
   - Extracts order rows from PDF tables by detecting header rows containing `Order Id`/`Order ID`.
   - Preserves all table columns found in the source PDFs (unioned across different statement layouts).
-  - Adds metadata columns: `provider`, `source_file`, `source_sheet` (PDF page marker), `email_date`, `added_at`.
+  - Adds metadata columns: `provider` (`AROMA`), `source_file`, `source_sheet` (PDF page marker), `email_date`, `added_at`.
   - If a PDF does not expose order tables cleanly, falls back to `OrderId:` text-block extraction.
+- Normalizer: `parsers/mayaeats/normalize_mayaeats_from_raw.py`
+  - Input: `data/raw/mayaeats/billings_raw.csv`
+  - Output: `data/normalized/mayaeats_orders_normalized.csv`
+  - Coalesces statement variants (`Order Id`/`Order ID`/`OrderId`, date/amount/tax/paid field variants).
+  - Drops OCR-corrupted rows with invalid order-id shapes (whitespace-containing IDs).
+  - Canonicalizes numeric-only IDs to `O-<digits>` before dedupe.
+  - Dedupes to one row per `order_id` and keeps the highest-information row.
+  - Forces normalized mapping for all kept rows:
+    - `provider=AROMA`
+    - `payment_type=credit`
+    - `order_type=pickup`
+    - `payout=total`
+  - Commission modeling for downstream accounting:
+    - `adjustments = subtotal / 0.57` (rounded to cents)
+    - `commission_fee = -adjustments`
+    - This keeps payout math unchanged while preserving the 57%-of-true-subtotal model explicitly in normalized fields.
+  - Notes include `platform=<dsp>`.
+- Wave payouts:
+  - `orders_analytics/scripts/wave_provider_payouts.py` extracts Mayaeats payouts from `Takeout/wave_aroma/accounting.csv`.
+  - Output: `orders_analytics/data/raw/mayaeats/wave_payouts_aroma.csv` (keyword match on `maya eats` / `mayaeats` / `unavu`).
 
 ## Menufy
 - Sources: `Takeout/Menufy/orders/**/Orders Paid Online*.csv`, `Takeout/Menufy/orders/**/Orders Paid In-Store*.csv`

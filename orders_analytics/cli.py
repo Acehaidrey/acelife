@@ -456,6 +456,16 @@ def run_extract(
         out_path = orders_raw or raw_path("orderinn", "commissions_raw.csv")
         extract_orderinn_raw.run(out_path)
         return
+    if platform == Platforms.MAYAEATS:
+        from orders_analytics.parsers.mayaeats import extract_mayaeats_billings_raw
+
+        extract_mayaeats_billings_raw.run(billings_mbox, billings_raw)
+        return
+    if platform == Platforms.NEXTBITE:
+        from orders_analytics.parsers.nextbite import extract_nextbite_billings_raw
+
+        extract_nextbite_billings_raw.run(billings_mbox, orders_raw, billings_raw)
+        return
     raise ValueError(f"Extract not supported for platform: {platform}")
 
 
@@ -719,6 +729,40 @@ def run_normalize(
             normalized_out,
         )
         print(f"[orderinn] normalized -> {normalized_out}")
+        return
+    if platform == Platforms.NEXTBITE:
+        from orders_analytics.parsers.nextbite import normalize_nextbite_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("nextbite", "orders_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("nextbite_orders_normalized.csv")
+        )
+        normalize_nextbite_from_raw.run(
+            orders_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
+        )
+        print(f"[nextbite] normalized -> {normalized_out}")
+        return
+    if platform == Platforms.MAYAEATS:
+        from orders_analytics.parsers.mayaeats import normalize_mayaeats_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        billings_raw_path = billings_raw or extras.pop(
+            "billings_raw", raw_path("mayaeats", "billings_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("mayaeats_orders_normalized.csv")
+        )
+        normalize_mayaeats_from_raw.run(
+            billings_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
+        )
+        print(f"[mayaeats] normalized -> {normalized_out}")
         return
     if platform == Platforms.BEYONDMENU:
         from orders_analytics.parsers.beyondmenu.parse_beyondmenu_orders import (
@@ -1230,6 +1274,16 @@ def main() -> None:
             billings_mbox = ""
             orders_raw = args.orders_raw or raw_path("orderinn", "commissions_raw.csv")
             billings_raw = ""
+        elif args.platform == Platforms.MAYAEATS:
+            orders_mbox = ""
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Mayaeats.mbox")
+            orders_raw = ""
+            billings_raw = args.billings_raw or raw_path("mayaeats", "billings_raw.csv")
+        elif args.platform == Platforms.NEXTBITE:
+            orders_mbox = ""
+            billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-Nextbite.mbox")
+            orders_raw = args.orders_raw or raw_path("nextbite", "orders_raw.csv")
+            billings_raw = args.billings_raw or raw_path("nextbite", "billings_raw.csv")
         elif args.platform == Platforms.DELIVERYCOM:
             orders_mbox = args.orders_mbox or takeout_path("Mail", "Orders-DeliveryCom.mbox")
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")

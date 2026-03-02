@@ -34,6 +34,8 @@ PROVIDER_KEYWORDS: Dict[str, List[str]] = {
     "foodrunners": ["foodrunners", "food runners"],
     "orderinn": ["order inn", "orderinn"],
     "officecaterer": ["office caterer", "officecaterer"],
+    "nextbite": ["nextbite", "nextbite brands"],
+    "mayaeats": ["maya eats", "mayaeats", "unavu"],
 }
 
 
