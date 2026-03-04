@@ -4,6 +4,7 @@ import csv
 import os
 from typing import Dict, Iterable, List
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from orders_analytics.utils.platforms import Platforms
 
 CANONICAL_COLUMNS: List[str] = [
     "order_id",
@@ -110,10 +111,26 @@ def compute_expected_payout(row: Dict[str, str]) -> str:
     expected = Decimal("0.00")
     from orders_analytics.utils.payment_types import PaymentTypes
     payment_type = str(row.get("payment_type") or "").strip().lower()
+    platform = str(row.get("platform") or "").strip().lower()
     if payment_type == PaymentTypes.CASH:
-        if commission_fee is None:
-            return ""
-        expected = commission_fee
+        if platform in Platforms.get_pos_providers():
+            if subtotal is not None:
+                expected += subtotal
+            if tax is not None:
+                expected += tax
+            if tip is not None:
+                expected += tip
+            if delivery_fee is not None:
+                expected += delivery_fee
+            if adjustments is not None:
+                expected += adjustments
+            for fee in (commission_fee, processing_fee, marketing_fee, misc_fee):
+                if fee is not None:
+                    expected += fee
+        else:
+            if commission_fee is None:
+                return ""
+            expected = commission_fee
     else:
         if subtotal is not None:
             expected += subtotal

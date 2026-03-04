@@ -22,6 +22,7 @@
 - [Order Inn](#order-inn)
 - [Slice](#slice)
 - [Uber Eats](#uber-eats)
+- [Wave](#wave)
 
 ## BeyondMenu
 - Source: `orders_analytics/data/raw/beyondmenu/beyond_menu_order_history.csv` (downloaded from Google Sheets)
@@ -561,6 +562,44 @@ Concerns / follow-ups:
   - Uses `Transaction Date` as `order_datetime`.
   - Uses `Amount (One column)` (fallback to debit/credit) as `commission_fee`.
   - Other money fields are blank; only commissions are represented for this provider.
+
+## Wave
+- Source files (Aroma only):
+  - `Takeout/wave_aroma/accounting.csv`
+  - `Takeout/wave_aroma/customers.csv`
+- Extractor: `parsers/wave/extract_wave_orders_raw.py`
+  - Builds from invoice-entry groups (not just payment events):
+    - `Account Name=Accounts Receivable`
+    - non-empty `Invoice Number`
+    - excludes `Invoice Payment` AR rows when selecting the invoice-creation transaction.
+  - Chooses one primary transaction snapshot per invoice number (latest modified/added timestamp).
+  - Aggregates one raw row per invoice with:
+    - `invoice_total` from Accounts Receivable amount (absolute value)
+    - `subtotal` from itemized Sales + Sales Discounts (minus tip/delivery components)
+    - `tax` from tax accounts (`sales tax` / `CA ...`)
+    - `tip`, `delivery_fee`, `discounts` from line-item descriptions/account names
+    - `items` and `item_count` from itemized sales line descriptions (excluding tip and explicit delivery-fee lines)
+    - `payment_terms` are intentionally ignored for all Wave orders
+  - Separately reads `Invoice Payment` groups by invoice number to enrich:
+    - `paid_in_amount`
+    - `merchant_account_fee`
+  - Joins customer data from `customers.csv` (`customer_name`, `email`, `phone`, `address`).
+  - Output: `orders_analytics/data/raw/wave/orders_raw.csv`
+- Normalizer: `parsers/wave/normalize_wave_from_raw.py`
+  - Provider forced to `AROMA`.
+  - `payment_type=credit`.
+  - `order_type` inferred from raw invoice data (`delivery` when delivery fee > 0; otherwise `pickup`).
+  - `subtotal`, `tax`, `tip`, `delivery_fee`, `adjustments` (discounts), `total`, `items`, `item_count` from extracted invoice aggregates.
+  - `processing_fee = -merchant_account_fee`, `commission_fee=0`.
+  - `payout = paid_in_amount` when a payment record exists (left blank when no payment record found yet).
+  - When `(paid_in_amount + merchant_account_fee) > invoice_total`, the positive delta is treated as tip:
+    - `tip += overage`
+    - `total += overage`
+    - notes include `payment_overage_to_tip=<amount>`
+  - Notes are blank by default (invoice and transaction identifiers are already encoded in `order_id`).
+  - Expected payout for cash is computed as full order components for POS providers (`wave`, `toast`, `speedline`) rather than commission-only cash logic.
+  - Total-components validation includes `adjustments` (discounts) for Wave.
+  - Output: `orders_analytics/data/normalized/wave_orders_normalized.csv`.
 
 ## Slice
 - Sources:

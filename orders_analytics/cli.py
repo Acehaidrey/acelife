@@ -313,6 +313,23 @@ def run_parse(
         normalize_orderinn_from_raw.run(raw_out, normalized_out)
         print("[orderinn] extracted raw commissions and normalized.")
         return
+    elif platform == Platforms.WAVE:
+        from orders_analytics.parsers.wave import (
+            extract_wave_orders_raw,
+            normalize_wave_from_raw,
+        )
+        from orders_analytics.utils.constants import normalized_path, raw_path, wave_aroma_path
+
+        accounting_csv = extras.pop("accounting_csv", wave_aroma_path("accounting.csv"))
+        customers_csv = extras.pop("customers_csv", wave_aroma_path("customers.csv"))
+        raw_out = extras.pop("orders_raw", raw_path("wave", "orders_raw.csv"))
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("wave_orders_normalized.csv")
+        )
+        extract_wave_orders_raw.run(accounting_csv, customers_csv, raw_out)
+        normalize_wave_from_raw.run(raw_out, normalized_out)
+        print("[wave] extracted raw invoice payments and normalized.")
+        return
     else:
         raise ValueError(f"Unknown platform: {platform}")
 
@@ -455,6 +472,15 @@ def run_extract(
 
         out_path = orders_raw or raw_path("orderinn", "commissions_raw.csv")
         extract_orderinn_raw.run(out_path)
+        return
+    if platform == Platforms.WAVE:
+        from orders_analytics.parsers.wave import extract_wave_orders_raw
+        from orders_analytics.utils.constants import wave_aroma_path
+
+        out_path = orders_raw
+        accounting_csv = orders_mbox or wave_aroma_path("accounting.csv")
+        customers_csv = billings_mbox or wave_aroma_path("customers.csv")
+        extract_wave_orders_raw.run(accounting_csv, customers_csv, out_path)
         return
     if platform == Platforms.MAYAEATS:
         from orders_analytics.parsers.mayaeats import extract_mayaeats_billings_raw
@@ -746,6 +772,23 @@ def run_normalize(
             reset_errors=reset_errors,
         )
         print(f"[nextbite] normalized -> {normalized_out}")
+        return
+    if platform == Platforms.WAVE:
+        from orders_analytics.parsers.wave import normalize_wave_from_raw
+        from orders_analytics.utils.constants import normalized_path, raw_path
+
+        orders_raw_path = orders_raw or extras.pop(
+            "orders_raw", raw_path("wave", "orders_raw.csv")
+        )
+        normalized_out = out_path or extras.pop(
+            "normalized_out", normalized_path("wave_orders_normalized.csv")
+        )
+        normalize_wave_from_raw.run(
+            orders_raw_path,
+            normalized_out,
+            reset_errors=reset_errors,
+        )
+        print(f"[wave] normalized -> {normalized_out}")
         return
     if platform == Platforms.MAYAEATS:
         from orders_analytics.parsers.mayaeats import normalize_mayaeats_from_raw
@@ -1273,6 +1316,11 @@ def main() -> None:
             orders_mbox = ""
             billings_mbox = ""
             orders_raw = args.orders_raw or raw_path("orderinn", "commissions_raw.csv")
+            billings_raw = ""
+        elif args.platform == Platforms.WAVE:
+            orders_mbox = args.orders_mbox or takeout_path("wave_aroma", "accounting.csv")
+            billings_mbox = args.billings_mbox or takeout_path("wave_aroma", "customers.csv")
+            orders_raw = args.orders_raw or raw_path("wave", "orders_raw.csv")
             billings_raw = ""
         elif args.platform == Platforms.MAYAEATS:
             orders_mbox = ""

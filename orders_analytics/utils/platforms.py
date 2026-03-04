@@ -24,6 +24,9 @@ class Platforms:
     DOORDASH = "doordash"
     MAYAEATS = "mayaeats"
     NEXTBITE = "nextbite"
+    WAVE = "wave"
+    TOAST = "toast"
+    SPEEDLINE = "speedline"
 
     # list of inactive platforms that no longer partner with
     INACTIVE = {
@@ -63,6 +66,7 @@ class Platforms:
             cls.DOORDASH,
             cls.MAYAEATS,
             cls.NEXTBITE,
+            cls.WAVE,
         ]
 
     @classmethod
@@ -103,4 +107,9 @@ class Platforms:
             cls.MEALHI5,
             cls.MAYAEATS,
             cls.NEXTBITE,
+            cls.WAVE,
         ]
+
+    @classmethod
+    def get_pos_providers(cls) -> set[str]:
+        return {cls.TOAST, cls.SPEEDLINE, cls.WAVE}
