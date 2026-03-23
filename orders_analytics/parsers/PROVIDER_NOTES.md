@@ -267,6 +267,36 @@ Concerns / follow-ups:
   - `payout` is mapped from `Caterer Total Due`.
   - Notes overrides can be supplied via `data/raw/ezcater/ezcater_notes_overrides.csv` (by `order_id`).
 
+## Fooda
+- Source takeout file: `Takeout/Mail/fooda_sales.csv`
+- Raw extract: `parsers/fooda/extract_fooda_orders_raw.py`
+  - Drops the grand total row.
+  - Drops columns that are all zero/blank in the source.
+  - Drops `Tax (Restaurant to remit)` from raw because it matches `Tax` for this dataset.
+- Normalizer: `parsers/fooda/parse_fooda_orders.py`
+  - Current scope is `Product = Catering` only. Popup rows are intentionally skipped for now.
+  - `provider` is hard-set to `FOODA`.
+  - For catering rows with `Subsidy`:
+    - `subtotal` = `Food sales (excludes Tax)`
+    - `tax` = `Tax`
+    - `delivery_fee` = `Subsidy - Food sales - Tax`
+    - `total` = `Subsidy`
+    - note: `delivery_fee_inferred_from_subsidy`
+  - For catering rows without `Subsidy`:
+    - `subtotal` = `Food sales + Tax`
+    - `tax` = `0`
+    - `delivery_fee` = `0`
+    - `total` = `subtotal`
+  - `commission_fee` = `Fooda Commission plus Additional Event Fees`
+  - `processing_fee` = `Payment Processing Fees`
+  - `adjustments` = `Other Fees + Restaurant Fee Tax`
+  - `payout` = `Paid to Restaurant`
+  - 2020 catering rows with no tax in source infer `tax_withheld = subtotal * 7.75%` and add note `tax_withheld_inferred_from_subtotal`.
+  - 2020 catering rows also move a flat `$20.00` from `subtotal` into `delivery_fee` and add note `delivery_fee_base_20`.
+  - One-off manual overrides live in `data/raw/fooda/adjustments.csv`
+    - `MS_195261_5823`: moves inferred delivery fee into `adjustments` and adds note `paid_for_cancelled_event`
+    - `MS_195295_5823`: forces `delivery_fee = 29.98`, `adjustments = -37.50`, adds note `adjustment_for_forgotten_items`
+
 ## Food Runners
 - Sources: `Takeout/Mail/Orders-FoodRunners.mbox`, `Takeout/Mail/Billings-FoodRunners.mbox`
 - Orders parser: `parsers/foodrunners/extract_foodrunners_orders_raw.py` (PDF attachments)

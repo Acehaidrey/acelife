@@ -388,6 +388,14 @@ def run_extract(
         extract_deliverycom_orders_raw.run(orders_mbox, orders_raw)
         extract_deliverycom_billings_raw.run(billings_mbox, billings_raw)
         return
+    if platform == Platforms.FOODA:
+        from orders_analytics.parsers.fooda import extract_fooda_orders_raw
+        from orders_analytics.utils.constants import raw_path, takeout_path
+
+        source_csv = orders_mbox or takeout_path("Mail", "fooda_sales.csv")
+        orders_raw_path = orders_raw or raw_path("fooda", "fooda_sales.csv")
+        extract_fooda_orders_raw.run(source_csv, orders_raw_path)
+        return
     if platform == Platforms.FOODEE:
         from orders_analytics.parsers.foodee import (
             extract_foodee_billings_raw,
@@ -1054,7 +1062,13 @@ def main() -> None:
     )
     extract_cmd.add_argument(
         "--platform",
-        choices=[*Platforms.mbox_platforms(), Platforms.MENUFY, Platforms.SLICE, Platforms.ORDERINN],
+        choices=[
+            *Platforms.mbox_platforms(),
+            Platforms.FOODA,
+            Platforms.MENUFY,
+            Platforms.SLICE,
+            Platforms.ORDERINN,
+        ],
         default=Platforms.EATSTREET,
         help="Platform to extract.",
     )
@@ -1337,6 +1351,11 @@ def main() -> None:
             billings_mbox = args.billings_mbox or takeout_path("Mail", "Billings-DeliveryCom.mbox")
             orders_raw = args.orders_raw or raw_path("deliverycom", "orders_raw.csv")
             billings_raw = args.billings_raw or raw_path("deliverycom", "billings_raw.csv")
+        elif args.platform == Platforms.FOODA:
+            orders_mbox = args.orders_mbox or takeout_path("Mail", "fooda_sales.csv")
+            billings_mbox = ""
+            orders_raw = args.orders_raw or raw_path("fooda", "fooda_sales.csv")
+            billings_raw = ""
         else:
             raise ValueError(f"Extract not supported for platform: {args.platform}")
         run_extract(args.platform, orders_mbox, billings_mbox, orders_raw, billings_raw)

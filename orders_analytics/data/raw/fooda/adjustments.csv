@@ -1,0 +1,3 @@
+order_id,delivery_fee,adjustments,move_delivery_fee_to_adjustments,notes_append
+MS_195261_5823,,,true,paid_for_cancelled_event
+MS_195295_5823,29.98,-37.50,false,adjustment_for_forgotten_items

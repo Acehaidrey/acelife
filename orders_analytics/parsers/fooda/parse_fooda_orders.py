@@ -12,8 +12,20 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../.
 from orders_analytics.utils.base_parser import BaseParser
 from orders_analytics.utils.constants import normalized_path, raw_path
 from orders_analytics.utils.normalize import normalize_datetime, normalize_money
-from orders_analytics.utils.providers import normalize_provider
 from orders_analytics.utils.order_types import OrderTypes
+
+
+def load_adjustments() -> Dict[str, Dict[str, str]]:
+    path = raw_path("fooda", "adjustments.csv")
+    if not os.path.exists(path):
+        return {}
+    df = pd.read_csv(path, dtype=str).fillna("")
+    overrides: Dict[str, Dict[str, str]] = {}
+    for _, row in df.iterrows():
+        order_id = str(row.get("order_id", "")).strip()
+        if order_id:
+            overrides[order_id] = {str(k): str(v).strip() for k, v in row.items()}
+    return overrides
 
 
 def parse_date(value: str) -> str:
@@ -22,6 +34,11 @@ def parse_date(value: str) -> str:
         formats=("%m/%d/%Y", "%m/%d/%y"),
         allow_iso=False,
     )
+
+
+def parse_year(value: str) -> str:
+    normalized = parse_date(value)
+    return normalized[:4] if normalized else ""
 
 
 def sum_money(*values: str) -> str:
@@ -35,6 +52,11 @@ def sum_money(*values: str) -> str:
         except InvalidOperation:
             continue
     return str(total.quantize(Decimal("0.01")))
+
+
+def is_nonzero_money(value: str) -> bool:
+    normalized = normalize_money(value)
+    return bool(normalized and normalized != "0.00")
 
 
 class FoodaOrdersParser(BaseParser):
@@ -52,10 +74,11 @@ class FoodaOrdersParser(BaseParser):
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
         df = inputs.copy()
+        adjustments_overrides = load_adjustments()
         df["Restaurant Name"] = df["Restaurant Name"].astype(str)
         df["Product"] = df["Product"].astype(str)
         df = df[df["Restaurant Name"].str.strip().str.lower() != "grand total"].copy()
-        df = df[df["Product"].str.strip().str.lower() != "popup"].copy()
+        df = df[df["Product"].str.strip().str.lower() == "catering"].copy()
 
         rows: List[Dict[str, str]] = []
         for _, row in df.iterrows():
@@ -64,43 +87,80 @@ class FoodaOrdersParser(BaseParser):
                 continue
             restaurant = str(row.get("Restaurant Name", "")).strip()
             product = str(row.get("Product", "")).strip().lower()
+            order_datetime = parse_date(row.get("Event date", ""))
+            order_year = parse_year(row.get("Event date", ""))
 
-            subtotal = normalize_money(row.get("Food sales (excludes Tax)", ""))
-            tax = normalize_money(row.get("Tax (Restaurant to remit)", ""))
-            tax_withheld = normalize_money(row.get("Tax (Fooda to remit)", ""))
+            food_sales = normalize_money(row.get("Food sales (excludes Tax)", "")) or "0.00"
+            tax = (
+                normalize_money(row.get("Tax", ""))
+                or normalize_money(row.get("Tax (Restaurant to remit)", ""))
+                or "0.00"
+            )
+            tax_withheld = normalize_money(row.get("Tax (Fooda to remit)", "")) or "0.00"
+            subsidy = normalize_money(row.get("Subsidy", "")) or "0.00"
             commission_fee = normalize_money(
                 row.get("Fooda Commission plus Additional Event Fees", "")
+            ) or "0.00"
+            processing_fee = normalize_money(row.get("Payment Processing Fees", "")) or "0.00"
+            adjustments = sum_money(
+                normalize_money(row.get("Other Fees", "")) or "0.00",
+                normalize_money(row.get("Restaurant Fee Tax", "")) or "0.00",
             )
-            processing_fee = normalize_money(row.get("Payment Processing Fees", ""))
-            adjustments = normalize_money(row.get("Other Fees", ""))
-            misc_fee = normalize_money(row.get("Unpaid Orders", ""))
-            total = normalize_money(row.get("Subsidy", ""))
-            if total and total != "0.00":
-                delivery_fee = sum_money(
-                    total,
-                    f"-{subtotal}" if subtotal else "0.00",
-                    f"-{tax}" if tax else "0.00",
-                )
+
+            if is_nonzero_money(subsidy):
+                subtotal = food_sales
+                delivery_fee = sum_money(subsidy, f"-{food_sales}", f"-{tax}")
+                total = subsidy
             else:
+                subtotal = sum_money(food_sales, tax)
+                tax = "0.00"
                 delivery_fee = "0.00"
+                total = subtotal
+
+            if order_year == "2020" and tax == "0.00":
+                tax_withheld = sum_money(Decimal(subtotal) * Decimal("0.0775"))
+            if order_year == "2020" and Decimal(subtotal) >= Decimal("20.00"):
+                subtotal = sum_money(subtotal, "-20.00")
+                delivery_fee = sum_money(delivery_fee, "20.00")
 
             notes = []
             if product:
                 notes.append(f"product={product}")
+            if is_nonzero_money(subsidy):
+                notes.append("delivery_fee_inferred_from_subsidy")
+            if order_year == "2020":
+                notes.append("delivery_fee_base_20")
+            if order_year == "2020" and tax == "0.00" and tax_withheld != "0.00":
+                notes.append("tax_withheld_inferred_from_subtotal")
             payment_date = str(row.get("Payment Date", "")).strip()
             if payment_date:
                 notes.append(f"payment_date={payment_date}")
             payout = normalize_money(row.get("Paid to Restaurant", ""))
-            if payout and payout != "0.00":
-                notes.append(f"paid_to_restaurant={payout}")
+
+            override = adjustments_overrides.get(section_ref, {})
+            if override:
+                delivery_fee = normalize_money(override.get("delivery_fee", "")) or delivery_fee
+                override_adjustments = normalize_money(override.get("adjustments", ""))
+                if override_adjustments:
+                    adjustments = override_adjustments
+                if str(override.get("move_delivery_fee_to_adjustments", "")).strip().lower() in {
+                    "1",
+                    "true",
+                    "yes",
+                }:
+                    adjustments = sum_money(adjustments, delivery_fee)
+                    delivery_fee = "0.00"
+                notes_append = str(override.get("notes_append", "")).strip()
+                if notes_append:
+                    notes.append(notes_append)
 
             rows.append(
                 {
                     "order_id": section_ref,
                     "platform": "FOODA",
-                    "provider": normalize_provider(restaurant),
+                    "provider": "FOODA",
                     "restaurant_name": restaurant,
-                    "order_datetime": parse_date(row.get("Event date", "")),
+                    "order_datetime": order_datetime,
                     "order_type": OrderTypes.DELIVERY,
                     "customer_name": "",
                     "company_name": "",
@@ -114,7 +174,7 @@ class FoodaOrdersParser(BaseParser):
                     "subtotal": subtotal,
                     "tax": tax,
                     "tax_withheld": tax_withheld,
-                    "tip": "",
+                    "tip": "0.00",
                     "delivery_fee": delivery_fee,
                     "total": total,
                     "item_count": "",
@@ -122,8 +182,9 @@ class FoodaOrdersParser(BaseParser):
                     "commission_fee": commission_fee,
                     "items": "",
                     "adjustments": adjustments,
-                    "marketing_fee": "",
-                    "misc_fee": misc_fee,
+                    "marketing_fee": "0.00",
+                    "misc_fee": "0.00",
+                    "payout": payout or "0.00",
                     "errors": "",
                     "notes": " | ".join(notes),
                 }
