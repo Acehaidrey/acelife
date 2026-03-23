@@ -274,7 +274,6 @@ Concerns / follow-ups:
   - Drops columns that are all zero/blank in the source.
   - Drops `Tax (Restaurant to remit)` from raw because it matches `Tax` for this dataset.
 - Normalizer: `parsers/fooda/parse_fooda_orders.py`
-  - Current scope is `Product = Catering` only. Popup rows are intentionally skipped for now.
   - `provider` is hard-set to `FOODA`.
   - For catering rows with `Subsidy`:
     - `subtotal` = `Food sales (excludes Tax)`
@@ -291,11 +290,33 @@ Concerns / follow-ups:
   - `processing_fee` = `Payment Processing Fees`
   - `adjustments` = `Other Fees + Restaurant Fee Tax`
   - `payout` = `Paid to Restaurant`
+  - Fooda total-components validation uses only `subtotal`, `tax`, `tip`, and `delivery_fee`.
+    - `marketing_fee`, `adjustments`, and `misc_fee` are treated as settlement-side fields, not customer total components.
   - 2020 catering rows with no tax in source infer `tax_withheld = subtotal * 7.75%` and add note `tax_withheld_inferred_from_subtotal`.
   - 2020 catering rows also move a flat `$20.00` from `subtotal` into `delivery_fee` and add note `delivery_fee_base_20`.
   - One-off manual overrides live in `data/raw/fooda/adjustments.csv`
     - `MS_195261_5823`: moves inferred delivery fee into `adjustments` and adds note `paid_for_cancelled_event`
     - `MS_195295_5823`: forces `delivery_fee = 29.98`, `adjustments = -37.50`, adds note `adjustment_for_forgotten_items`
+  - Popup handling is currently implemented only for `2020` rows:
+    - Each popup event is split into two normalized rows:
+      - `<section_reference>|CASH`
+      - `<section_reference>|CREDIT`
+    - Both popup rows use `order_type = pickup`
+    - Cash row:
+      - `payment_type = cash`
+      - `payout = total`
+      - subtotal/tax are prorated from `Cash Collected by Restaurant` so cash + credit sums exactly back to the original event
+    - Credit row:
+      - `payment_type = credit`
+      - `payout = Paid to Restaurant`
+      - `commission_fee` = `Fooda Commission plus Additional Event Fees`
+      - `processing_fee` = `Payment Processing Fees`
+      - `misc_fee` = `Other Fees`
+      - `Coupons` are added back into the credit `subtotal` and also subtracted in `marketing_fee`
+      - `marketing_fee` = negative `Rewards Coupons + Coupons`
+      - `adjustments` = negative absolute `Unpaid Orders`
+      - `Restaurant Fee Tax` is added into the credit `tax`
+    - Notes include `popup_2020_split` plus any nonzero `rewards_coupons`, `coupons`, `unpaid_orders`, and whether the row is the `popup_cash_component` or `popup_credit_component`
 
 ## Food Runners
 - Sources: `Takeout/Mail/Orders-FoodRunners.mbox`, `Takeout/Mail/Billings-FoodRunners.mbox`

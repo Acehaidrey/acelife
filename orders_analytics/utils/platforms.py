@@ -112,4 +112,4 @@ class Platforms:
 
     @classmethod
     def get_pos_providers(cls) -> set[str]:
-        return {cls.TOAST, cls.SPEEDLINE, cls.WAVE}
+        return {cls.TOAST, cls.SPEEDLINE, cls.WAVE, cls.FOODA}

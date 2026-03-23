@@ -41,6 +41,16 @@ def parse_year(value: str) -> str:
     return normalized[:4] if normalized else ""
 
 
+def to_decimal(value: str) -> Decimal:
+    text = str(value or "").strip()
+    if not text:
+        return Decimal("0.00")
+    try:
+        return Decimal(text)
+    except InvalidOperation:
+        return Decimal("0.00")
+
+
 def sum_money(*values: str) -> str:
     total = Decimal("0.00")
     for value in values:
@@ -62,6 +72,12 @@ def is_nonzero_money(value: str) -> bool:
 class FoodaOrdersParser(BaseParser):
     platform = "FOODA"
     dedupe_key = "order_id"
+    total_components_fields = (
+        "subtotal",
+        "tax",
+        "tip",
+        "delivery_fee",
+    )
 
     def default_input_path(self) -> str:
         return raw_path("fooda", "fooda_sales.csv")
@@ -78,7 +94,6 @@ class FoodaOrdersParser(BaseParser):
         df["Restaurant Name"] = df["Restaurant Name"].astype(str)
         df["Product"] = df["Product"].astype(str)
         df = df[df["Restaurant Name"].str.strip().str.lower() != "grand total"].copy()
-        df = df[df["Product"].str.strip().str.lower() == "catering"].copy()
 
         rows: List[Dict[str, str]] = []
         for _, row in df.iterrows():
@@ -96,6 +111,7 @@ class FoodaOrdersParser(BaseParser):
                 or normalize_money(row.get("Tax (Restaurant to remit)", ""))
                 or "0.00"
             )
+            original_tax = tax
             tax_withheld = normalize_money(row.get("Tax (Fooda to remit)", "")) or "0.00"
             subsidy = normalize_money(row.get("Subsidy", "")) or "0.00"
             commission_fee = normalize_money(
@@ -137,31 +153,147 @@ class FoodaOrdersParser(BaseParser):
                 notes.append(f"payment_date={payment_date}")
             payout = normalize_money(row.get("Paid to Restaurant", ""))
 
-            override = adjustments_overrides.get(section_ref, {})
-            if override:
-                delivery_fee = normalize_money(override.get("delivery_fee", "")) or delivery_fee
-                override_adjustments = normalize_money(override.get("adjustments", ""))
-                if override_adjustments:
-                    adjustments = override_adjustments
-                if str(override.get("move_delivery_fee_to_adjustments", "")).strip().lower() in {
-                    "1",
-                    "true",
-                    "yes",
-                }:
-                    adjustments = sum_money(adjustments, delivery_fee)
-                    delivery_fee = "0.00"
-                notes_append = str(override.get("notes_append", "")).strip()
-                if notes_append:
-                    notes.append(notes_append)
+            if product == "catering":
+                override = adjustments_overrides.get(section_ref, {})
+                if override:
+                    delivery_fee = normalize_money(override.get("delivery_fee", "")) or delivery_fee
+                    override_adjustments = normalize_money(override.get("adjustments", ""))
+                    if override_adjustments:
+                        adjustments = override_adjustments
+                    if str(override.get("move_delivery_fee_to_adjustments", "")).strip().lower() in {
+                        "1",
+                        "true",
+                        "yes",
+                    }:
+                        adjustments = sum_money(adjustments, delivery_fee)
+                        delivery_fee = "0.00"
+                    notes_append = str(override.get("notes_append", "")).strip()
+                    if notes_append:
+                        notes.append(notes_append)
+
+                rows.append(
+                    {
+                        "order_id": section_ref,
+                        "platform": "FOODA",
+                        "provider": "FOODA",
+                        "restaurant_name": restaurant,
+                        "order_datetime": order_datetime,
+                        "order_type": OrderTypes.DELIVERY,
+                        "customer_name": "",
+                        "company_name": "",
+                        "phone": "",
+                        "email": "",
+                        "address": "",
+                        "address_formatted": "",
+                        "lat": "",
+                        "lng": "",
+                        "payment_type": "credit",
+                        "subtotal": subtotal,
+                        "tax": tax,
+                        "tax_withheld": tax_withheld,
+                        "tip": "0.00",
+                        "delivery_fee": delivery_fee,
+                        "total": total,
+                        "item_count": "",
+                        "processing_fee": processing_fee,
+                        "commission_fee": commission_fee,
+                        "items": "",
+                        "adjustments": adjustments,
+                        "marketing_fee": "0.00",
+                        "misc_fee": "0.00",
+                        "payout": payout or "0.00",
+                        "errors": "",
+                        "notes": " | ".join(notes),
+                    }
+                )
+                continue
+
+            if product != "popup" or order_year != "2020":
+                continue
+
+            food_sales_dec = to_decimal(food_sales)
+            tax_dec = to_decimal(original_tax)
+            tax_fee_dec = to_decimal(normalize_money(row.get("Restaurant Fee Tax", "")) or "0.00")
+            total_dec = food_sales_dec + tax_dec
+            cash_total_dec = to_decimal(normalize_money(row.get("Cash Collected by Restaurant", "")) or "0.00")
+            cash_total_dec = min(max(cash_total_dec, Decimal("0.00")), total_dec)
+            if total_dec > Decimal("0.00"):
+                cash_tax_dec = ((tax_dec * cash_total_dec) / total_dec).quantize(Decimal("0.01"))
+            else:
+                cash_tax_dec = Decimal("0.00")
+            cash_subtotal_dec = (cash_total_dec - cash_tax_dec).quantize(Decimal("0.01"))
+            credit_subtotal_dec = (food_sales_dec - cash_subtotal_dec).quantize(Decimal("0.01"))
+            credit_tax_dec = (tax_dec - cash_tax_dec + tax_fee_dec).quantize(Decimal("0.01"))
+            rewards_dec = to_decimal(normalize_money(row.get("Rewards Coupons", "")) or "0.00")
+            coupons_dec = to_decimal(normalize_money(row.get("Coupons", "")) or "0.00")
+            unpaid_dec = to_decimal(normalize_money(row.get("Unpaid Orders", "")) or "0.00")
+            credit_subtotal_dec = (credit_subtotal_dec + coupons_dec).quantize(Decimal("0.01"))
+            popup_marketing_fee = str((-(rewards_dec + coupons_dec)).quantize(Decimal("0.01")))
+            popup_adjustments = (
+                str((-abs(unpaid_dec)).quantize(Decimal("0.01")))
+                if unpaid_dec != Decimal("0.00")
+                else "0.00"
+            )
+
+            common_popup_notes = [f"product={product}", "popup_2020_split"]
+            if rewards_dec != Decimal("0.00"):
+                common_popup_notes.append(
+                    f"rewards_coupons={rewards_dec.quantize(Decimal('0.01'))}"
+                )
+            if coupons_dec != Decimal("0.00"):
+                common_popup_notes.append(f"coupons={coupons_dec.quantize(Decimal('0.01'))}")
+            if unpaid_dec != Decimal("0.00"):
+                common_popup_notes.append(
+                    f"unpaid_orders={unpaid_dec.quantize(Decimal('0.01'))}"
+                )
+            if payment_date:
+                common_popup_notes.append(f"payment_date={payment_date}")
+
+            if cash_total_dec > Decimal("0.00"):
+                rows.append(
+                    {
+                        "order_id": f"{section_ref}|CASH",
+                        "platform": "FOODA",
+                        "provider": "FOODA",
+                        "restaurant_name": restaurant,
+                        "order_datetime": order_datetime,
+                        "order_type": OrderTypes.PICKUP,
+                        "customer_name": "",
+                        "company_name": "",
+                        "phone": "",
+                        "email": "",
+                        "address": "",
+                        "address_formatted": "",
+                        "lat": "",
+                        "lng": "",
+                        "payment_type": "cash",
+                        "subtotal": str(cash_subtotal_dec),
+                        "tax": str(cash_tax_dec),
+                        "tax_withheld": "0.00",
+                        "tip": "0.00",
+                        "delivery_fee": "0.00",
+                        "total": str(cash_total_dec.quantize(Decimal("0.01"))),
+                        "item_count": "",
+                        "processing_fee": "0.00",
+                        "commission_fee": "0.00",
+                        "items": "",
+                        "adjustments": "0.00",
+                        "marketing_fee": "0.00",
+                        "misc_fee": "0.00",
+                        "payout": str(cash_total_dec.quantize(Decimal("0.01"))),
+                        "errors": "",
+                        "notes": " | ".join(common_popup_notes + ["popup_cash_component"]),
+                    }
+                )
 
             rows.append(
                 {
-                    "order_id": section_ref,
+                    "order_id": f"{section_ref}|CREDIT",
                     "platform": "FOODA",
                     "provider": "FOODA",
                     "restaurant_name": restaurant,
                     "order_datetime": order_datetime,
-                    "order_type": OrderTypes.DELIVERY,
+                    "order_type": OrderTypes.PICKUP,
                     "customer_name": "",
                     "company_name": "",
                     "phone": "",
@@ -171,22 +303,22 @@ class FoodaOrdersParser(BaseParser):
                     "lat": "",
                     "lng": "",
                     "payment_type": "credit",
-                    "subtotal": subtotal,
-                    "tax": tax,
-                    "tax_withheld": tax_withheld,
+                    "subtotal": str(credit_subtotal_dec),
+                    "tax": str(credit_tax_dec),
+                    "tax_withheld": "0.00",
                     "tip": "0.00",
-                    "delivery_fee": delivery_fee,
-                    "total": total,
+                    "delivery_fee": "0.00",
+                    "total": str((credit_subtotal_dec + credit_tax_dec).quantize(Decimal("0.01"))),
                     "item_count": "",
                     "processing_fee": processing_fee,
                     "commission_fee": commission_fee,
                     "items": "",
-                    "adjustments": adjustments,
-                    "marketing_fee": "0.00",
-                    "misc_fee": "0.00",
+                    "adjustments": popup_adjustments,
+                    "marketing_fee": popup_marketing_fee,
+                    "misc_fee": normalize_money(row.get("Other Fees", "")) or "0.00",
                     "payout": payout or "0.00",
                     "errors": "",
-                    "notes": " | ".join(notes),
+                    "notes": " | ".join(common_popup_notes + ["popup_credit_component"]),
                 }
             )
         return rows
