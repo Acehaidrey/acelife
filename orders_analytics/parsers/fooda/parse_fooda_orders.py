@@ -28,6 +28,24 @@ def load_adjustments() -> Dict[str, Dict[str, str]]:
     return overrides
 
 
+def load_company_info() -> Dict[str, str]:
+    mapping: Dict[str, str] = {}
+    for filename in ("orders_company_raw.csv", "orders_company_overrides.csv"):
+        path = raw_path("fooda", filename)
+        if not os.path.exists(path):
+            continue
+        df = pd.read_csv(path, dtype=str).fillna("")
+        for _, row in df.iterrows():
+            event_id = (
+                str(row.get("event_number_normalized", "")).strip()
+                or normalized_section_event_id(str(row.get("order_id", "")).strip())
+            )
+            company_name = str(row.get("company_name", "")).strip()
+            if event_id and company_name:
+                mapping[event_id] = company_name
+    return mapping
+
+
 def parse_date(value: str) -> str:
     return normalize_datetime(
         value,
@@ -49,6 +67,16 @@ def to_decimal(value: str) -> Decimal:
         return Decimal(text)
     except InvalidOperation:
         return Decimal("0.00")
+
+
+def normalized_section_event_id(section_ref: str) -> str:
+    text = str(section_ref or "").strip()
+    if text.startswith("MS_"):
+        parts = text.split("_")
+        if len(parts) >= 2:
+            return parts[1].lstrip("0") or "0"
+    digits = "".join(ch for ch in text if ch.isdigit())
+    return digits.lstrip("0") or "0"
 
 
 def sum_money(*values: str) -> str:
@@ -91,6 +119,7 @@ class FoodaOrdersParser(BaseParser):
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
         df = inputs.copy()
         adjustments_overrides = load_adjustments()
+        company_info = load_company_info()
         df["Restaurant Name"] = df["Restaurant Name"].astype(str)
         df["Product"] = df["Product"].astype(str)
         df = df[df["Restaurant Name"].str.strip().str.lower() != "grand total"].copy()
@@ -104,6 +133,7 @@ class FoodaOrdersParser(BaseParser):
             product = str(row.get("Product", "")).strip().lower()
             order_datetime = parse_date(row.get("Event date", ""))
             order_year = parse_year(row.get("Event date", ""))
+            company_name = company_info.get(normalized_section_event_id(section_ref), "")
 
             food_sales = normalize_money(row.get("Food sales (excludes Tax)", "")) or "0.00"
             tax = (
@@ -180,7 +210,7 @@ class FoodaOrdersParser(BaseParser):
                         "order_datetime": order_datetime,
                         "order_type": OrderTypes.DELIVERY,
                         "customer_name": "",
-                        "company_name": "",
+                        "company_name": company_name,
                         "phone": "",
                         "email": "",
                         "address": "",
@@ -259,7 +289,7 @@ class FoodaOrdersParser(BaseParser):
                         "order_datetime": order_datetime,
                         "order_type": OrderTypes.PICKUP,
                         "customer_name": "",
-                        "company_name": "",
+                        "company_name": company_name,
                         "phone": "",
                         "email": "",
                         "address": "",
@@ -295,7 +325,7 @@ class FoodaOrdersParser(BaseParser):
                     "order_datetime": order_datetime,
                     "order_type": OrderTypes.PICKUP,
                     "customer_name": "",
-                    "company_name": "",
+                    "company_name": company_name,
                     "phone": "",
                     "email": "",
                     "address": "",

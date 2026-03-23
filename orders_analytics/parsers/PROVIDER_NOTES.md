@@ -273,8 +273,12 @@ Concerns / follow-ups:
   - Drops the grand total row.
   - Drops columns that are all zero/blank in the source.
   - Drops `Tax (Restaurant to remit)` from raw because it matches `Tax` for this dataset.
+  - Parses `Takeout/Mail/Orders-Fooda.mbox` subjects into `data/raw/fooda/orders_company_raw.csv` with `event_number`, `event_date`, and `company_name`.
+  - Manual company-name fixes can be added in `data/raw/fooda/orders_company_overrides.csv` for event ids that are missing from the mbox subjects.
 - Normalizer: `parsers/fooda/parse_fooda_orders.py`
   - `provider` is hard-set to `FOODA`.
+  - `company_name` is joined from `orders_company_raw.csv` by normalized Fooda event id:
+    - `MS_200853_5823` joins to `Event #0200853`
   - For catering rows with `Subsidy`:
     - `subtotal` = `Food sales (excludes Tax)`
     - `tax` = `Tax`
