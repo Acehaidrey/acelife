@@ -1,0 +1,10 @@
+order_id,provider,delivery_fee_override,adjustments_delta,notes_append,tax_withheld_override
+34368935,AROMA,14.99,-14.99,del_fee_not_paid_by_slice,
+50771495,AROMA,0.01,-0.01,slice_missing_delivery_fee,
+51047181,AMECI,0.01,-0.01,slice_missing_delivery_fee,
+82368507,AROMA,4.99,4.99,slice_missing_del_fee_payout,
+119477732,AROMA,2.99,2.99,slice_missing_del_fee_payout,
+99070344,AROMA,,,slice_zero_tax_glitch_2023_11_13,4.12
+99070886,AROMA,,,slice_zero_tax_glitch_2023_11_13,4.03
+99070945,AMECI,,,slice_zero_tax_glitch_2023_11_13,1.39
+99071599,AROMA,,,slice_zero_tax_glitch_2023_11_13,25.57

@@ -3,7 +3,7 @@ import argparse
 import os
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-from typing import Dict, List, Tuple
+from typing import Dict, List, Set, Tuple
 
 import pandas as pd
 
@@ -21,6 +21,31 @@ def load_raw(path: str) -> pd.DataFrame:
     if not os.path.exists(path):
         return pd.DataFrame()
     return pd.read_csv(path, dtype=str).fillna("")
+
+
+def load_cancelled_keys(path: str) -> Set[Tuple[str, str]]:
+    if not os.path.exists(path):
+        return set()
+    df = pd.read_csv(path, dtype=str).fillna("")
+    return {
+        (str(row.get("order_id", "")).strip(), str(row.get("provider", "")).strip())
+        for _, row in df.iterrows()
+        if str(row.get("order_id", "")).strip() and str(row.get("provider", "")).strip()
+    }
+
+
+def load_override_map(path: str) -> Dict[Tuple[str, str], Dict[str, str]]:
+    if not os.path.exists(path):
+        return {}
+    df = pd.read_csv(path, dtype=str).fillna("")
+    out: Dict[Tuple[str, str], Dict[str, str]] = {}
+    for _, row in df.iterrows():
+        order_id = str(row.get("order_id", "")).strip()
+        provider = str(row.get("provider", "")).strip()
+        if not order_id or not provider:
+            continue
+        out[(order_id, provider)] = {k: str(v or "").strip() for k, v in row.to_dict().items()}
+    return out
 
 
 def parse_decimal(value: str) -> Decimal:
@@ -68,11 +93,12 @@ def normalize_order_type_for_slice(value: str) -> str:
 
 def build_adjustments_map(
     adjustments: List[Dict[str, str]],
-) -> Tuple[Dict[str, List[Tuple[Decimal, str, str]]], List[Dict[str, str]]]:
-    adjustments_map: Dict[str, List[Tuple[Decimal, str, str]]] = {}
+) -> Tuple[Dict[Tuple[str, str], List[Tuple[Decimal, str, str]]], List[Dict[str, str]]]:
+    adjustments_map: Dict[Tuple[str, str], List[Tuple[Decimal, str, str]]] = {}
     synthetic_rows: List[Dict[str, str]] = []
     for row in adjustments:
         order_id = str(row.get("order_id", "")).strip()
+        provider = str(row.get("provider", "")).strip()
         amount = parse_decimal(normalize_money(row.get("adjustment_amount", "")))
         description = str(row.get("adjustment_description", "")).strip()
         adjustment_datetime = str(row.get("adjustment_datetime", "")).strip()
@@ -83,23 +109,29 @@ def build_adjustments_map(
             synthetic_rows.append(
                 {
                     "order_id": synth_id,
+                    "provider": provider,
                     "order_datetime": adjustment_datetime,
                     "adjustment_amount": amount,
                     "adjustment_description": description,
                 }
             )
             continue
-        adjustments_map.setdefault(order_id, []).append((amount, description, adjustment_datetime))
+        adjustments_map.setdefault((order_id, provider), []).append((amount, description, adjustment_datetime))
     return adjustments_map, synthetic_rows
 
 
 def normalize_rows(
     orders: List[Dict[str, str]],
     adjustments: List[Dict[str, str]],
+    cancelled_keys: Set[Tuple[str, str]],
+    override_map: Dict[Tuple[str, str], Dict[str, str]],
 ) -> List[Dict[str, str]]:
     adjustments_map, synthetic_rows = build_adjustments_map(adjustments)
     normalized: List[Dict[str, str]] = []
-    order_ids = {str(row.get("order_id", "")).strip() for row in orders}
+    order_keys = {
+        (str(row.get("order_id", "")).strip(), str(row.get("provider", "")).strip())
+        for row in orders
+    }
     provider_default = ""
     restaurant_default = ""
     for row in orders:
@@ -109,6 +141,12 @@ def normalize_rows(
             restaurant_default = row.get("restaurant_name", "")
         notes: List[str] = []
         order_id = str(row.get("order_id", "")).strip()
+        provider = str(row.get("provider", "")).strip()
+        order_key = (order_id, provider)
+        override = override_map.get(order_key, {})
+        if order_key in cancelled_keys:
+            continue
+
         payment_type = normalize_payment_type(row.get("payment_type", ""))
         payment_status = str(row.get("payment_status", "") or "").strip().lower()
         if payment_status:
@@ -121,18 +159,17 @@ def normalize_rows(
             if not payment_type and payment_status not in {"paid", "authorized"}:
                 if payment_status != "refunded":
                     continue
+        adjustment_items = adjustments_map.get(order_key, [])
+        status = str(row.get("status", "") or "").strip().lower() or "active"
+        if status != "active" and not adjustment_items:
+            continue
 
         total_value = normalize_dash_zero(row.get("total", ""))
         if not total_value:
             total_value = normalize_money(
                 f"{(parse_decimal(row.get('subtotal', '')) + parse_decimal(row.get('tip', '')) + parse_decimal(row.get('customer_delivery_fee', '')) + parse_decimal(row.get('tax', ''))):.2f}"
             )
-        misc_fee_value = normalize_money(row.get("misc_fee", ""))
-        if misc_fee_value and misc_fee_value != "0.00":
-            total_value = normalize_money(
-                f"{(parse_decimal(total_value) + parse_decimal(misc_fee_value)):.2f}"
-            )
-            notes.append("total_includes_misc_fee")
+        misc_fee_decimal = parse_decimal(normalize_money(row.get("misc_fee", "")))
 
         order_adjustments = parse_decimal(normalize_money(row.get("order_adjustments", "")))
         if order_adjustments != Decimal("0.00"):
@@ -141,11 +178,40 @@ def normalize_rows(
         if raw_notes:
             notes.append(raw_notes)
         extra_adjustments = Decimal("0.00")
-        for amount, description, _ in adjustments_map.get(order_id, []):
+        adjustment_descriptions: List[str] = []
+        for amount, description, _ in adjustment_items:
             extra_adjustments += amount
-            if description:
-                notes.append(description)
+            if description and description not in adjustment_descriptions:
+                adjustment_descriptions.append(description)
         adjustments_total = order_adjustments + extra_adjustments
+        if adjustment_descriptions:
+            notes.append(f"adjustment_description={' | '.join(adjustment_descriptions)}")
+
+        subtotal_decimal = parse_decimal(row.get("subtotal", ""))
+        tax_decimal = parse_decimal(row.get("tax", ""))
+        tip_decimal = parse_decimal(row.get("tip", ""))
+        delivery_decimal = parse_decimal(row.get("customer_delivery_fee", ""))
+        delivery_override = override.get("delivery_fee_override", "")
+        if delivery_override:
+            delivery_decimal = parse_decimal(delivery_override)
+        original_order_total = subtotal_decimal + tax_decimal + tip_decimal + delivery_decimal
+        if status != "active" and adjustment_items:
+            misc_fee_decimal -= original_order_total
+            total_value = normalize_money(f"{original_order_total:.2f}")
+            notes.append(f"status={status}")
+            if row.get("order_total_raw"):
+                notes.append(f"order_total_raw={row.get('order_total_raw')}")
+
+        override_adjustments = override.get("adjustments_delta", "")
+        if override_adjustments:
+            adjustments_total += parse_decimal(override_adjustments)
+        if override.get("notes_append"):
+            notes.append(override["notes_append"])
+
+        total_value = normalize_money(
+            f"{(subtotal_decimal + tax_decimal + tip_decimal + delivery_decimal):.2f}"
+        )
+
         if payment_status == "refunded" and "source_history" not in " | ".join(notes):
             refund_adjustment = -parse_decimal(total_value)
             if refund_adjustment != Decimal("0.00"):
@@ -164,6 +230,8 @@ def normalize_rows(
                     tax_withheld = ""
             except ValueError:
                 pass
+        if override.get("tax_withheld_override"):
+            tax_withheld = normalize_money(override["tax_withheld_override"])
 
         normalized.append(
             build_normalized_row(
@@ -182,11 +250,11 @@ def normalize_rows(
                 tax=tax,
                 tax_withheld=tax_withheld,
                 tip=normalize_dash_zero(row.get("tip", "")),
-                delivery_fee=normalize_dash_zero(row.get("customer_delivery_fee", "")),
+                delivery_fee=normalize_money(f"{delivery_decimal:.2f}"),
                 total=total_value,
                 processing_fee=normalize_dash_zero(row.get("processing_fee", "")),
                 commission_fee=normalize_money(row.get("partnership_fee", "")),
-                misc_fee=misc_fee_value,
+                misc_fee=normalize_money(f"{misc_fee_decimal:.2f}"),
                 adjustments=normalize_money(f"{adjustments_total:.2f}"),
                 payout="",
                 errors="",
@@ -206,11 +274,11 @@ def normalize_rows(
             build_normalized_row(
                 Platforms.SLICE.upper(),
                 order_id=synth["order_id"],
-                provider=provider_default,
+                provider=synth.get("provider", "") or provider_default,
                 restaurant_name=restaurant_default,
                 order_datetime=synth.get("order_datetime", ""),
-                order_type=OrderTypes.PHONE_CALL,
-                payment_type=PaymentTypes.CASH,
+                order_type=OrderTypes.PICKUP,
+                payment_type=PaymentTypes.CREDIT,
                 subtotal="0.00",
                 tax="0.00",
                 tax_withheld="0.00",
@@ -228,8 +296,8 @@ def normalize_rows(
             )
         )
 
-    for order_id, items in adjustments_map.items():
-        if order_id in order_ids:
+    for (order_id, provider), items in adjustments_map.items():
+        if (order_id, provider) in order_keys or (order_id, provider) in cancelled_keys:
             continue
         total = sum((amount for amount, _, _ in items), Decimal("0.00"))
         notes = [desc for _, desc, _ in items if desc]
@@ -239,10 +307,11 @@ def normalize_rows(
             build_normalized_row(
                 Platforms.SLICE.upper(),
                 order_id=order_id,
-                provider=provider_default,
+                provider=provider or provider_default,
                 restaurant_name=restaurant_default,
                 order_datetime=adjustment_datetime,
-                payment_type=PaymentTypes.CASH,
+                order_type=OrderTypes.PICKUP,
+                payment_type=PaymentTypes.CREDIT,
                 subtotal="0.00",
                 tax="0.00",
                 tax_withheld="0.00",
@@ -266,6 +335,13 @@ def normalize_rows(
 class SliceNormalizer(BaseParser):
     platform = "SLICE"
     provider = ""
+    total_components_fields = (
+        "subtotal",
+        "tax",
+        "tax_withheld",
+        "tip",
+        "delivery_fee",
+    )
 
     def default_input_path(self) -> str:
         return raw_path("slice", "orders_raw.csv")
@@ -277,12 +353,21 @@ class SliceNormalizer(BaseParser):
         adjustments_path = self.extra.get("adjustments_raw") or raw_path(
             "slice", "adjustments_raw.csv"
         )
-        return load_raw(input_path), load_raw(adjustments_path)
+        cancelled_path = self.extra.get("cancelled_raw") or raw_path(
+            "slice", "cancelled_orders_manual.csv"
+        )
+        overrides_path = self.extra.get("overrides_raw") or raw_path(
+            "slice", "adjustments_overrides.csv"
+        )
+        return load_raw(input_path), load_raw(adjustments_path), cancelled_path, overrides_path
 
     def parse_rows(self, inputs) -> List[Dict[str, str]]:
-        orders_df, adjustments_df = inputs
+        orders_df, adjustments_df, cancelled_path, overrides_path = inputs
         return normalize_rows(
-            orders_df.to_dict("records"), adjustments_df.to_dict("records")
+            orders_df.to_dict("records"),
+            adjustments_df.to_dict("records"),
+            load_cancelled_keys(cancelled_path),
+            load_override_map(overrides_path),
         )
 
 
@@ -296,6 +381,8 @@ def run(
         input_path=orders_raw_path,
         out_path=out_path,
         adjustments_raw=adjustments_raw_path,
+        cancelled_raw=raw_path("slice", "cancelled_orders_manual.csv"),
+        overrides_raw=raw_path("slice", "adjustments_overrides.csv"),
         reset_errors=reset_errors,
     )
     stats = parser.run()

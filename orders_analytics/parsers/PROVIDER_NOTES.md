@@ -9,6 +9,7 @@
 - [DoorDash](#doordash)
 - [EatStreet](#eatstreet)
 - [ezCater](#ezcater)
+- [Fooda](#fooda)
 - [Food Runners](#food-runners)
 - [Foodee](#foodee)
 - [Foodja](#foodja)
@@ -659,31 +660,54 @@ Concerns / follow-ups:
 ## Slice
 - Sources:
   - Statements PDFs: `Takeout/Slice/*.pdf` (Order Activity Report)
+  - Monthly reports: `Takeout/Slice Reports/**/*`
   - All Orders exports: `Takeout/Slice/All Orders *.xlsx`
   - Order history (customer info): `Takeout/Slice/VA Task Sheet - Slice Order History.csv`
 - PDF parser: `parsers/slice/extract_slice_orders_raw.py`
   - Reads the Orders table (page 2+).
   - Captures Date/Time, Order ID, payment type (Credit/Phone), order type (Pickup/Delivery), Subtotal, Customer Delivery Fee, Order Adjust., Tax, Tips, Order Total, Partnership Fee, Processing Fee.
+  - Preserves the raw statement order-total token in `order_total_raw`; if the statement shows a non-dollar status token such as `VOIDED` or `REFUNDED`, the row gets `status=<token>` and numeric `total` stays `0.00`.
+  - If the statement row is missing the payment-type token and starts directly with `Pickup` / `Delivery`, the parser assumes `payment_type=credit` and adds note `missing_payment_type_assumed_credit`.
+  - Adjustments raw includes `provider`, `adjustment_datetime_raw`, and `adjustment_datetime`.
+  - Adjustment `order_id` handling:
+    - use the explicit statement `order_id` when present
+    - otherwise infer from descriptions such as `Reimbursement cost of food for Order #: 32143414` and `COF Reimbursement 122597436`
+    - tablet / iPad fee rows get deterministic ids like `TABLET_032025`
+    - any remaining non-order-specific adjustment gets a deterministic synthetic id like `SLICE_FEES_REIMBURSEMENT_<hash>`
   - Outputs `orders_raw_from_statements.csv` + `adjustments_raw_from_statements.csv`.
+  - `statements_raw_from_statements.csv` now also carries `provider` so monthly statement reconciliation can join by store cleanly.
 - Merge script: `orders_analytics/scripts/slice_merge_orders.py`
-  - Base = All Orders Excel exports.
-  - Fills missing fields from Order History and then from statement PDF raw.
-  - Order datetime preference: history (has time) → PDF → Excel (date-only).
-  - Adds `mismatch_<field>` notes when history/PDF disagree with Excel on subtotal/tax/tip/delivery_fee/total.
-  - `order_type` inferred from delivery_fee (delivery if > 0 else pickup).
-  - Commission: `Flat Shop Fee` negated to `partnership_fee`.
-  - Merchant processing: `CC Fee` negated to `processing_fee`.
-  - Discounts: `Shop Funded Discounts Amount` → `misc_fee` + `discount_for_order=...` note.
+  - Source precedence for shared order fields is `statement > excel > history`.
+  - History is only used to enrich customer/contact fields: `customer_name` (`first_name + last_name`), `phone`, `email`, `address`.
+  - If the winning source is not the statement, notes append `source=excel` or `source=history`.
   - `orders_raw.csv` is the merged output used for normalization.
+ - Missing-source audit: `orders_analytics/scripts/slice_orders_missing_sources.py`
+  - Compares Excel, order history, and statement raw on `(order_id, provider)`.
+  - Excludes statement rows whose statement `status` is not `active`.
+  - Also excludes manual cancellations listed in `orders_analytics/data/raw/slice/cancelled_orders_manual.csv`.
 - Normalization: `parsers/slice/normalize_slice_from_raw.py`
-  - Only includes rows where payment_status is `paid` (credit) or `authorized` (cash); refunded rows are included with `adjustments = -total`.
+  - Manual per-order overrides live in `orders_analytics/data/raw/slice/adjustments_overrides.csv`.
+    - Supports `delivery_fee_override`, `adjustments_delta`, and `notes_append`.
+    - Also supports `tax_withheld_override` for statement tax glitches.
+    - Current examples include delivery-fee payout fixes such as:
+      - `34368935`: add `delivery_fee=14.99`, `adjustments=-14.99`, note `del_fee_not_paid_by_slice`
+      - `82368507`: add `delivery_fee=4.99`, `adjustments=4.99`
+      - `119477732`: add `delivery_fee=2.99`, `adjustments=2.99`
+      - `50771495` / `51047181`: note-only `slice_missing_delivery_fee`
+    - `99070344`, `99070886`, `99070945`, `99071599`: `tax_withheld` is overridden to 7.75% of subtotal and notes carry `slice_zero_tax_glitch_2023_11_13` because Slice showed zero tax on `2023-11-13`.
+  - Manual cancellations in `orders_analytics/data/raw/slice/cancelled_orders_manual.csv` are excluded from normalized output.
+  - Statement `status != active` rows are only kept when there is a tied statement adjustment.
+  - For `voided` / `refunded` rows with tied adjustments:
+    - keep the order
+    - reverse the original order amount via `misc_fee = -(subtotal + tax + tip + delivery_fee)`
+    - add the tied statement adjustments into `adjustments`
+    - add `status=<status>`, `order_total_raw=<raw token>`, and distinct adjustment descriptions into notes
+  - Statement adjustments tie to orders on `(order_id, provider)`.
+  - Adjustment-only rows (tablet fees, Slice fee reimbursements, other non-order-specific statement adjustments) are emitted as standalone synthetic normalized rows.
   - `payout` is currently blank (provider payout not available yet).
   - Processing fees are only available from the PDFs; Excel files do not include them.
-  - TODO: confirm/ingest all Slice discount fields and apply them to totals.
-  - TODO: obtain merchant processing costs and invoice data to reconcile payouts.
-  - TODO: verify total differences after discounts are applied.
   - Tax handling: orders before 2020-06-01 use `tax` (we remit). Orders on/after 2020-06-01 use `tax_withheld`.
-  - `total` includes `misc_fee` (discounts) to avoid total mismatch checks; rows note `total_includes_misc_fee`.
+  - Slice total-components validation uses `subtotal + tax + tax_withheld + tip + delivery_fee` at the parser level so post-2020 rows with tax remitted by Slice do not false-positive.
   - Known discrepancy: some orders have tax differences between All Orders exports and Order History (e.g., order_id 144995507 has tax 1.90 vs 1.75). We currently keep the All Orders tax and are awaiting Slice support clarification.
 
 ## Uber Eats

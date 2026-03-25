@@ -3,13 +3,11 @@ import argparse
 import os
 import re
 from datetime import datetime
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 import pandas as pd
 
 from orders_analytics.utils.constants import raw_path
-from orders_analytics.utils.google_sheets import GoogleSheetsDownloader
-from orders_analytics.utils.google_sheets_registry import SHEETS
 from orders_analytics.utils.normalize import normalize_money
 from orders_analytics.utils.providers import normalize_provider
 
@@ -31,6 +29,8 @@ RAW_COLUMNS = [
     "tax",
     "tip",
     "total",
+    "order_total_raw",
+    "status",
     "partnership_fee",
     "processing_fee",
     "misc_fee",
@@ -57,6 +57,17 @@ def parse_datetime(value: str) -> str:
         return ""
 
 
+def clean_restaurant_name(value: str) -> str:
+    text = str(value or "").strip()
+    lower = text.lower()
+    if "aroma" in lower:
+        return "Aroma Pizza & Pasta"
+    if "ameci" in lower:
+        return "Ameci Pizza & Pasta"
+    match = re.search(r"((?:Aroma|Ameci)\s+Pizza\s*&?\s*Pasta.*)$", text, re.IGNORECASE)
+    return match.group(1).strip() if match else text
+
+
 def store_from_filename(path: str) -> str:
     base = os.path.basename(path)
     match = re.search(r"-\s*(.+)\.(xlsx|xls)$", base, re.IGNORECASE)
@@ -74,7 +85,7 @@ def parse_all_orders_excel(path: str) -> List[Dict[str, str]]:
         return []
     df = pd.read_excel(path, dtype=str).fillna("")
     df.columns = [str(col).strip() for col in df.columns]
-    store_name = store_from_filename(path)
+    store_name = clean_restaurant_name(store_from_filename(path))
     provider = normalize_provider(store_name) if store_name else ""
     rows: List[Dict[str, str]] = []
     for _, row in df.iterrows():
@@ -125,6 +136,8 @@ def parse_all_orders_excel(path: str) -> List[Dict[str, str]]:
                 "tax": tax,
                 "tip": tip,
                 "total": "",
+                "order_total_raw": "",
+                "status": "active",
                 "partnership_fee": partnership_fee,
                 "processing_fee": processing_fee,
                 "misc_fee": misc_fee,
@@ -164,7 +177,7 @@ def parse_order_history(path: str) -> List[Dict[str, str]]:
                 order_datetime = pd.to_datetime(f"{order_date} {order_time}", errors="coerce").isoformat()
             except Exception:
                 order_datetime = ""
-        store_name = str(row.get("restaurant_name", "")).strip()
+        store_name = clean_restaurant_name(str(row.get("restaurant_name", "")).strip())
         delivery_fee = parse_money(row.get("delivery_fee", ""))
         order_type = "delivery" if delivery_fee and delivery_fee != "0.00" else "pickup"
         provider = normalize_provider(store_name) if store_name else ""
@@ -191,6 +204,8 @@ def parse_order_history(path: str) -> List[Dict[str, str]]:
                 "tax": parse_money(row.get("tax", "")),
                 "tip": parse_money(row.get("tip", "")),
                 "total": parse_money(row.get("total", "")),
+                "order_total_raw": parse_money(row.get("total", "")),
+                "status": "active",
                 "partnership_fee": "",
                 "processing_fee": "",
                 "misc_fee": "",
@@ -212,52 +227,17 @@ def load_pdf_raw(path: str) -> List[Dict[str, str]]:
     df = pd.read_csv(path, dtype=str).fillna("")
     rows = df.to_dict("records")
     for row in rows:
+        row["restaurant_name"] = clean_restaurant_name(str(row.get("restaurant_name", "")).strip())
         notes = str(row.get("notes", "") or "").strip()
         if "source_pdf" not in notes:
             row["notes"] = " | ".join(filter(None, [notes, "source_pdf"]))
     return rows
 
 
-def is_midnight(value: str) -> bool:
-    text = str(value or "").strip()
-    return text.endswith("T00:00:00") or text.endswith(" 00:00:00")
-
-
-def coalesce_row(base: Dict[str, str], other: Dict[str, str], other_label: str) -> Dict[str, str]:
-    diff_fields = [
-        "subtotal",
-        "tax",
-        "tip",
-        "customer_delivery_fee",
-        "total",
-    ]
-    for field in diff_fields:
-        base_val = str(base.get(field, "") or "").strip()
-        other_val = str(other.get(field, "") or "").strip()
-        if base_val and other_val and base_val != other_val:
-            base_notes = str(base.get("notes", "") or "").strip()
-            note = f"mismatch_{field} {other_label}={other_val} base={base_val}"
-            if note not in base_notes:
-                base["notes"] = " | ".join(filter(None, [base_notes, note]))
-    for col in RAW_COLUMNS:
-        if col in ("notes", "added_at"):
-            continue
-        base_val = str(base.get(col, "") or "").strip()
-        other_val = str(other.get(col, "") or "").strip()
-        if col == "order_datetime" and other_val:
-            if not base_val or is_midnight(base_val):
-                base[col] = other_val
-            continue
-        if not base_val and other_val:
-            base[col] = other_val
-    base_notes = str(base.get("notes", "") or "").strip()
-    other_notes = str(other.get("notes", "") or "").strip()
-    if other_notes and other_notes not in base_notes:
-        if base_notes:
-            base["notes"] = f"{base_notes} | {other_notes}"
-        else:
-            base["notes"] = other_notes
-    return base
+def load_existing_raw(path: str) -> List[Dict[str, str]]:
+    if not path or not os.path.exists(path):
+        return []
+    return pd.read_csv(path, dtype=str).fillna("").to_dict("records")
 
 
 def compute_total(row: Dict[str, str]) -> str:
@@ -277,38 +257,118 @@ def compute_total(row: Dict[str, str]) -> str:
     return f"{total_val:.2f}"
 
 
-def merge_orders(
-    base_rows: List[Dict[str, str]],
-    history_rows: List[Dict[str, str]],
-    pdf_rows: List[Dict[str, str]],
-) -> List[Dict[str, str]]:
-    merged: Dict[str, Dict[str, str]] = {}
-    for row in base_rows:
-        merged[str(row.get("order_id", "")).strip()] = row
-    for row in history_rows:
-        key = str(row.get("order_id", "")).strip()
-        if not key:
-            continue
-        if key in merged:
-            merged[key] = coalesce_row(merged[key], row, "history")
-        else:
-            merged[key] = row
-    for row in pdf_rows:
-        key = str(row.get("order_id", "")).strip()
-        if not key:
-            continue
-        if key in merged:
-            merged[key] = coalesce_row(merged[key], row, "pdf")
-        else:
-            merged[key] = row
+def normalize_row_values(row: Dict[str, str]) -> Dict[str, str]:
+    normalized = {col: str(row.get(col, "") or "").strip() for col in RAW_COLUMNS}
+    normalized["provider"] = str(row.get("provider", "") or "").strip()
+    normalized["restaurant_name"] = clean_restaurant_name(row.get("restaurant_name", ""))
+    normalized["status"] = str(row.get("status", "") or "").strip().lower() or "active"
+    return normalized
 
+
+def build_source_map(rows: List[Dict[str, str]]) -> Dict[Tuple[str, str], Dict[str, str]]:
+    out: Dict[Tuple[str, str], Dict[str, str]] = {}
+    for row in rows:
+        normalized = normalize_row_values(row)
+        order_id = normalized.get("order_id", "")
+        provider = normalized.get("provider", "")
+        if not order_id or not provider:
+            continue
+        out[(order_id, provider)] = normalized
+    return out
+
+
+def pick_first(rows: List[Dict[str, str]], field: str) -> str:
+    for row in rows:
+        value = str(row.get(field, "") or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def merge_orders(
+    excel_rows: List[Dict[str, str]],
+    history_rows: List[Dict[str, str]],
+    statement_rows: List[Dict[str, str]],
+) -> List[Dict[str, str]]:
+    excel_map = build_source_map(excel_rows)
+    history_map = build_source_map(history_rows)
+    statement_map = build_source_map(statement_rows)
+    all_keys = sorted(set(excel_map) | set(history_map) | set(statement_map))
     final_rows: List[Dict[str, str]] = []
     now = datetime.now().isoformat()
-    for row in merged.values():
-        if not str(row.get("total", "") or "").strip():
-            row["total"] = compute_total(row)
-        row.setdefault("added_at", now)
-        final_rows.append(row)
+    precedence_fields = [
+        "restaurant_name",
+        "order_datetime",
+        "order_type",
+        "payment_type",
+        "payment_status",
+        "subtotal",
+        "customer_delivery_fee",
+        "order_adjustments",
+        "tax",
+        "tip",
+        "total",
+        "order_total_raw",
+        "status",
+        "partnership_fee",
+        "processing_fee",
+        "misc_fee",
+        "statement_period_start",
+        "statement_period_end",
+        "account_id",
+        "source_file",
+    ]
+    history_enrichment_fields = ["customer_name", "phone", "email", "address"]
+
+    for key in all_keys:
+        statement_row = statement_map.get(key, {})
+        excel_row = excel_map.get(key, {})
+        history_row = history_map.get(key, {})
+        if statement_row:
+            precedence_rows = [statement_row]
+            winner_source = "statement"
+        elif excel_row:
+            precedence_rows = [excel_row]
+            winner_source = "excel"
+        elif history_row:
+            precedence_rows = [history_row]
+            winner_source = "history"
+        else:
+            precedence_rows = []
+            winner_source = "history"
+
+        merged = {col: "" for col in RAW_COLUMNS}
+        merged["order_id"], merged["provider"] = key
+        for field in precedence_fields:
+            merged[field] = pick_first(precedence_rows, field)
+
+        # History is only used for customer/contact enrichment.
+        for field in history_enrichment_fields:
+            merged[field] = str(history_row.get(field, "") or "").strip()
+
+        note_parts: List[str] = []
+        statement_notes = str(statement_row.get("notes", "") or "").strip()
+        if statement_notes:
+            note_parts.append(statement_notes)
+        if winner_source != "statement":
+            note_parts.append(f"source={winner_source}")
+            chosen_notes = str(
+                (excel_row if winner_source == "excel" else history_row).get("notes", "") or ""
+            ).strip()
+            if winner_source == "history" and chosen_notes == "source_history":
+                chosen_notes = ""
+            if winner_source == "excel" and chosen_notes == "source_excel":
+                chosen_notes = ""
+            if chosen_notes and chosen_notes not in note_parts:
+                note_parts.append(chosen_notes)
+        merged["notes"] = " | ".join(part for part in note_parts if part)
+
+        if not str(merged.get("total", "") or "").strip():
+            merged["total"] = compute_total(merged)
+        if not str(merged.get("status", "") or "").strip():
+            merged["status"] = "active"
+        merged["added_at"] = now
+        final_rows.append(merged)
 
     return final_rows
 
@@ -368,10 +428,21 @@ def main() -> None:
     args = parser.parse_args()
 
     excel_rows: List[Dict[str, str]] = []
-    for path in args.offline_online:
-        excel_rows.extend(parse_all_orders_excel(path))
+    try:
+        for path in args.offline_online:
+            excel_rows.extend(parse_all_orders_excel(path))
+    except ImportError as exc:
+        if "openpyxl" not in str(exc).lower():
+            raise
+        excel_rows = load_existing_raw(args.excel_out)
+        if not excel_rows:
+            raise
+        print(f"Using existing Slice Excel raw because openpyxl is unavailable: {args.excel_out}")
     history_path = args.order_history
     if args.download_history and not args.no_download_history:
+        from orders_analytics.utils.google_sheets import GoogleSheetsDownloader
+        from orders_analytics.utils.google_sheets_registry import SHEETS
+
         entry = SHEETS.get("slice_order_history")
         if not entry:
             raise ValueError("slice_order_history not found in google sheets registry.")

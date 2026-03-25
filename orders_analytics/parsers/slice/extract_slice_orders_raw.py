@@ -2,6 +2,7 @@
 import argparse
 import datetime as dt
 import glob
+import hashlib
 import os
 import re
 from typing import Dict, List
@@ -20,17 +21,14 @@ RAW_COLUMNS = [
     "order_datetime",
     "order_type",
     "payment_type",
-    "payment_status",
-    "customer_name",
-    "phone",
-    "email",
-    "address",
     "subtotal",
     "customer_delivery_fee",
     "order_adjustments",
     "tax",
     "tip",
     "total",
+    "order_total_raw",
+    "status",
     "partnership_fee",
     "processing_fee",
     "misc_fee",
@@ -39,12 +37,13 @@ RAW_COLUMNS = [
     "statement_period_end",
     "account_id",
     "source_file",
-    "email_date",
     "added_at",
 ]
 
 ADJUSTMENT_COLUMNS = [
     "order_id",
+    "provider",
+    "adjustment_datetime_raw",
     "adjustment_datetime",
     "adjustment_amount",
     "adjustment_description",
@@ -52,11 +51,11 @@ ADJUSTMENT_COLUMNS = [
     "statement_period_end",
     "account_id",
     "source_file",
-    "email_date",
     "added_at",
 ]
 
 STATEMENT_COLUMNS = [
+    "provider",
     "section",
     "label",
     "value",
@@ -64,7 +63,6 @@ STATEMENT_COLUMNS = [
     "statement_period_end",
     "account_id",
     "source_file",
-    "email_date",
     "added_at",
 ]
 
@@ -81,7 +79,7 @@ WEEKDAYS = (
 
 def parse_activity_period(text: str) -> Dict[str, str]:
     match = re.search(
-        r"Activity Period:\s+([A-Za-z]{3}\s+\w+\s+\d{1,2},\s+\d{4})\s+to\s+([A-Za-z]{3}\s+\w+\s+\d{1,2},\s+\d{4})",
+        r"(?:Activity|Statement) Period:\s+([A-Za-z]{3}\s+\w+\s+\d{1,2},\s+\d{4})\s+to\s+([A-Za-z]{3}\s+\w+\s+\d{1,2},\s+\d{4})",
         text,
     )
     if not match:
@@ -98,7 +96,20 @@ def parse_account_id(text: str) -> str:
 def parse_restaurant_name(text: str) -> str:
     for line in text.splitlines():
         if "Pizza" in line or "Pasta" in line:
-            return line.strip()
+            cleaned = line.strip()
+            if "aroma" in cleaned.lower():
+                return "Aroma Pizza & Pasta"
+            if "ameci" in cleaned.lower():
+                return "Ameci Pizza & Pasta"
+            match = re.search(r"((?:Aroma|Ameci)\s+Pizza\s*&?\s*Pasta.*)$", cleaned, re.IGNORECASE)
+            if match:
+                canonical = match.group(1).strip()
+                if "aroma" in canonical.lower():
+                    return "Aroma Pizza & Pasta"
+                if "ameci" in canonical.lower():
+                    return "Ameci Pizza & Pasta"
+                return canonical
+            return cleaned
     return ""
 
 
@@ -122,6 +133,15 @@ def normalize_money_or_blank(value: str) -> str:
         return ""
     return normalize_money(value)
 
+
+def parse_order_total_status(value: str) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return "active"
+    if re.fullmatch(r"-?\$?\d+\.\d{2}|-", text):
+        return "active"
+    return text.lower()
+
 def parse_adjustment_line(line: str) -> Dict[str, str]:
     parts = line.split()
     if len(parts) < 4:
@@ -143,15 +163,85 @@ def parse_adjustment_cell_datetime(cell: str) -> str:
         return ""
     date_match = re.search(r"[A-Z][a-z]{2}\s+\d{1,2},\s+\d{4}", cell)
     time_match = re.search(r"\d{1,2}:\d{2}(am|pm)", cell, re.IGNORECASE)
-    if not date_match or not time_match:
+    if not date_match:
         return ""
+    if not time_match:
+        try:
+            return dt.datetime.strptime(date_match.group(0), "%b %d, %Y").isoformat()
+        except ValueError:
+            return ""
     return parse_order_datetime(date_match.group(0), time_match.group(0))
 
 
+def infer_adjustment_order_id(
+    order_id: str,
+    description: str,
+    provider: str = "",
+    adjustment_datetime_raw: str = "",
+    adjustment_amount: str = "",
+    statement_period_start: str = "",
+) -> str:
+    normalized_order_id = str(order_id or "").strip()
+    if normalized_order_id:
+        return normalized_order_id
+
+    desc = str(description or "").strip()
+    if not desc:
+        return ""
+
+    order_match = re.search(
+        r"(?:Order\s*#:\s*|COF Reimbursement\s+)(\d+)\b",
+        desc,
+        flags=re.IGNORECASE,
+    )
+    if order_match:
+        return order_match.group(1)
+
+    tablet_match = re.search(
+        r"(?:Hardware Subscription Fee - Tablet|iPad charge) for ([A-Za-z]+) (\d{4})",
+        desc,
+        flags=re.IGNORECASE,
+    )
+    if tablet_match:
+        month_name, year = tablet_match.groups()
+        try:
+            month = dt.datetime.strptime(month_name, "%B").strftime("%m")
+        except ValueError:
+            month = ""
+        if month:
+            return f"TABLET_{month}{year}"
+
+    if re.search(r"(?:Hardware Subscription Fee - Tablet|iPad charge)", desc, flags=re.IGNORECASE):
+        try:
+            parsed_start = dt.datetime.strptime(statement_period_start, "%a %b %d, %Y")
+        except ValueError:
+            parsed_start = None
+        if parsed_start is not None:
+            return f"TABLET_{parsed_start.strftime('%m%Y')}"
+
+    slug = re.sub(r"[^A-Z0-9]+", "_", desc.upper()).strip("_")
+    slug = re.sub(r"_+", "_", slug)
+    slug = slug[:48] if slug else "ADJUSTMENT"
+    fingerprint = "|".join(
+        [
+            str(provider or "").strip().upper(),
+            str(adjustment_datetime_raw or "").strip(),
+            str(desc or "").strip(),
+            str(adjustment_amount or "").strip(),
+            str(statement_period_start or "").strip(),
+        ]
+    )
+    digest = hashlib.sha1(fingerprint.encode("utf-8")).hexdigest()[:10].upper()
+    return f"{slug}_{digest}"
+
+
 def parse_adjustments_table(page) -> List[Dict[str, str]]:
+    page_text = page.extract_text() or ""
+    if not page_text.strip():
+        return []
     hits = page.search("Slice Adjustments")
     if not hits:
-        return parse_adjustments_table_ocr(page)
+        return []
     words = page.extract_words() or []
     header_words = {
         "date": None,
@@ -166,7 +256,7 @@ def parse_adjustments_table(page) -> List[Dict[str, str]]:
         if key in header_words and header_words[key] is None:
             header_words[key] = w
     if not (header_words["date"] and header_words["id"] and header_words["adjustment"]):
-        return parse_adjustments_table_ocr(page)
+        return []
 
     header_bottom = max(
         w["bottom"] for w in header_words.values() if w is not None
@@ -218,6 +308,7 @@ def parse_adjustments_table(page) -> List[Dict[str, str]]:
                 rows.append(
                     {
                         "order_id": order_id,
+                        "adjustment_datetime_raw": date_cell,
                         "adjustment_datetime": parse_adjustment_cell_datetime(date_cell),
                         "adjustment_amount": normalize_money(amount),
                         "adjustment_description": description,
@@ -322,6 +413,7 @@ def parse_adjustments_table_ocr(page) -> List[Dict[str, str]]:
             parsed.append(
                 {
                     "order_id": order_id,
+                    "adjustment_datetime_raw": f"{current_date} {current_time}".strip(),
                     "adjustment_datetime": parse_order_datetime(current_date, current_time),
                     "adjustment_amount": normalize_money(current_amount),
                     "adjustment_description": description,
@@ -462,11 +554,19 @@ def parse_pdf(
                 adjustments.append(
                     {
                         **adjustment,
+                        "order_id": infer_adjustment_order_id(
+                            adjustment.get("order_id", ""),
+                            adjustment.get("adjustment_description", ""),
+                            provider,
+                            adjustment.get("adjustment_datetime_raw", ""),
+                            adjustment.get("adjustment_amount", ""),
+                            period["statement_period_start"],
+                        ),
+                        "provider": provider,
                         "statement_period_start": period["statement_period_start"],
                         "statement_period_end": period["statement_period_end"],
                         "account_id": account_id,
                         "source_file": os.path.basename(path),
-                        "email_date": "",
                     }
                 )
 
@@ -485,12 +585,12 @@ def parse_pdf(
                 for statement in parse_statement_summary(page_text):
                     statements.append(
                         {
+                            "provider": provider,
                             **statement,
                             "statement_period_start": period["statement_period_start"],
                             "statement_period_end": period["statement_period_end"],
                             "account_id": account_id,
                             "source_file": os.path.basename(path),
-                            "email_date": "",
                         }
                     )
 
@@ -502,12 +602,24 @@ def parse_pdf(
         if re.match(r"^[A-Z][a-z]{2}\s+\d{2},\s+\d{4}$", line):
             current_date = line
             continue
-        if line.strip() == "Adjustments":
+        if line.strip() in {"Adjustments", "Slice Adjustments"}:
+            next_lines = lines[idx + 1 : idx + 4]
+            has_adjustment_header = any(
+                candidate.startswith("Date & Time ID Adjustment Value Description")
+                for candidate in next_lines
+            )
+            if not has_adjustment_header:
+                continue
             in_adjustments = True
             continue
         if in_adjustments:
             if line.strip() == "" or line.startswith("Summary"):
                 in_adjustments = False
+                continue
+            if line.startswith("FAQ ") or line.startswith("How is the Slice Partnership Fee") or line.startswith("We're here to help!"):
+                in_adjustments = False
+                continue
+            if line.startswith("Date & Time ID Adjustment Value Description"):
                 continue
             adjustment = parse_adjustment_line(line)
             if adjustment:
@@ -516,14 +628,23 @@ def parse_pdf(
                     time_str = parse_time(lines[idx + 1])
                 adjustment_datetime = parse_order_datetime(current_date, time_str)
                 adjustment["adjustment_datetime"] = adjustment_datetime
+                adjustment["adjustment_datetime_raw"] = f"{current_date} {time_str}".strip()
                 adjustments.append(
                     {
                         **adjustment,
+                        "order_id": infer_adjustment_order_id(
+                            adjustment.get("order_id", ""),
+                            adjustment.get("adjustment_description", ""),
+                            provider,
+                            adjustment.get("adjustment_datetime_raw", ""),
+                            adjustment.get("adjustment_amount", ""),
+                            period["statement_period_start"],
+                        ),
+                        "provider": provider,
                         "statement_period_start": period["statement_period_start"],
                         "statement_period_end": period["statement_period_end"],
                         "account_id": account_id,
                         "source_file": os.path.basename(path),
-                        "email_date": "",
                     }
                 )
             continue
@@ -538,22 +659,32 @@ def parse_pdf(
         order_id = parts[1]
         if not order_id.isdigit():
             continue
-        payment_type = parts[2]
-        order_type = parts[3] if parts[3] in ("Pickup", "Delivery") else ""
-        remainder = " ".join(parts[4:])
-        money_tokens = re.findall(r"-?\$?\d+\.\d{2}|-", remainder)
+        payment_type_token = parts[2]
+        order_type = parts[3] if len(parts) > 3 and parts[3] in ("Pickup", "Delivery") else ""
+        notes = []
+        remainder_start_idx = 4
+        if payment_type_token in ("Pickup", "Delivery") and not order_type:
+            order_type = payment_type_token
+            payment_type_token = "Credit"
+            notes.append("missing_payment_type_assumed_credit")
+            remainder_start_idx = 3
+        remainder = " ".join(parts[remainder_start_idx:])
+        money_tokens = re.findall(r"[A-Z]+(?: [A-Z]+)*|-?\$?\d+\.\d{2}|-", remainder, flags=re.IGNORECASE)
         money_tokens += [""] * (8 - len(money_tokens))
         subtotal, cust_delivery_fee, order_adjust, tax, tip, total, pship_fee, proc_fee = money_tokens[:8]
         if not subtotal or not total:
             continue
+        total_raw = str(total or "").strip()
+        status = parse_order_total_status(total_raw)
 
         time_str = ""
         if idx + 1 < len(lines):
             time_str = parse_time(lines[idx + 1])
         order_datetime = parse_order_datetime(current_date, time_str)
 
-        if payment_type.lower() == "phone":
+        if payment_type_token.lower() == "phone":
             order_type = "phone_call"
+        normalized_payment_type = "credit" if payment_type_token.lower() == "credit" else "cash"
         orders.append(
             {
                 "order_id": order_id,
@@ -561,31 +692,55 @@ def parse_pdf(
                 "restaurant_name": restaurant_name,
                 "order_datetime": order_datetime,
                 "order_type": order_type.lower(),
-                "payment_type": "credit" if payment_type.lower() == "credit" else "cash",
+                "payment_type": normalized_payment_type,
                 "subtotal": normalize_money_or_blank(subtotal),
                 "customer_delivery_fee": normalize_money_or_blank(cust_delivery_fee),
                 "order_adjustments": normalize_money_or_blank(order_adjust),
                 "tax": normalize_money_or_blank(tax),
                 "tip": normalize_money_or_blank(tip),
-                "total": normalize_money_or_blank(total),
+                "total": "0.00" if status != "active" else normalize_money_or_blank(total),
+                "order_total_raw": total_raw,
+                "status": status,
                 "partnership_fee": normalize_money_or_blank(pship_fee),
                 "processing_fee": normalize_money_or_blank(proc_fee),
+                "notes": " | ".join(notes),
                 "statement_period_start": period["statement_period_start"],
                 "statement_period_end": period["statement_period_end"],
                 "account_id": account_id,
                 "source_file": os.path.basename(path),
-                "email_date": "",
             }
         )
 
-    return {"orders": orders, "adjustments": adjustments, "statements": statements}
+    deduped_adjustments: Dict[str, Dict[str, str]] = {}
+    for adjustment in adjustments:
+        key = "||".join(
+            [
+                str(adjustment.get("order_id", "") or ""),
+                str(adjustment.get("adjustment_amount", "") or ""),
+                str(adjustment.get("adjustment_description", "") or ""),
+                str(adjustment.get("statement_period_start", "") or ""),
+                str(adjustment.get("source_file", "") or ""),
+            ]
+        )
+        current = deduped_adjustments.get(key)
+        if current is None:
+            deduped_adjustments[key] = adjustment
+            continue
+        current_has_dt = bool(str(current.get("adjustment_datetime", "") or "").strip())
+        new_has_dt = bool(str(adjustment.get("adjustment_datetime", "") or "").strip())
+        if new_has_dt and not current_has_dt:
+            deduped_adjustments[key] = adjustment
+
+    return {"orders": orders, "adjustments": list(deduped_adjustments.values()), "statements": statements}
 
 
 def parse_dir(root: str) -> Dict[str, List[Dict[str, str]]]:
     orders: List[Dict[str, str]] = []
     adjustments: List[Dict[str, str]] = []
     statements: List[Dict[str, str]] = []
-    for path in glob.glob(os.path.join(root, "*.pdf")):
+    for path in glob.glob(os.path.join(root, "**", "*.pdf"), recursive=True):
+        if os.path.basename(path) == "oar-full-3057-2025-08-01-2025-08-31 (1).pdf":
+            continue
         parsed = parse_pdf(path)
         orders.extend(parsed["orders"])
         adjustments.extend(parsed["adjustments"])
