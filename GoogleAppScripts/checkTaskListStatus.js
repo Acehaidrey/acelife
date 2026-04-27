@@ -1,4 +1,4 @@
-const VA_EMAIL = 'acehaidrey@gmail.com';
+const VA_EMAIL = 'liannereynoso222@gmail.com';
 const OWNER_EMAIL = 'acehaidrey@gmail.com';
 
 /**
@@ -24,7 +24,18 @@ const OWNER_EMAIL = 'acehaidrey@gmail.com';
 const TASK_LIST_CONFIG = {
   spreadsheetId: '1bnwEN-yY-ton6VLbAxyuu13LeAUzUAF9G_G6KCQ5Mro',
   recipients: `${VA_EMAIL}, ${OWNER_EMAIL}`,
-  subjectPrefix: 'Daily'
+  subjectPrefix: 'Daily',
+  enableDebugLogging: true
+};
+
+const STATUS_STYLES = {
+  'completed': { background: '#d9ead3', color: '#1b5e20' },
+  'in progress': { background: '#d9eaf7', color: '#0d47a1' },
+  'to do': { background: '#fff2cc', color: '#8a5300' },
+  'blocked': { background: '#f4cccc', color: '#8a1c1c' },
+  'abandoned': { background: '#ead1dc', color: '#6a1b3f' },
+  'skipped': { background: '#e6e6e6', color: '#424242' },
+  'missed': { background: '#FCCDCDFF', color: '#EC0B0BAD' }
 };
 
 /**
@@ -39,7 +50,8 @@ function checkLatestTaskListStatus() {
 
   var reportData = getTaskStatusReportData(latestSheet);
   var recipients = getTaskStatusRecipients();
-  var subject = `${TASK_LIST_CONFIG.subjectPrefix} - Task Status Report - ${latestSheet.getName()}`;
+  var todayLabel = formatTaskDate(getStartOfTodayForTasks());
+  var subject = `${TASK_LIST_CONFIG.subjectPrefix} - ${todayLabel} - Task Status Report - ${latestSheet.getName()}`;
   var htmlBody = buildTaskStatusEmailHtml(
     latestSheet.getName(),
     getTaskSheetUrl(spreadsheet, latestSheet),
@@ -173,7 +185,7 @@ function getTaskStatusReportData(sheet) {
   var incompleteRows = [];
   var skippedCount = 0;
 
-  values.slice(1).forEach(function(row) {
+  values.slice(1).forEach(function(row, rowIndex) {
     var status = String(row[columnIndexes.status] || '').trim();
     var taskName = String(row[columnIndexes.taskName] || '').trim();
     var frequency = String(row[columnIndexes.frequency] || '').trim();
@@ -183,6 +195,16 @@ function getTaskStatusReportData(sheet) {
     var dateDue = parseSheetDate(row[columnIndexes.dateDue]);
     var dateCompleted = parseSheetDate(row[columnIndexes.dateCompleted]);
     var missingFields = [];
+
+    if (TASK_LIST_CONFIG.enableDebugLogging && status) {
+      Logger.log(
+        '[TaskStatusDebug] row=%s task="%s" status="%s" styleKey="%s"',
+        rowIndex + 2,
+        taskName || '(blank)',
+        status,
+        normalizeStatusKey(status)
+      );
+    }
 
     if (status.toLowerCase() === 'skipped') {
       skippedCount += 1;
@@ -202,9 +224,9 @@ function getTaskStatusReportData(sheet) {
         taskName: taskName || '(blank)',
         frequency: frequency || '(blank)',
         status: status || '(blank)',
-      dateDue: dateDue ? formatTaskDate(dateDue) : '(blank)',
-      personCharge: rawPersonCharge || '(blank)',
-      missingFields: missingFields.join(', ')
+        dateDue: dateDue ? formatTaskDate(dateDue) : '(blank)',
+        personCharge: rawPersonCharge || '(blank)',
+        missingFields: missingFields.join(', ')
       });
     }
 
@@ -301,6 +323,20 @@ function getTaskStatusReportData(sheet) {
 }
 
 /**
+ * Logs status values and background colors from the latest month sheet without sending email.
+ */
+function debugLatestTaskListStatusColors() {
+  var spreadsheet = SpreadsheetApp.openById(TASK_LIST_CONFIG.spreadsheetId);
+  var latestSheet = getLatestMonthSheet(spreadsheet);
+  if (!latestSheet) {
+    throw new Error('Could not find a month-formatted sheet tab like MMM/YYYY or MMM/YY.');
+  }
+
+  Logger.log('[TaskStatusDebug] latestSheet=%s', latestSheet.getName());
+  getTaskStatusReportData(latestSheet);
+}
+
+/**
  * Collapses duplicate overdue weekly tasks by owner/task/frequency and stacks
  * unique statuses, due dates, and notes as multi-line values.
  */
@@ -312,6 +348,7 @@ function collapseWeeklyTasks(tasks) {
     var isWeekly = String(task.frequency || '').trim().toLowerCase() === 'weekly';
     if (!isWeekly) {
       task.statusDisplay = task.status;
+      task.statusHtml = buildStatusHtml(task.status);
       task.dateDueDisplay = task.dateDue;
       task.notesDisplay = task.notes || '';
       task.maxDaysOverdue = task.daysOverdue;
@@ -331,7 +368,7 @@ function collapseWeeklyTasks(tasks) {
         taskName: task.taskName,
         frequency: task.frequency,
         personCharge: task.personCharge,
-        statusValues: [],
+        statusEntries: [],
         dateDueValues: [],
         notesValues: [],
         dateDueSortKey: task.dateDueSortKey,
@@ -341,8 +378,14 @@ function collapseWeeklyTasks(tasks) {
     }
 
     var group = weeklyGroups[key];
-    if (group.statusValues.indexOf(task.status) === -1) {
-      group.statusValues.push(task.status);
+    var statusEntryExists = group.statusEntries.some(function(entry) {
+      return entry.status === task.status;
+    });
+    if (!statusEntryExists) {
+      group.statusEntries.push({
+        status: task.status,
+        color: task.statusColor
+      });
     }
     if (group.dateDueValues.indexOf(task.dateDue) === -1) {
       group.dateDueValues.push(task.dateDue);
@@ -363,12 +406,22 @@ function collapseWeeklyTasks(tasks) {
 
   Object.keys(weeklyGroups).forEach(function(key) {
     var group = weeklyGroups[key];
+    var nonSkippedStatusEntries = group.statusEntries.filter(function(entry) {
+      return normalizeStatusKey(entry.status) !== 'skipped';
+    });
+    var effectiveStatusEntries = nonSkippedStatusEntries.length !== 0
+      ? nonSkippedStatusEntries
+      : group.statusEntries;
+
     collapsed.push({
       taskName: group.taskName,
       frequency: group.frequency,
       personCharge: group.personCharge,
-      status: group.statusValues.join('\n'),
-      statusDisplay: group.statusValues.join('\n'),
+      status: effectiveStatusEntries.map(function(entry) { return entry.status; }).join('\n'),
+      statusDisplay: effectiveStatusEntries.map(function(entry) { return entry.status; }).join('\n'),
+      statusHtml: effectiveStatusEntries.map(function(entry) {
+        return buildStatusHtml(entry.status);
+      }).join('<br>'),
       dateDue: group.dateDueValues.join('\n'),
       dateDueDisplay: group.dateDueValues.join('\n'),
       daysOverdue: group.maxDaysOverdue,
@@ -454,6 +507,25 @@ function formatTaskCell(value) {
 }
 
 /**
+ * Normalizes status text for lookup in STATUS_STYLES.
+ */
+function normalizeStatusKey(status) {
+  return String(status || '').trim().toLowerCase();
+}
+
+/**
+ * Renders a status value using the configured status style map.
+ */
+function buildStatusHtml(status) {
+  var safeStatus = escapeTaskHtml(status || '');
+  var style = STATUS_STYLES[normalizeStatusKey(status)];
+  if (!style) {
+    return safeStatus;
+  }
+  return `<span style="display: inline-block; padding: 2px 8px; border-radius: 999px; background: ${style.background}; color: ${style.color}; font-weight: 600;">${safeStatus}</span>`;
+}
+
+/**
  * Builds the grouped HTML email body.
  */
 function buildTaskStatusEmailHtml(sheetName, sheetUrl, reportData) {
@@ -477,22 +549,21 @@ function buildTaskStatusEmailHtml(sheetName, sheetUrl, reportData) {
 
   if (people.length !== 0) {
     html += '<h3>Overdue Tasks</h3>';
-    html += '<p>The following tasks are overdue and need immediate attention. Please reply right away with a status update on each late task so we can reassess what the issue is and whether any dates need to be adjusted.</p>';
+    html += '<p>The following tasks are overdue and need immediate attention. Please reply right away with a status update on each late task so we can reassess what the issue is and whether any dates need to be adjusted. Failure to correct these items can lead to payment delays or payment adjustments.</p>';
   }
 
   people.forEach(function(person) {
     html += `<h3>${escapeTaskHtml(person)}</h3>`;
     html += '<table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse;">';
-    html += '<tr><th>Task Name</th><th>Frequency</th><th>Status</th><th>Date Due</th><th>Days Overdue</th><th>Owner</th><th>Notes</th></tr>';
+    html += '<tr><th>Task Name</th><th>Frequency</th><th>Status</th><th>Date Due</th><th>Days Overdue</th><th>Notes</th></tr>';
 
     tasksByPerson[person].forEach(function(task) {
       html += '<tr>';
       html += `<td>${formatTaskCell(task.taskName)}</td>`;
       html += `<td>${formatTaskCell(task.frequency)}</td>`;
-      html += `<td>${formatTaskCell(task.statusDisplay || task.status)}</td>`;
+      html += `<td>${task.statusHtml || formatTaskCell(task.statusDisplay || task.status)}</td>`;
       html += `<td>${formatTaskCell(task.dateDueDisplay || task.dateDue)}</td>`;
       html += `<td style="color: #c62828; font-weight: 700;">${escapeTaskHtml(task.daysOverdue)}</td>`;
-      html += `<td>${formatTaskCell(task.personCharge)}</td>`;
       html += `<td>${formatTaskCell(task.notesDisplay || task.notes || '')}</td>`;
       html += '</tr>';
     });
@@ -510,7 +581,7 @@ function buildTaskStatusEmailHtml(sheetName, sheetUrl, reportData) {
       html += '<tr>';
       html += `<td>${escapeTaskHtml(task.taskName)}</td>`;
       html += `<td>${escapeTaskHtml(task.frequency)}</td>`;
-      html += `<td>${escapeTaskHtml(task.status)}</td>`;
+      html += `<td>${buildStatusHtml(task.status)}</td>`;
       html += `<td>${escapeTaskHtml(task.dateDue)}</td>`;
       html += `<td>${escapeTaskHtml(task.personCharge)}</td>`;
       html += `<td>${escapeTaskHtml(task.notes || '')}</td>`;
@@ -530,7 +601,7 @@ function buildTaskStatusEmailHtml(sheetName, sheetUrl, reportData) {
       html += '<tr>';
       html += `<td>${escapeTaskHtml(row.taskName)}</td>`;
       html += `<td>${escapeTaskHtml(row.frequency)}</td>`;
-      html += `<td>${escapeTaskHtml(row.status)}</td>`;
+      html += `<td>${buildStatusHtml(row.status)}</td>`;
       html += `<td>${escapeTaskHtml(row.dateDue)}</td>`;
       html += `<td>${escapeTaskHtml(row.personCharge)}</td>`;
       html += `<td>${escapeTaskHtml(row.missingFields)}</td>`;
