@@ -1,0 +1,26 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Sep 2020,Aroma,Toast,4616.41,27166.17,1759.13,381.0,2127.2,31021.27,0.0,761.31,"Get true del fee from service charges in backend.
+Cross check fees for credit processing."
+Sep 2020,Aroma,Menufy,42.79,110.09,13.76,5.98,9.04,101.92,7.5,3.67,
+Sep 2020,Aroma,Postmates,0.0,3740.43,0.0,0.0,269.01,2845.68,937.79,0.0,
+Sep 2020,Aroma,Ezcater,0.0,252.71,38.0,10.0,14.72,216.81,30.0,5.9,
+Sep 2020,Aroma,Menustar,0.0,105.07,10.87,0.0,6.98,94.34,10.73,0.0,
+Sep 2020,Aroma,Ubereats,0.0,2805.23,2.18,0.0,201.74,2094.65,712.76,0.0,
+Sep 2020,Aroma,Office Express,0.0,15.98,0.0,0.0,0.0,11.19,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Sep 2020,Aroma,Grubhub,43.69,7524.63,819.58,727.64,459.71,5541.99,1568.67,274.15,"$280.0 in promo fees. $137.5 reimbursed.
+$140.18 in adjustment payments"
+Sep 2020,Aroma,Doordash,0.0,15902.56,0.0,0.0,1143.78,13520.14,2225.16,0.0,"Transaction types found: ['STORE_PAYMENT', 'ERROR_CHARGE', 'ADJUSTMENT']  Net Adjustments: $41.73  Payout Records Total: $14486.02  Marketing Fees: $198.99"
+Sep 2020,Aroma,Eatstreet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Withheld taxes remitted: $0.0
+Sep 2020,Aroma,Cater2Me,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Sep 2020,Aroma,Fooda,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Sep 2020,Aroma,Delivery.Com,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Sep 2020,Aroma,Slice,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report from statement.
+Sep 2020,Aroma,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Sep 2020,Aroma,Future Foods,0.0,18002.09,0.0,0.0,1227.8,10523.26,7503.51,0.0,Dates: 8/29 - 9/25. Adjustment Amount: $24.68
+Sep 2020,Aroma,Age Well,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Sep 2020,The Wing Stop,Ubereats,0.0,2391.06,0.0,0.0,167.07,1731.16,659.9,0.0,
+Sep 2020,The Wing Stop,Grubhub,0.0,1602.81,0.0,0.0,113.33,1089.38,446.4,65.1,$-1.93 in adjustment payments
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Sep 2020,Trattoria Contadina,Ubereats,0.0,2309.9,0.0,0.0,168.79,1683.88,626.02,0.0,
+Sep 2020,Trattoria Contadina,Grubhub,0.0,706.15,0.0,0.0,50.78,482.56,196.64,26.95,

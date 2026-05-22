@@ -2,6 +2,7 @@
 import argparse
 import datetime as dt
 import os
+from pathlib import Path
 
 import pandas as pd
 
@@ -86,11 +87,29 @@ def build_deduped(df: pd.DataFrame) -> pd.DataFrame:
     return deduped
 
 
-def run(input_path: str, out_path: str, deduped_path: str) -> int:
-    now = dt.datetime.now().isoformat()
-    df = pd.read_csv(input_path, dtype=str).fillna("")
+def _load_inputs(input_path: str) -> pd.DataFrame:
+    input_path = str(input_path)
+    path = Path(input_path)
+    if path.is_dir():
+        files = sorted([p for p in path.glob("*.csv*") if p.is_file()])
+        if not files:
+            raise SystemExit(f"No CSV files found in {input_path}")
+        frames = []
+        for file_path in files:
+            frame = pd.read_csv(file_path, dtype=str).fillna("")
+            frame.columns = [str(col).strip() for col in frame.columns]
+            frame["source_file"] = str(file_path)
+            frames.append(frame)
+        return pd.concat(frames, ignore_index=True)
+    df = pd.read_csv(path, dtype=str).fillna("")
     df.columns = [str(col).strip() for col in df.columns]
     df["source_file"] = input_path
+    return df
+
+
+def run(input_path: str, out_path: str, deduped_path: str) -> int:
+    now = dt.datetime.now().isoformat()
+    df = _load_inputs(input_path)
     df["added_at"] = now
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     df.to_csv(out_path, index=False)
@@ -106,7 +125,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Extract Grubhub orders to raw CSV.")
     parser.add_argument(
         "--input",
-        default=takeout_path("gh_jan25_jun25.csv"),
+        default=takeout_path("grubhub"),
         help="Input Grubhub CSV path.",
     )
     parser.add_argument(

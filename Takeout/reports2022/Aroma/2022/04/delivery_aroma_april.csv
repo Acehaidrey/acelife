@@ -1,0 +1,2 @@
+Merchant,Address,Orders ID,User Name,Date Ordered,Delivery Date,Sub-Total,Tax,Tip,Total,Order Status,House Account
+"Aroma Pizza and Pasta","20491 Alton Pkwy, 92610","35304414","Tom Schultz","4/22/2022 3:46:49 pm","4/22/2022 3:46:49 pm","$56.73","$3.86","$0.00","$52.08","Confirmed","Yes"

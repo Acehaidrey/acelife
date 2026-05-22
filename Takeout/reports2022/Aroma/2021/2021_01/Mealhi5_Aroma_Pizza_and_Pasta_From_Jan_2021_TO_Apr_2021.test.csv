@@ -1,0 +1,23 @@
+,,,,,,,Statement Date : From Jan_01_2021 To Apr_04_2021,,
+"To,",,,,,,,,,
+Aroma Pizza and Pasta,,,,,,,,,
+"20491 Alton Pkwy, Lake Forest, CA 92630, United States",,,,,,,,,
+STATEMENT OF ACCOUNT,,,,,,,,,
+Aroma Pizza and Pasta,,,,,,,,,
+"Lake Forest, CA",,,,,,,,,
+,For Subtraction,,,,,,,,
+,For Addition,,,,,,,,
+OrderId#,Date,Product Taken,Invoice Amount,Food Value,Tax,Discount,Delivery Charges by Restaurant,Delivery Charge by Mealhi5,Delivery fee refund
+128472,2021-01-23 17:57:28,Pick Up,$ 79.12,$ 73.43,$ 5.69,$ 0.00,$ 0.00,$ 0.00,$ 0.00
+,,,,,,,,Invoice Amount,$ 79.12
+,,,,,,,,Total Food Value,$ 73.43
+,,,,,,,,Total Tax,$ 5.69
+,,,,,,,,Credit Card Fee,$ 3.96
+,,,,,,,,Payment Processing Fees,$ 1
+,,,,,,,,Mealhi5 Fees(Includes credit card fee),$ 11.30
+,,,,,,,,Total Discount,$ 0.00
+,,,,,,,,Total Delivery by Restaurant Charge,$ 0
+,,,,,,,,Total Delivery by mealhi5 Charge,$ 0
+,,,,,,,,Total Delivery fee refund,$ 0.00
+,,,,,,,,Total Payable Amount,$ 66.82
+,,,,,,,,Total Order,1

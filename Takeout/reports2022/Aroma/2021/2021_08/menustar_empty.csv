@@ -1,0 +1,10 @@
+Invoice,,,,,,,
+,,,,,,,
+Date,Subtotal,Tax,Delivery Fee,Tip,Total,Payment Type,Order Type
+Total,0,0,0,0,0,,
+,,,,,,,
+All Orders,0,,(all orders including cash and credit card paid orders),,,,
+Pre-Paid Orders,0,,(orders where the customer paid with a credit card online),,,,
+MenuStar Fees,0,,(includes credit card processing fee),,,,
+Adjustments,0,,(credits/debts posted to your account),,,,
+Net Payout,0,,(amount will be paid in your account in 3-4 days),,,,

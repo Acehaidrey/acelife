@@ -1,0 +1,227 @@
+﻿Store Name,Store ID,Order ID,Dining Mode,Order Channel,Order Status,Order Date / Refund date,Order Accept Time,Food Sales (excluding tax),Tax on Food Sales,Food sales (including tax),Adjustments (excluding tax),Tax on Adjustments,Promo Spend on food,Tax on Promotion on Food,Promo Spend on Delivery,Tax on Promo Spend on Delivery,Bag Fee,Marketing Service Fee Adjustment,Total Sales after Adjustments (including tax),Uber Service Fee,Delivery Network Fee,Order Processing Fee,Dispatch Fee,Tax on Dispatch Fee,Gratuity,Misc Payment Description,Miscellaneous Payments,Marketplace Facilitator Tax,Backup Withholding Tax,Payout,Payout Date
+Aroma Pizza,,#7E6E0,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,12:19,15.74,1.22,16.96,0,0,0,0,0,0,0,0,16.96,-2.99,0,0,0,0,0,,0,0,0,13.97,2020-11-09
+Aroma Pizza,,#6280E,Delivery - Partner Using Uber App,Android,Completed,2020-11-04,16:24,32.18,2.49,34.67,0,0,0,0,0,0,0,0,34.67,-6.11,0,0,0,0,0,,0,0,0,28.56,2020-11-09
+Aroma Pizza,,#D6ECC,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,16:27,27.98,2.17,30.15,0,0,0,0,0,0,0,0,30.15,-5.32,0,0,0,0,0,,0,0,0,24.83,2020-11-09
+Aroma Pizza,,#FD911,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,17:58,39.72,3.08,42.8,0,0,0,0,0,0,0,0,42.8,-7.55,0,0,0,0,0,,0,0,0,35.25,2020-11-09
+Aroma Pizza,,#B41D7,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-05,12:33,23.73,1.84,25.57,0,0,0,0,0,0,0,0,25.57,-4.51,0,0,0,0,0,,0,0,0,21.06,2020-11-09
+Aroma Pizza,,#B2C47,Delivery - Partner Using Uber App,Android,Completed,2020-11-05,14:52,15.98,1.24,17.22,0,0,0,0,0,0,0,0,17.22,-3.04,0,0,0,0,0,,0,0,0,14.18,2020-11-09
+Aroma Pizza,,#4EBCD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,11:14,26.98,2.09,29.07,0,0,0,0,0,0,0,0,29.07,-5.13,0,0,0,0,0,,0,0,0,23.94,2020-11-09
+Aroma Pizza,,#7E213,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,11:40,28.48,2.21,30.69,0,0,0,0,0,0,0,0,30.69,-5.41,0,0,0,0,0,,0,0,0,25.28,2020-11-09
+Aroma Pizza,,#CDFFD,Delivery - Partner Using Uber App,Android,Completed,2020-11-06,16:24,29.96,2.32,32.28,0,0,0,0,0,0,0,0,32.28,-5.69,0,0,0,0,0,,0,0,0,26.59,2020-11-09
+Aroma Pizza,,#95060,Pickup,iOS,Completed,2020-11-06,17:08,33.72,2.61,36.33,0,0,0,0,0,0,0,0,36.33,0,0,0,0,0,0,,0,0,0,36.33,2020-11-09
+Aroma Pizza,,#C3F54,Delivery - Partner Using Uber App,Android,Completed,2020-11-06,19:56,16.98,1.32,18.3,0,0,0,0,0,0,0,0,18.3,-3.23,0,0,0,0,0,,0,0,0,15.07,2020-11-09
+Aroma Pizza,,#2CD19,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-07,11:52,32.49,2.52,35.01,0,0,0,0,0,0,0,0,35.01,-6.17,0,0,0,0,0,,0,0,0,28.84,2020-11-09
+Aroma Pizza,,#D9BFF,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,17:47,38.97,3.02,41.99,0,0,0,0,0,0,0,0,41.99,-7.4,0,0,0,0,0,,0,0,0,34.59,2020-11-09
+Aroma Pizza,,#5E3B9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,18:33,50.35,3.9,54.25,0,0,0,0,0,0,0,0,54.25,-9.57,0,0,0,0,0,,0,0,0,44.68,2020-11-09
+Aroma Pizza,,#2CA31,Delivery - Partner Using Uber App,iOS,Completed,2020-11-08,18:32,32.46,2.52,34.98,0,0,0,0,0,0,0,0,34.98,-6.17,0,0,0,0,0,,0,0,0,28.81,2020-11-09
+Aroma Pizza,,#2FD05,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,18:48,15.58,1.21,16.79,0,0,0,0,0,0,0,0,16.79,-2.96,0,0,0,0,0,,0,0,0,13.83,2020-11-16
+Aroma Pizza,,#30204,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,20:02,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-2.66,0,0,0,0,0,,0,0,0,12.41,2020-11-16
+Aroma Pizza,,#A20D0,Delivery - Partner Using Uber App,Android,Completed,2020-11-10,17:50,53.29,4.13,57.42,0,0,0,0,0,0,0,0,57.42,-10.13,0,0,0,0,0,,0,0,0,47.29,2020-11-16
+Aroma Pizza,,#49849,Delivery - Partner Using Uber App,iOS,Completed,2020-11-10,18:14,21.99,1.7,23.69,0,0,0,0,0,0,0,0,23.69,-4.18,0,0,0,0,0,,0,0,0,19.51,2020-11-16
+Aroma Pizza,,#0B281,Pickup,iOS,Completed,2020-11-10,18:34,38.97,3.02,41.99,0,0,0,0,0,0,0,0,41.99,0,0,0,0,0,0,,0,0,0,41.99,2020-11-16
+Aroma Pizza,,#4E29E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-10,22:15,24.47,1.9,26.37,0,0,0,0,0,0,0,0,26.37,-4.65,0,0,0,0,0,,0,0,0,21.72,2020-11-16
+Aroma Pizza,,#8E579,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,16:57,28.57,2.21,30.78,0,0,0,0,0,0,0,0,30.78,-5.43,0,0,0,0,0,,0,0,0,25.35,2020-11-16
+Aroma Pizza,,#17A73,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,18:34,24.98,1.94,26.92,0,0,0,0,0,0,0,0,26.92,-4.75,0,0,0,0,0,,0,0,0,22.17,2020-11-16
+Aroma Pizza,,#C17A9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,17:10,17.49,1.36,18.85,0,0,0,0,0,0,0,0,18.85,-3.32,0,0,0,0,0,,0,0,0,15.53,2020-11-16
+Aroma Pizza,,#5A565,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,18:38,38.46,2.98,41.44,0,0,0,0,0,0,0,0,41.44,-7.31,0,0,0,0,0,,0,0,0,34.13,2020-11-16
+Aroma Pizza,,#E8C4D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,18:58,15.99,1.24,17.23,0,0,0,0,0,0,0,0,17.23,-3.04,0,0,0,0,0,,0,0,0,14.19,2020-11-16
+Aroma Pizza,,#E7D62,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,19:34,23.95,1.86,25.81,0,0,0,0,0,0,0,0,25.81,-4.55,0,0,0,0,0,,0,0,0,21.26,2020-11-16
+Aroma Pizza,,#0255F,Delivery - Partner Using Uber App,Android,Completed,2020-11-14,13:27,29.94,2.32,32.26,0,0,0,0,0,0,0,0,32.26,-5.69,0,0,0,0,0,,0,0,0,26.57,2020-11-16
+Aroma Pizza,,#E423D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,14:59,29.23,2.27,31.5,0,0,0,0,0,0,0,0,31.5,-5.55,0,0,0,0,0,,0,0,0,25.95,2020-11-16
+Aroma Pizza,,#19D02,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,16:35,41.54,3.22,44.76,0,0,0,0,0,0,0,0,44.76,-7.89,0,0,0,0,0,,0,0,0,36.87,2020-11-16
+Aroma Pizza,,#5E6BC,Delivery - Partner Using Uber App,Android,Completed,2020-11-14,18:19,30.97,2.4,33.37,0,0,0,0,0,0,0,0,33.37,-5.88,0,0,0,0,0,,0,0,0,27.49,2020-11-16
+Aroma Pizza,,#92D59,Delivery - Partner Using Uber App,Android,Completed,2020-11-14,19:34,15.48,1.2,16.68,0,0,0,0,0,0,0,0,16.68,-2.94,0,0,0,0,0,,0,0,0,13.74,2020-11-16
+Aroma Pizza,,#EC76B,Delivery - Partner Using Uber App,Android,Completed,2020-11-15,12:46,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-3.8,0,0,0,0,0,,0,0,0,17.73,2020-11-16
+Aroma Pizza,,#EE747,Delivery - Partner Using Uber App,iOS,Completed,2020-11-15,13:58,94.91,7.36,102.27,0,0,0,0,0,0,0,0,102.27,-18.03,0,0,0,0,0,,0,0,0,84.24,2020-11-16
+Aroma Pizza,,#9F0E0,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-15,17:50,35.44,2.75,38.19,0,0,0,0,0,0,0,0,38.19,-6.73,0,0,0,0,0,,0,0,0,31.46,2020-11-16
+Aroma Pizza,,#CEB78,Delivery - Partner Using Uber App,iOS,Completed,2020-11-16,18:17,36.97,2.87,39.84,0,0,0,0,0,0,0,0,39.84,-7.02,0,0,0,0,0,,0,0,0,32.82,2020-11-23
+Aroma Pizza,,#062EB,Delivery - Partner Using Uber App,iOS,Completed,2020-11-16,18:36,12.38,0.96,13.34,0,0,0,0,0,0,0,0,13.34,-2.35,0,0,0,0,0,,0,0,0,10.99,2020-11-23
+Aroma Pizza,,#85FF9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-16,20:24,29.47,2.28,31.75,0,0,0,0,0,0,0,0,31.75,-5.6,0,0,0,0,0,,0,0,0,26.15,2020-11-23
+Aroma Pizza,,#24A2E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,17:51,28.73,2.23,30.96,0,0,0,0,0,0,0,0,30.96,-5.46,0,0,0,0,0,,0,0,0,25.5,2020-11-23
+Aroma Pizza,,#1ECB9,Pickup,iOS,Completed,2020-11-17,18:23,20.24,1.57,21.81,0,0,0,0,0,0,0,0,21.81,0,0,0,0,0,0,,0,0,0,21.81,2020-11-23
+Aroma Pizza,,#6B419,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,17:28,19.74,1.53,21.27,0,0,0,0,0,0,0,0,21.27,-3.75,0,0,0,0,0,,0,0,0,17.52,2020-11-23
+Aroma Pizza,,#598BF,Delivery - Partner Using Uber App,Android,Completed,2020-11-18,18:38,25.98,2.01,27.99,0,0,0,0,0,0,0,0,27.99,-4.94,0,0,0,0,0,,0,0,0,23.05,2020-11-23
+Aroma Pizza,,#E2D1F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,18:58,31.48,2.44,33.92,0,0,0,0,0,0,0,0,33.92,-5.98,0,0,0,0,0,,0,0,0,27.94,2020-11-23
+Aroma Pizza,,#2A6B7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,17:57,28.14,2.18,30.32,0,0,0,0,0,0,0,0,30.32,-5.35,0,0,0,0,0,,0,0,0,24.97,2020-11-23
+Aroma Pizza,,#A3D16,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,14:06,35.57,2.76,38.33,0,0,0,0,0,0,0,0,38.33,-6.76,0,0,0,0,0,,0,0,0,31.57,2020-11-23
+Aroma Pizza,,#E6B6F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,15:36,49.56,3.84,53.4,0,0,0,0,0,0,0,0,53.4,-9.42,0,0,0,0,0,,0,0,0,43.98,2020-11-23
+Aroma Pizza,,#C9F82,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,19:11,45.71,3.54,49.25,0,0,0,0,0,0,0,0,49.25,-8.68,0,0,0,0,0,,0,0,0,40.57,2020-11-23
+Aroma Pizza,,#D437B,Pickup,iOS,Completed,2020-11-20,19:49,12.99,1.01,14,0,0,0,0,0,0,0,0,14,0,0,0,0,0,0,,0,0,0,14,2020-11-23
+Aroma Pizza,,#9F093,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,21:39,15.74,1.22,16.96,0,0,0,0,0,0,0,0,16.96,-2.99,0,0,0,0,0,,0,0,0,13.97,2020-11-23
+Aroma Pizza,,#18399,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,17:43,51.31,3.98,55.29,0,0,0,0,0,0,0,0,55.29,-9.75,0,0,0,0,0,,0,0,0,45.54,2020-11-23
+Aroma Pizza,,#51CF9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,17:54,18.48,1.43,19.91,0,0,0,0,0,0,0,0,19.91,-3.51,0,0,0,0,0,,0,0,0,16.4,2020-11-23
+Aroma Pizza,,#049AA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,14:03,26.72,2.07,28.79,0,0,0,0,0,0,0,0,28.79,-5.08,0,0,0,0,0,,0,0,0,23.71,2020-11-23
+Aroma Pizza,,#FB64C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,18:28,55.95,4.34,60.29,0,0,0,0,0,0,0,0,60.29,-10.63,0,0,0,0,0,,0,0,0,49.66,2020-11-23
+Aroma Pizza,,#6412D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,19:46,23.73,1.84,25.57,0,0,0,0,0,0,0,0,25.57,-4.51,0,0,0,0,0,,0,0,0,21.06,2020-11-23
+Aroma Pizza,,#9BDAC,Pickup,iOS,Completed,2020-11-23,15:59,10.48,0.81,11.29,0,0,0,0,0,0,0,0,11.29,0,0,0,0,0,0,,0,0,0,11.29,2020-11-30
+Aroma Pizza,,#0991F,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-24,20:12,22.48,1.74,24.22,0,0,0,0,0,0,0,0,24.22,-4.27,0,0,0,0,0,,0,0,0,19.95,2020-11-30
+Aroma Pizza,,#9B573,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,20:23,29.34,2.27,31.61,0,0,0,0,0,0,0,0,31.61,-5.57,0,0,0,0,0,,0,0,0,26.04,2020-11-30
+Aroma Pizza,,#D739B,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,16:56,40.47,3.14,43.61,0,0,0,0,0,0,0,0,43.61,-7.69,0,0,0,0,0,,0,0,0,35.92,2020-11-30
+Aroma Pizza,,#9BCD2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,18:53,30.97,2.4,33.37,0,0,0,0,0,0,0,0,33.37,-5.88,0,0,0,0,0,,0,0,0,27.49,2020-11-30
+Aroma Pizza,,#7A27B,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,17:34,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-2.66,0,0,0,0,0,,0,0,0,12.41,2020-11-30
+Aroma Pizza,,#8A62F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,18:16,12.38,0.96,13.34,0,0,0,0,0,0,0,0,13.34,-2.35,0,0,0,0,0,,0,0,0,10.99,2020-11-30
+Aroma Pizza,,#F85D8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,19:49,28.97,2.25,31.22,0,0,0,0,0,0,0,0,31.22,-5.5,0,0,0,0,0,,0,0,0,25.72,2020-11-30
+Aroma Pizza,,#84314,Delivery - Partner Using Uber App,Android,Completed,2020-11-27,21:56,20.98,1.63,22.61,0,0,0,0,0,0,0,0,22.61,-3.99,0,0,0,0,0,,0,0,0,18.62,2020-11-30
+Aroma Pizza,,#1EDF5,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,15:50,40.96,3.17,44.13,0,0,0,0,0,0,0,0,44.13,-7.78,0,0,0,0,0,,0,0,0,36.35,2020-11-30
+Aroma Pizza,,#3D2AA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,16:54,55.44,4.3,59.74,0,0,0,0,0,0,0,0,59.74,-10.53,0,0,0,0,0,,0,0,0,49.21,2020-11-30
+Aroma Pizza,,#7EE2B,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-28,17:30,53.57,4.15,57.72,0,0,0,0,0,0,0,0,57.72,-10.18,0,0,0,0,0,,0,0,0,47.54,2020-11-30
+Aroma Pizza,,#C4B9B,Pickup,iOS,Completed,2020-11-28,18:51,28.47,2.21,30.68,0,0,0,0,0,0,0,0,30.68,0,0,0,0,0,0,,0,0,0,30.68,2020-11-30
+Aroma Pizza,,#8A397,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,19:15,21.98,1.7,23.68,0,0,0,0,0,0,0,0,23.68,-4.18,0,0,0,0,0,,0,0,0,19.5,2020-11-30
+Aroma Pizza,,#3B325,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,19:44,23.48,1.82,25.3,0,0,0,0,0,0,0,0,25.3,-4.46,0,0,0,0,0,,0,0,0,20.84,2020-11-30
+Aroma Pizza,,#471F9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,21:51,11.49,0.89,12.38,0,0,0,0,0,0,0,0,12.38,-2.18,0,0,0,0,0,,0,0,0,10.2,2020-11-30
+Aroma Pizza,,#CDC8E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,14:50,27.98,2.17,30.15,0,0,0,0,0,0,0,0,30.15,-5.32,0,0,0,0,0,,0,0,0,24.83,2020-11-30
+Aroma Pizza,,#2BC93,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,15:59,41.98,3.25,45.23,0,0,0,0,0,0,0,0,45.23,-7.98,0,0,0,0,0,,0,0,0,37.25,2020-11-30
+Aroma Pizza,,#102FD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-29,17:19,21.33,1.65,22.98,0,0,0,0,0,0,0,0,22.98,-4.05,0,0,0,0,0,,0,0,0,18.93,2020-11-30
+Aroma Pizza,,#9BD58,Delivery - Partner Using Uber App,Android,Completed,2020-11-29,18:17,15.58,1.21,16.79,0,0,0,0,0,0,0,0,16.79,-2.96,0,0,0,0,0,,0,0,0,13.83,2020-11-30
+Aroma Pizza,,#9EB57,Delivery - Partner Using Uber App,Android,Completed,2020-11-29,19:50,94.16,7.3,101.46,0,0,0,0,0,0,0,0,101.46,-17.89,0,0,0,0,0,,0,0,0,83.57,2020-11-30
+Aroma Pizza,,#6F928,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,18:45,23.98,1.86,25.84,0,0,0,0,0,0,0,0,25.84,-4.56,0,0,0,0,0,,0,0,0,21.28,
+Aroma Pizza,,#EF63F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,20:03,17.49,1.36,18.85,0,0,0,0,0,0,0,0,18.85,-3.32,0,0,0,0,0,,0,0,0,15.53,
+Trattoria Contadina ,,#147A1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,13:17,11.99,0.97,12.96,0,0,0,0,0,0,0,0,12.96,-3,0,0,0,0,0,,0,0,0,9.96,2020-11-09
+Trattoria Contadina ,,#FF61D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,17:35,35.96,2.9,38.86,0,0,0,0,0,0,0,0,38.86,-8.99,0,0,0,0,0,,0,0,0,29.87,2020-11-09
+Trattoria Contadina ,,#CFF03,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,19:42,19.97,1.62,21.59,0,0,0,0,0,0,0,0,21.59,-4.99,0,0,0,0,0,,0,0,0,16.6,2020-11-09
+Trattoria Contadina ,,#97746,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,20:11,47.68,3.74,51.42,0,0,0,0,0,0,0,0,51.42,-11.92,0,0,0,0,0,,0,0,0,39.5,2020-11-09
+Trattoria Contadina ,,#A44F7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,18:19,16.98,1.36,18.34,0,0,0,0,0,0,0,0,18.34,-4.25,0,0,0,0,0,,0,0,0,14.09,2020-11-09
+Trattoria Contadina ,,#757E3,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,19:05,32.97,2.68,35.65,0,0,0,0,0,0,0,0,35.65,-8.24,0,0,0,0,0,,0,0,0,27.41,2020-11-09
+Trattoria Contadina ,,#65289,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,15:22,25.96,2.11,28.07,0,0,0,0,0,0,0,0,28.07,-6.49,0,0,0,0,0,,0,0,0,21.58,2020-11-09
+Trattoria Contadina ,,#D5B03,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,18:47,34.7,2.73,37.43,0,0,0,0,0,0,0,0,37.43,-8.68,0,0,0,0,0,,0,0,0,28.75,2020-11-09
+Trattoria Contadina ,,#6CA2E,Delivery - Partner Using Uber App,Android,Completed,2020-11-06,19:35,23.72,1.91,25.63,0,0,0,0,0,0,0,0,25.63,-5.93,0,0,0,0,0,,0,0,0,19.7,2020-11-09
+Trattoria Contadina ,,#7CBA4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,19:50,11.48,0.89,12.37,0,0,0,0,0,0,0,0,12.37,-2.87,0,0,0,0,0,,0,0,0,9.5,2020-11-09
+Trattoria Contadina ,,#F15AA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,20:20,44.4,3.44,47.84,0,0,0,0,0,0,0,0,47.84,-11.1,0,0,0,0,0,,0,0,0,36.74,2020-11-09
+Trattoria Contadina ,,#2996D,Delivery - Partner Using Uber App,Android,Completed,2020-11-08,13:52,23.98,1.91,25.89,0,0,0,0,0,0,0,0,25.89,-6,0,0,0,0,0,,0,0,0,19.89,2020-11-09
+Trattoria Contadina ,,#C0F5B,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-10,18:09,23.98,1.95,25.93,0,0,0,0,0,0,0,0,25.93,-6,0,0,0,0,0,,0,0,0,19.93,2020-11-16
+Trattoria Contadina ,,#EFC12,Delivery - Partner Using Uber App,Android,Completed,2020-11-11,17:29,38.2,3.01,41.21,0,0,0,0,0,0,0,0,41.21,-9.55,0,0,0,0,0,,0,0,0,31.66,2020-11-16
+Trattoria Contadina ,,#DCAA5,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-11,18:55,62.93,5.06,67.99,0,0,0,0,0,0,0,0,67.99,-15.73,0,0,0,0,0,,0,0,0,52.26,2020-11-16
+Trattoria Contadina ,,#F9E1D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,19:14,21.98,1.79,23.77,0,0,0,0,0,0,0,0,23.77,-5.5,0,0,0,0,0,,0,0,0,18.27,2020-11-16
+Trattoria Contadina ,,#EDADF,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,13:51,7.99,0.62,8.61,0,0,0,0,0,0,0,0,8.61,-2,0,0,0,0,0,,0,0,0,6.61,2020-11-16
+Trattoria Contadina ,,#62193,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,12:27,19.98,1.62,21.6,0,0,0,0,0,0,0,0,21.6,-5,0,0,0,0,0,,0,0,0,16.6,2020-11-16
+Trattoria Contadina ,,#5FE6A,Delivery - Partner Using Uber App,Android,Completed,2020-11-13,18:02,17.98,1.44,19.42,0,0,0,0,0,0,0,0,19.42,-4.5,0,0,0,0,0,,0,0,0,14.92,2020-11-16
+Trattoria Contadina ,,#A6DD4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,16:34,49.66,3.95,53.61,0,0,0,0,0,0,0,0,53.61,-12.42,0,0,0,0,0,,0,0,0,41.19,2020-11-16
+Trattoria Contadina ,,#05D2A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,18:24,15.97,1.3,17.27,0,0,0,0,0,0,0,0,17.27,-3.99,0,0,0,0,0,,0,0,0,13.28,2020-11-16
+Trattoria Contadina ,,#C11B2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-15,21:10,15.98,1.3,17.28,0,0,0,0,0,0,0,0,17.28,-4,0,0,0,0,0,,0,0,0,13.28,2020-11-16
+Trattoria Contadina ,,#A1624,Delivery - Partner Using Uber App,iOS,Completed,2020-11-16,19:28,19.98,1.62,21.6,0,0,0,0,0,0,0,0,21.6,-5,0,0,0,0,0,,0,0,0,16.6,2020-11-23
+Trattoria Contadina ,,#6A9C7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,15:23,11.99,0.97,12.96,0,0,0,0,0,0,0,0,12.96,-3,0,0,0,0,0,,0,0,0,9.96,2020-11-23
+Trattoria Contadina ,,#CC1A3,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-17,16:33,30.97,2.48,33.45,0,0,0,0,0,0,0,0,33.45,-7.74,0,0,0,0,0,,0,0,0,25.71,2020-11-23
+Trattoria Contadina ,,#CAB44,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,18:02,21.98,1.79,23.77,0,0,0,0,0,0,0,0,23.77,-5.5,0,0,0,0,0,,0,0,0,18.27,2020-11-23
+Trattoria Contadina ,,#47DF6,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-17,18:37,24.97,1.98,26.95,0,0,0,0,0,0,0,0,26.95,-6.24,0,0,0,0,0,,0,0,0,20.71,2020-11-23
+Trattoria Contadina ,,#A2FA0,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,18:57,25.97,2.11,28.08,0,0,0,0,0,0,0,0,28.08,-6.49,0,0,0,0,0,,0,0,0,21.59,2020-11-23
+Trattoria Contadina ,,#A47C9,Delivery - Partner Using Uber App,Android,Completed,2020-11-17,19:20,27.97,2.25,30.22,0,0,0,0,0,0,0,0,30.22,-6.99,0,0,0,0,0,,0,0,0,23.23,2020-11-23
+Trattoria Contadina ,,#776D6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,17:23,73.91,5.95,79.86,0,0,0,0,0,0,0,0,79.86,-18.48,0,0,0,0,0,,0,0,0,61.38,2020-11-23
+Trattoria Contadina ,,#BF91F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,18:37,10.99,0.89,11.88,0,0,0,0,0,0,0,0,11.88,-2.75,0,0,0,0,0,,0,0,0,9.13,2020-11-23
+Trattoria Contadina ,,#C3708,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,19:01,11.74,0.95,12.69,0,0,0,0,0,0,0,0,12.69,-2.94,0,0,0,0,0,,0,0,0,9.75,2020-11-23
+Trattoria Contadina ,,#768E8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,19:52,15.72,1.22,16.94,0,0,0,0,0,0,0,0,16.94,-3.93,0,0,0,0,0,,0,0,0,13.01,2020-11-23
+Trattoria Contadina ,,#7B6AA,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,21:23,29.96,2.42,32.38,0,0,0,0,0,0,0,0,32.38,-7.49,0,0,0,0,0,,0,0,0,24.89,2020-11-23
+Trattoria Contadina ,,#E5511,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,19:21,41.16,3.24,44.4,0,0,0,0,0,0,0,0,44.4,-10.29,0,0,0,0,0,,0,0,0,34.11,2020-11-23
+Trattoria Contadina ,,#2F297,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,14:25,10.98,0.85,11.83,0,0,0,0,0,0,0,0,11.83,-2.75,0,0,0,0,0,,0,0,0,9.08,2020-11-23
+Trattoria Contadina ,,#4F63F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,17:29,29.7,2.3,32,0,0,0,0,0,0,0,0,32,-7.43,0,0,0,0,0,,0,0,0,24.57,2020-11-23
+Trattoria Contadina ,,#FAB57,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,17:47,30.2,2.38,32.58,0,0,0,0,0,0,0,0,32.58,-7.55,0,0,0,0,0,,0,0,0,25.03,2020-11-23
+Trattoria Contadina ,,#0714D,Delivery - Partner Using Uber App,Android,Completed,2020-11-22,18:01,15.97,1.26,17.23,0,0,0,0,0,0,0,0,17.23,-3.99,0,0,0,0,0,,0,0,0,13.24,2020-11-23
+Trattoria Contadina ,,#F99D3,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,18:08,41.95,3.37,45.32,0,0,0,0,0,0,0,0,45.32,-10.49,0,0,0,0,0,,0,0,0,34.83,2020-11-30
+Trattoria Contadina ,,#D5964,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,18:12,51.4,4.03,55.43,0,0,0,0,0,0,0,0,55.43,-12.85,0,0,0,0,0,,0,0,0,42.58,2020-11-30
+Trattoria Contadina ,,#71DAB,Delivery - Partner Using Uber App,Android,Completed,2020-11-23,22:11,10.98,0.85,11.83,0,0,0,0,0,0,0,0,11.83,-2.75,0,0,0,0,0,,0,0,0,9.08,2020-11-30
+Trattoria Contadina ,,#6DF6F,Delivery - Partner Using Uber App,Android,Canceled,2020-11-24,22:08,41.18,3.29,44.47,0,0,0,0,0,0,0,0,44.47,-10.3,0,0,0,0,0,,0,0,0,34.17,2020-11-30
+Trattoria Contadina ,,#F6A4E,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,14:25,31.44,2.44,33.88,0,0,0,0,0,0,0,0,33.88,-7.86,0,0,0,0,0,,0,0,0,26.02,2020-11-30
+Trattoria Contadina ,,#221FB,Pickup,Android,Canceled,2020-11-27,16:52,10.99,0.89,11.88,0,0,0,0,0,0,0,0,11.88,0,0,0,0,0,0,,0,0,0,11.88,2020-11-30
+Trattoria Contadina ,,#04758,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,18:18,61.94,5,66.94,0,0,0,0,0,0,0,0,66.94,-15.49,0,0,0,0,0,,0,0,0,51.45,2020-11-30
+Trattoria Contadina ,,#554C8,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-29,15:42,35.96,2.83,38.79,0,0,0,0,0,0,0,0,38.79,-8.99,0,0,0,0,0,,0,0,0,29.8,2020-11-30
+Trattoria Contadina ,,#6A284,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,21:03,18.98,1.54,20.52,0,0,0,0,0,0,0,0,20.52,-4.75,0,0,0,0,0,,0,0,0,15.77,
+The Wing Stop ,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,6.45,0,0,6.45,2020-11-23
+The Wing Stop ,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,23.16,0,0,23.16,2020-11-23
+The Wing Stop ,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,5.38,0,0,5.38,2020-11-30
+The Wing Stop ,,,,Unknown,,,,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Restaurant refunds,20.45,0,0,20.45,2020-11-30
+The Wing Stop ,,#073B1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,11:35,15.49,1.2,16.69,0,0,0,0,0,0,0,0,16.69,-3.87,0,0,0,0,0,,0,0,0,12.82,2020-11-09
+The Wing Stop ,,#49C2D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-04,17:54,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,2020-11-09
+The Wing Stop ,,#1982D,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,12:08,8.99,0.7,9.69,0,0,0,0,0,0,0,0,9.69,-2.25,0,0,0,0,0,,0,0,0,7.44,2020-11-09
+The Wing Stop ,,#1AF45,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-05,17:39,25.98,2.01,27.99,0,0,0,0,0,0,0,0,27.99,-6.5,0,0,0,0,0,,0,0,0,21.49,2020-11-09
+The Wing Stop ,,#5D510,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,17:48,37.46,2.9,40.36,0,0,0,0,0,0,0,0,40.36,-9.37,0,0,0,0,0,,0,0,0,30.99,2020-11-09
+The Wing Stop ,,#79AAF,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,19:51,46.23,3.58,49.81,0,0,0,0,0,0,0,0,49.81,-11.56,0,0,0,0,0,,0,0,0,38.25,2020-11-09
+The Wing Stop ,,#DF428,Delivery - Partner Using Uber App,iOS,Completed,2020-11-05,21:49,21.48,1.66,23.14,0,0,0,0,0,0,0,0,23.14,-5.37,0,0,0,0,0,,0,0,0,17.77,2020-11-09
+The Wing Stop ,,#4D6B0,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-06,13:18,15.49,1.2,16.69,0,0,0,0,0,0,0,0,16.69,-3.87,0,0,0,0,0,,0,0,0,12.82,2020-11-09
+The Wing Stop ,,#84D4A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,16:13,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-5,0,0,0,0,0,,0,0,0,16.53,2020-11-09
+The Wing Stop ,,#782D6,Delivery - Partner Using Uber App,Android,Completed,2020-11-06,17:07,38.94,3.02,41.96,0,0,0,0,0,0,0,0,41.96,-9.74,0,0,0,0,0,,0,0,0,32.22,2020-11-09
+The Wing Stop ,,#58E56,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,20:04,14.74,1.14,15.88,0,0,0,0,0,0,0,0,15.88,-3.69,0,0,0,0,0,,0,0,0,12.19,2020-11-09
+The Wing Stop ,,#17260,Delivery - Partner Using Uber App,iOS,Completed,2020-11-06,22:04,37.99,2.94,40.93,0,0,0,0,0,0,0,0,40.93,-9.5,0,0,0,0,0,,0,0,0,31.43,2020-11-09
+The Wing Stop ,,#00506,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,12:33,23.22,1.8,25.02,0,0,0,0,0,0,0,0,25.02,-5.81,0,0,0,0,0,,0,0,0,19.21,2020-11-09
+The Wing Stop ,,#11468,Delivery - Partner Using Uber App,iOS,Completed,2020-11-07,17:20,29.99,2.32,32.31,0,0,0,0,0,0,0,0,32.31,-7.5,0,0,0,0,0,,0,0,0,24.81,2020-11-09
+The Wing Stop ,,#654C4,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-08,11:51,15.49,1.2,16.69,0,0,0,0,0,0,0,0,16.69,-3.87,0,0,0,0,0,,0,0,0,12.82,2020-11-09
+The Wing Stop ,,#3C682,Delivery - Partner Using Uber App,iOS,Completed,2020-11-08,15:41,32.2,2.5,34.7,0,0,0,0,0,0,0,0,34.7,-8.05,0,0,0,0,0,,0,0,0,26.65,2020-11-09
+The Wing Stop ,,#EF8C9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,17:06,33.73,2.61,36.34,0,0,0,0,0,0,0,0,36.34,-8.43,0,0,0,0,0,,0,0,0,27.91,2020-11-16
+The Wing Stop ,,#707F2,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,17:53,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,2020-11-16
+The Wing Stop ,,#B12B7,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-09,19:00,60.48,4.69,65.17,0,0,0,0,0,0,0,0,65.17,-15.12,0,0,0,0,0,,0,0,0,50.05,2020-11-16
+The Wing Stop ,,#B064C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,19:24,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-3.5,0,0,0,0,0,,0,0,0,11.57,2020-11-16
+The Wing Stop ,,#34220,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,19:25,15.48,1.2,16.68,0,0,0,0,0,0,0,0,16.68,-3.87,0,0,0,0,0,,0,0,0,12.81,2020-11-16
+The Wing Stop ,,#01F22,Delivery - Partner Using Uber App,iOS,Completed,2020-11-09,19:30,23.98,1.86,25.84,0,0,0,0,0,0,0,0,25.84,-6,0,0,0,0,0,,0,0,0,19.84,2020-11-16
+The Wing Stop ,,#39C42,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,18:33,24.48,1.9,26.38,0,0,0,0,0,0,0,0,26.38,-6.12,0,0,0,0,0,,0,0,0,20.26,2020-11-16
+The Wing Stop ,,#E8EA7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,19:10,22.73,1.76,24.49,0,0,0,0,0,0,0,0,24.49,-5.68,0,0,0,0,0,,0,0,0,18.81,2020-11-16
+The Wing Stop ,,#D5F58,Delivery - Partner Using Uber App,Android,Completed,2020-11-11,19:17,45.97,3.56,49.53,0,0,0,0,0,0,0,0,49.53,-11.49,0,0,0,0,0,,0,0,0,38.04,2020-11-16
+The Wing Stop ,,#D5F58,,Unknown,Refund,2020-11-11,19:17,-21.49,-1.67,-23.16,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-23.16,2020-11-16
+The Wing Stop ,,#BC5C1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-11,19:30,15.73,1.22,16.95,0,0,0,0,0,0,0,0,16.95,-3.93,0,0,0,0,0,,0,0,0,13.02,2020-11-16
+The Wing Stop ,,#BC5C1,,Unknown,Refund,2020-11-11,19:30,-5.99,-0.46,-6.45,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-6.45,2020-11-16
+The Wing Stop ,,#3F78F,Delivery - Partner Using Uber App,Android,Completed,2020-11-11,21:33,40.95,3.17,44.12,0,0,0,0,0,0,0,0,44.12,-10.24,0,0,0,0,0,,0,0,0,33.88,2020-11-16
+The Wing Stop ,,#6D417,Delivery - Partner Using Uber App,iOS,Completed,2020-11-12,18:36,27.74,2.15,29.89,0,0,0,0,0,0,0,0,29.89,-6.94,0,0,0,0,0,,0,0,0,22.95,2020-11-16
+The Wing Stop ,,#1D7AD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,18:41,37.96,2.94,40.9,0,0,0,0,0,0,0,0,40.9,-9.49,0,0,0,0,0,,0,0,0,31.41,2020-11-16
+The Wing Stop ,,#850AD,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,18:46,14.74,1.14,15.88,0,0,0,0,0,0,0,0,15.88,-3.69,0,0,0,0,0,,0,0,0,12.19,2020-11-16
+The Wing Stop ,,#26BB0,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,19:09,15.49,1.2,16.69,0,0,0,0,0,0,0,0,16.69,-3.87,0,0,0,0,0,,0,0,0,12.82,2020-11-16
+The Wing Stop ,,#63699,Delivery - Partner Using Uber App,iOS,Completed,2020-11-13,19:15,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,2020-11-16
+The Wing Stop ,,#76782,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-13,20:04,30.74,2.38,33.12,0,0,0,0,0,0,0,0,33.12,-7.69,0,0,0,0,0,,0,0,0,25.43,2020-11-16
+The Wing Stop ,,#4C175,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,11:35,22.98,1.78,24.76,0,0,0,0,0,0,0,0,24.76,-5.75,0,0,0,0,0,,0,0,0,19.01,2020-11-16
+The Wing Stop ,,#48303,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,14:51,44.46,3.45,47.91,0,0,0,0,0,0,0,0,47.91,-11.12,0,0,0,0,0,,0,0,0,36.79,2020-11-16
+The Wing Stop ,,#B87DE,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,20:49,37.98,2.94,40.92,0,0,0,0,0,0,0,0,40.92,-9.5,0,0,0,0,0,,0,0,0,31.42,2020-11-16
+The Wing Stop ,,#0F3B5,Delivery - Partner Using Uber App,iOS,Completed,2020-11-14,22:12,11.74,0.91,12.65,0,0,0,0,0,0,0,0,12.65,-2.94,0,0,0,0,0,,0,0,0,9.71,2020-11-16
+The Wing Stop ,,#BE2F8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-15,17:31,67.42,5.23,72.65,0,0,0,0,0,0,0,0,72.65,-16.86,0,0,0,0,0,,0,0,0,55.79,2020-11-16
+The Wing Stop ,,#4385C,Delivery - Partner Using Uber App,iOS,Completed,2020-11-16,17:58,33.97,2.63,36.6,0,0,0,0,0,0,0,0,36.6,-8.49,0,0,0,0,0,,0,0,0,28.11,2020-11-23
+The Wing Stop ,,#7C0D4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-16,18:51,15.73,1.22,16.95,0,0,0,0,0,0,0,0,16.95,-3.93,0,0,0,0,0,,0,0,0,13.02,2020-11-23
+The Wing Stop ,,#02AF5,Delivery - Partner Using Uber App,Android,Completed,2020-11-16,21:39,9.99,0.77,10.76,0,0,0,0,0,0,0,0,10.76,-2.5,0,0,0,0,0,,0,0,0,8.26,2020-11-23
+The Wing Stop ,,#895BF,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,11:25,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-3.5,0,0,0,0,0,,0,0,0,11.57,2020-11-23
+The Wing Stop ,,#C1A0F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,11:44,29.24,2.27,31.51,0,0,0,0,0,0,0,0,31.51,-7.31,0,0,0,0,0,,0,0,0,24.2,2020-11-23
+The Wing Stop ,,#2FF2F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-17,17:56,20.98,1.63,22.61,0,0,0,0,0,0,0,0,22.61,-5.25,0,0,0,0,0,,0,0,0,17.36,2020-11-23
+The Wing Stop ,,#050CF,Delivery - Partner Using Uber App,iOS,Canceled,2020-11-17,22:54,14.74,1.14,15.88,0,0,0,0,0,0,0,0,15.88,-3.69,0,0,0,0,0,,0,0,0,12.19,2020-11-23
+The Wing Stop ,,#5EB07,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-18,12:34,153.31,11.88,165.19,0,0,0,0,0,0,0,0,165.19,-38.33,0,0,0,0,0,,0,0,0,126.86,2020-11-23
+The Wing Stop ,,#FF452,Delivery - Partner Using Uber App,Android,Completed,2020-11-18,19:25,16.98,1.32,18.3,0,0,0,0,0,0,0,0,18.3,-4.25,0,0,0,0,0,,0,0,0,14.05,2020-11-23
+The Wing Stop ,,#E7481,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-18,21:54,22.24,1.72,23.96,0,0,0,0,0,0,0,0,23.96,-5.56,0,0,0,0,0,,0,0,0,18.4,2020-11-23
+The Wing Stop ,,#827A6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-18,21:58,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-3.5,0,0,0,0,0,,0,0,0,11.57,2020-11-23
+The Wing Stop ,,#71384,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,12:23,19.99,1.55,21.54,0,0,0,0,0,0,0,0,21.54,-5,0,0,0,0,0,,0,0,0,16.54,2020-11-23
+The Wing Stop ,,#6B5EE,Delivery - Partner Using Uber App,Android,Completed,2020-11-19,16:04,28.49,2.21,30.7,0,0,0,0,0,0,0,0,30.7,-7.12,0,0,0,0,0,,0,0,0,23.58,2020-11-23
+The Wing Stop ,,#C7ED7,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,16:48,13.99,1.08,15.07,0,0,0,0,0,0,0,0,15.07,-3.5,0,0,0,0,0,,0,0,0,11.57,2020-11-23
+The Wing Stop ,,#A37C0,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,17:51,18.98,1.47,20.45,0,0,0,0,0,0,0,0,20.45,-4.75,0,0,0,0,0,,0,0,0,15.7,2020-11-23
+The Wing Stop ,,#78D21,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,20:05,46.44,3.6,50.04,0,0,0,0,0,0,0,0,50.04,-11.61,0,0,0,0,0,,0,0,0,38.43,2020-11-23
+The Wing Stop ,,#9208A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,20:36,20.74,1.61,22.35,0,0,0,0,0,0,0,0,22.35,-5.19,0,0,0,0,0,,0,0,0,17.16,2020-11-23
+The Wing Stop ,,#86ED4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,20:57,32.48,2.52,35,0,0,0,0,0,0,0,0,35,-8.12,0,0,0,0,0,,0,0,0,26.88,2020-11-23
+The Wing Stop ,,#79450,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,21:36,23.97,1.86,25.83,0,0,0,0,0,0,0,0,25.83,-5.99,0,0,0,0,0,,0,0,0,19.84,2020-11-23
+The Wing Stop ,,#A4136,Delivery - Partner Using Uber App,iOS,Completed,2020-11-19,21:43,27.46,2.13,29.59,0,0,0,0,0,0,0,0,29.59,-6.87,0,0,0,0,0,,0,0,0,22.72,2020-11-23
+The Wing Stop ,,#44839,Delivery - Partner Using Uber App,Android,Completed,2020-11-20,15:08,50.97,3.95,54.92,0,0,0,0,0,0,0,0,54.92,-12.74,0,0,0,0,0,,0,0,0,42.18,2020-11-23
+The Wing Stop ,,#8DB65,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,18:35,40.97,3.18,44.15,0,0,0,0,0,0,0,0,44.15,-10.24,0,0,0,0,0,,0,0,0,33.91,2020-11-23
+The Wing Stop ,,#8DB65,,Unknown,Refund,2020-11-20,18:35,-4.99,-0.39,-5.38,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-5.38,2020-11-30
+The Wing Stop ,,#B9956,Delivery - Partner Using Uber App,iOS,Completed,2020-11-20,19:12,14.74,1.14,15.88,0,0,0,0,0,0,0,0,15.88,-3.69,0,0,0,0,0,,0,0,0,12.19,2020-11-23
+The Wing Stop ,,#C9E5F,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-20,22:13,14.74,1.14,15.88,0,0,0,0,0,0,0,0,15.88,-3.69,0,0,0,0,0,,0,0,0,12.19,2020-11-23
+The Wing Stop ,,#915A4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,12:32,129.89,10.07,139.96,0,0,0,0,0,0,0,0,139.96,-32.47,0,0,0,0,0,,0,0,0,107.49,2020-11-23
+The Wing Stop ,,#9F405,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,15:55,18.98,1.47,20.45,0,0,0,0,0,0,0,0,20.45,-4.75,0,0,0,0,0,,0,0,0,15.7,2020-11-23
+The Wing Stop ,,#9F405,,Unknown,Refund,2020-11-21,15:55,-18.98,-1.47,-20.45,0,0,0,0,0,0,0,,0,0,,,0,0,0,,0,0,0,-20.45,2020-11-30
+The Wing Stop ,,#D4A76,Delivery - Partner Using Uber App,Android,Completed,2020-11-21,16:22,22.98,1.78,24.76,0,0,0,0,0,0,0,0,24.76,-5.75,0,0,0,0,0,,0,0,0,19.01,2020-11-23
+The Wing Stop ,,#D4A57,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,17:42,49.94,3.87,53.81,0,0,0,0,0,0,0,0,53.81,-12.49,0,0,0,0,0,,0,0,0,41.32,2020-11-23
+The Wing Stop ,,#821E0,Pickup,iOS,Completed,2020-11-21,19:00,30.97,2.4,33.37,0,0,0,0,0,0,0,0,33.37,0,0,0,0,0,0,,0,0,0,33.37,2020-11-23
+The Wing Stop ,,#86DB8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-21,20:33,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,2020-11-23
+The Wing Stop ,,#0CDC1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-22,14:23,32.97,2.56,35.53,0,0,0,0,0,0,0,0,35.53,-8.24,0,0,0,0,0,,0,0,0,27.29,2020-11-23
+The Wing Stop ,,#303C5,Delivery - Partner Using Uber App,Android,Completed,2020-11-22,22:09,10.49,0.81,11.3,0,0,0,0,0,0,0,0,11.3,-2.62,0,0,0,0,0,,0,0,0,8.68,2020-11-23
+The Wing Stop ,,#78AD1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,12:01,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,2020-11-30
+The Wing Stop ,,#62CE6,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,14:38,16.48,1.28,17.76,0,0,0,0,0,0,0,0,17.76,-4.12,0,0,0,0,0,,0,0,0,13.64,2020-11-30
+The Wing Stop ,,#B09B8,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,18:38,15.49,1.2,16.69,0,0,0,0,0,0,0,0,16.69,-3.87,0,0,0,0,0,,0,0,0,12.82,2020-11-30
+The Wing Stop ,,#8B35F,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,18:59,23.74,1.84,25.58,0,0,0,0,0,0,0,0,25.58,-5.94,0,0,0,0,0,,0,0,0,19.64,2020-11-30
+The Wing Stop ,,#281E9,Delivery - Partner Using Uber App,iOS,Completed,2020-11-23,19:10,14.74,1.14,15.88,0,0,0,0,0,0,0,0,15.88,-3.69,0,0,0,0,0,,0,0,0,12.19,2020-11-30
+The Wing Stop ,,#3A579,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-23,21:10,16.74,1.3,18.04,0,0,0,0,0,0,0,0,18.04,-4.19,0,0,0,0,0,,0,0,0,13.85,2020-11-30
+The Wing Stop ,,#B34CC,Delivery - Partner Using Uber App,Android,Canceled,2020-11-23,22:25,20.97,1.63,22.6,0,0,0,0,0,0,0,0,22.6,-5.24,0,0,0,0,0,,0,0,0,17.36,2020-11-30
+The Wing Stop ,,#0FE40,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-24,12:13,16.74,1.3,18.04,0,0,0,0,0,0,0,0,18.04,-4.19,0,0,0,0,0,,0,0,0,13.85,2020-11-30
+The Wing Stop ,,#68740,Delivery - Partner Using Uber App,Uber Eats Web,Completed,2020-11-24,14:51,17.49,1.36,18.85,0,0,0,0,0,0,0,0,18.85,-4.37,0,0,0,0,0,,0,0,0,14.48,2020-11-30
+The Wing Stop ,,#74D91,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,18:48,16.98,1.32,18.3,0,0,0,0,0,0,0,0,18.3,-4.25,0,0,0,0,0,,0,0,0,14.05,2020-11-30
+The Wing Stop ,,#59EE1,Delivery - Partner Using Uber App,iOS,Completed,2020-11-24,19:32,37.95,2.94,40.89,0,0,0,0,0,0,0,0,40.89,-9.49,0,0,0,0,0,,0,0,0,31.4,2020-11-30
+The Wing Stop ,,#1643F,Delivery - Partner Using Uber App,iOS,Canceled,2020-11-24,22:41,37.48,2.9,40.38,0,0,0,0,0,0,0,0,40.38,-9.37,0,0,0,0,0,,0,0,0,31.01,2020-11-30
+The Wing Stop ,,#D6248,Delivery - Partner Using Uber App,Android,Completed,2020-11-25,11:59,19.98,1.55,21.53,0,0,0,0,0,0,0,0,21.53,-5,0,0,0,0,0,,0,0,0,16.53,2020-11-30
+The Wing Stop ,,#8AE31,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,12:27,36.73,2.85,39.58,0,0,0,0,0,0,0,0,39.58,-9.18,0,0,0,0,0,,0,0,0,30.4,2020-11-30
+The Wing Stop ,,#965DE,Delivery - Partner Using Uber App,iOS,Completed,2020-11-25,21:21,20.73,1.61,22.34,0,0,0,0,0,0,0,0,22.34,-5.18,0,0,0,0,0,,0,0,0,17.16,2020-11-30
+The Wing Stop ,,#96244,Delivery - Partner Using Uber App,iOS,Completed,2020-11-27,16:56,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,2020-11-30
+The Wing Stop ,,#1B8EF,Delivery - Partner Using Uber App,Android,Completed,2020-11-27,18:41,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,2020-11-30
+The Wing Stop ,,#EDF36,Delivery - Partner Using Uber App,iOS,Completed,2020-11-28,21:59,27.74,2.15,29.89,0,0,0,0,0,0,0,0,29.89,-6.94,0,0,0,0,0,,0,0,0,22.95,2020-11-30
+The Wing Stop ,,#CD1CE,Delivery - Partner Using Uber App,Android,Completed,2020-11-30,12:33,19.99,1.55,21.54,0,0,0,0,0,0,0,0,21.54,-5,0,0,0,0,0,,0,0,0,16.54,
+The Wing Stop ,,#3CD62,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,16:34,22.98,1.78,24.76,0,0,0,0,0,0,0,0,24.76,-5.75,0,0,0,0,0,,0,0,0,19.01,
+The Wing Stop ,,#5472A,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,17:48,26.99,2.09,29.08,0,0,0,0,0,0,0,0,29.08,-6.75,0,0,0,0,0,,0,0,0,22.33,
+The Wing Stop ,,#BB2C4,Delivery - Partner Using Uber App,iOS,Completed,2020-11-30,19:26,9.73,0.75,10.48,0,0,0,0,0,0,0,0,10.48,-2.43,0,0,0,0,0,,0,0,0,8.05,
+The Wing Stop ,,#A7FD2,Delivery - Partner Using Uber App,Android,Completed,2020-11-30,20:43,29.99,2.32,32.31,0,0,0,0,0,0,0,0,32.31,-7.5,0,0,0,0,0,,0,0,0,24.81,

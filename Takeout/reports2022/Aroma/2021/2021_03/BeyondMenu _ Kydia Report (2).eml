@@ -1,0 +1,434 @@
+Delivered-To: acehaidrey@gmail.com
+Received: by 2002:ab0:1585:0:0:0:0:0 with SMTP id i5csp4035856uae;
+        Mon, 5 Apr 2021 14:21:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzN3VBP4PgY/xrc/jXNbRCWldIjf5U9tFsGKZ8A/muC8dT49ep1JtpKQrN4/qDcCg5Pvw7T
+X-Received: by 2002:a50:ef11:: with SMTP id m17mr33921975eds.151.1617657698782;
+        Mon, 05 Apr 2021 14:21:38 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1617657698; cv=none;
+        d=google.com; s=arc-20160816;
+        b=EMaTGtpRw2+ghbg8gkSqpvuaB/9xPD8132tpTkc/aOfX1IQ4cbjF4AcCdL8WLFQX33
+         OSkmqRprZh3CfxElOzqYjksJM8A1QnuetrY6kGGt6R59Pe7yZIGScTTYTH2BdYSVmvkM
+         NLwkByjTIlHg0JtfIvTr7WF5I2eahUgqxXY4rRMdy4Neg2fRNQV7Bx3yPHJ7tbkINPI1
+         6J0AQ538e/FM/Da3g7t7+JxISyFKhIQ3BOFBG78Sm+K6AJOhXCF1kwhIuHUlS+hXBuHI
+         y3MVnlCQRefggsc91QA1VzE3u+Nu3R8HVjMiuaTWhpsV4hrbZME+2dxJfZkijZv4hKFl
+         sNTg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=subject:message-id:to:mime-version:from:date
+         :content-transfer-encoding:dkim-signature:dkim-signature;
+        bh=8t7Vno1xskmOyIWQE2NBdBoFVFgG1LSXP0GXe9c0pMg=;
+        b=vkCu37KwgY5cJCm2EDxD+JtAib2kxMhP51vu2NHs4TgmqPCzKUcQfVxaX7upMmgrKx
+         8GTGguZfiXcJ+uDpGM0dSo1gtEzxjRoCwEuaQIQIGSVGUQnSTsvs6hMp9Q26flBnnLoj
+         5GGvQq9nF1L9sUQnWHl9HOSBKh6F6d8puiTrvP0LQf5XfGuqKQe4IeJbCUZILQWE6d7m
+         tZFGmAGe7+i+JkfjUtEHgpXCqKGCnUNpPojEISkOcSrxytmnXBDqCO8+GZjQ69aMnn/N
+         SA6X6GY86cNfqPqMedVQVUozvVANPUzwecNVQFqi5HfafY0ps5aLHWbSA/klXK47g/EX
+         GXTQ==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@beyondmenu.com header.s=s1 header.b=qTrHPM7p;
+       dkim=pass header.i=@sendgrid.info header.s=smtpapi header.b=fdzmBh82;
+       spf=pass (google.com: domain of bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com designates 149.72.185.249 as permitted sender) smtp.mailfrom="bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com";
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=beyondmenu.com
+Return-Path: <bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com>
+Received: from o1.ptr2595.beyondmenu.com (o1.ptr2595.beyondmenu.com. [149.72.185.249])
+        by mx.google.com with ESMTPS id bn11si747435ejb.403.2021.04.05.14.21.38
+        for <acehaidrey@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Apr 2021 14:21:38 -0700 (PDT)
+Received-SPF: pass (google.com: domain of bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com designates 149.72.185.249 as permitted sender) client-ip=149.72.185.249;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@beyondmenu.com header.s=s1 header.b=qTrHPM7p;
+       dkim=pass header.i=@sendgrid.info header.s=smtpapi header.b=fdzmBh82;
+       spf=pass (google.com: domain of bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com designates 149.72.185.249 as permitted sender) smtp.mailfrom="bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com";
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=beyondmenu.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; 
+	d=beyondmenu.com; 
+	h=content-transfer-encoding:content-type:from:mime-version:to:subject; 
+	s=s1; bh=8t7Vno1xskmOyIWQE2NBdBoFVFgG1LSXP0GXe9c0pMg=; b=qTrHPM7
+	pC8NcRlH5f83QshWk6hqMwZh7lm1bU41n2nvLmrIUXUMUdNyxVezuQU24U0uzFgz
+	0DPJvD3MKbHHLIHzNk3TxNNhzVNsY0T41sSXIk77v863Cola/l4Xm1Zjr1lk+X2n
+	CEPjbkcPbpQj+bE6DKoS6EZnICRZgxfeCmDU=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; 
+	d=sendgrid.info; 
+	h=content-transfer-encoding:content-type:from:mime-version:to:subject:x-feedback-id; 
+	s=smtpapi; bh=8t7Vno1xskmOyIWQE2NBdBoFVFgG1LSXP0GXe9c0pMg=; b=fd
+	zmBh8233eSnuyT1n7oYbSFRehST6sT+JS8T6lHppBBzalYV3ZjwCXKjSq5UyALxY
+	JNmbaJ39IYm1Q6fTThZWFrELUrNSEyMwTjW6cCZJpnc8VUMWyIpHD7pZEJWfpHgD
+	tswMvS5DTMoVNz0kc6ywo8TjVghnF6aINUYJJ7IXA=
+Received: by filter1622p1iad2.sendgrid.net with SMTP id filter1622p1iad2-18425-606B7F61-19
+        2021-04-05 21:21:37.682367455 +0000 UTC m=+520617.371915117
+Received: from MTU0MjkyNjc (unknown)
+	by ismtpd0144p1mdw1.sendgrid.net (SG) with HTTP id cOcKCe4fT4CGh-HVw_29JQ
+	Mon, 05 Apr 2021 21:21:37.621 +0000 (UTC)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=UTF-8
+Date: Mon, 05 Apr 2021 21:21:37 +0000 (UTC)
+From: "BeyondMenu" <info@beyondmenu.com>
+Mime-Version: 1.0
+To: acehaidrey@gmail.com
+Message-ID: <cOcKCe4fT4CGh-HVw_29JQ@ismtpd0144p1mdw1.sendgrid.net>
+Subject: BeyondMenu / Kydia Report
+X-SG-EID: 0+IMYgLnW8t6hmzFI1sEpfuZE5GOKk4+TBu0sxynEbJwM08Y/bJctk+rDcA32mO8ij8XEYMKUNrWx+
+ kGCZyKD+oQ9FxwD2jZex1r5BIWRM9GASEcDfARA84PhuZUkdGR+hGGT3Gqf1dR10GzGPBLPkQ6Wl54
+ 2XImCT87SohMMtVPFdfRDMNYNfuO53XpfzGN4MtaZyaFFR7fFe5YaG3jsS/sOUBzYaZFlQKF+9/hLh
+ o=
+X-Entity-ID: paDFd8Wf3W6tjSq2x7eh3Q==
+X-Feedback-ID: 15429267:1yAlQfPiI9C/lm4U+boMCdwH6kOEog2L9hR1awdE/2I=:1yAlQfPiI9C/lm4U+boMCdwH6kOEog2L9hR1awdE/2I=:SG
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml">
+<head><title>
+	Year Report
+</title>
+    <style>
+    body
+{
+}
+
+*
+{
+	color:black !important;
+}
+
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form,=
+ input, textarea, p, blockquote, th, td, img, hr
+{
+	margin: auto 0;
+	padding: 0;
+}
+img
+{
+	border: 0;
+}
+
+td
+{
+}
+
+hr
+{
+	border:none;
+	border-top: 1px solid black;
+	height: 0px;
+}
+
+.hr
+{
+	border:none;
+	border-top: 1px solid black;
+	height: 0px;
+	font-size:0;
+	float:none;
+}
+
+.clear
+{
+	clear:both;
+	height:0px;
+	font-size:0;
+}
+    </style>
+</head>
+<body>
+    <form name=3D"form1" method=3D"post" action=3D"./yearreport.aspx?db=3Db=
+m&amp;beid=3DH7K0C4F3G4G1I4&amp;beginmonth=3D2021-3&amp;endmonth=3D2021-3" =
+id=3D"form1">
+<div>
+<input type=3D"hidden" name=3D"__VIEWSTATE" id=3D"__VIEWSTATE" value=3D"/wE=
+PDwUKMTg3NzMzNDQ3Mg9kFgICAw9kFgICAQ9kFjICAQ8WAh4EVGV4dAUOKDYzMCkgNzc2LTM1OT=
+BkAgMPFgIfAAUVQXJvbWEgUGl6emEgYW5kIFBhc3RhZAIFDxYCHwAFB0JNNTIyMDRkAgcPFgIfA=
+AUMU2FpZCBIYWlkcmV5ZAIJDxYCHwAFEDIwNDkxIEFsdG9uIFBrd3lkAgsPFgIfAAUIMy8xLzIw=
+MjFkAg0PFgIfAAUVTGFrZSBGb3Jlc3QsIENBIDkyNjMwZAIPDxYCHwAFCTMvMzEvMjAyMWQCEQ8=
+WAh8ABQ4oOTQ5KSA5MTYtMDkwOWQCEw8WAh8ABQQ4LjAzZAIVDxYCHwAFDig5NDkpIDkxNi0wOT=
+c5ZAIXDxYCHwAFATRkAhkPFgIfAAUBMGQCGw8WAh8ABQQ5Ljk4ZAIdDxYCHwAFBTEyLjQ2ZAIfD=
+xYCHwAFBTE5LjA0ZAIhDxYCHwAFBjIwMi4xMWQCIw8WAh8ABQQ4LjAzZAInDxYCHwAFBDAuMDBk=
+AikPFgIfAAUEMC4wMGQCKw8WAh8ABQQwLjAwZAItDxYCHwAFBDguMDNkAi8PFgIfAAUEMC4wMGQ=
+CMQ8WAh8ABQQ4LjAzZAIzDw8WAh4HVmlzaWJsZWdkFgQCAQ8WAh8ABQYyMDIuMTFkAgMPFgIfAA=
+UENi42N2RkeN3HZWcn6U8pFbtOGslSoTmCAmtSnZURjdNmtp289EE=3D" />
+</div>
+
+<div>
+
+	<input type=3D"hidden" name=3D"__VIEWSTATEGENERATOR" id=3D"__VIEWSTATEGENE=
+RATOR" value=3D"9441698A" />
+</div>
+        <div>
+=20=20=20=20=20=20=20=20=20=20=20=20
+<div class=3D"wrapper" align=3D"center" style=3D"font-family: Verdana; font=
+-size: 10pt; max-width: 785px; margin: auto; border: solid 1px black; text-=
+align: left;">
+    <div style=3D"text-align: center; font-size: 15pt; font-weight: bold; p=
+adding: 15px 0px 5px 0px; text-transform: uppercase; border-bottom: solid 1=
+px black; display: none;">
+        Important: Beyondmenu.com year end tax summary
+    </div>
+    <div style=3D"margin-top: 10px; padding: 0px 0px 10px 20px; font-size: =
+11pt;">
+        <table style=3D"width: 100%; vertical-align: top;">
+            <tr>
+                <td style=3D"vertical-align: top;">
+                    <div class=3D"headerleft">
+                        <span style=3D"font-size: 23pt; font-weight: bold;"=
+>BeyondMenu</span>
+                    </div>
+                    <div style=3D"padding-top: 10px;">
+                        Kydia Federal TAX ID: 20-0854385
+                    </div>
+                </td>
+                <td>
+                    <span style=3D"font-size: 16pt; font-weight: bold;">Kyd=
+ia Inc</span><br />
+                    10400 W Higgins Rd, #205<br />
+                    Rosemont, IL 60018<br />
+                    Tel:
+                    (630) 776-3590<br />
+                    Fax: (888) 422-4187
+                </td>
+                <td style=3D"vertical-align: top;">
+                    <span style=3D"font-size: 16pt; font-weight: bold;"></s=
+pan>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class=3D"clear">
+    </div>
+    <div style=3D"width: 100%;">
+        <table style=3D"width: 100%; border-collapse: collapse;" border=3D"=
+1" rules=3D"all">
+            <tr style=3D"background-color: #E6E6E6; font-size: 10pt; font-w=
+eight: bold;">
+                <td colspan=3D"4">Restaurant Information:
+                </td>
+            </tr>
+            <tr>
+                <td style=3D"width: 25%;">Restaurant Name:
+                </td>
+                <td style=3D"width: 25%;">
+                    Aroma Pizza and Pasta
+                </td>
+                <td style=3D"width: 25%;">Account Number:
+                </td>
+                <td style=3D"width: 25%; font-weight: bold;">
+                    BM52204
+                </td>
+            </tr>
+            <tr>
+                <td>Name:
+                </td>
+                <td>
+                    Said Haidrey
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Address:
+                </td>
+                <td>
+                    20491 Alton Pkwy
+                </td>
+                <td>Start Date:
+                </td>
+                <td style=3D"font-weight: bold;">
+                    3/1/2021
+                </td>
+            </tr>
+            <tr>
+                <td>City/State/Zip:
+                </td>
+                <td>
+                    Lake Forest, CA 92630
+                </td>
+                <td>End Date:
+                </td>
+                <td style=3D"font-weight: bold;">
+                    3/31/2021
+                </td>
+            </tr>
+            <tr>
+                <td>Phone:
+                </td>
+                <td>
+                    (949) 916-0909
+                </td>
+                <td>Total Amount:
+                </td>
+                <td>$8.03
+                </td>
+            </tr>
+            <tr>
+                <td>Fax:
+                </td>
+                <td>
+                    (949) 916-0979
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <div class=3D"clear">
+        </div>
+        <br />
+        <table style=3D"width: 100%; border-collapse: collapse;" border=3D"=
+1" rules=3D"all">
+            <tr style=3D"background-color: #E6E6E6; font-size: 10pt; font-w=
+eight: bold;">
+                <td colspan=3D"2">Order Summary
+                </td>
+            </tr>
+            <tr>
+                <td style=3D"width: 25%;">Active Order Count:
+                </td>
+                <td style=3D"width: 25%;">
+                    4
+                </td>
+            </tr>
+            <tr>
+                <td>Void Order Count:
+                </td>
+                <td>
+                    0
+                </td>
+            </tr>
+            <tr>
+                <td>Delivery Fee Total:
+                </td>
+                <td>$9.98
+                </td>
+            </tr>
+            <tr>
+                <td>Tax Total:
+                </td>
+                <td>$12.46
+                </td>
+            </tr>
+            <tr>
+                <td>Tip Total:
+                </td>
+                <td>$19.04
+                </td>
+            </tr>
+            <tr>
+                <td>Order Amount Total:
+                </td>
+                <td>$202.11
+                </td>
+            </tr>
+        </table>
+        <br />
+        <table style=3D"width: 100%; border-collapse: collapse;" border=3D"=
+1" rules=3D"all">
+            <tr style=3D"background-color: #E6E6E6; font-size: 10pt; font-w=
+eight: bold;">
+                <td colspan=3D"2">Commission Summary
+                </td>
+            </tr>
+            <tr>
+                <td style=3D"width: 50%;">Order Commission
+                </td>
+                <td>$8.03
+                </td>
+            </tr>
+=20=20=20=20=20=20=20=20=20=20=20=20
+            <tr>
+                <td>Fax Fee
+                </td>
+                <td>$0.00
+                </td>
+            </tr>
+            <tr>
+                <td>Phone Fee
+                </td>
+                <td>$0.00
+                </td>
+            </tr>
+            <tr>
+                <td>Other Fee</td>
+                <td>$0.00
+                </td>
+            </tr>
+            <tr style=3D"font-weight: bold;">
+                <td style=3D"width: 50%;">Subtotal:
+                </td>
+                <td style=3D"width: 50%;">$8.03
+                </td>
+            </tr>
+            <tr>
+                <td>Discount:
+                </td>
+                <td>$0.00
+                </td>
+            </tr>
+            <tr style=3D"font-size: 14pt; font-weight: bold;">
+                <td>TOTAL:
+                </td>
+                <td>$8.03
+                </td>
+            </tr>
+        </table>
+        <div class=3D"clear">
+        </div>
+        <br />
+        <div id=3D"YearReportCtrl1_pnlOnlineCC" style=3D"margin: 0;">
+=09
+            <table style=3D"width: 100%; border-collapse: collapse;" border=
+=3D"1" rules=3D"all">
+                <tr style=3D"background-color: #E6E6E6; font-size: 10pt; fo=
+nt-weight: bold;">
+                    <td colspan=3D"2">Online Credit Card Summary
+                    </td>
+                </tr>
+                <tr>
+                    <td style=3D"width: 50%;">Online CC Collected
+                    </td>
+                    <td>$202.11
+                    </td>
+                </tr>
+                <tr>
+                    <td>Online CC Processing Fee
+                    </td>
+                    <td>$6.67
+                    </td>
+                </tr>
+            </table>
+            <div class=3D"clear">
+            </div>
+            <br />
+=20=20=20=20=20=20=20=20
+</div>
+        <table style=3D"width: 100%; border-collapse: collapse; float: righ=
+t;" border=3D"1" rules=3D"all">
+            <tr style=3D"background-color: #E6E6E6; font-size: 10pt; font-w=
+eight: bold;">
+                <td style=3D"width: 887px">Notes:
+                </td>
+            </tr>
+            <tr>
+                <td style=3D"width: 887px">
+                    <br />
+                </td>
+            </tr>
+        </table>
+        <div class=3D"clear">
+        </div>
+    </div>
+    <div class=3D"clear">
+    </div>
+    <br />
+</div>
+</div>
+    </form>
+
+<img src=3D"http://url496.beyondmenu.com/wf/open?upn=3DT4szy95X1PFB-2BW7lhH=
+NLmm0jj-2FSSYi27GgFkIWM3RGEbIcHysSKzjU5eL53kp7JMhuLkKFG7bIk2a9-2FFvHTa9y-2B=
+NHH6cs9hmF7ZYlQpYDPhsiyBg8RsA-2BanaXOxA-2BKdIX5ku7DE9SJ4VNKur0g7ydA7S-2B4Lq=
+12aRufpjkcRKcYZ5Ww2SVzibqvYLehCqQp9gpm5g7pTHzdik1mfu2lU05-2BAsa7HFZq2evj66g=
+FO2cCo-3D" alt=3D"" width=3D"1" height=3D"1" border=3D"0" style=3D"height:1=
+px !important;width:1px !important;border-width:0 !important;margin-top:0 !=
+important;margin-bottom:0 !important;margin-right:0 !important;margin-left:=
+0 !important;padding-top:0 !important;padding-bottom:0 !important;padding-r=
+ight:0 !important;padding-left:0 !important;"/>
+</body>
+</html>
+

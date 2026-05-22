@@ -1,0 +1,18 @@
+Marketplace,Date,Order_id,Brand,Location,Gross_sales,total_tax,tip,total_gross,popchew_fee,total_adjusted_gross
+Captain,10/31/2021,JNB8JQV,Bitcoin Pizza,Lake Forest,$20.95,$1.62,$3.14,$25.71,$4.19,$21.52
+Grubhub,12/4/2021,O-243817266080007,Bitcoin Pizza,Lake Forest,$133.70,$10.36,$0.00,$144.06,$26.74,$117.32
+Doordash,12/4/2021,1c4b6951,Bitcoin Pizza,Lake Forest,$81.80,$6.34,$0.00,$88.14,$16.36,$71.78
+Ubereats,12/6/2021,#7B2CA,Bitcoin Pizza,Lake Forest,$22.97,$1.78,$0.00,$22.97,$4.59,$18.38
+Doordash,12/7/2021,5f99813e,Bitcoin Pizza,Lake Forest,$20.90,$1.30,$0.00,$22.20,$4.18,$18.02
+Doordash,12/10/2021,5e37c70e,Bitcoin Pizza,Lake Forest,$25.90,$1.62,$0.00,$27.52,$5.18,$22.34
+Grubhub,12/11/2021,O-188317332157952,Bitcoin Pizza,Lake Forest,$31.40,$2.43,$0.00,$33.83,$6.28,$27.55
+Doordash,12/11/2021,4cfe6b9c,Bitcoin Pizza,Lake Forest,$20.95,$1.62,$0.00,$22.57,$4.19,$18.38
+Ubereats,12/12/2021,#E5F31,Bitcoin Pizza,Lake Forest,$20.95,$1.62,$0.00,$20.95,$4.19,$16.76
+Doordash,12/13/2021,a0ebfc79,Bitcoin Pizza,Lake Forest,$25.90,$1.62,$0.00,$27.52,$5.18,$22.34
+Ubereats,12/16/2021,#80FF3,Bitcoin Pizza,Lake Forest,$29.90,$2.32,$0.00,$29.90,$5.98,$23.92
+Grubhub,12/26/2021,O-670117486937884,Bitcoin Pizza,Lake Forest,$23.95,$1.86,$0.00,$25.81,$4.79,$21.02
+Ubereats,12/27/2021,#9A3B8,Bitcoin Pizza,Lake Forest,$20.95,$1.62,$0.00,$20.95,$4.19,$16.76
+Doordash,12/27/2021,8a655e53,Bitcoin Pizza,Lake Forest,$23.95,$1.86,$0.00,$25.81,$4.79,$21.02
+Doordash,12/27/2021,74e510bc,Bitcoin Pizza,Lake Forest,$28.91,$1.48,$0.00,$30.39,$5.78,$19.65
+Ubereats,12/29/2021,#BB992,Bitcoin Pizza,Lake Forest,$23.95,$1.47,$0.00,$23.95,$4.79,$19.16
+Doordash,12/29/2021,74e510bc,Bitcoin Pizza,Lake Forest,$4.96,$0.00,$0.00,$4.96,$0.99,$3.97

@@ -114,6 +114,25 @@ class GrubhubOrdersParser(BaseParser):
                     raise
         supplement = {}
         supplement_suffix = {}
+        adjustments_overrides = {}
+        overrides_path = raw_path("grubhub", "grubhub_adjustments.csv")
+        if os.path.exists(overrides_path):
+            overrides_df = pd.read_csv(overrides_path, dtype=str).fillna("")
+            for _, override in overrides_df.iterrows():
+                oid = str(override.get("order_id", "")).strip()
+                if not oid:
+                    continue
+                service_fee_override = override.get("service_fee_override", "")
+                try:
+                    service_fee_override = float(service_fee_override)
+                except (TypeError, ValueError):
+                    service_fee_override = None
+                note = str(override.get("note", "")).strip()
+                adjustments_overrides[oid] = {
+                    "service_fee_override": service_fee_override,
+                    "note": note,
+                }
+
         if supplemental_path and os.path.exists(supplemental_path):
             sup_df = pd.read_csv(supplemental_path, dtype=str).fillna("")
             for _, sup_row in sup_df.iterrows():
@@ -148,6 +167,8 @@ class GrubhubOrdersParser(BaseParser):
             rows = group.to_dict("records")
             merged_count = len(rows)
 
+            order_id_clean = _clean_str(order_id)
+
             restaurants = [_clean_str(r.get("Restaurant", "")) for r in rows]
             fulfillment_types = [_clean_str(r.get("Fulfillment Type", "")) for r in rows]
             order_types_raw = [_clean_str(r.get("Type", "")) for r in rows]
@@ -156,9 +177,15 @@ class GrubhubOrdersParser(BaseParser):
             date_str = _join_distinct([_clean_str(r.get("Date", "")) for r in rows])
             time_str = _join_distinct([_clean_str(r.get("Time", "")) for r in rows])
 
+
             subtotal = sum(_to_num(r.get("Subtotal", "")) for r in rows)
             delivery_fee = sum(_to_num(r.get("Delivery Fee", "")) for r in rows)
             service_fee = sum(_to_num(r.get("Service Fee", "")) for r in rows)
+            override_note = ""
+            override = adjustments_overrides.get(order_id_clean)
+            if override is not None and override.get("service_fee_override") is not None:
+                service_fee = override["service_fee_override"]
+                override_note = override.get("note", "")
             service_fee_exemption = sum(_to_num(r.get("Service Fee Exemption", "")) for r in rows)
             flexible_fees = sum(_to_num(r.get("(flexible fees)", "")) for r in rows)
             tax_fee = sum(_to_num(r.get("Tax Fee", "")) for r in rows)
@@ -177,12 +204,13 @@ class GrubhubOrdersParser(BaseParser):
             # computed fields
             tax = tax_fee - tax_fee_exemption
             tax_withheld = withheld_tax + withheld_tax_exemption
-            misc_fee = service_fee + service_fee_exemption + flexible_fees
+            misc_fee = service_fee_exemption + flexible_fees
             commission_fee = commission + gh_plus_commission + delivery_commission
             marketing_fee = targeted_promo + rewards
 
-            order_id_clean = _clean_str(order_id)
             has_adjustment_rows, adjustment_total = compute_adjustment_total(order_id_clean, rows)
+            if abs(service_fee) >= 0.01:
+                adjustment_total += service_fee
 
             restaurant = _join_distinct(restaurants)
             provider = normalize_provider(restaurant)
@@ -194,6 +222,8 @@ class GrubhubOrdersParser(BaseParser):
                 notes.append(f"merged_rows={merged_count}")
             if order_id_clean.startswith("W-"):
                 notes.append("commission_free_link")
+            if override_note:
+                notes.append(override_note)
             if has_adjustment_rows:
                 notes.append(f"adjustment_total={adjustment_total:.2f}")
             if fulfillment == "self delivery":
@@ -208,8 +238,24 @@ class GrubhubOrdersParser(BaseParser):
 
             order_type_raw = _join_distinct(order_types_raw)
             payment_type = ""
-            if order_type_raw.lower() == "prepaid order":
+            order_type_raw_l = order_type_raw.lower()
+            if order_id_clean.startswith("T-"):
                 payment_type = PaymentTypes.CREDIT
+            if "adjustment" in order_type_raw_l:
+                payment_type = PaymentTypes.CREDIT
+            if "prepaid order" in order_type_raw_l:
+                payment_type = PaymentTypes.CREDIT
+            elif "phone order" in order_type_raw_l:
+                order_type = OrderTypes.PHONE_CALL
+                payment_type = PaymentTypes.CREDIT
+            elif "cash order" in order_type_raw_l:
+                payment_type = PaymentTypes.CASH
+                expected_total = subtotal + delivery_fee + tax + tip
+                if abs(expected_total - total) >= 0.01:
+                    notes.append(f"cash_total_adjusted_from={total:.2f}")
+                    total = expected_total
+                if abs(tip) >= 0.01:
+                    notes.append(f"cash_tip_nonzero={tip:.2f}")
             elif order_type_raw:
                 notes.append(f"payment_type_raw={order_type_raw}")
 
@@ -218,6 +264,25 @@ class GrubhubOrdersParser(BaseParser):
                 notes.append(description)
 
             order_datetime = _build_datetime(date_str, time_str)
+
+            zero_financials = all(
+                abs(value) < 0.01
+                for value in (
+                    subtotal,
+                    tax,
+                    tax_withheld,
+                    tip,
+                    delivery_fee,
+                    total,
+                    commission_fee,
+                    processing_fee,
+                    marketing_fee,
+                    misc_fee,
+                    adjustment_total,
+                )
+            )
+            if zero_financials:
+                continue
 
             sup = supplement.get(order_id_clean)
             if sup is None and "-" in order_id_clean:
@@ -233,6 +298,13 @@ class GrubhubOrdersParser(BaseParser):
             if sup is None:
                 sup = {}
 
+            def _fmt(value: float, force_zero: bool = False) -> str:
+                if value:
+                    return f"{value:.2f}"
+                return "0.00" if force_zero else ""
+
+            force_zero_values = order_id_clean.startswith("T-")
+
             grouped.append(build_normalized_row(
                 Platforms.GRUBHUB.upper(),
                 order_id=order_id_clean,
@@ -241,17 +313,17 @@ class GrubhubOrdersParser(BaseParser):
                 order_datetime=order_datetime,
                 order_type=order_type,
                 payment_type=payment_type,
-                subtotal=f"{subtotal:.2f}" if subtotal else "",
-                tax=f"{tax:.2f}" if tax else "",
-                tax_withheld=f"{tax_withheld:.2f}" if tax_withheld else "",
-                tip=f"{tip:.2f}" if tip else "",
-                delivery_fee=f"{delivery_fee:.2f}" if delivery_fee else "",
-                total=f"{total:.2f}" if total else "",
-                commission_fee=f"{commission_fee:.2f}" if commission_fee else "",
-                processing_fee=f"{processing_fee:.2f}" if processing_fee else "",
-                marketing_fee=f"{marketing_fee:.2f}" if marketing_fee else "",
-                misc_fee=f"{misc_fee:.2f}" if misc_fee else "",
-                adjustments=f"{adjustment_total:.2f}" if adjustment_total else "",
+                subtotal=_fmt(subtotal, force_zero_values),
+                tax=_fmt(tax, force_zero_values),
+                tax_withheld=_fmt(tax_withheld, force_zero_values),
+                tip=_fmt(tip, force_zero_values),
+                delivery_fee=_fmt(delivery_fee, force_zero_values),
+                total=_fmt(total, force_zero_values),
+                commission_fee=_fmt(commission_fee, force_zero_values),
+                processing_fee=_fmt(processing_fee, force_zero_values),
+                marketing_fee=_fmt(marketing_fee, force_zero_values),
+                misc_fee=_fmt(misc_fee, force_zero_values),
+                adjustments=_fmt(adjustment_total, force_zero_values),
                 payout="",
                 customer_name=sup.get("customer_name", ""),
                 company_name=sup.get("company_name", ""),
@@ -263,7 +335,138 @@ class GrubhubOrdersParser(BaseParser):
                 notes=" | ".join([n for n in notes if n]),
             ))
 
+
+        def _merge_prefix_orders(rows):
+            def base_id(value: str) -> str:
+                base = re.sub(r"^[A-Za-z]+-", "", str(value))
+                if re.search(r"[A-Za-z]", base):
+                    return base
+                return re.sub(r"\D", "", base)
+
+            def prefix_rank(value: str) -> int:
+                value = str(value)
+                if value.startswith("W-"):
+                    return 0
+                if value.startswith("O-"):
+                    return 1
+                if value.startswith("T-"):
+                    return 2
+                return 3
+
+            numeric_fields = [
+                "subtotal",
+                "tax",
+                "tax_withheld",
+                "tip",
+                "delivery_fee",
+                "total",
+                "commission_fee",
+                "processing_fee",
+                "marketing_fee",
+                "misc_fee",
+                "adjustments",
+                "expected_payout",
+                "payout",
+            ]
+
+            grouped_rows = {}
+            for row in rows:
+                key = (
+                    row.get("provider", ""),
+                    row.get("restaurant_name", ""),
+                    base_id(row.get("order_id", "")),
+                )
+                grouped_rows.setdefault(key, []).append(row)
+
+            merged_rows = []
+            for (_, _, _), items in grouped_rows.items():
+                if len(items) == 1:
+                    merged_rows.append(items[0])
+                    continue
+
+                items_sorted = sorted(items, key=lambda r: prefix_rank(r.get("order_id", "")))
+                merged = dict(items_sorted[0])
+
+                merged_ids = [r.get("order_id", "") for r in items_sorted if r.get("order_id", "")]
+                merge_note = f"merged_orders={','.join(merged_ids)}" if merged_ids else ""
+
+                # earliest order_datetime
+                parsed_dates = []
+                for r in items_sorted:
+                    value = str(r.get("order_datetime", "")).strip()
+                    if not value:
+                        continue
+                    parsed = pd.to_datetime(value, errors="coerce")
+                    if pd.notna(parsed):
+                        parsed_dates.append(parsed)
+                if parsed_dates:
+                    merged["order_datetime"] = min(parsed_dates).isoformat()
+
+                # merge enum fields
+                for enum_field, note_key in ("order_type", "order_type_mismatch"), ("payment_type", "payment_type_mismatch"):
+                    values = [str(r.get(enum_field, "")).strip() for r in items_sorted if str(r.get(enum_field, "")).strip()]
+                    if values:
+                        merged[enum_field] = values[0]
+                        if len(set(values)) > 1:
+                            merged.setdefault("notes", "")
+                            merged["notes"] = " | ".join([v for v in [merged.get("notes", ""), note_key] if v])
+
+                # sum numeric fields
+                for field in numeric_fields:
+                    total_value = 0.0
+                    for r in items_sorted:
+                        raw = str(r.get(field, "")).strip()
+                        if not raw:
+                            continue
+                        try:
+                            total_value += float(raw)
+                        except ValueError:
+                            continue
+                    merged[field] = f"{total_value:.2f}" if abs(total_value) >= 0.01 else ""
+
+                # first non-empty for other fields
+                for field in ["customer_name", "company_name", "phone", "email", "address", "items", "item_count"]:
+                    if merged.get(field):
+                        continue
+                    for r in items_sorted:
+                        value = str(r.get(field, "")).strip()
+                        if value:
+                            merged[field] = value
+                            break
+
+                notes = [str(r.get("notes", "")).strip() for r in items_sorted if str(r.get("notes", "")).strip()]
+                if merge_note:
+                    notes.append(merge_note)
+                note_tokens = []
+                for note in notes:
+                    for token in [t.strip() for t in note.split("|")]:
+                        if token:
+                            note_tokens.append(token)
+                merged["notes"] = " | ".join(dict.fromkeys(note_tokens))
+
+                # Drop merged rows that net to zero across financial fields.
+                all_zero = True
+                for field in numeric_fields:
+                    raw = str(merged.get(field, "")).strip()
+                    if raw:
+                        try:
+                            if abs(float(raw)) >= 0.01:
+                                all_zero = False
+                                break
+                        except ValueError:
+                            all_zero = False
+                            break
+                if all_zero:
+                    continue
+
+                merged_rows.append(merged)
+
+            return merged_rows
+
+        grouped = _merge_prefix_orders(grouped)
+
         return grouped
+
 
 
 def run(input_path: str, out_path: str) -> int:

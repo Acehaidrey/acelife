@@ -119,6 +119,30 @@ def map_rows(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def run(
+    in_path: str = "orders_analytics/data/raw/brygid/orders_raw_from_csvs.csv",
+    out_path: str = "orders_analytics/data/raw/brygid/orders_raw_from_csvs_normalized.csv",
+) -> None:
+    in_path = Path(in_path)
+    if not in_path.exists():
+        raise SystemExit(f"Missing input: {in_path}")
+
+    df = pd.read_csv(in_path, dtype=str).fillna("")
+    mapped = map_rows(df)
+
+    # Ensure standard raw columns are first
+    for col in RAW_COLUMNS:
+        if col not in mapped.columns:
+            mapped[col] = ""
+    ordered = RAW_COLUMNS + [c for c in mapped.columns if c not in RAW_COLUMNS]
+    mapped = mapped[ordered]
+
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    mapped.to_csv(out_path, index=False)
+    print(f"Wrote {len(mapped)} rows -> {out_path}")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Normalize aggregated Brygid report CSVs into raw schema for review."
@@ -135,25 +159,7 @@ def main() -> None:
         help="Output normalized CSV path.",
     )
     args = parser.parse_args()
-
-    in_path = Path(args.in_path)
-    if not in_path.exists():
-        raise SystemExit(f"Missing input: {in_path}")
-
-    df = pd.read_csv(in_path, dtype=str).fillna("")
-    mapped = map_rows(df)
-
-    # Ensure standard raw columns are first
-    for col in RAW_COLUMNS:
-        if col not in mapped.columns:
-            mapped[col] = ""
-    ordered = RAW_COLUMNS + [c for c in mapped.columns if c not in RAW_COLUMNS]
-    mapped = mapped[ordered]
-
-    out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    mapped.to_csv(out_path, index=False)
-    print(f"Wrote {len(mapped)} rows -> {out_path}")
+    run(args.in_path, args.out)
 
 
 if __name__ == "__main__":

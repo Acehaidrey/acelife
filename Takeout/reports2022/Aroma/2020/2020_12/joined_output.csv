@@ -1,0 +1,33 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Dec 2020,Aroma,Toast,4655.21,30968.5,2303.3,441.0,2359.29,34757.33,0.0,866.38,"Get true del fee from service charges in backend.
+Cross check fees for credit processing."
+Dec 2020,Aroma,Menufy,138.64,217.79,20.67,6.98,22.58,201.52,15.0,7.27,
+Dec 2020,Aroma,Postmates,0.0,3371.89,0.0,0.0,242.52,2559.24,836.89,0.0,Missing Orders: [469]
+Dec 2020,Aroma,Ezcater,0.0,212.4,0.0,25.0,13.49,176.72,29.84,5.84,
+Dec 2020,Aroma,Menustar,114.35,0.0,0.0,0.0,8.47,-8.47,8.47,0.0,Merchant Services included in commission.
+Dec 2020,Aroma,Ubereats,0.0,2134.12,0.0,0.0,153.53,1784.13,340.14,0.0,
+Dec 2020,Aroma,Office Express,0.0,1209.36,0.0,0.0,0.0,846.55,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Dec 2020,Aroma,Grubhub,30.14,7490.66,867.49,613.73,453.75,5607.18,1512.7,271.29,"Missing ids for reimbursement: {741313678961357, 164813755923759}
+$200.0 in promo fees. $99.0 reimbursed.
+$100.51 in adjustment payments (Not Counted In)"
+Dec 2020,Aroma,Doordash,0.0,22315.97,0.0,0.0,1592.26,18914.87,3108.96,0.0,"Transaction types found: ['ERROR_CHARGE', 'STORE_PAYMENT', 'ADJUSTMENT'] 
+Net Adjustments: $-52.56 Payout Records Total: $17068.1 Marketing Fees: $239.58"
+Dec 2020,Aroma,Eatstreet,0.0,12.29,0.0,0.0,0.0,8.8,1.84,0.7,Withheld taxes remitted: $0.95
+Dec 2020,Aroma,Cater2Me,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Dec 2020,Aroma,Fooda,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Dec 2020,Aroma,Delivery.Com,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Cross check commission/merchant services.
+Get del fees from backend."
+Dec 2020,Aroma,Slice,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Get report from statement.
+Withheld taxes remitted: $0.00"
+Dec 2020,Aroma,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Get report by phone app or through an email from them.
+Dec 2020,Aroma,Future Foods,0.0,30805.32,0.0,0.0,2089.2,19428.4,11200.94,0.0,"Dates: Dec 25 - Dec 11, 2020. Adjustment Amount: $-175.98000000000002
+Future Foods Payout: $15381.56. Percent Comm: 39%"
+Dec 2020,Aroma,On Demand Co,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Dec 2020,The Wing Stop,Ubereats,0.0,2284.15,0.0,0.0,162.35,1795.11,489.04,0.0,
+Dec 2020,The Wing Stop,Grubhub,0.0,796.26,0.0,0.0,52.06,595.22,221.77,32.99,$53.72 in adjustment payments (Not Counted In)
+Dec 2020,The Wing Stop,Postmates,0.0,1233.48,0.0,0.0,88.71,920.25,308.87,0.0,"Adjustments: 4.36, Reimbursements: 0.0. Fix in console."
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Dec 2020,Trattoria Contadina,Ubereats,0.0,1173.2,0.0,0.0,86.98,906.56,266.64,0.0,
+Dec 2020,Trattoria Contadina,Grubhub,0.0,1271.85,0.0,0.0,91.5,872.01,354.15,45.69,
+Dec 2020,Trattoria Contadina,Postmates,0.0,1281.77,0.0,0.0,92.2,960.79,320.98,0.0,

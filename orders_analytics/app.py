@@ -133,7 +133,7 @@ def ingest_normalized(conn: duckdb.DuckDBPyConnection) -> int:
         return 0
     frames = []
     for path in files:
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, low_memory=False)
         if "phone" in df.columns:
             def _normalize_phone(value):
                 if pd.isna(value):
@@ -1605,9 +1605,12 @@ def main() -> None:
                 st.dataframe(ameci_royalty_only, column_config=ameci_royalty_config, width="stretch")
             st.subheader("All Providers")
             totals = {col: ameci_monthly[col].sum() for col in total_cols if col in ameci_monthly.columns}
-            totals.update({"platform": "", "provider": "Total", "year": "", "month": ""})
+            totals.update({"platform": "", "provider": "Total", "year": pd.NA, "month": pd.NA})
             ameci_monthly = ameci_monthly.copy()
             ameci_monthly = pd.concat([ameci_monthly, pd.DataFrame([totals])], ignore_index=True)
+            for col in ["year", "month"]:
+                if col in ameci_monthly.columns:
+                    ameci_monthly[col] = pd.to_numeric(ameci_monthly[col], errors="coerce").astype("Int64")
             ameci_monthly = ameci_monthly[display_cols]
 
             ameci_column_config = {

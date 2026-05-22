@@ -33,7 +33,7 @@ def validate_required_fields(
     rows: List[Dict[str, str]],
     source: str,
 ) -> Tuple[List[Dict[str, str]], List[Dict[str, str]]]:
-    required = ["order_id", "platform", "provider", "order_datetime", "order_type"]
+    required = ["order_id", "platform", "provider", "order_datetime", "order_type", "payment_type"]
     errors: List[Dict[str, str]] = []
     for row in rows:
         missing = [key for key in required if not str(row.get(key) or "").strip()]

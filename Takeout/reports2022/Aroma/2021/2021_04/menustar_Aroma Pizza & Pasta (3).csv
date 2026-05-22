@@ -1,0 +1,13 @@
+Invoice,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7
+,,,,,,,
+Date,Subtotal,Tax,Delivery Fee,Tip,Total,Payment Type,Order Type
+2021-04-01 19:39:06,30.8,2.46,0,0,33.26,credit_card,pickup
+2021-04-16 23:06:00,25.98,2.32,2.99,4.69,35.98,credit_card,delivery
+2021-04-30 22:30:53,43.17,3.69,2.99,0,49.85,credit_card,delivery
+Total,99.95,8.47,5.98,4.69,119.09,,
+,,,,,,,
+All Orders,119.09,,(all orders including cash and credit card paid orders),,,,
+Pre-Paid Orders,119.09,,(orders where the customer paid with a credit card online),,,,
+MenuStar Fees,12.47,,(includes credit card processing fee),,,,
+Adjustments,0,,(credits/debts posted to your account),,,,
+Net Payout,106.62,,(amount will be paid in your account in 3-4 days),,,,

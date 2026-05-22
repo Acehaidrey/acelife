@@ -1,0 +1,7 @@
+Index,Event Date,Event Id,Order Placed By,Account Internal Name,Vendor Internal Names,Meal Period,Delivery Commission Amt,Delivery Fee,Food Sales,Gross Food Sales,Payment Processing Fee,Provider Total,Tax,Total Commission
+6,10/11/2021,191502,Justine Breen,Lordstown Motors Co,Aroma Pizza and Pasta,Lunch,8.47,42.36000000000001,423.64,502.12,10.040000000000001,398.88,36.120000000000005,93.2
+5,10/15/2021,191316,Justine Breen,Alteryx Irvine,"Fooda - LA/OC, Aroma Pizza and Pasta",Lunch,5.04,25.18,251.79,298.44,6.07,236.98,21.470000000000002,55.400000000000006
+3,10/18/2021,193264,Justine Breen,Alteryx Irvine,"Aroma Pizza and Pasta, Fooda - LA/OC",Lunch,3.6,17.98,179.85,213.16,4.41,169.18,15.33,39.57
+4,10/18/2021,193537,Erin Keane,Fooda OC,Aroma Pizza and Pasta,Lunch,6.41,32.05,153.25,187.78,3.9099999999999997,177.46,2.48,6.41
+2,10/25/2021,193727,Justine Breen,Lordstown Motors Co,Aroma Pizza and Pasta,Lunch,8.95,44.760000000000005,447.62,530.54,10.600000000000001,421.46,38.160000000000004,98.47000000000001
+1,10/26/2021,193737,Justine Breen,Alteryx Irvine,"Fooda - LA/OC, Aroma Pizza and Pasta",Lunch,8.47,42.330000000000005,423.34,501.76,10.030000000000001,398.6,36.09,93.14

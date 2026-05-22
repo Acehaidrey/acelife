@@ -48,27 +48,13 @@ def dedupe_best(df: pd.DataFrame) -> pd.DataFrame:
     return df.drop(columns=["__score"])
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description="Merge Brygid email + CSV orders into orders_raw.csv.")
-    parser.add_argument(
-        "--email",
-        default="orders_analytics/data/raw/brygid/orders_raw_from_email.csv",
-        help="Email-sourced orders CSV.",
-    )
-    parser.add_argument(
-        "--csv",
-        default="orders_analytics/data/raw/brygid/orders_raw_from_csvs_normalized.csv",
-        help="CSV-sourced normalized orders.",
-    )
-    parser.add_argument(
-        "--out",
-        default="orders_analytics/data/raw/brygid/orders_raw.csv",
-        help="Output merged orders_raw.csv path.",
-    )
-    args = parser.parse_args()
-
-    email = pd.read_csv(args.email, dtype=str).fillna("")
-    csvs = pd.read_csv(args.csv, dtype=str).fillna("")
+def run(
+    email_path: str = "orders_analytics/data/raw/brygid/orders_raw_from_email.csv",
+    csv_path: str = "orders_analytics/data/raw/brygid/orders_raw_from_csvs_normalized.csv",
+    out_path: str = "orders_analytics/data/raw/brygid/orders_raw.csv",
+) -> None:
+    email = pd.read_csv(email_path, dtype=str).fillna("")
+    csvs = pd.read_csv(csv_path, dtype=str).fillna("")
 
     # Ensure columns exist
     for col in RAW_COLUMNS:
@@ -106,10 +92,31 @@ def main() -> None:
     # preserve column order
     out = out[RAW_COLUMNS]
 
-    out_path = Path(args.out)
+    out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(out_path, index=False)
     print(f"Wrote {len(out)} rows -> {out_path}")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Merge Brygid email + CSV orders into orders_raw.csv.")
+    parser.add_argument(
+        "--email",
+        default="orders_analytics/data/raw/brygid/orders_raw_from_email.csv",
+        help="Email-sourced orders CSV.",
+    )
+    parser.add_argument(
+        "--csv",
+        default="orders_analytics/data/raw/brygid/orders_raw_from_csvs_normalized.csv",
+        help="CSV-sourced normalized orders.",
+    )
+    parser.add_argument(
+        "--out",
+        default="orders_analytics/data/raw/brygid/orders_raw.csv",
+        help="Output merged orders_raw.csv path.",
+    )
+    args = parser.parse_args()
+    run(args.email, args.csv, args.out)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,24 @@
+Transaction ID,Merchant Delivery ID,Timestamp Local Date,Payout Date,Store Name,Store ID,Store Address,Business ID,Merchant Store ID,Error Charge,Adjustment,Transaction Type,Description
+360890593,1e0cd4e0-406e-45e4-850c-6ad12c6a80c9,2022-01-21,2022-01-25,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,0.0,6.01,ADJUSTMENT,merchant_payment_adjustment
+360889842,ffb33b11-db7f-4df3-8dc0-4cae2a84d7c8,2022-01-21,2022-01-25,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,0.0,3.71,ADJUSTMENT,merchant_payment_adjustment
+360650303,9c9fbfeb-7e22-40d5-a079-0acb9dd8aa80,2022-01-21,2022-01-25,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,5.68,0.0,ERROR_CHARGE,Issue: 1 Cheese Pizza missing
+360890335,81bb19ce-b92a-414c-8d21-f7a5b2274ff6,2022-01-21,2022-01-25,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,0.0,3.48,ADJUSTMENT,merchant_payment_adjustment
+360890982,fa93a35d-5a97-46e5-8b5d-bf07a28370bf,2022-01-21,2022-01-25,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,0.0,4.88,ADJUSTMENT,merchant_payment_adjustment
+358500594,ffb33b11-db7f-4df3-8dc0-4cae2a84d7c8,2022-01-17,2022-01-21,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,3.71,0.0,ERROR_CHARGE,Issue: 1 Small Side Salad missing
+356887838,81bb19ce-b92a-414c-8d21-f7a5b2274ff6,2022-01-15,2022-01-19,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,3.48,0.0,ERROR_CHARGE,Issue: 1 Baked Rigatoni missing
+354989435,1e0cd4e0-406e-45e4-850c-6ad12c6a80c9,2022-01-12,2022-01-17,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,6.01,0.0,ERROR_CHARGE,Issue: 1 Create Your Own Pasta missing
+354055403,fa93a35d-5a97-46e5-8b5d-bf07a28370bf,2022-01-10,2022-01-14,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,4.88,0.0,ERROR_CHARGE,"Issue: 1 Cheese Calzone missing
+1 Combo Pizza missing"
+350878705,c72052d7-6886-46a7-a344-880bdda41f40,2022-01-05,2022-01-10,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,3.7,0.0,ERROR_CHARGE,Issue: 1 Create Your Own Pasta missing
+351588659,cfeb2121-140d-44a9-b090-2aa391112f69,2022-01-06,2022-01-10,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,3.02,0.0,ERROR_CHARGE,Issue: 1 1. Pizza Special missing
+349177073,ea29ec75-67ea-4de1-9ffa-0ee68efd128c,2022-01-02,2022-01-06,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,2.78,0.0,ERROR_CHARGE,Issue: 1 Snapple missing
+348457545,4e15b761-b15b-44c2-99d4-c44be5aec495,2022-01-01,2022-01-05,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,0.7,0.0,ERROR_CHARGE,Issue: 1 Additional Sauce missing
+347623200,e31a2085-2bd7-4e67-ac4a-53086d6e1f56,2021-12-31,2022-01-04,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,9.26,0.0,ERROR_CHARGE,"Issue: 1 Cannoli missing
+1 Cannoli missing"
+347637241,7717c653-8ccd-40c8-8957-78bb86ab07ce,2021-12-31,2022-01-04,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,8.39,0.0,ERROR_CHARGE,"Issue: 1 Can Soda (12 Oz.) missing
+1 Cheese Pizza missing
+1 New! Black Truffle Burrata Pizza missing"
+346832439,0d66cfe2-cd86-40ed-82c6-4c7fd5673fa9,2021-12-30,2022-01-03,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,6.5,0.0,ERROR_CHARGE,"Issue: 1 BBQ Wings missing
+1 Cheese Pizza missing"
+346848079,0d66cfe2-cd86-40ed-82c6-4c7fd5673fa9,2021-12-30,2022-01-03,Aroma Pizza & Pasta,486867,"20491 Alton Pkwy Ste B, Lake Forest, CA 92610, USA",223895,NULL,28.74,0.0,ERROR_CHARGE,"Issue: 1 Cheese Pizza missing
+1 Cheese Pizza missing"

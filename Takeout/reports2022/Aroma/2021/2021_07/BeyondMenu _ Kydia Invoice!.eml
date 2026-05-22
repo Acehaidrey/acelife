@@ -1,0 +1,548 @@
+Delivered-To: acehaidrey@gmail.com
+Received: by 2002:ab0:166d:0:0:0:0:0 with SMTP id l42csp1272038uae;
+        Sun, 1 Aug 2021 11:15:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyEQEZyQNLMQFUOTxD93g2viC21HQyqCZcwdswUm48TEFNTn2BAk4XJ9gkSjTkn9XThDQN5
+X-Received: by 2002:a92:dcc2:: with SMTP id b2mr1475300ilr.84.1627841737551;
+        Sun, 01 Aug 2021 11:15:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1627841737; cv=none;
+        d=google.com; s=arc-20160816;
+        b=pkElPG00u8hpuPMMp5cOgQdeOqsqkMyTuSAwl+MJWq7rzwivsisTGAPfPewaGKjUjh
+         AJSXIN6kDi0qedD1keuHtLrarXvY13Yv6rc2M7MhxyZqgyQQBQPoEwbXRxsV34sMNDJS
+         fpdih4459dKkYsq3wlLRivznOpmGJgSJw/UliM0BmrPdlaF70UqH+FhMsbn/4vSEosf/
+         hpv2vb4vbsdB2vhF/cXsNTVdgqKZ9yvBf2+wqOmFdeUQV+Lw1iq29s2Dusb/muXYRoE7
+         md0/AjnxfgOL1Grl4r0c/Vz3wJFOgeTl4PtdUN8NHZBBcsjcQkDadBCGLRB8oweMglat
+         8v7w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=subject:message-id:to:mime-version:from:date
+         :content-transfer-encoding:dkim-signature:dkim-signature;
+        bh=HPBmEToNp+S66YPnkaNLmeaRoQwklYIOWCoUDkrWyFA=;
+        b=LZscc/IT0nS1c9WlcCVQl0sCSDy89EYIA94hqlFpmlSEqshPJJs1PRlaJ3l3BXpOWM
+         rFTkn7IO1NEcAX0NBNuY8WR5UXH9mU3c4VhYY0AdlNe1FbDkOc/J5FTfx7ChUOnO84FX
+         95r3EDEILOMI6ZSbU2tV6N//aGGgS+KBNfpVbm4v/F7Tub2gJ5cDypkcSxIcoEgt4Niq
+         8BwF7bUq+wh7xg8E0ZzV5MnefkaGS+BOxyXAjJJGugbed8ccGfd4mRDEl0mAXslTjCwY
+         oNqM0jcvqyBKpTWnNM/xQrKt9oiAlh4/xFThad1q+qIO21iZFxe2ThQ43DZ8odC75AeB
+         EYTQ==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@beyondmenu.com header.s=s2 header.b=vUiD41q0;
+       dkim=pass header.i=@sendgrid.info header.s=smtpapi header.b="Nv1xqV/+";
+       spf=pass (google.com: domain of bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com designates 149.72.185.249 as permitted sender) smtp.mailfrom="bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com";
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=beyondmenu.com
+Return-Path: <bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com>
+Received: from o1.ptr2595.beyondmenu.com (o1.ptr2595.beyondmenu.com. [149.72.185.249])
+        by mx.google.com with ESMTPS id q21si9777077jat.69.2021.08.01.11.15.37
+        for <acehaidrey@gmail.com>
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 01 Aug 2021 11:15:37 -0700 (PDT)
+Received-SPF: pass (google.com: domain of bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com designates 149.72.185.249 as permitted sender) client-ip=149.72.185.249;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@beyondmenu.com header.s=s2 header.b=vUiD41q0;
+       dkim=pass header.i=@sendgrid.info header.s=smtpapi header.b="Nv1xqV/+";
+       spf=pass (google.com: domain of bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com designates 149.72.185.249 as permitted sender) smtp.mailfrom="bounces+15429267-f921-acehaidrey=gmail.com@em9205.beyondmenu.com";
+       dmarc=pass (p=QUARANTINE sp=QUARANTINE dis=NONE) header.from=beyondmenu.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; 
+	d=beyondmenu.com; 
+	h=content-transfer-encoding:content-type:from:mime-version:to:subject; 
+	s=s2; bh=HPBmEToNp+S66YPnkaNLmeaRoQwklYIOWCoUDkrWyFA=; b=vUiD41q
+	0oIMPTE07u1JgTJTC3Erjjg3UD6aDnI4tbQcG94oToPr3xuOgh+wJR4PoOVpQsWh
+	RZZ7hgGi6cGbQueJUh+zd8e0RmEX50Fcr1uzAbTiBxFGS3EPDMqAyFkmOt9m+c9A
+	tLgQKumznx1y6fUHUAMs/l8nhGjM/cc9fgQc=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; 
+	d=sendgrid.info; 
+	h=content-transfer-encoding:content-type:from:mime-version:to:subject:x-feedback-id; 
+	s=smtpapi; bh=HPBmEToNp+S66YPnkaNLmeaRoQwklYIOWCoUDkrWyFA=; b=Nv
+	1xqV/+xGC7WqzLyX59AdcD2AWT05EEm/GgPkRf9W+KNT0xTBE57aVjxlf628D1C1
+	C8AhD1pUajtmLsXAQGQ0Aq/WqRXkew2MYreROXC9sgYxRQSklQdCleYeS3HlKdPO
+	PEN3SI1K8ornGFlBgkcwelzO5ho2HrbfqISdJJMpg=
+Received: by filter2992p1mdw1.sendgrid.net with SMTP id filter2992p1mdw1-6134-6106E4C8-1F
+        2021-08-01 18:15:36.666868024 +0000 UTC m=+261011.367274139
+Received: from MTU0MjkyNjc (unknown)
+	by geopod-ismtpd-6-2 (SG) with HTTP id KTetyQ_lQraFLV_LBpNgEA
+	Sun, 01 Aug 2021 18:15:36.629 +0000 (UTC)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset=UTF-8
+Date: Sun, 01 Aug 2021 18:15:36 +0000 (UTC)
+From: "BeyondMenu" <info@beyondmenu.com>
+Mime-Version: 1.0
+To: acehaidrey@gmail.com
+Message-ID: <KTetyQ_lQraFLV_LBpNgEA@geopod-ismtpd-6-2>
+Subject: BeyondMenu / Kydia Invoice!
+X-SG-EID: 0+IMYgLnW8t6hmzFI1sEpfuZE5GOKk4+TBu0sxynEbK2Ivsev3uz8lhbkYvN+5qGwOeE7M5NTX6HyX
+ riM6WbktTPuTvgSXJ3/MGy7pYi0G/g1SjdQDPWCKZLq9KU2GZ9SJWlcygwZVQGgCWtxut6NevFjOZj
+ xSR60Urs1jsOmH6YX+1f11CQwuZIQU6/rA03MNp07W1nyxoEXvw8t2TygzpHyn3cJZjsUJ/i0adfSu
+ 0=
+X-Entity-ID: paDFd8Wf3W6tjSq2x7eh3Q==
+X-Feedback-ID: 15429267:1yAlQfPiI9C/lm4U+boMCdwH6kOEog2L9hR1awdE/2I=:1yAlQfPiI9C/lm4U+boMCdwH6kOEog2L9hR1awdE/2I=:SG
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.=
+w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns=3D"http://www.w3.org/1999/xhtml">
+<head><title>
+	Receipt
+</title><meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Du=
+tf-8" />
+    <style>
+        @page {
+            margin: 0;
+            size: 8.5in 11in;
+            size: portrait;
+        }
+
+        @-moz-document url-prefix() {
+            body {
+                padding-top: 14px;
+            }
+        }
+
+        @media print {
+            .printright {
+                margin-bottom: -2em !important;
+            }
+
+            span[printable] {
+                display: inline !important;
+            }
+        }
+
+        .printright {
+            font-size: 8pt;
+            font-weight: bold;
+            float: right;
+            margin-top: -0.5em;
+            text-align: right;
+        }
+
+        span[printable] {
+            display: none;
+        }
+
+        .owner_table {
+            margin: 0 auto;
+        }
+
+        * {
+            color: black !important;
+            padding: 0;
+            margin: 0;
+        }
+
+        body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, cod=
+e, form, input, textarea, p, blockquote, th, td, img, hr {
+            margin: auto 0;
+            padding: 0;
+        }
+
+        img {
+            border: 0;
+        }
+
+        td {
+            line-height: 1.25em;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid black;
+            height: 0px;
+        }
+
+        .hr {
+            border: none;
+            border-top: 1px solid black;
+            height: 0px;
+            font-size: 0;
+            float: none;
+        }
+
+        .clear {
+            clear: both;
+            height: 0px;
+            font-size: 0;
+        }
+
+        .font {
+            font-size: 10pt;
+        }
+    </style>
+</head>
+<body>
+    <form name=3D"form1" method=3D"post" action=3D"./paymentreceipt.aspx?db=
+=3Dbm&amp;beplid=3DD7I3L8J2H4D7H2K7H3&amp;isemail=3Dtrue" id=3D"form1">
+<div>
+<input type=3D"hidden" name=3D"__VIEWSTATE" id=3D"__VIEWSTATE" value=3D"/wE=
+PDwUJNTgwNDAzMzU2ZBgBBRxQYXltZW50UmVjZWlwdEN0cmwxJGd2T3JkZXJzDzwrAAwBCAIBZB=
+HJqeqGbw11nkTBJdS+ZrwuKZd/+DoW01/LSmA3v4ic" />
+</div>
+
+<div>
+
+	<input type=3D"hidden" name=3D"__VIEWSTATEGENERATOR" id=3D"__VIEWSTATEGENE=
+RATOR" value=3D"A4EFCC65" />
+</div>
+        <div>
+=20=20=20=20=20=20=20=20=20=20=20=20
+<div id=3D"PaymentReceiptCtrl1_OwnerAppAdCtrl_pnlEmailAd" style=3D"text-ali=
+gn:center;font-size: 12px; max-width: 755px; margin: auto; margin: 10px aut=
+o; font-family: Verdana; min-width: 600px; width: 100%;">
+=09
+    <table style=3D"width: 100%">
+=20=20=20=20=20=20=20=20
+            <tbody>
+                <tr>
+                    <td style=3D"width: 100%; font-size: 0.8em">BM is offer=
+ing <strong>POS</strong> software!
+                        <strong>Special Offer:</strong> Just one-time setup=
+ fee, $250 for 1st station and $100 for addl stations.
+                    </td>
+                </tr>
+            </tbody>
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20
+    </table>
+
+</div>
+
+<div class=3D"font" align=3D"center" style=3D"font-family: Verdana; max-wid=
+th: 755px; margin: auto; border: solid 1px black; text-align: left;">
+    <div style=3D"margin-top: 20px; padding: 0px 0px 10px 20px; font-size: =
+12pt;">
+        <table style=3D"width: 100%; vertical-align: top;">
+            <tr>
+                <td style=3D"vertical-align: top;">
+                    <div class=3D"headerleft">
+                        <span style=3D"font-size: 23pt; font-weight: bold;"=
+>BeyondMenu</span>
+                    </div>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+                <td>
+                    <span style=3D"font-size: 16pt; font-weight: bold;">Kyd=
+ia Inc</span><br />
+                    10400 W Higgins Rd,<br />
+                    Suite#205<br />
+                    Rosemont, IL 60018<br />
+                </td>
+                <td style=3D"vertical-align: top;">
+                    Invoice Date:<br />
+                    8/1/2021
+                    <br />
+                    <br />
+                    Account #: <br /><big><b>
+                        52204</b></big>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class=3D"clear">
+    </div>
+    <div style=3D"width: 100%;">
+        <table style=3D"width: 100%; border-collapse: collapse;" border=3D"=
+1" rules=3D"all">
+            <tr style=3D"background-color: #E6E6E6; font-weight: bold;">
+                <td colspan=3D"2">Billing Address:
+                </td>
+                <td colspan=3D"2">Billing Information:
+                </td>
+            </tr>
+            <tr>
+                <td style=3D"width: 25%;">Company:
+                </td>
+                <td style=3D"width: 25%;">
+                    Aroma Pizza and Pasta
+                </td>
+                <td style=3D"width: 25%;">Start Date:
+                </td>
+                <td style=3D"width: 25%;">
+                    5/1/2021
+                </td>
+            </tr>
+            <tr>
+                <td>Name:
+                </td>
+                <td>
+                    Said Haidrey
+                </td>
+                <td>End Date:
+                </td>
+                <td>
+                    7/31/2021
+                </td>
+            </tr>
+            <tr>
+                <td>Address:
+                </td>
+                <td>
+                    20491 Alton Pkwy
+                </td>
+                <td>Billing Date:
+                </td>
+                <td>
+                    8/1/2021
+                </td>
+            </tr>
+            <tr>
+                <td>City/State/Zip:
+                </td>
+                <td>
+                    Lake Forest, CA 92630
+                </td>
+                <td>Balance:
+                </td>
+                <td>$-55.42
+                </td>
+            </tr>
+            <tr>
+                <td>Phone:
+                </td>
+                <td>
+                    (949) 916-0909
+                </td>
+                <td>Payment Due By:
+                </td>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+            </tr>
+            <tr>
+                <td>Fax:
+                </td>
+                <td>
+                    (949) 916-0979
+                </td>
+                <td>Pay Method:
+                </td>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+            </tr>
+        </table>
+        <div class=3D"clear">
+        </div>
+        <br />
+        <table style=3D"width: 100%; border-collapse: collapse;" border=3D"=
+1" rules=3D"all">
+            <tr style=3D"background-color: #E6E6E6; font-weight: bold;">
+                <td colspan=3D"2">Order Summary
+                </td>
+                <td colspan=3D"2"></td>
+            </tr>
+            <tr>
+                <td style=3D"width: 25%;">Active Order Count:
+                </td>
+                <td style=3D"width: 25%;">
+                    1
+                </td>
+                <td style=3D"width: 25%;"></td>
+                <td style=3D"width: 25%;"></td>
+            </tr>
+            <tr>
+                <td>Void Order Count:
+                </td>
+                <td>
+                    0
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Tip Total:</td>
+                <td>$6.67</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Delivery Fee Total:
+                </td>
+                <td>$4.99
+                </td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>Tax Total:
+                </td>
+                <td>$3.45
+                </td>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+            </tr>
+            <tr>
+                <td>Order Amount Total:
+                </td>
+                <td>$59.57
+                </td>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+            </tr>
+            <tr>
+                <td>Order Amount Subtotal:</td>
+                <td>$44.46</td>
+                <td>
+                    5% Before Tax:
+                </td>
+                <td>$2.22
+                </td>
+            </tr>
+            <tr>
+                <td>Fax Count:
+                </td>
+                <td>
+                    1
+                </td>
+                <td>Fax Fee ($0.00/fax)
+                </td>
+                <td>$0.00
+                </td>
+            </tr>
+            <tr>
+                <td>Phone Count:
+                </td>
+                <td>
+                    1
+                </td>
+                <td>Phone Fee ($0.00/call)
+                </td>
+                <td>$0.00
+                </td>
+            </tr>
+            <tr>
+                <td>Other
+                </td>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                </td>
+                <td></td>
+                <td>$0.00
+                </td>
+            </tr>
+        </table>
+        <table style=3D"width: 50%; border-collapse: collapse; float: right=
+; border-top-style: none;"
+            border=3D"1" rules=3D"all">
+            <tr style=3D"font-weight: bold;">
+                <td style=3D"width: 50%;">Subtotal:
+                </td>
+                <td style=3D"width: 50%;">$2.22
+                </td>
+            </tr>
+=20=20=20=20=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20=20=20=20=20
+            <tr>
+                <td>
+                    Online CC Collected:
+                </td>
+                <td>
+                    $59.57
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Online CC Processing Fee:
+                </td>
+                <td>
+                    $1.93
+                </td>
+            </tr>
+=20=20=20=20=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20=20=20=20=20
+            <tr style=3D"font-size: 14pt; font-weight: bold;">
+                <td>
+                    Pay Restaurant:
+                </td>
+                <td>
+                    $55.42
+                </td>
+            </tr>
+=20=20=20=20=20=20=20=20=20=20=20=20
+        </table>
+        <div class=3D"clear">
+        </div>
+        <br />
+=20=20=20=20=20=20=20=20
+        <table style=3D"width: 100%; border-collapse: collapse; float: righ=
+t;" border=3D"1" rules=3D"all">
+            <tr style=3D"background-color: #E6E6E6; font-weight: bold;">
+                <td>Notes:
+                </td>
+            </tr>
+            <tr>
+                <td>
+=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
+                    <br />
+                </td>
+            </tr>
+        </table>
+        <div style=3D"float: right">
+=20=20=20=20=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20=20=20=20=20
+=20=20=20=20=20=20=20=20=20=20=20=20
+        </div>
+        <div class=3D"clear" style=3D"clear: both;">
+        </div>
+=20=20=20=20=20=20=20=20
+        <div class=3D"clear">
+        </div>
+        <br />
+        <div id=3D"PaymentReceiptCtrl1_pnlOnlineOrder">
+=09
+            Online Order Information:
+            <div>
+                <div>
+		<table cellspacing=3D"0" rules=3D"all" border=3D"1" id=3D"PaymentReceiptC=
+trl1_gvOrders" style=3D"width:100%;border-collapse:collapse;">
+			<tr>
+				<th scope=3D"col">Date</th><th scope=3D"col">Order #</th><th scope=3D"c=
+ol">Time</th><th scope=3D"col">Name</th><th scope=3D"col">Type</th><th scop=
+e=3D"col">Paid By</th><th scope=3D"col">Subtotal</th><th scope=3D"col">Amou=
+nt</th><th scope=3D"col">Credit Card</th>
+			</tr><tr>
+				<td style=3D"width:10%;white-space:nowrap;">7/26/2021</td><td style=3D"=
+width:8%;white-space:nowrap;">75111208</td><td style=3D"width:10%;white-spa=
+ce:nowrap;">07:05 PM</td><td style=3D"width:10%;">Bullard</td><td style=3D"=
+width:10%;">Delivery</td><td style=3D"width:10%;white-space:nowrap;">
+                                <span id=3D"PaymentReceiptCtrl1_gvOrders_ct=
+l02_lblPayMethodTypeName"><nobr>BM Visa</nobr></span>
+                            </td><td style=3D"width:8%;">44.46</td><td styl=
+e=3D"width:8%;">59.57</td><td style=3D"width:6%;">59.57</td>
+			</tr>
+		</table>
+	</div>
+            </div>
+=20=20=20=20=20=20=20=20
+</div>
+    </div>
+    <div class=3D"clear">
+    </div>
+    <br />
+</div>
+<div style=3D"display: none;">
+    Success
+</div>
+
+        </div>
+    </form>
+
+<img src=3D"http://url496.beyondmenu.com/wf/open?upn=3DT4szy95X1PFB-2BW7lhH=
+NLmm0jj-2FSSYi27GgFkIWM3RGFKEAa9cpfoC8c3yb2Xt7snB3Kzrz1suvjfrBe8L9wPggB7pcP=
+MoYqIBcUDzRv20euYI-2BeLlxzuaN-2F5hdpct-2BfTwXRl842Bq27KQ5PiDcDvG88cWmBFKh-2=
+FF-2BojeYL-2BOadHSMm1mxGS5opvEhJINP1qr01K8uJefcjm-2FK6xUvsGrA-2BwzJjjJCgW9x=
+iPBid1UEuI-3D" alt=3D"" width=3D"1" height=3D"1" border=3D"0" style=3D"heig=
+ht:1px !important;width:1px !important;border-width:0 !important;margin-top=
+:0 !important;margin-bottom:0 !important;margin-right:0 !important;margin-l=
+eft:0 !important;padding-top:0 !important;padding-bottom:0 !important;paddi=
+ng-right:0 !important;padding-left:0 !important;"/>
+</body>
+</html>
+

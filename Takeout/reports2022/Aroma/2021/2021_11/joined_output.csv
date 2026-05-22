@@ -1,0 +1,53 @@
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Nov 2021,Aroma,Beyond Menu,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,"Check against email.
+No BM file found - could mean no orders this month."
+Nov 2021,Aroma,Bitcoin Pizza,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Nov 2021,Aroma,Cater2Me,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,Taxes Remitted by them (not included in credit total either).
+Nov 2021,Aroma,Delivery.Com,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No file found. Verify $0 sales for this partner this month.
+Nov 2021,Aroma,Doordash,0.0,15558.3,24.91,0.0,1119.15,13275.37,2109.75,0.0,"Transaction types found: ['AD_FEE', 'ERROR_CHARGE', 'ADJUSTMENT'] 
+Net Adjustments: $-41.4 Payout Records Total: $14475.84 Marketing Fees: $156.69. Ads Fees (incl. in marketing fees): $27.0."
+Nov 2021,Aroma,Eatstreet,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,No ES file found - could mean no orders this month.
+Nov 2021,Aroma,Ezcater,0.0,901.57,33.0,65.0,57.8,691.47,196.21,23.89,"Misc Fees: 0.0, Adjustments: 10.0, Discounts: 0.0"
+Nov 2021,Aroma,Fooda,0.0,2305.83,0.0,214.94,154.77,1859.93,442.41,46.47,
+Nov 2021,Aroma,Foodee,0.0,789.0,0.0,0.0,0.0,670.65,118.35,0.0,Taxes Remitted by them (not included in credit total either).
+Nov 2021,Aroma,Future Foods,0.0,16078.68,0.0,0.0,666.16,9902.03,5247.07,0.0,"Transaction Types: {'Reimbursement', 'Delivery'}
+Adjustment Orders: {'', '#043616964599318', '#1CCEE', '#7d4889a9', '#7E84C', '#5fb83fb2', '#4246754a', '#101417216132469', '#6A66D', '#8ff69c15'}
+adjustments || -121.71
+reimbursement adjustments || 47.19
+VR STORE | ORDERS | TOTAL
+The United Pepperonis of Pizza | 13 | 430.26
+Philly Fresh Cheesesteaks | 56 | 1212.16
+Ma's Meatballs | 65 | 1728.0
+Brooklyn Calzones | 143 | 3258.86
+Mothership Pizza | 61 | 2116.51
+Pasta Pirozzi | 14 | 337.68
+The Hot Italian | 18 | 600.43
+F*CKING GOOD PIZZA | 81 | 2888.76
+Fusilli Fusilli | 72 | 1957.05
+Cupid's Wings | 10 | 249.81
+Just Wing It. | 24 | 625.7
+Killer Wings | 13 | 486.56
+Cheeky's Cheesesteaks | 6 | 186.9
+"
+Nov 2021,Aroma,Grubhub,0.0,5589.16,492.08,424.26,352.85,4581.86,721.22,202.51,"Missing ids for reimbursement: {277916958487298}
+$64.0 in promo fees. $0.0 reimbursed.
+$-19.57 in adjustment payments"
+Nov 2021,Aroma,Mealhi5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+Nov 2021,Aroma,Menufy,0.0,81.4,9.43,6.98,4.46,75.76,3.0,2.64,
+Nov 2021,Aroma,Menustar,122.09,186.84,18.91,2.99,21.48,158.79,28.05,0.0,Merchant Services included in commission.
+Nov 2021,Aroma,Office Express,0.0,3051.6,0.0,0.0,0.0,2136.12,0.0,0.0,Check against payout pdf to verify. Taxes remitted by them.
+Nov 2021,Aroma,Slice,0.0,7441.55,644.08,273.29,0.0,6421.49,348.75,298.28,"Withheld taxes remitted: $500.01
+Adjustments: $126.98."
+Nov 2021,Aroma,Toast,4192.55,29286.37,1983.96,297.0,2249.32,32673.71,0.0,805.21,"Get true del fee from service charges in backend.
+Statement MS (Dates Adjusted): $840.48. Calculated MS: $805.21.
+Discrepancy in credit. Order Total: $29525.22. Payment Total: $29286.37."
+Nov 2021,Aroma,Ubereats,0.0,3673.93,0.0,0.0,0.0,2824.59,585.11,0.0,"Contains Postmates Orders.
+Withheld Taxes: $264.23"
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Nov 2021,The Wing Stop,Grubhub,0.0,442.53,0.0,0.0,31.43,302.12,123.21,16.81,$-0.39 in adjustment payments
+Nov 2021,The Wing Stop,Ubereats,0.0,1884.71,0.0,0.0,0.0,1416.62,332.33,0.0,"Contains Postmates Orders.
+Withheld Taxes: $135.76"
+Period,Location,Provider,Cash,Credit,Tip,Delivery_Fees,Tax,Payout,Commission,Merchant_Services,Notes
+Nov 2021,Trattoria Contadina,Grubhub,0.0,1078.79,0.0,0.0,77.58,736.21,300.41,42.17,
+Nov 2021,Trattoria Contadina,Ubereats,0.0,1379.48,0.0,0.0,0.0,1029.8,237.67,0.0,"Contains Postmates Orders.
+Withheld Taxes: $99.27"

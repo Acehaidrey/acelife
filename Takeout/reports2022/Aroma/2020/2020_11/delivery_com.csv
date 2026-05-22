@@ -1,0 +1,2 @@
+Merchant,Address,Orders ID,User Name,Date Ordered,Delivery Date,Sub-Total,Tax,Tip,Total,Order Status,House Account
+"Aroma Pizza and Pasta","20491 Alton Pkwy, 92610","31635621","Nathaniel Park","11/03/2020 2:22:09 pm","11/03/2020 2:22:09 pm","$11.99","$0.96","$0.00","$12.95","Confirmed","Yes"

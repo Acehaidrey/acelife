@@ -518,7 +518,7 @@ def parse_statement_summary(text: str) -> List[Dict[str, str]]:
         ("Total Earnings", "total_earnings"),
     ]:
         amount = find_amount(label, main_block)
-        if not amount and label in {"Slice Fees", "Total Earnings"}:
+        if not amount and label in {"Tips", "Slice Fees", "Total Earnings"}:
             amount = find_amount(label, text)
         if amount:
             rows.append({"section": "activity_details", "label": out_label, "value": amount})
